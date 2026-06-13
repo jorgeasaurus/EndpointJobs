@@ -44,3 +44,11 @@ Note: Remotive currently returned zero strict endpoint matches, so refresh leave
 - [x] Update SVG/icon visual assets.
 - [x] Verify build and browser rendering.
 - [x] Commit and push style update.
+
+## Multi-source Job Refresh Wiring
+
+- [x] Aggregate Remotive, Arbeitnow, Jobicy, and Remote OK in one refresh run.
+- [x] De-dupe normalized jobs across providers.
+- [x] Update workflow and README configuration.
+- [x] Verify refresh and build.
+- [x] Commit and push wiring update.

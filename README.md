@@ -15,7 +15,9 @@ npm run dev
 npm run jobs:refresh
 ```
 
-Default provider: Remotive public API. The site preserves source/apply links and displays attribution. Set `JOB_PROVIDER=remoteok` and `JOB_API_URL=https://remoteok.com/api` to use Remote OK instead.
+Default providers: Remotive, Arbeitnow, Jobicy, and Remote OK. The site preserves source/apply links and displays attribution.
+
+Use `JOB_PROVIDERS=remotive,arbeitnow,jobicy,remoteok` to choose sources. Single-provider legacy mode still works with `JOB_PROVIDER=remoteok` and `JOB_API_URL=https://remoteok.com/api`. Override individual URLs with `JOB_REMOTIVE_API_URL`, `JOB_ARBEITNOW_API_URL`, `JOB_JOBICY_API_URL`, or `JOB_REMOTEOK_API_URL`.
 
 ## GitHub Action
 

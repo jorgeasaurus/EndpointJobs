@@ -72,9 +72,7 @@ type ToolAlias = {
   strong: boolean;
 };
 
-const outputPath = resolve("src/data/jobs.json");
-const provider = process.env.JOB_PROVIDER ?? "remotive";
-const sourceUrl = process.env.JOB_API_URL ?? getDefaultSourceUrl(provider);
+const outputPath = resolve(process.env.JOB_OUTPUT_PATH ?? "src/data/jobs.json");
 const maxJobs = Number(process.env.JOB_MAX_RESULTS ?? 80);
 const staleDays = Number(process.env.JOB_STALE_DAYS ?? 45);
 
@@ -141,21 +139,20 @@ const endpointRoleTerms = [
 ];
 
 async function main() {
-  if (!isSupportedProvider(provider)) {
-    throw new Error(`Unsupported JOB_PROVIDER: ${provider}`);
-  }
-
+  const providers = getConfiguredProviders();
   const fetchedAt = new Date();
-  const jobs = await fetchProviderJobs(provider, sourceUrl, fetchedAt);
-  const normalizedJobs = jobs
-    .filter((job): job is Job => Boolean(job))
-    .filter((job) => new Date(job.staleAfter).getTime() >= fetchedAt.getTime())
+  const jobs = await fetchConfiguredProviderJobs(providers, fetchedAt);
+  const normalizedJobs = dedupeJobs(
+    jobs
+      .filter((job): job is Job => Boolean(job))
+      .filter((job) => new Date(job.staleAfter).getTime() >= fetchedAt.getTime())
+  )
     .sort((first, second) => new Date(second.postedAt).getTime() - new Date(first.postedAt).getTime())
     .slice(0, maxJobs);
 
   const feed: JobsFeed = {
     updatedAt: fetchedAt.toISOString(),
-    source: getSourceMetadata(provider, sourceUrl),
+    source: getFeedSourceMetadata(providers),
     jobs: normalizedJobs
   };
 
@@ -163,7 +160,7 @@ async function main() {
 
   if (normalizedJobs.length === 0 && process.env.JOB_ALLOW_EMPTY !== "true") {
     console.log(
-      "No endpoint jobs matched the current provider feed; leaving src/data/jobs.json unchanged."
+      "No endpoint jobs matched the configured provider feeds; leaving src/data/jobs.json unchanged."
     );
     return;
   }
@@ -171,7 +168,9 @@ async function main() {
   await mkdir(dirname(outputPath), { recursive: true });
   await writeFile(outputPath, `${JSON.stringify(feed, null, 2)}\n`, "utf8");
 
-  console.log(`Wrote ${normalizedJobs.length} endpoint jobs to ${outputPath}`);
+  console.log(
+    `Wrote ${normalizedJobs.length} endpoint jobs from ${providers.length} provider(s) to ${outputPath}`
+  );
 }
 
 const supportedProviders = ["remoteok", "remotive", "arbeitnow", "jobicy"] as const;
@@ -181,8 +180,60 @@ function isSupportedProvider(value: string): value is SupportedProvider {
   return supportedProviders.includes(value as SupportedProvider);
 }
 
+function getConfiguredProviders() {
+  const configured = process.env.JOB_PROVIDERS ?? process.env.JOB_PROVIDER;
+  const providerNames = configured
+    ? configured.split(",")
+    : [...supportedProviders];
+  const providers = providerNames.map(normalizeProviderName);
+
+  if (providers.length === 0) {
+    throw new Error("No job providers configured");
+  }
+
+  return Array.from(new Set(providers));
+}
+
+function normalizeProviderName(value: string): SupportedProvider {
+  const normalized = value.trim().toLowerCase().replace(/[\s_-]/g, "");
+  const provider = normalized === "remoteok" ? "remoteok" : normalized;
+
+  if (!isSupportedProvider(provider)) {
+    throw new Error(`Unsupported JOB_PROVIDERS entry: ${value}`);
+  }
+
+  return provider;
+}
+
+async function fetchConfiguredProviderJobs(
+  providers: SupportedProvider[],
+  fetchedAt: Date
+): Promise<Array<Job | null>> {
+  const jobs: Array<Job | null> = [];
+  let successfulProviders = 0;
+
+  for (const provider of providers) {
+    const sourceUrl = getConfiguredSourceUrl(provider, providers.length === 1);
+
+    try {
+      const providerJobs = await fetchProviderJobs(provider, sourceUrl, fetchedAt);
+      successfulProviders += 1;
+      jobs.push(...providerJobs);
+      console.log(`Fetched ${providerJobs.length} raw jobs from ${getSourceMetadata(provider, sourceUrl).name}`);
+    } catch (error) {
+      console.warn(`Skipping ${provider}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  if (successfulProviders === 0) {
+    throw new Error("All configured job providers failed");
+  }
+
+  return jobs;
+}
+
 async function fetchProviderJobs(
-  jobProvider: string,
+  jobProvider: SupportedProvider,
   url: string,
   fetchedAt: Date
 ): Promise<Array<Job | null>> {
@@ -344,7 +395,7 @@ function normalizeRemoteOkJob(raw: RemoteOkJob, fetchedAt: Date): Job | null {
   const platforms = derivePlatforms(haystack);
   const matchReasons = deriveMatchReasons(haystack, tools, platforms);
 
-  if (!isEndpointRelevant(haystack, tools, matchReasons)) {
+  if (!isEndpointRelevant(haystack, title, tools)) {
     return null;
   }
 
@@ -406,7 +457,7 @@ function normalizeRemotiveJob(raw: RemotiveJob, fetchedAt: Date): Job | null {
   const platforms = derivePlatforms(haystack);
   const matchReasons = deriveMatchReasons(haystack, tools, platforms);
 
-  if (!isEndpointRelevant(haystack, tools, matchReasons)) {
+  if (!isEndpointRelevant(haystack, title, tools)) {
     return null;
   }
 
@@ -462,7 +513,7 @@ function normalizeArbeitnowJob(raw: ArbeitnowJob, fetchedAt: Date): Job | null {
   const platforms = derivePlatforms(haystack);
   const matchReasons = deriveMatchReasons(haystack, tools, platforms);
 
-  if (!isEndpointRelevant(haystack, tools, matchReasons)) {
+  if (!isEndpointRelevant(haystack, title, tools)) {
     return null;
   }
 
@@ -518,7 +569,7 @@ function normalizeJobicyJob(raw: JobicyJob, fetchedAt: Date): Job | null {
   const platforms = derivePlatforms(haystack);
   const matchReasons = deriveMatchReasons(haystack, tools, platforms);
 
-  if (!isEndpointRelevant(haystack, tools, matchReasons)) {
+  if (!isEndpointRelevant(haystack, title, tools)) {
     return null;
   }
 
@@ -556,14 +607,18 @@ function normalizeJobicyJob(raw: JobicyJob, fetchedAt: Date): Job | null {
 
 function isEndpointRelevant(
   haystack: string,
-  tools: EndpointTool[],
-  matchReasons: string[]
+  title: string,
+  tools: EndpointTool[]
 ) {
+  const normalizedTitle = normalizeSearchText(title);
   const hasStrongTool = toolAliases.some(
     ({ tool, strong }) => strong && tools.includes(tool)
   );
   const hasEndpointRole = endpointRoleTerms.some((term) =>
     containsAlias(haystack, term)
+  );
+  const hasEndpointTitle = endpointRoleTerms.some((term) =>
+    containsAlias(normalizedTitle, term)
   );
   const looksLikeFrontlineSupport =
     containsAlias(haystack, "service desk") ||
@@ -576,7 +631,7 @@ function isEndpointRelevant(
     return false;
   }
 
-  return hasStrongTool || hasEndpointRole || matchReasons.length >= 2;
+  return hasStrongTool || (hasEndpointRole && hasEndpointTitle);
 }
 
 function deriveTools(haystack: string) {
@@ -813,7 +868,22 @@ function addDays(value: Date, days: number) {
   return new Date(value.getTime() + days * 24 * 60 * 60 * 1000);
 }
 
-function getDefaultSourceUrl(jobProvider: string) {
+function getConfiguredSourceUrl(provider: SupportedProvider, allowLegacyUrl: boolean) {
+  const overrideKey = `JOB_${provider.toUpperCase()}_API_URL`;
+  const providerOverride = process.env[overrideKey];
+
+  if (providerOverride) {
+    return providerOverride;
+  }
+
+  if (allowLegacyUrl && process.env.JOB_API_URL) {
+    return process.env.JOB_API_URL;
+  }
+
+  return getDefaultSourceUrl(provider);
+}
+
+function getDefaultSourceUrl(jobProvider: SupportedProvider) {
   if (jobProvider === "remoteok") {
     return "https://remoteok.com/api";
   }
@@ -829,7 +899,21 @@ function getDefaultSourceUrl(jobProvider: string) {
   return "https://remotive.com/api/remote-jobs";
 }
 
-function getSourceMetadata(jobProvider: string, url: string) {
+function getFeedSourceMetadata(providers: SupportedProvider[]) {
+  if (providers.length === 1) {
+    const provider = providers[0];
+    return getSourceMetadata(provider, getConfiguredSourceUrl(provider, true));
+  }
+
+  return {
+    name: providers
+      .map((provider) => getSourceMetadata(provider, getDefaultSourceUrl(provider)).name)
+      .join(" + "),
+    url: process.env.JOB_FEED_SOURCE_URL ?? "https://github.com/jorgeasaurus/EndpointJobs"
+  };
+}
+
+function getSourceMetadata(jobProvider: SupportedProvider, url: string) {
   if (jobProvider === "remoteok") {
     return {
       name: "Remote OK",
@@ -855,6 +939,23 @@ function getSourceMetadata(jobProvider: string, url: string) {
     name: "Remotive",
     url
   };
+}
+
+function dedupeJobs(jobs: Job[]) {
+  const byKey = new Map<string, Job>();
+
+  for (const job of jobs) {
+    const sourceKey = normalizeSearchText(job.sourceUrl);
+    const roleKey = normalizeSearchText([job.title, job.company, job.location].join("|"));
+    const key = roleKey || sourceKey;
+    const existing = byKey.get(key);
+
+    if (!existing || new Date(job.postedAt).getTime() > new Date(existing.postedAt).getTime()) {
+      byKey.set(key, job);
+    }
+  }
+
+  return Array.from(byKey.values());
 }
 
 function validateFeed(feed: JobsFeed) {

@@ -27,8 +27,8 @@ jobs:
       - name: Refresh endpoint jobs
         run: npm run jobs:refresh
         env:
-          JOB_PROVIDER: remotive
-          JOB_API_URL: https://remotive.com/api/remote-jobs
+          JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok
+          JOB_FEED_SOURCE_URL: https://github.com/jorgeasaurus/EndpointJobs
           JOB_STALE_DAYS: "45"
           JOB_MAX_RESULTS: "80"
 
