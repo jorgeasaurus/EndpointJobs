@@ -39,6 +39,33 @@ type RemotiveJob = {
   description?: string;
 };
 
+type ArbeitnowJob = {
+  slug?: string;
+  company_name?: string;
+  title?: string;
+  description?: string;
+  remote?: boolean;
+  url?: string;
+  tags?: string[];
+  job_types?: string[];
+  location?: string;
+  created_at?: number;
+};
+
+type JobicyJob = {
+  id?: string | number;
+  url?: string;
+  jobTitle?: string;
+  companyName?: string;
+  jobIndustry?: string[];
+  jobType?: string[];
+  jobGeo?: string;
+  jobLevel?: string;
+  jobExcerpt?: string;
+  jobDescription?: string;
+  pubDate?: string;
+};
+
 type ToolAlias = {
   tool: EndpointTool;
   aliases: string[];
@@ -114,7 +141,7 @@ const endpointRoleTerms = [
 ];
 
 async function main() {
-  if (provider !== "remoteok" && provider !== "remotive") {
+  if (!isSupportedProvider(provider)) {
     throw new Error(`Unsupported JOB_PROVIDER: ${provider}`);
   }
 
@@ -147,6 +174,13 @@ async function main() {
   console.log(`Wrote ${normalizedJobs.length} endpoint jobs to ${outputPath}`);
 }
 
+const supportedProviders = ["remoteok", "remotive", "arbeitnow", "jobicy"] as const;
+type SupportedProvider = (typeof supportedProviders)[number];
+
+function isSupportedProvider(value: string): value is SupportedProvider {
+  return supportedProviders.includes(value as SupportedProvider);
+}
+
 async function fetchProviderJobs(
   jobProvider: string,
   url: string,
@@ -155,6 +189,16 @@ async function fetchProviderJobs(
   if (jobProvider === "remoteok") {
     const payload = await fetchRemoteOk(url);
     return payload.map((job) => normalizeRemoteOkJob(job, fetchedAt));
+  }
+
+  if (jobProvider === "arbeitnow") {
+    const payload = await fetchArbeitnow(url);
+    return payload.map((job) => normalizeArbeitnowJob(job, fetchedAt));
+  }
+
+  if (jobProvider === "jobicy") {
+    const payload = await fetchJobicy(url);
+    return payload.map((job) => normalizeJobicyJob(job, fetchedAt));
   }
 
   const payload = await fetchRemotive(url);
@@ -203,6 +247,48 @@ async function fetchRemotive(url: string) {
   return (json as { jobs: unknown[] }).jobs.filter(isRemotiveJob);
 }
 
+async function fetchArbeitnow(url: string) {
+  const response = await fetch(url, {
+    headers: {
+      accept: "application/json",
+      "user-agent": "EndpointJobs/1.0 (+https://github.com/)"
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Arbeitnow request failed: ${response.status} ${response.statusText}`);
+  }
+
+  const json: unknown = await response.json();
+
+  if (!json || typeof json !== "object" || !Array.isArray((json as { data?: unknown }).data)) {
+    throw new Error("Arbeitnow response did not include a data array");
+  }
+
+  return (json as { data: unknown[] }).data.filter(isArbeitnowJob);
+}
+
+async function fetchJobicy(url: string) {
+  const response = await fetch(url, {
+    headers: {
+      accept: "application/json",
+      "user-agent": "EndpointJobs/1.0 (+https://github.com/)"
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Jobicy request failed: ${response.status} ${response.statusText}`);
+  }
+
+  const json: unknown = await response.json();
+
+  if (!json || typeof json !== "object" || !Array.isArray((json as { jobs?: unknown }).jobs)) {
+    throw new Error("Jobicy response did not include a jobs array");
+  }
+
+  return (json as { jobs: unknown[] }).jobs.filter(isJobicyJob);
+}
+
 function isRemoteOkJob(value: unknown): value is RemoteOkJob {
   if (!value || typeof value !== "object") {
     return false;
@@ -219,6 +305,24 @@ function isRemotiveJob(value: unknown): value is RemotiveJob {
 
   const candidate = value as RemotiveJob;
   return Boolean(candidate.id && candidate.title && candidate.company_name && candidate.url);
+}
+
+function isArbeitnowJob(value: unknown): value is ArbeitnowJob {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as ArbeitnowJob;
+  return Boolean(candidate.slug && candidate.title && candidate.company_name && candidate.url);
+}
+
+function isJobicyJob(value: unknown): value is JobicyJob {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as JobicyJob;
+  return Boolean(candidate.id && candidate.jobTitle && candidate.companyName && candidate.url);
 }
 
 function normalizeRemoteOkJob(raw: RemoteOkJob, fetchedAt: Date): Job | null {
@@ -336,6 +440,117 @@ function normalizeRemotiveJob(raw: RemotiveJob, fetchedAt: Date): Job | null {
     seniority: inferSeniority(haystack),
     employmentType: normalizeRemotiveJobType(raw.job_type),
     ...(raw.salary ? { salary: { currency: "USD", label: cleanText(raw.salary) } } : {})
+  };
+}
+
+function normalizeArbeitnowJob(raw: ArbeitnowJob, fetchedAt: Date): Job | null {
+  const title = cleanText(raw.title);
+  const company = cleanText(raw.company_name);
+  const sourceJobUrl = cleanUrl(raw.url);
+
+  if (!title || !company || !sourceJobUrl) {
+    return null;
+  }
+
+  const description = stripHtml(raw.description ?? "");
+  const tags = Array.isArray(raw.tags) ? raw.tags.map(cleanText).filter(Boolean) : [];
+  const jobTypes = Array.isArray(raw.job_types) ? raw.job_types.map(cleanText).filter(Boolean) : [];
+  const haystack = normalizeSearchText(
+    [title, company, raw.location, tags.join(" "), jobTypes.join(" "), description].join(" ")
+  );
+  const tools = deriveTools(haystack);
+  const platforms = derivePlatforms(haystack);
+  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
+
+  if (!isEndpointRelevant(haystack, tools, matchReasons)) {
+    return null;
+  }
+
+  const postedAt =
+    raw.created_at && raw.created_at > 0
+      ? new Date(raw.created_at * 1000).toISOString()
+      : new Date().toISOString();
+  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
+  const workplace = raw.remote ? "Remote" : inferWorkplace(raw.location, haystack);
+
+  return {
+    id: `arbeitnow-${raw.slug}`,
+    title,
+    company,
+    location: cleanText(raw.location) || (raw.remote ? "Remote" : "Unknown"),
+    workplace,
+    postedAt,
+    fetchedAt: fetchedAt.toISOString(),
+    staleAfter,
+    expiresAt: staleAfter,
+    source: "Arbeitnow",
+    sourceUrl: sourceJobUrl,
+    applyUrl: sourceJobUrl,
+    attributionLabel: "Arbeitnow",
+    termsProfile: "attribution-required",
+    summary: summarize(description),
+    tags: normalizeTags([...tags, ...jobTypes], tools, platforms),
+    matchReasons,
+    tools,
+    platforms,
+    roleFamily: inferRoleFamily(haystack, tools, platforms),
+    seniority: inferSeniority(haystack),
+    employmentType: inferEmploymentType(haystack)
+  };
+}
+
+function normalizeJobicyJob(raw: JobicyJob, fetchedAt: Date): Job | null {
+  const title = cleanText(raw.jobTitle);
+  const company = cleanText(raw.companyName);
+  const sourceJobUrl = cleanUrl(raw.url);
+
+  if (!title || !company || !sourceJobUrl) {
+    return null;
+  }
+
+  const description = stripHtml(raw.jobDescription ?? raw.jobExcerpt ?? "");
+  const industry = Array.isArray(raw.jobIndustry) ? raw.jobIndustry.map(cleanText).filter(Boolean) : [];
+  const jobType = Array.isArray(raw.jobType) ? raw.jobType.map(cleanText).filter(Boolean) : [];
+  const haystack = normalizeSearchText(
+    [title, company, raw.jobGeo, raw.jobLevel, industry.join(" "), jobType.join(" "), description].join(" ")
+  );
+  const tools = deriveTools(haystack);
+  const platforms = derivePlatforms(haystack);
+  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
+
+  if (!isEndpointRelevant(haystack, tools, matchReasons)) {
+    return null;
+  }
+
+  const postedAt =
+    raw.pubDate && !Number.isNaN(new Date(raw.pubDate).getTime())
+      ? new Date(raw.pubDate).toISOString()
+      : new Date().toISOString();
+  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
+
+  return {
+    id: `jobicy-${raw.id}`,
+    title,
+    company,
+    location: cleanText(raw.jobGeo) || "Remote",
+    workplace: "Remote",
+    postedAt,
+    fetchedAt: fetchedAt.toISOString(),
+    staleAfter,
+    expiresAt: staleAfter,
+    source: "Jobicy",
+    sourceUrl: sourceJobUrl,
+    applyUrl: sourceJobUrl,
+    attributionLabel: "Jobicy",
+    termsProfile: "attribution-required",
+    summary: summarize(description),
+    tags: normalizeTags([...industry, ...jobType], tools, platforms),
+    matchReasons,
+    tools,
+    platforms,
+    roleFamily: inferRoleFamily(haystack, tools, platforms),
+    seniority: inferSeniority(haystack),
+    employmentType: jobType[0] || inferEmploymentType(haystack)
   };
 }
 
@@ -603,6 +818,14 @@ function getDefaultSourceUrl(jobProvider: string) {
     return "https://remoteok.com/api";
   }
 
+  if (jobProvider === "arbeitnow") {
+    return "https://www.arbeitnow.com/api/job-board-api";
+  }
+
+  if (jobProvider === "jobicy") {
+    return "https://jobicy.com/api/v2/remote-jobs?count=50&industry=engineering";
+  }
+
   return "https://remotive.com/api/remote-jobs";
 }
 
@@ -610,6 +833,20 @@ function getSourceMetadata(jobProvider: string, url: string) {
   if (jobProvider === "remoteok") {
     return {
       name: "Remote OK",
+      url
+    };
+  }
+
+  if (jobProvider === "arbeitnow") {
+    return {
+      name: "Arbeitnow",
+      url
+    };
+  }
+
+  if (jobProvider === "jobicy") {
+    return {
+      name: "Jobicy",
       url
     };
   }
