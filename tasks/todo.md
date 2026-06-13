@@ -40,7 +40,7 @@ Note: Remotive currently returned zero strict endpoint matches, so refresh leave
 
 ## Obsidian Lime Style Refresh
 
-- [ ] Apply black/obsidian, lime, emerald, glass, grid, noise, and glow styling.
-- [ ] Update SVG/icon visual assets.
-- [ ] Verify build and browser rendering.
-- [ ] Commit and push style update.
+- [x] Apply black/obsidian, lime, emerald, glass, grid, noise, and glow styling.
+- [x] Update SVG/icon visual assets.
+- [x] Verify build and browser rendering.
+- [x] Commit and push style update.
