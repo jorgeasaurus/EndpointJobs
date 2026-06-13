@@ -52,3 +52,12 @@ Note: Remotive currently returned zero strict endpoint matches, so refresh leave
 - [x] Update workflow and README configuration.
 - [x] Verify refresh and build.
 - [x] Commit and push wiring update.
+
+## Vercel Publish
+
+- [x] Verify Vercel CLI/auth.
+- [x] Link/create Vercel project.
+- [x] Deploy production build.
+- [x] Verify deployment URL.
+
+Deployment: https://endpoint-jobs.vercel.app
