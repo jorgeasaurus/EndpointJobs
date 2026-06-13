@@ -6,6 +6,7 @@ coverage/
 .vercel/
 .playwright-mcp/
 endpoint-jobs-*.png
+endpoint-lime-*.png
 .env
 .env.local
 .env.*.local
