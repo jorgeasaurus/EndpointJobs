@@ -61,3 +61,13 @@ Note: Remotive currently returned zero strict endpoint matches, so refresh leave
 - [x] Verify deployment URL.
 
 Deployment: https://endpoint-jobs.vercel.app
+
+## Job API Diagnostics
+
+- [x] Verify provider APIs return raw jobs.
+- [x] Verify refresh normalization/filtering output.
+- [x] Inspect GitHub Action run history.
+- [x] Adjust filter/source wiring if needed.
+- [x] Re-run validation and push if changed.
+
+Result: 2026-06-13 workflow run 27482502661 on 992f112 fetched Remotive 29, Arbeitnow 100, Jobicy 50, and Remote OK 100; accepted 0 endpoint matches and made no listing changes. Local sampling found only false-positive near matches, so no source/filter code change was needed.
