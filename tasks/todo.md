@@ -33,7 +33,7 @@ Note: Remotive currently returned zero strict endpoint matches, so refresh leave
 
 ## Repo Move And Publish
 
-- [ ] Move repo to `~/Code/EndpointJobs`.
-- [ ] Create initial commit.
-- [ ] Create GitHub repo and push.
-- [ ] Verify remote state.
+- [x] Move repo to `~/Code/EndpointJobs`.
+- [x] Create initial commit.
+- [x] Create GitHub repo and push.
+- [x] Verify remote state.
