@@ -1,0 +1,34 @@
+<svg width="900" height="620" viewBox="0 0 900 620" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="620" rx="32" fill="#17150F"/>
+  <path d="M0 92H900M0 196H900M0 300H900M0 404H900M0 508H900M112 0V620M224 0V620M336 0V620M448 0V620M560 0V620M672 0V620M784 0V620" stroke="#393224" stroke-width="1"/>
+  <path d="M108 436L242 274L378 331L514 174L652 246L792 118" stroke="#00E68A" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M114 436L250 516L386 396L522 462L660 340L794 376" stroke="#62D8FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>
+  <path d="M108 436L242 274L378 331L514 174L652 246L792 118" stroke="#F4F0E7" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" opacity=".08"/>
+  <g filter="url(#glow)">
+    <circle cx="108" cy="436" r="16" fill="#FFB020"/>
+    <circle cx="242" cy="274" r="16" fill="#00E68A"/>
+    <circle cx="378" cy="331" r="16" fill="#F4F0E7"/>
+    <circle cx="514" cy="174" r="16" fill="#00E68A"/>
+    <circle cx="652" cy="246" r="16" fill="#FF5C39"/>
+    <circle cx="792" cy="118" r="16" fill="#62D8FF"/>
+    <circle cx="250" cy="516" r="10" fill="#62D8FF"/>
+    <circle cx="522" cy="462" r="10" fill="#62D8FF"/>
+    <circle cx="794" cy="376" r="10" fill="#62D8FF"/>
+  </g>
+  <rect x="58" y="64" width="208" height="58" rx="10" fill="#F4F0E7"/>
+  <rect x="80" y="84" width="88" height="8" rx="4" fill="#17150F"/>
+  <rect x="80" y="101" width="144" height="8" rx="4" fill="#6B604B"/>
+  <rect x="604" y="490" width="226" height="66" rx="10" fill="#221F17" stroke="#4B432F"/>
+  <rect x="630" y="516" width="68" height="8" rx="4" fill="#00E68A"/>
+  <rect x="714" y="516" width="84" height="8" rx="4" fill="#FFB020"/>
+  <rect x="630" y="535" width="130" height="8" rx="4" fill="#F4F0E7" opacity=".65"/>
+  <defs>
+    <filter id="glow" x="68" y="78" width="764" height="478" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+</svg>
