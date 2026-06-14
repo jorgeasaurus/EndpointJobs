@@ -376,3 +376,28 @@ Result: Found and fixed one structural blocker: the parallax change pushed src/a
 - [x] Deploy production to Vercel and verify live response.
 
 Result: Verified typecheck, lint, YAML parsing, diff hygiene, file-size line counts, and production build; pushed implementation commit 790b2b5; triggered Refresh job listings run 27509038208, which succeeded and wrote 54 jobs from 12 providers in action commit b7e4f0b; deployed production to https://endpointjobs.dev and verified HTTP 200. Action logs still show env-gated providers skipped until their GitHub secrets/config are set: Workable, Techmap RSS, Adzuna, TheirStack, and SerpAPI.
+
+## High-Signal Company Source Expansion
+
+- [x] Add verified Greenhouse boards for Databricks, Zscaler, Samsara, Scale AI, and Wiz.
+- [x] Add verified Ashby boards for Cursor, Perplexity, OpenAI, Cohere, ElevenLabs, and Watershed.
+- [x] Keep GitHub Action env and local refresh defaults aligned.
+- [x] Refresh jobs and verify local quality gates.
+
+Result: Added high-signal public ATS sources to local defaults and GitHub Actions. Refresh fetched the new boards successfully and wrote 61 endpoint jobs from 12 providers, with accepted new-company roles from Zscaler, Samsara, Databricks, Scale AI, Wiz, and Cursor. Verified duplicate IDs, typecheck, lint, build, and diff hygiene.
+
+## Second-Batch Company Source Expansion
+
+- [x] Add Greenhouse boards for Stripe, Robinhood, Box, Datadog, Elastic, Lyft, and Instacart.
+- [x] Keep GitHub Action env and local refresh defaults aligned.
+- [x] Update provider docs and display-name mapping.
+- [x] Refresh jobs and verify local quality gates.
+
+Result: Added second-batch Greenhouse boards for Stripe, Robinhood, Box, Datadog, Elastic, Lyft, and Instacart. Refresh fetched all seven successfully, increasing Greenhouse raw scan volume to 5,534 jobs; none produced endpoint-qualified accepted listings in this run, so the feed remained at 61 jobs from 12 providers.
+
+## Publish Company Source Expansion
+
+- [x] Run final local verification before publishing.
+- [ ] Commit source expansion and refreshed feed.
+- [ ] Push main to GitHub.
+- [ ] Deploy production to Vercel and verify endpointjobs.dev.

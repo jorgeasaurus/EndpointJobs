@@ -113,12 +113,32 @@ const defaultGreenhouseBoards = [
   "doordashusa",
   "commvault",
   "kaseya",
-  "kymeratherapeutics"
+  "kymeratherapeutics",
+  "databricks",
+  "zscaler",
+  "samsara",
+  "scaleai",
+  "wizinc",
+  "stripe",
+  "robinhood",
+  "boxinc",
+  "datadog",
+  "elastic",
+  "lyft",
+  "instacart"
 ];
 
 const defaultLeverCompanies = ["jumpcloud", "brightonjones", "hermeus", "omnidian"];
 
-const defaultAshbyBoards = ["docker"];
+const defaultAshbyBoards = [
+  "docker",
+  "cursor",
+  "perplexity",
+  "openai",
+  "cohere",
+  "elevenlabs",
+  "watershed"
+];
 
 const defaultWorkableAccounts: WorkableAccount[] = [];
 
@@ -787,17 +807,35 @@ function formatSourceAccountName(slug: string) {
   const knownNames: Record<string, string> = {
     anthropic: "Anthropic",
     automox: "Automox",
+    boxinc: "Box",
     brightonjones: "Brighton Jones",
+    cohere: "Cohere",
     commvault: "Commvault",
+    cursor: "Cursor",
+    databricks: "Databricks",
+    datadog: "Datadog",
     doordashusa: "DoorDash",
+    elastic: "Elastic",
+    elevenlabs: "ElevenLabs",
+    instacart: "Instacart",
     jamf: "Jamf",
     kaseya: "Kaseya",
     jumpcloud: "JumpCloud",
     kymeratherapeutics: "Kymera Therapeutics",
+    lyft: "Lyft",
     okta: "Okta",
+    openai: "OpenAI",
+    perplexity: "Perplexity",
+    robinhood: "Robinhood",
+    samsara: "Samsara",
+    scaleai: "Scale AI",
     sonyinteractiveentertainmentglobal: "PlayStation",
+    stripe: "Stripe",
     tanium: "Tanium",
-    verkada: "Verkada"
+    verkada: "Verkada",
+    watershed: "Watershed",
+    wizinc: "Wiz",
+    zscaler: "Zscaler"
   };
   const normalized = slug.trim().toLowerCase();
 
