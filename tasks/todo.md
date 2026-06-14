@@ -441,3 +441,13 @@ Result: Initial run 27514957148 proved Adzuna and SerpAPI credentials are accept
 - [x] Commit and push the change.
 
 Result: Added Vercel Web Analytics using the official `@vercel/analytics/next` App Router component. Verified `npm run typecheck`, `npm run lint`, `npm run build`, and `git diff --check`; pushed commit `b6cce31`.
+
+## README Screenshot Refresh
+
+- [x] Inspect current README screenshot references.
+- [x] Capture fresh desktop and mobile screenshots from the current app.
+- [x] Replace README screenshot assets without changing public paths.
+- [x] Verify image files, README references, and diff hygiene.
+- [x] Commit and push refreshed screenshots.
+
+Result: Refreshed `docs/screenshots/readme-desktop.png` and `docs/screenshots/readme-mobile.png` from the current production page at 1440x1200 and 390x1200. Verified README paths, image dimensions, and `git diff --check`.
