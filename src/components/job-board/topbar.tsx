@@ -17,7 +17,7 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
         <a
           aria-label="Report an issue or request a feature on GitHub"
           className="feedback-link"
-          href="https://github.com/jorgeasaurus/EndpointJobs/issues/new"
+          href="https://github.com/jorgeasaurus/EndpointJobs/issues/new?template=report-or-request.yml"
           rel="noopener noreferrer"
           target="_blank"
           title="Report an issue or request a feature"

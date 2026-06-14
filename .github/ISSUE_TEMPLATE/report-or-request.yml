@@ -1,0 +1,81 @@
+name: Report an issue or request a feature
+description: Report stale listings, missing job sources, UI bugs, or feature ideas.
+title: "[Request]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Endpoint Jobs. Include enough detail to reproduce, verify, or evaluate the request.
+
+  - type: dropdown
+    id: request_type
+    attributes:
+      label: Request type
+      options:
+        - Missing job or source
+        - Stale, duplicate, or inaccurate job
+        - Search or filter issue
+        - Mobile or visual bug
+        - Feature request
+        - Data/API refresh issue
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What should change?
+      placeholder: Add a short, specific summary.
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Include expected behavior, actual behavior, or why this would help.
+      placeholder: |
+        Expected:
+        Actual:
+        Why it matters:
+    validations:
+      required: true
+
+  - type: textarea
+    id: job_source_examples
+    attributes:
+      label: Job or source examples
+      description: For missing/bad jobs, include company, title, location, URL, ATS/source, salary, and posted date when available.
+      placeholder: |
+        Company:
+        Title:
+        Location/remote:
+        URL:
+        Source/ATS:
+        Posted date:
+        Salary range:
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: For UI/search/filter bugs, list the exact steps.
+      placeholder: |
+        1. Open endpointjobs.dev
+        2. Search for ...
+        3. Select ...
+        4. See ...
+
+  - type: input
+    id: device
+    attributes:
+      label: Device and browser
+      description: Optional, but helpful for visual or mobile issues.
+      placeholder: iPhone 15 Safari, Chrome desktop, etc.
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or extra context
+      description: Drag in screenshots, logs, or anything else that helps.

@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Endpoint Jobs live site
+    url: https://endpointjobs.dev
+    about: Check the current live job board before filing an issue.

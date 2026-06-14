@@ -342,3 +342,37 @@ Result: Centralized the Edge-compatible literal `aria-pressed` branch in `Toggle
 - [x] Deploy production to Vercel and verify live response.
 
 Result: Verified typecheck, lint, React Doctor, diff hygiene, and production build; pushed `712bbc6`; triggered Refresh job listings run `27508084649`, which succeeded and wrote 54 jobs from 12 providers in action commit `f25fe7a`; deployed production to `https://endpointjobs.dev` and verified HTTP 200. Action logs still show env-gated providers skipped until their GitHub secrets are configured: Workable, Techmap RSS, Adzuna, TheirStack, and SerpAPI.
+
+## Obsidian Parallax Background
+
+- [x] Add a parallax pixel background using the site's obsidian, lime, and emerald palette.
+- [x] Keep the job-board UI readable and interactive above the background layers.
+- [x] Respect reduced-motion users and mobile performance.
+- [x] Verify typecheck, lint, build, and responsive browser rendering.
+
+Result: Added inert parallax layers behind the job board with lime, emerald, and white pixel fields, a 60px grid atmosphere, reduced-motion handling, and softer mobile opacity. Verified npm run typecheck, npm run lint, git diff --check, npm run build, and browser desktop/mobile snapshots; dev-only HMR warnings were due to 127.0.0.1 origin blocking and do not affect production.
+
+## GitHub Issue Template
+
+- [x] Add a GitHub issue form for bug reports, stale listings, missing sources, and feature requests.
+- [x] Keep blank issues available and link back to the live site.
+- [x] Validate YAML syntax and diff hygiene.
+
+Result: Added .github/ISSUE_TEMPLATE/report-or-request.yml and config.yml. Verified both files parse as YAML and git diff --check passes.
+
+## Thermo-Nuclear Current Branch Fixes
+
+- [x] Review current uncommitted branch changes for structural regressions.
+- [x] Fix any file-size, spaghetti, abstraction, or boundary findings.
+- [x] Re-run validation and line-count checks.
+
+Result: Found and fixed one structural blocker: the parallax change pushed src/app/job-board.css to 1,014 lines. Decomposed the background into src/app/parallax-background.css and src/components/job-board/parallax-background.tsx, added one site-content stacking wrapper, removed stale per-section z-index selectors, and pointed the feedback link directly at the new issue form. Verified typecheck, lint, YAML parsing, build, diff hygiene, line counts, and desktop/mobile browser snapshots.
+
+## Publish Parallax And Issue Template Work
+
+- [ ] Run final local verification.
+- [ ] Commit and push current changes to GitHub.
+- [ ] Trigger the job refresh GitHub Action and check result.
+- [ ] Deploy production to Vercel and verify live response.
+
+Result: Pending.

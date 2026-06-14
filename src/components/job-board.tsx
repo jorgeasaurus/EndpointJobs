@@ -12,6 +12,7 @@ import {
   getActiveFilterCount,
   initialFilterState
 } from "./job-board/filter-model";
+import { ParallaxBackground } from "./job-board/parallax-background";
 import { ResultsPanel } from "./job-board/results-panel";
 import { SiteFooter, Topbar } from "./job-board/topbar";
 
@@ -40,24 +41,28 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
 
   return (
     <main className="site-frame">
-      <Topbar updatedAt={feed.updatedAt} />
+      <ParallaxBackground />
 
-      <section className="workbench" aria-label="Endpoint job search">
-        <CommandPanel
-          activeFilterCount={activeFilterCount}
-          activeFilterLabel={activeFilterLabel}
-          activeJobsCount={activeJobs.length}
-          clearFilters={clearFilters}
-          dispatch={dispatch}
-          filters={filters}
-        />
-      </section>
+      <div className="site-content">
+        <Topbar updatedAt={feed.updatedAt} />
 
-      <section className="board-grid">
-        <ResultsPanel clearFilters={clearFilters} visibleJobs={visibleJobs} />
-      </section>
+        <section className="workbench" aria-label="Endpoint job search">
+          <CommandPanel
+            activeFilterCount={activeFilterCount}
+            activeFilterLabel={activeFilterLabel}
+            activeJobsCount={activeJobs.length}
+            clearFilters={clearFilters}
+            dispatch={dispatch}
+            filters={filters}
+          />
+        </section>
 
-      <SiteFooter updatedAt={feed.updatedAt} />
+        <section className="board-grid">
+          <ResultsPanel clearFilters={clearFilters} visibleJobs={visibleJobs} />
+        </section>
+
+        <SiteFooter updatedAt={feed.updatedAt} />
+      </div>
     </main>
   );
 }
