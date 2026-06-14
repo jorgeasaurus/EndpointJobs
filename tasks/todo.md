@@ -151,11 +151,12 @@ Result: Split styles into `globals.css` (104 lines), `job-board.css` (784 lines)
 - [x] Run refresh, typecheck, lint, build, and source-specific checks.
 
 Result: Greenhouse, Ashby, and Lever were already wired. Added Workable account ingestion and configurable Techmap RSS ingestion, including workflow env/secrets and README setup notes. Verified Workable and Techmap RSS with local mock feeds, `npm run typecheck`, `npm run lint`, `npm run build`, and a temp full refresh that wrote 49 endpoint jobs from 12 providers. `npm audit --audit-level=moderate` still reports the existing Next/PostCSS advisory; npm only offers `npm audit fix --force`, so no forced breaking remediation was applied.
+
 ## Publish Current Changes
 
 - [x] Confirm working tree scope.
 - [x] Run final local verification.
-- [ ] Commit and push to GitHub.
-- [ ] Deploy production to Vercel.
+- [x] Commit and push to GitHub.
+- [x] Deploy production to Vercel.
 
-Result: Pending.
+Result: Pushed current changes to `main` and deployed production to https://endpoint-jobs.vercel.app. Vercel returned Ready and the live alias returned HTTP 200.
