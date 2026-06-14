@@ -217,7 +217,7 @@ function normalizeTheirStackJob(raw: TheirStackJob, fetchedAt: Date) {
 }
 
 function buildTheirStackSearchBody(page: number) {
-  const limit = Math.max(1, Number(process.env.JOB_THEIRSTACK_LIMIT ?? 100));
+  const limit = Math.max(1, Number(process.env.JOB_THEIRSTACK_LIMIT ?? 25));
   const maxAgeDays = Number(process.env.JOB_THEIRSTACK_MAX_AGE_DAYS ?? 30);
   const countryCodes = getCsvConfig("JOB_THEIRSTACK_COUNTRY_CODES", ["US"]);
   const titleQueries = getCsvConfig("JOB_THEIRSTACK_TITLE_QUERIES", defaultTheirStackTitleQueries);

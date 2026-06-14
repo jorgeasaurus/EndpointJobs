@@ -421,3 +421,13 @@ Result: Moved the report/request action to the footer, added Made by Jorgeasauru
 - [x] Deploy production to Vercel and verify endpointjobs.dev.
 
 Result: Published footer and description formatting commit fa3893b to GitHub main, deployed Vercel production deployment dpl_2HEpjSqp1u5iyHaxWTzFv2NW2UJz, aliased it to https://endpointjobs.dev, and verified the live domain returned HTTP 200 with the Made by Jorgeasaurus footer content.
+
+## Provider Secret Verification
+
+- [x] Trigger the Refresh job listings workflow.
+- [x] Inspect provider logs for Adzuna, TheirStack, and SerpAPI.
+- [x] Fix SerpAPI duplicate feed IDs and TheirStack page limit.
+- [ ] Re-run the workflow and verify provider counts.
+- [ ] Fast-forward local listings if the workflow commits refreshed jobs.
+
+Result: Initial run 27514957148 proved Adzuna and SerpAPI credentials are accepted, but failed because SerpAPI returned duplicate aggregator IDs. TheirStack authenticated but rejected the configured 100-result page size; current plan allows 25. Local mock verification confirmed duplicate SerpAPI job IDs now produce unique stable feed IDs.

@@ -44,7 +44,7 @@ jobs:
           JOB_ADZUNA_QUERIES: endpoint engineer,desktop engineer,macos engineer,windows engineer,workplace engineer,client engineering,end user computer,device management,intune,jamf,sccm,mdm
           THEIRSTACK_API_KEY: ${{ secrets.THEIRSTACK_API_KEY }}
           JOB_THEIRSTACK_MAX_AGE_DAYS: "30"
-          JOB_THEIRSTACK_LIMIT: "100"
+          JOB_THEIRSTACK_LIMIT: "25"
           JOB_THEIRSTACK_COUNTRY_CODES: US
           SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
           JOB_SERPAPI_LOCATION: United States

@@ -2,11 +2,11 @@ import type { Job, Workplace } from "../../../src/types/job";
 
 import type { ProviderAdapter } from "../provider";
 import {
+  buildStableJobId,
   cleanText,
   cleanUrl,
   getCsvConfig,
   getString,
-  normalizeIdPart,
   normalizeSearchText,
   parseRelativeAgeDate,
   summarize,
@@ -151,6 +151,7 @@ function normalizeSerpApiGoogleJob(raw: SerpApiGoogleJob, query: string, fetched
   const title = cleanText(raw.title);
   const company = cleanText(raw.company_name);
   const sourceJobUrl = getSerpApiGoogleJobsApplyUrl(raw) ?? cleanUrl(raw.share_link);
+  const location = cleanText(raw.location);
 
   if (!title || !company || !sourceJobUrl) {
     return null;
@@ -162,10 +163,10 @@ function normalizeSerpApiGoogleJob(raw: SerpApiGoogleJob, query: string, fetched
     .filter(Boolean);
 
   return toEndpointJob({
-    id: `serpapi-${normalizeIdPart(raw.job_id ?? sourceJobUrl)}`,
+    id: buildStableJobId("serpapi", [company, location].filter(Boolean).join(" "), title, sourceJobUrl),
     title,
     company,
-    location: cleanText(raw.location),
+    location,
     workplace: inferSerpApiGoogleJobsWorkplace(raw),
     postedAt: getSerpApiGoogleJobsPostedAt(raw, fetchedAt),
     fetchedAt,
