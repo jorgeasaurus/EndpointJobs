@@ -1,0 +1,339 @@
+import {
+  BriefcaseBusiness,
+  Clock3,
+  Cpu,
+  DollarSign,
+  MapPin,
+  Search,
+  ShieldCheck,
+  SlidersHorizontal,
+  X
+} from "lucide-react";
+
+import {
+  platformOptions,
+  roleFamilyOptions,
+  seniorityOptions,
+  toolOptions
+} from "@/lib/jobs";
+import type { EndpointTool, Platform } from "@/types/job";
+
+import { AnimatedNumber } from "./animated-number";
+import { ToggleButton } from "./toggle-button";
+import {
+  freshnessFilterOptions,
+  sortOptions,
+  toFreshnessFilter,
+  toRoleFamilyFilter,
+  toSeniorityFilter,
+  toSortKey
+} from "./filter-model";
+import type {
+  FilterDispatch,
+  FilterState,
+  FreshnessFilter,
+  RoleFamilyFilter,
+  SeniorityFilter,
+  SortKey
+} from "./filter-model";
+
+export function CommandPanel({
+  activeFilterCount,
+  activeFilterLabel,
+  activeJobsCount,
+  clearFilters,
+  dispatch,
+  filters
+}: {
+  activeFilterCount: number;
+  activeFilterLabel: string;
+  activeJobsCount: number;
+  clearFilters: () => void;
+  dispatch: FilterDispatch;
+  filters: FilterState;
+}) {
+  return (
+    <div className="command-panel">
+      <div className="eyebrow">
+        <ShieldCheck size={16} aria-hidden="true" />
+        Endpoint, workplace, and client platform roles
+      </div>
+
+      <div className="title-row">
+        <div>
+          <h1>Endpoint Jobs</h1>
+          <p>
+            Focused listings for macOS, Windows, MDM, UEM, endpoint security,
+            packaging, and automation work.
+          </p>
+        </div>
+
+        <div
+          className="counter-stack"
+          aria-label={activeJobsCount + " tracked roles"}
+        >
+          <AnimatedNumber
+            className="slot-number slot-number--hero"
+            value={activeJobsCount}
+          />
+          <small aria-hidden="true">tracked roles</small>
+        </div>
+      </div>
+
+      <SearchStrip
+        dispatch={dispatch}
+        query={filters.query}
+        remoteOnly={filters.remoteOnly}
+        salaryOnly={filters.salaryOnly}
+      />
+      <HighSignalFilters
+        dispatch={dispatch}
+        freshness={filters.freshness}
+        roleFamily={filters.roleFamily}
+      />
+      <PlatformFilters
+        dispatch={dispatch}
+        selectedPlatforms={filters.selectedPlatforms}
+      />
+      <FilterStack
+        activeFilterCount={activeFilterCount}
+        activeFilterLabel={activeFilterLabel}
+        clearFilters={clearFilters}
+        dispatch={dispatch}
+        selectedTools={filters.selectedTools}
+        seniority={filters.seniority}
+        sort={filters.sort}
+      />
+    </div>
+  );
+}
+
+function SearchStrip({
+  dispatch,
+  query,
+  remoteOnly,
+  salaryOnly
+}: {
+  dispatch: FilterDispatch;
+  query: string;
+  remoteOnly: boolean;
+  salaryOnly: boolean;
+}) {
+  return (
+    <div className="search-strip">
+      <label className="search-box">
+        <Search size={20} aria-hidden="true" />
+        <span className="sr-only">Search jobs</span>
+        <input
+          type="search"
+          value={query}
+          onChange={(event) =>
+            dispatch({ type: "setQuery", value: event.currentTarget.value })
+          }
+          placeholder="Search Jamf, Intune, macOS, SCCM, Kandji..."
+        />
+      </label>
+
+      <ToggleButton
+        activeClassName="mode-button is-active"
+        inactiveClassName="mode-button"
+        isActive={remoteOnly}
+        onClick={() => dispatch({ type: "toggleRemoteOnly" })}
+      >
+        <MapPin size={18} aria-hidden="true" />
+        Remote
+      </ToggleButton>
+
+      <ToggleButton
+        activeClassName="mode-button is-active"
+        inactiveClassName="mode-button"
+        isActive={salaryOnly}
+        onClick={() => dispatch({ type: "toggleSalaryOnly" })}
+      >
+        <DollarSign size={18} aria-hidden="true" />
+        Salary shown
+      </ToggleButton>
+    </div>
+  );
+}
+
+function HighSignalFilters({
+  dispatch,
+  freshness,
+  roleFamily
+}: {
+  dispatch: FilterDispatch;
+  freshness: FreshnessFilter;
+  roleFamily: RoleFamilyFilter;
+}) {
+  return (
+    <div className="high-signal-filters">
+      <label className="mini-field">
+        <BriefcaseBusiness size={17} aria-hidden="true" />
+        <span>Role</span>
+        <select
+          value={roleFamily}
+          onChange={(event) =>
+            dispatch({
+              type: "setRoleFamily",
+              value: toRoleFamilyFilter(event.currentTarget.value)
+            })
+          }
+        >
+          <option value="All">All endpoint roles</option>
+          {roleFamilyOptions.map((family) => (
+            <option key={family} value={family}>
+              {family}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label className="mini-field">
+        <Clock3 size={17} aria-hidden="true" />
+        <span>Freshness</span>
+        <select
+          value={freshness}
+          onChange={(event) =>
+            dispatch({
+              type: "setFreshness",
+              value: toFreshnessFilter(event.currentTarget.value)
+            })
+          }
+        >
+          {freshnessFilterOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </label>
+    </div>
+  );
+}
+
+function PlatformFilters({
+  dispatch,
+  selectedPlatforms
+}: {
+  dispatch: FilterDispatch;
+  selectedPlatforms: Platform[];
+}) {
+  return (
+    <div className="quick-filters" aria-label="Platform filters">
+      {platformOptions.map((platform) => (
+        <ToggleButton
+          key={platform}
+          activeClassName="facet-button is-active"
+          inactiveClassName="facet-button"
+          isActive={selectedPlatforms.includes(platform)}
+          onClick={() => dispatch({ type: "togglePlatform", value: platform })}
+        >
+          {platform}
+        </ToggleButton>
+      ))}
+    </div>
+  );
+}
+
+function FilterStack({
+  activeFilterCount,
+  activeFilterLabel,
+  clearFilters,
+  dispatch,
+  selectedTools,
+  seniority,
+  sort
+}: {
+  activeFilterCount: number;
+  activeFilterLabel: string;
+  clearFilters: () => void;
+  dispatch: FilterDispatch;
+  selectedTools: EndpointTool[];
+  seniority: SeniorityFilter;
+  sort: SortKey;
+}) {
+  return (
+    <section className="hero-filter-stack" aria-label="Filter stack">
+      <div className="rail-heading">
+        <SlidersHorizontal size={18} aria-hidden="true" />
+        <span>Filter Stack</span>
+      </div>
+
+      <div className="hero-filter-controls">
+        <label className="field">
+          <span>Seniority</span>
+          <select
+            value={seniority}
+            onChange={(event) =>
+              dispatch({
+                type: "setSeniority",
+                value: toSeniorityFilter(event.currentTarget.value)
+              })
+            }
+          >
+            <option value="All">All levels</option>
+            {seniorityOptions.map((level) => (
+              <option key={level} value={level}>
+                {level}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="field">
+          <span>Sort</span>
+          <select
+            value={sort}
+            onChange={(event) =>
+              dispatch({ type: "setSort", value: toSortKey(event.currentTarget.value) })
+            }
+          >
+            {sortOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      <div className="facet-group hero-tool-group">
+        <div className="facet-title">
+          <Cpu size={17} aria-hidden="true" />
+          Tools
+        </div>
+        <div className="facet-list">
+          {toolOptions.map((tool) => (
+            <ToggleButton
+              key={tool}
+              activeClassName="facet-button is-active"
+              inactiveClassName="facet-button"
+              isActive={selectedTools.includes(tool)}
+              onClick={() => dispatch({ type: "toggleTool", value: tool })}
+            >
+              {tool}
+            </ToggleButton>
+          ))}
+        </div>
+      </div>
+
+      {activeFilterCount > 0 ? (
+        <button
+          aria-label={"Clear " + activeFilterLabel}
+          className="clear-button"
+          type="button"
+          onClick={clearFilters}
+        >
+          <X size={17} aria-hidden="true" />
+          <span>Clear</span>
+          <AnimatedNumber
+            className="slot-number slot-number--button"
+            value={activeFilterCount}
+          />
+        </button>
+      ) : null}
+    </section>
+  );
+}
+

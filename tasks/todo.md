@@ -286,3 +286,59 @@ Result: Added a `Salary shown` toggle beside Remote. It filters to jobs with par
 - [x] Deploy production to Vercel and verify.
 
 Result: Pushed `1d1cca2`, triggered Refresh job listings run 27504335404 successfully, fast-forwarded to action commit `ed930ea`, and deployed production to https://endpointjobs.dev with HTTP 200 verification.
+
+## README Screenshots And Feedback Button
+
+- [x] Add a GitHub Issues button to the live page.
+- [x] Capture desktop and mobile screenshots for the README.
+- [x] Document how the page works and how job data is populated.
+- [x] Run typecheck, lint, build, browser checks, and diff hygiene.
+
+Result: Added a topbar GitHub Issues link, README screenshots, page behavior overview, and data population flow. Verified screenshot files, accessible mobile link label, `npm run typecheck`, `npm run lint`, `npm run build`, and `git diff --check`.
+
+## React Doctor Top 3 Fixes
+
+- [x] Confirm React Doctor CI/install state.
+- [x] Read diagnostics and canonical no-cache rule docs.
+- [x] Hoist repeated Intl date formatters.
+- [x] Split JobBoard into smaller components.
+- [x] Replace related filter useState calls with a reducer.
+- [x] Re-run React Doctor and project gates.
+
+Result: Installed React Doctor locally, confirmed existing PR/push CI workflow, hoisted static date formatters, split JobBoard into focused UI sections, and moved related filter/search/sort state into a reducer. Verified `npx react-doctor@latest --verbose` reports no issues and 100/100; `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`, and a mobile browser smoke test passed.
+
+
+## Thermo-Nuclear React Doctor Follow-up
+
+- [x] Audit current branch changes for structural maintainability findings.
+- [x] Split JobBoard orchestration from filter model and section components.
+- [x] Remove cast-heavy select handling from UI code.
+- [x] Re-run React Doctor, typecheck, lint, build, diff hygiene, and browser smoke checks.
+
+Result: Fixed the structural follow-up from the React Doctor pass. The top-level JobBoard client file is now a 63-line orchestration shell; filter state, typed parsing, controls, result rendering, topbar/footer, animated counters, and job cards live in focused modules. Verified `npx react-doctor@latest --verbose`, `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`, and a mobile browser smoke test.
+
+## Edge Tools Compatibility Diagnostics
+
+- [x] Add Safari-compatible prefixed backdrop filters.
+- [x] Fix external-link rel attributes and static ARIA diagnostics.
+- [x] Replace unsupported mobile CSS patterns and add standard line-clamp.
+- [x] Run typecheck, lint, build, React Doctor, diff hygiene, and browser smoke checks.
+
+Result: Added `-webkit-backdrop-filter`, `noopener noreferrer`, literal `aria-pressed` toggle branches, standard `line-clamp`, and Firefox-safe mobile min-height values. Removed unsupported `scrollbar-width`. Verified `npm run typecheck`, `npm run lint`, `npm run build`, `npx react-doctor@latest --verbose`, `git diff --check`, and a mobile browser smoke test.
+
+## Thermo-Nuclear Compatibility Cleanup
+
+- [x] Collapse duplicated literal ARIA toggle branches into one shared component.
+- [x] Centralize glass backdrop-filter compatibility CSS.
+- [x] Re-run React Doctor, typecheck, lint, build, diff hygiene, and browser smoke checks.
+
+Result: Centralized the Edge-compatible literal `aria-pressed` branch in `ToggleButton` and replaced repeated glass blur declarations with one shared CSS selector group. Verified `npm run typecheck`, `npm run lint`, `npx react-doctor@latest --verbose`, `npm run build`, `git diff --check`, and a mobile browser smoke test.
+
+## Publish React Doctor And Diagnostics Work
+
+- [ ] Run final local verification.
+- [ ] Commit and push current changes to GitHub.
+- [ ] Trigger the job refresh GitHub Action and check result.
+- [ ] Deploy production to Vercel and verify live response.
+
+Result: Pending.

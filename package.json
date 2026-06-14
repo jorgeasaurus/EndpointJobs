@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "jobs:refresh": "tsx scripts/refresh-jobs.ts"
+    "jobs:refresh": "tsx scripts/refresh-jobs.ts",
+    "doctor": "react-doctor"
   },
   "dependencies": {
     "fast-xml-parser": "^5.8.0",
@@ -28,6 +29,7 @@
     "eslint": "^9.17.0",
     "eslint-config-next": "^16.0.0",
     "postcss": "^8.4.49",
+    "react-doctor": "^0.5.5",
     "tailwindcss": "^4.1.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"

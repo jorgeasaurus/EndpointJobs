@@ -47,12 +47,12 @@
   border: 1px solid var(--glass-border);
   border-radius: 8px;
   box-shadow: var(--shadow);
-  backdrop-filter: blur(16px);
 }
 
 .brand,
 .topbar-actions,
 .refresh-pill,
+.feedback-link,
 .eyebrow,
 .feed-note,
 .rail-heading,
@@ -64,6 +64,25 @@
 .apply-link {
   display: inline-flex;
   align-items: center;
+}
+
+.topbar,
+.refresh-pill,
+.feedback-link,
+.feed-note,
+.command-panel,
+.results-panel,
+.job-card,
+.empty-state,
+.search-box,
+.mode-button,
+.facet-button,
+.clear-button,
+.apply-link,
+.mini-field,
+.description-details {
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
 
 .brand {
@@ -92,6 +111,7 @@
 }
 
 .refresh-pill,
+.feedback-link,
 .feed-note {
   gap: 8px;
   min-height: 38px;
@@ -105,7 +125,25 @@
   font-weight: 600;
   text-transform: uppercase;
   white-space: nowrap;
-  backdrop-filter: blur(16px);
+}
+
+.feedback-link {
+  color: var(--lime);
+  border-color: rgb(204 255 0 / 24%);
+  transition:
+    transform 180ms var(--curve),
+    border-color 180ms var(--curve),
+    background 180ms var(--curve),
+    color 180ms var(--curve),
+    box-shadow 180ms var(--curve);
+}
+
+.feedback-link:hover {
+  color: var(--black);
+  background: var(--lime);
+  border-color: var(--lime);
+  box-shadow: var(--glow-lime);
+  transform: translateY(-1px);
 }
 
 .workbench {
@@ -132,7 +170,6 @@
   border: 1px solid var(--glass-border);
   border-radius: 8px;
   box-shadow: var(--shadow);
-  backdrop-filter: blur(16px);
 }
 
 .command-panel {
@@ -277,7 +314,6 @@ h1 {
   background: rgb(0 0 0 / 36%);
   border: 1px solid var(--glass-border);
   border-radius: 8px;
-  backdrop-filter: blur(16px);
 }
 
 .search-box:focus-within {
@@ -308,7 +344,6 @@ h1 {
   background: var(--glass);
   border: 1px solid var(--glass-border);
   border-radius: 8px;
-  backdrop-filter: blur(16px);
   transition:
     transform 180ms var(--curve),
     border-color 180ms var(--curve),
@@ -370,7 +405,6 @@ h1 {
   background: rgb(0 0 0 / 34%);
   border: 1px solid var(--glass-border);
   border-radius: 8px;
-  backdrop-filter: blur(16px);
 }
 
 .mini-field span,
@@ -633,6 +667,7 @@ h1 {
   line-height: 1.55;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
 
 .description-details {
@@ -642,7 +677,6 @@ h1 {
   background: rgb(255 255 255 / 3%);
   border: 1px solid rgb(255 255 255 / 10%);
   border-radius: 18px;
-  backdrop-filter: blur(16px);
   transition:
     background 180ms cubic-bezier(0.4, 0, 0.2, 1),
     border-color 180ms cubic-bezier(0.4, 0, 0.2, 1);

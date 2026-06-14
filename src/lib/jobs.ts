@@ -38,6 +38,18 @@ export const seniorityOptions: Seniority[] = [
   "Manager"
 ];
 
+const postedDateFormatter = new Intl.DateTimeFormat("en", {
+  month: "short",
+  day: "numeric"
+});
+
+const updatedAtFormatter = new Intl.DateTimeFormat("en", {
+  month: "short",
+  day: "numeric",
+  hour: "numeric",
+  minute: "2-digit"
+});
+
 export const roleFamilyOptions: RoleFamily[] = [
   "Endpoint Engineering",
   "macOS Platform",
@@ -55,10 +67,7 @@ export function formatPostedDate(value: string) {
     return "Fresh";
   }
 
-  return new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric"
-  }).format(date);
+  return postedDateFormatter.format(date);
 }
 
 export function getPostedAgeDays(value: string, now = new Date()) {
@@ -109,12 +118,7 @@ export function formatUpdatedAt(value: string) {
     return "Pending refresh";
   }
 
-  return new Intl.DateTimeFormat("en", {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit"
-  }).format(date);
+  return updatedAtFormatter.format(date);
 }
 
 export function getSearchText(job: Job) {
