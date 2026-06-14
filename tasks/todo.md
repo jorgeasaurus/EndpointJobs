@@ -280,9 +280,9 @@ Result: Added a `Salary shown` toggle beside Remote. It filters to jobs with par
 
 ## Publish Salary Work
 
-- [ ] Run final verification.
-- [ ] Commit and push salary extraction/filter changes.
-- [ ] Trigger the job refresh GitHub Action.
-- [ ] Deploy production to Vercel and verify.
+- [x] Run final verification.
+- [x] Commit and push salary extraction/filter changes.
+- [x] Trigger the job refresh GitHub Action.
+- [x] Deploy production to Vercel and verify.
 
-Result: Pending.
+Result: Pushed `1d1cca2`, triggered Refresh job listings run 27504335404 successfully, fast-forwarded to action commit `ed930ea`, and deployed production to https://endpointjobs.dev with HTTP 200 verification.
