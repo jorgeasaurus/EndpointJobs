@@ -113,4 +113,6 @@ Result: Expanded coverage fetched 1,948 raw jobs from 11 successful providers an
 - [x] Add source/query coverage for stable matches without scraping LinkedIn.
 - [x] Adjust relevance rules only where target examples prove a gap.
 - [x] Refresh jobs and verify new target-style matches appear.
-- [ ] Run typecheck, lint, build, commit, push, and verify production.
+- [x] Run typecheck, lint, build, commit, push, and verify production.
+
+Result: Expanded coverage fetched 2,581 raw jobs from 12 successful providers and wrote 49 endpoint-qualified listings. Captured target roles from Leidos, Cardinal Health, Commvault, UT Austin, DoorDash, Dexcom, Kaseya, Kymera, Hermeus, Blue Origin, and Omnidian; Delta, The Planet Group, WME, Pennant, and Providence still need stable public API coverage before default inclusion.
