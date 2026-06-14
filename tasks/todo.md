@@ -71,3 +71,15 @@ Deployment: https://endpoint-jobs.vercel.app
 - [x] Re-run validation and push if changed.
 
 Result: 2026-06-13 workflow run 27482502661 on 992f112 fetched Remotive 29, Arbeitnow 100, Jobicy 50, and Remote OK 100; accepted 0 endpoint matches and made no listing changes. Local sampling found only false-positive near matches, so no source/filter code change was needed.
+
+## Source Expansion
+
+- [x] Add public career-board providers for Greenhouse and Lever.
+- [x] Add The Muse Computer and IT provider.
+- [x] Add optional Adzuna search provider for credentialed production use.
+- [x] Tighten relevance matching so vendor company names alone do not qualify a job.
+- [x] Update workflow and README source configuration.
+- [x] Verify refresh, typecheck, lint, and build.
+- [x] Commit and push source expansion.
+
+Result: Expanded refresh fetched 848 raw jobs from 7 successful public providers and wrote 3 endpoint-qualified listings. Adzuna is wired but skipped until `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` are set.

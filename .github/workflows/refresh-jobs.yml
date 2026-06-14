@@ -27,7 +27,14 @@ jobs:
       - name: Refresh endpoint jobs
         run: npm run jobs:refresh
         env:
-          JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok
+          JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,adzuna
+          JOB_GREENHOUSE_BOARDS: jamf,automox,tanium,okta
+          JOB_LEVER_COMPANIES: jumpcloud
+          JOB_MUSE_PAGES: "5"
+          JOB_ADZUNA_COUNTRY: us
+          JOB_ADZUNA_QUERIES: endpoint engineer,desktop engineer,macos engineer,windows engineer,workplace engineer,device management,intune,jamf,sccm,mdm
+          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
           JOB_FEED_SOURCE_URL: https://github.com/jorgeasaurus/EndpointJobs
           JOB_STALE_DAYS: "45"
           JOB_MAX_RESULTS: "80"

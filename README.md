@@ -15,9 +15,11 @@ npm run dev
 npm run jobs:refresh
 ```
 
-Default providers: Remotive, Arbeitnow, Jobicy, and Remote OK. The site preserves source/apply links and displays attribution.
+Default providers: Remotive, Arbeitnow, Jobicy, Remote OK, Greenhouse, Lever, and The Muse. Adzuna is supported when `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` are present.
 
-Use `JOB_PROVIDERS=remotive,arbeitnow,jobicy,remoteok` to choose sources. Single-provider legacy mode still works with `JOB_PROVIDER=remoteok` and `JOB_API_URL=https://remoteok.com/api`. Override individual URLs with `JOB_REMOTIVE_API_URL`, `JOB_ARBEITNOW_API_URL`, `JOB_JOBICY_API_URL`, or `JOB_REMOTEOK_API_URL`.
+Use `JOB_PROVIDERS=remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,adzuna` to choose sources. Single-provider legacy mode still works with `JOB_PROVIDER=remoteok` and `JOB_API_URL=https://remoteok.com/api`. Override individual URLs with `JOB_REMOTIVE_API_URL`, `JOB_ARBEITNOW_API_URL`, `JOB_JOBICY_API_URL`, `JOB_REMOTEOK_API_URL`, `JOB_GREENHOUSE_API_URL`, `JOB_LEVER_API_URL`, `JOB_MUSE_API_URL`, or `JOB_ADZUNA_API_URL`.
+
+Career-board defaults: `JOB_GREENHOUSE_BOARDS=jamf,automox,tanium,okta`, `JOB_LEVER_COMPANIES=jumpcloud`, and `JOB_MUSE_PAGES=5`. Adzuna defaults to US searches from `JOB_ADZUNA_QUERIES`.
 
 ## GitHub Action
 
