@@ -94,3 +94,14 @@ Result: Expanded refresh fetched 848 raw jobs from 7 successful public providers
 - [x] Run typecheck, lint, build, commit, push, and verify production.
 
 Result: Expanded coverage fetched 1,450 raw jobs from 10 successful providers and wrote 15 endpoint-qualified listings. Captured screenshot-style targets from Accenture, PlayStation, Amazon, Docker, and Brighton Jones; GEICO and Providence need a stable public API before default inclusion.
+
+## Endpoint Remote Coverage Batch
+
+- [x] Record target examples: Verkada, MSM Technology, Honeywell, Gartner, Intuitive Machines, Anthropic, McGraw Hill, Goodwin, and GDIT.
+- [x] Probe stable public ATS/search APIs for those companies.
+- [x] Add source/query coverage for stable matches without scraping LinkedIn.
+- [x] Adjust relevance rules only where target examples prove a gap.
+- [x] Refresh jobs and verify new target-style matches appear.
+- [x] Run typecheck, lint, build, commit, push, and verify production.
+
+Result: Expanded coverage fetched 1,948 raw jobs from 11 successful providers and wrote 28 endpoint-qualified listings. Captured target roles from Verkada, Anthropic, McGraw Hill, Goodwin, and GDIT; Gartner, Honeywell, MSM Technology, and Intuitive Machines still need stable public API coverage before default inclusion.

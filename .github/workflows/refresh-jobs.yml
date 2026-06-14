@@ -27,12 +27,13 @@ jobs:
       - name: Refresh endpoint jobs
         run: npm run jobs:refresh
         env:
-          JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,amazon,workday,adzuna
-          JOB_GREENHOUSE_BOARDS: jamf,automox,tanium,okta,sonyinteractiveentertainmentglobal
+          JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,amazon,workday,jibe,adzuna
+          JOB_GREENHOUSE_BOARDS: jamf,automox,tanium,okta,sonyinteractiveentertainmentglobal,verkada,anthropic
           JOB_LEVER_COMPANIES: jumpcloud,brightonjones
           JOB_ASHBY_BOARDS: docker
           JOB_AMAZON_QUERIES: macOS Client Engineering,systems engineer macOS,client engineering,endpoint engineer,intune engineer,end user computer
-          JOB_WORKDAY_SITES: accenture|https://accenture.wd103.myworkdayjobs.com/wday/cxs/accenture/AccentureCareers/jobs|Intune Engineer;Endpoint Engineer;Client Engineering;End User Computer;Workplace Engineer
+          JOB_WORKDAY_SITES: accenture|https://accenture.wd103.myworkdayjobs.com/wday/cxs/accenture/AccentureCareers/jobs|Intune Engineer;Endpoint Engineer;Client Engineering;End User Computer;Workplace Engineer;;goodwin|https://goodwinprocter.wd5.myworkdayjobs.com/wday/cxs/goodwinprocter/External_Careers/jobs|Manager Desktop Engineering;Desktop Engineering;Endpoint Engineer;;gdit|https://gdit.wd5.myworkdayjobs.com/wday/cxs/gdit/External_Career_Site/jobs|Endpoint Engineer;Endpoint;Intune;Desktop Engineer
+          JOB_JIBE_SITES: mcgraw-hill|https://careers.mheducation.com/api/jobs|Endpoint Engineering Lead;Endpoint Engineer;Jamf;Intune
           JOB_MUSE_PAGES: "5"
           JOB_ADZUNA_COUNTRY: us
           JOB_ADZUNA_QUERIES: endpoint engineer,desktop engineer,macos engineer,windows engineer,workplace engineer,client engineering,end user computer,device management,intune,jamf,sccm,mdm

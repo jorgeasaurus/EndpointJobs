@@ -15,11 +15,11 @@ npm run dev
 npm run jobs:refresh
 ```
 
-Default providers: Remotive, Arbeitnow, Jobicy, Remote OK, Greenhouse, Lever, The Muse, Ashby, Amazon Jobs, and Workday. Adzuna is supported when `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` are present.
+Default providers: Remotive, Arbeitnow, Jobicy, Remote OK, Greenhouse, Lever, The Muse, Ashby, Amazon Jobs, Workday, and Jibe. Adzuna is supported when `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` are present.
 
-Use `JOB_PROVIDERS=remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,amazon,workday,adzuna` to choose sources. Single-provider legacy mode still works with `JOB_PROVIDER=remoteok` and `JOB_API_URL=https://remoteok.com/api`. Override individual URLs with `JOB_REMOTIVE_API_URL`, `JOB_ARBEITNOW_API_URL`, `JOB_JOBICY_API_URL`, `JOB_REMOTEOK_API_URL`, `JOB_GREENHOUSE_API_URL`, `JOB_LEVER_API_URL`, `JOB_MUSE_API_URL`, `JOB_ASHBY_API_URL`, `JOB_AMAZON_API_URL`, `JOB_WORKDAY_API_URL`, or `JOB_ADZUNA_API_URL`.
+Use `JOB_PROVIDERS=remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,amazon,workday,jibe,adzuna` to choose sources. Single-provider legacy mode still works with `JOB_PROVIDER=remoteok` and `JOB_API_URL=https://remoteok.com/api`. Override individual URLs with `JOB_REMOTIVE_API_URL`, `JOB_ARBEITNOW_API_URL`, `JOB_JOBICY_API_URL`, `JOB_REMOTEOK_API_URL`, `JOB_GREENHOUSE_API_URL`, `JOB_LEVER_API_URL`, `JOB_MUSE_API_URL`, `JOB_ASHBY_API_URL`, `JOB_AMAZON_API_URL`, `JOB_WORKDAY_API_URL`, `JOB_JIBE_API_URL`, or `JOB_ADZUNA_API_URL`.
 
-Career-board defaults: `JOB_GREENHOUSE_BOARDS=jamf,automox,tanium,okta,sonyinteractiveentertainmentglobal`, `JOB_LEVER_COMPANIES=jumpcloud,brightonjones`, `JOB_ASHBY_BOARDS=docker`, `JOB_AMAZON_QUERIES=macOS Client Engineering,...`, `JOB_WORKDAY_SITES=name|url|query;query`, and `JOB_MUSE_PAGES=5`. Adzuna defaults to US searches from `JOB_ADZUNA_QUERIES`.
+Career-board defaults include Greenhouse boards for Jamf, Automox, Tanium, Okta, PlayStation, Verkada, and Anthropic; Lever companies JumpCloud and Brighton Jones; Ashby board Docker; targeted Amazon, Workday, and Jibe searches; and `JOB_MUSE_PAGES=5`. Adzuna defaults to US searches from `JOB_ADZUNA_QUERIES`.
 
 ## GitHub Action
 

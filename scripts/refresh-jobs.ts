@@ -175,6 +175,40 @@ type AmazonJob = {
   team?: string | { label?: string };
 };
 
+type JibeJob = {
+  data?: {
+    slug?: string;
+    req_id?: string;
+    title?: string;
+    description?: string;
+    location_name?: string;
+    full_location?: string;
+    short_location?: string;
+    location_type?: string;
+    categories?: Array<{ name?: string }>;
+    tags1?: string[];
+    tags2?: string[];
+    tags3?: string[];
+    tags4?: string[];
+    tags5?: string[];
+    tags6?: string[];
+    tags7?: string[];
+    employment_type?: string;
+    hiring_organization?: string;
+    source?: string;
+    posted_date?: string;
+    apply_url?: string;
+    update_date?: string;
+    create_date?: string;
+  };
+};
+
+type JibeSite = {
+  name: string;
+  url: string;
+  queries: string[];
+};
+
 type WorkdayJob = {
   title?: string;
   externalPath?: string;
@@ -241,6 +275,7 @@ const platformAliases: Array<{ platform: Platform; aliases: string[] }> = [
 const endpointRoleTerms = [
   "endpoint",
   "desktop engineer",
+  "desktop engineering",
   "desktop administrator",
   "desktop infrastructure",
   "client platform",
@@ -303,7 +338,15 @@ const technicalRoleTitleTerms = [
   "professional services engineer"
 ];
 
-const defaultGreenhouseBoards = ["jamf", "automox", "tanium", "okta", "sonyinteractiveentertainmentglobal"];
+const defaultGreenhouseBoards = [
+  "jamf",
+  "automox",
+  "tanium",
+  "okta",
+  "sonyinteractiveentertainmentglobal",
+  "verkada",
+  "anthropic"
+];
 const defaultLeverCompanies = ["jumpcloud", "brightonjones"];
 const defaultAdzunaQueries = [
   "endpoint engineer",
@@ -339,6 +382,23 @@ const defaultWorkdaySites: WorkdaySite[] = [
       "End User Computer",
       "Workplace Engineer"
     ]
+  },
+  {
+    name: "Goodwin",
+    url: "https://goodwinprocter.wd5.myworkdayjobs.com/wday/cxs/goodwinprocter/External_Careers/jobs",
+    queries: ["Manager Desktop Engineering", "Desktop Engineering", "Endpoint Engineer"]
+  },
+  {
+    name: "GDIT",
+    url: "https://gdit.wd5.myworkdayjobs.com/wday/cxs/gdit/External_Career_Site/jobs",
+    queries: ["Endpoint Engineer", "Endpoint", "Intune", "Desktop Engineer"]
+  }
+];
+const defaultJibeSites: JibeSite[] = [
+  {
+    name: "McGraw Hill",
+    url: "https://careers.mheducation.com/api/jobs",
+    queries: ["Endpoint Engineering Lead", "Endpoint Engineer", "Jamf", "Intune"]
   }
 ];
 
@@ -388,10 +448,8 @@ const supportedProviders = [
   "ashby",
   "amazon",
   "workday",
-  "adzuna",
-  "ashby",
-  "amazon",
-  "workday"
+  "jibe",
+  "adzuna"
 ] as const;
 type SupportedProvider = (typeof supportedProviders)[number];
 
@@ -402,7 +460,11 @@ const defaultProviders: SupportedProvider[] = [
   "remoteok",
   "greenhouse",
   "lever",
-  "muse"
+  "muse",
+  "ashby",
+  "amazon",
+  "workday",
+  "jibe"
 ];
 
 function isSupportedProvider(value: string): value is SupportedProvider {
@@ -507,6 +569,10 @@ async function fetchProviderJobs(
 
   if (jobProvider === "workday") {
     return fetchWorkdayJobs(url, fetchedAt);
+  }
+
+  if (jobProvider === "jibe") {
+    return fetchJibeJobs(url, fetchedAt);
   }
 
   const payload = await fetchRemotive(url);
@@ -641,6 +707,21 @@ async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
   return jobs;
 }
 
+async function fetchJibeJobs(url: string, fetchedAt: Date) {
+  const sites = getJibeSites(url);
+  const jobs: Array<Job | null> = [];
+
+  for (const site of sites) {
+    for (const query of site.queries) {
+      const payload = await fetchJibeSearch(site.url, query, site.name);
+      jobs.push(...payload.map((job) => normalizeJibeJob(job, site, query, fetchedAt)));
+      console.log(`Fetched ${payload.length} raw jobs from Jibe/${site.name} query ${query}`);
+    }
+  }
+
+  return jobs;
+}
+
 async function fetchAshbyBoard(url: string, board: string) {
   const response = await fetch(url, {
     headers: {
@@ -714,6 +795,28 @@ async function fetchWorkdaySearch(url: string, query: string) {
   }
 
   return (json as { jobPostings: unknown[] }).jobPostings.filter(isWorkdayJob);
+}
+
+async function fetchJibeSearch(url: string, query: string, siteName: string) {
+  const queryUrl = buildJibeSearchUrl(url, query);
+  const response = await fetch(queryUrl, {
+    headers: {
+      accept: "application/json",
+      "user-agent": "EndpointJobs/1.0 (+https://github.com/)"
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Jibe ${siteName} request failed: ${response.status} ${response.statusText}`);
+  }
+
+  const json: unknown = await response.json();
+
+  if (!json || typeof json !== "object" || !Array.isArray((json as { jobs?: unknown }).jobs)) {
+    throw new Error(`Jibe ${siteName} response did not include a jobs array`);
+  }
+
+  return (json as { jobs: unknown[] }).jobs.filter(isJibeJob);
 }
 
 async function fetchAdzunaJobs(url: string, fetchedAt: Date) {
@@ -993,6 +1096,15 @@ function isAmazonJob(value: unknown): value is AmazonJob {
 
   const candidate = value as AmazonJob;
   return Boolean(candidate.id && candidate.title && candidate.job_path);
+}
+
+function isJibeJob(value: unknown): value is JibeJob {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as JibeJob;
+  return Boolean(candidate.data?.slug && candidate.data?.title);
 }
 
 function isWorkdayJob(value: unknown): value is WorkdayJob {
@@ -1595,6 +1707,65 @@ function normalizeAmazonJob(raw: AmazonJob, fetchedAt: Date): Job | null {
   };
 }
 
+function normalizeJibeJob(raw: JibeJob, site: JibeSite, query: string, fetchedAt: Date): Job | null {
+  const data = raw.data ?? {};
+  const title = cleanText(data.title);
+  const company = cleanText(data.hiring_organization ?? data.source) || site.name;
+  const sourceJobUrl = buildJibeJobUrl(site.url, data.slug);
+  const applyUrl = cleanUrl(data.apply_url) ?? sourceJobUrl;
+
+  if (!title || !company || !sourceJobUrl || !applyUrl) {
+    return null;
+  }
+
+  const description = stripHtml(data.description ?? "");
+  const location = cleanText(data.location_name ?? data.full_location ?? data.short_location);
+  const categories = Array.isArray(data.categories)
+    ? data.categories.map((category) => cleanText(category.name)).filter(Boolean)
+    : [];
+  const tagFields = [data.tags2, data.tags4]
+    .flatMap((tags) => (Array.isArray(tags) ? tags : []))
+    .map(cleanText)
+    .filter(Boolean);
+  const sourceTags = [...categories, ...tagFields, cleanText(data.location_type), cleanText(data.employment_type)].filter(Boolean);
+  const haystack = normalizeSearchText([title, company, location, sourceTags.join(" "), description].join(" "));
+  const tools = deriveTools(haystack);
+  const platforms = derivePlatforms(haystack);
+  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
+
+  if (!isEndpointRelevant(haystack, title, tools)) {
+    return null;
+  }
+
+  const postedAt = parseDateLike(data.posted_date) ?? parseDateLike(data.update_date) ?? parseDateLike(data.create_date) ?? fetchedAt.toISOString();
+  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
+
+  return {
+    id: `jibe-${normalizeIdPart(site.name)}-${normalizeIdPart(data.req_id ?? data.slug ?? sourceJobUrl)}`,
+    title,
+    company,
+    location: location || "Unknown",
+    workplace: inferWorkplace(location, haystack),
+    postedAt,
+    fetchedAt: fetchedAt.toISOString(),
+    staleAfter,
+    expiresAt: staleAfter,
+    source: "Jibe",
+    sourceUrl: sourceJobUrl,
+    applyUrl,
+    attributionLabel: `Jibe / ${site.name}`,
+    termsProfile: "public-api",
+    summary: summarize(description),
+    tags: normalizeTags(sourceTags, tools, platforms),
+    matchReasons,
+    tools,
+    platforms,
+    roleFamily: inferRoleFamily(haystack, tools, platforms),
+    seniority: inferSeniority(haystack),
+    employmentType: cleanText(data.employment_type) || inferEmploymentType(haystack)
+  };
+}
+
 function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, fetchedAt: Date): Job | null {
   const title = cleanText(raw.title);
   const company = site.name;
@@ -2062,6 +2233,10 @@ function getDefaultSourceUrl(jobProvider: SupportedProvider) {
     return "https://accenture.wd103.myworkdayjobs.com/wday/cxs/accenture/AccentureCareers/jobs";
   }
 
+  if (jobProvider === "jibe") {
+    return "https://careers.mheducation.com/api/jobs";
+  }
+
   return "https://remotive.com/api/remote-jobs";
 }
 
@@ -2150,6 +2325,13 @@ function getSourceMetadata(jobProvider: SupportedProvider, url: string) {
     };
   }
 
+  if (jobProvider === "jibe") {
+    return {
+      name: "Jibe",
+      url
+    };
+  }
+
   return {
     name: "Remotive",
     url
@@ -2202,6 +2384,35 @@ function buildAmazonJobUrl(jobPath: string | undefined) {
   }
 }
 
+function getJibeSites(defaultUrl: string) {
+  const configured = process.env.JOB_JIBE_SITES;
+
+  if (!configured) {
+    return defaultJibeSites.map((site) => ({
+      ...site,
+      url: site.url || defaultUrl
+    }));
+  }
+
+  return configured
+    .split(";;")
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      const [name, url, queries] = entry.split("|");
+
+      if (!name || !url || !queries) {
+        throw new Error(`Invalid JOB_JIBE_SITES entry: ${entry}`);
+      }
+
+      return {
+        name: cleanText(name),
+        url: cleanText(url),
+        queries: queries.split(";").map(cleanText).filter(Boolean)
+      };
+    });
+}
+
 function getWorkdaySites(defaultUrl: string) {
   const configured = process.env.JOB_WORKDAY_SITES;
 
@@ -2229,6 +2440,24 @@ function getWorkdaySites(defaultUrl: string) {
         queries: queries.split(";").map(cleanText).filter(Boolean)
       };
     });
+}
+
+function buildJibeSearchUrl(siteUrl: string, query: string) {
+  const url = new URL(siteUrl);
+  url.searchParams.set("keywords", query);
+  return url.toString();
+}
+
+function buildJibeJobUrl(siteUrl: string, slug: string | undefined) {
+  if (!slug) {
+    return undefined;
+  }
+
+  try {
+    return new URL(`/jobs/${encodeURIComponent(slug)}`, new URL(siteUrl).origin).toString();
+  } catch {
+    return undefined;
+  }
 }
 
 function buildWorkdayJobUrl(siteUrl: string, externalPath: string | undefined) {
@@ -2305,13 +2534,15 @@ function buildAdzunaSearchUrl(baseUrl: string, query: string, appId: string, app
 
 function formatSourceAccountName(slug: string) {
   const knownNames: Record<string, string> = {
+    anthropic: "Anthropic",
     automox: "Automox",
     brightonjones: "Brighton Jones",
     jamf: "Jamf",
     jumpcloud: "JumpCloud",
     okta: "Okta",
     sonyinteractiveentertainmentglobal: "PlayStation",
-    tanium: "Tanium"
+    tanium: "Tanium",
+    verkada: "Verkada"
   };
   const normalized = slug.trim().toLowerCase();
 
