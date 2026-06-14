@@ -9,7 +9,6 @@ import {
   Layers3,
   MapPin,
   MonitorSmartphone,
-  RadioTower,
   RefreshCw,
   Search,
   ShieldCheck,
@@ -152,10 +151,6 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
         </Link>
 
         <div className="topbar-actions">
-          <a className="source-link" href={feed.source.url} rel="noreferrer" target="_blank">
-            <RadioTower size={16} aria-hidden="true" />
-            <span>{feed.source.name}</span>
-          </a>
           <span className="refresh-pill">
             <RefreshCw size={15} aria-hidden="true" />
             {formatUpdatedAt(feed.updatedAt)}
@@ -366,9 +361,7 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
 
       <footer className="site-footer">
         <span>Endpoint Jobs</span>
-        <a href={feed.source.url} rel="noreferrer" target="_blank">
-          Source: {feed.source.name}
-        </a>
+        <span>{formatUpdatedAt(feed.updatedAt)}</span>
       </footer>
     </main>
   );
@@ -426,12 +419,9 @@ function JobCard({ job }: { job: Job }) {
       </div>
 
       <div className="job-actions">
-        <div className="source-actions">
-          <a href={job.sourceUrl} rel="noreferrer" target="_blank">
-            Source
-          </a>
-          <span title={job.attributionLabel}>{job.attributionLabel}</span>
-        </div>
+        <span className="attribution-label" title={job.attributionLabel}>
+          {job.attributionLabel}
+        </span>
         {job.applyUrl ? (
           <a className="apply-link" href={job.applyUrl} rel="noreferrer" target="_blank">
             Apply

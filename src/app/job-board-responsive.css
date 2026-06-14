@@ -1,0 +1,328 @@
+@keyframes float-glow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(2rem, 1.4rem, 0) scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+@media (max-width: 1120px) {
+  .workbench,
+  .board-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .board-grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .results-panel {
+    order: 1;
+  }
+
+  .filter-rail {
+    position: static;
+    order: 2;
+  }
+
+  .filter-rail,
+  .results-panel {
+    width: 100%;
+  }
+
+  .facet-list {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .site-frame {
+    padding: 10px;
+  }
+
+  .site-frame::before,
+  .site-frame::after {
+    width: 22rem;
+    height: 22rem;
+  }
+
+  .topbar {
+    top: 8px;
+    gap: 8px;
+    min-height: 52px;
+    padding: 8px;
+    margin-bottom: 12px;
+  }
+
+  .brand {
+    gap: 8px;
+    font-size: 0.95rem;
+  }
+
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+  }
+
+  .topbar-actions {
+    width: auto;
+  }
+
+  .refresh-pill {
+    min-width: 0;
+    min-height: 34px;
+    justify-content: center;
+    padding: 0 8px;
+    overflow: hidden;
+    font-size: 0.62rem;
+    text-overflow: ellipsis;
+  }
+
+  .workbench {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .command-panel,
+  .filter-rail,
+  .results-panel,
+  .job-card {
+    padding: 12px;
+  }
+
+  .command-panel,
+  .signal-panel,
+  .signal-panel img {
+    min-height: auto;
+  }
+
+  .signal-panel {
+    display: none;
+  }
+
+  .eyebrow {
+    width: 100%;
+    min-height: 30px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    font-size: 0.62rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .title-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-size: 2.1rem;
+    line-height: 0.98;
+  }
+
+  .title-row p {
+    display: none;
+  }
+
+  .counter-stack {
+    display: none;
+  }
+
+  .search-strip {
+    grid-template-columns: minmax(0, 1fr) 108px;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .search-box {
+    min-height: 48px;
+    gap: 8px;
+    padding: 0 12px;
+  }
+
+  .search-box input {
+    font-size: 0.93rem;
+  }
+
+  .high-signal-filters {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .mini-field {
+    min-height: 42px;
+  }
+
+  .mode-button {
+    width: auto;
+    min-width: 0;
+    min-height: 48px;
+    padding: 0 10px;
+  }
+
+  .quick-filters {
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .quick-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .facet-button {
+    flex: 0 0 auto;
+    min-height: 38px;
+  }
+
+  .results-panel {
+    min-height: auto;
+  }
+
+  .results-heading,
+  .job-main,
+  .job-actions,
+  .site-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .results-heading {
+    gap: 8px;
+    min-height: auto;
+    padding-bottom: 12px;
+  }
+
+  .results-heading h2 {
+    font-size: 1.22rem;
+  }
+
+  .results-panel .feed-note {
+    display: none;
+  }
+
+  .job-card-top {
+    margin-bottom: 12px;
+  }
+
+  .job-main {
+    gap: 10px;
+  }
+
+  .job-main h3 {
+    font-size: 1.12rem;
+    line-height: 1.18;
+    overflow-wrap: anywhere;
+  }
+
+  .company-line {
+    margin-top: 7px;
+    font-size: 0.88rem;
+  }
+
+  .workplace {
+    width: fit-content;
+  }
+
+  .summary {
+    margin-top: 12px;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    -webkit-line-clamp: 2;
+  }
+
+  .match-row,
+  .metadata-row,
+  .tag-row {
+    margin-top: 12px;
+  }
+
+  .match-row span,
+  .metadata-row span,
+  .tag-row span {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  .job-actions {
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .apply-link {
+    order: 1;
+    width: 100%;
+  }
+
+  .attribution-label {
+    order: 2;
+    max-width: 100%;
+    text-align: center;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 420px) {
+  .site-frame {
+    padding: 8px;
+  }
+
+  .topbar {
+    border-radius: 8px;
+  }
+
+  .brand > span:last-child {
+    max-width: 138px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .refresh-pill svg {
+    display: none;
+  }
+
+  h1 {
+    font-size: 1.95rem;
+  }
+
+  .eyebrow {
+    display: none;
+  }
+
+  .search-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .mode-button {
+    width: 100%;
+  }
+
+  .source-pill,
+  .posted-pill,
+  .workplace,
+  .tag-row span,
+  .metadata-row span,
+  .match-row span {
+    font-size: 0.62rem;
+  }
+}

@@ -4,3 +4,6 @@
 - Coverage checks need real user-visible example titles, not only tool-keyword counts; include client engineering, end-user compute, and systems engineering title patterns.
 - Endpoint searches need employer-targeted ATS probes for each screenshot batch; broad aggregators miss many LinkedIn-visible roles.
 - Greenhouse board slugs can differ from employer names; check branded variants like `doordashusa` before marking a source unavailable.
+- Mobile flex-column layouts need explicit `min-width: 0`/`width: 100%` checks on panels and cards; verify with narrow viewport box snapshots, not just screenshots.
+- When a review flags file-size growth, split by responsibility and re-check line counts; moving bulk into a new oversized file does not resolve the design issue.
+- Aggregator-style source requests still need per-provider activation checks; Workable requires account slugs and paid RSS feeds require feed URL/auth secrets before they can add production coverage.

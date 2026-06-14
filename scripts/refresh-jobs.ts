@@ -1,6 +1,8 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
+import { XMLParser } from "fast-xml-parser";
+
 import type {
   EndpointTool,
   Job,
@@ -153,6 +155,61 @@ type AshbyJob = {
   applyUrl?: string;
   descriptionHtml?: string;
   descriptionPlain?: string;
+};
+
+type WorkableLocation = {
+  city?: string;
+  region?: string;
+  country?: string;
+  workplace?: string;
+};
+
+type WorkableJob = {
+  id?: string | number;
+  shortcode?: string;
+  title?: string;
+  location?: WorkableLocation;
+  department?: string | string[];
+  type?: string;
+  employment_type?: string;
+  published?: string;
+  published_on?: string;
+  remote?: boolean;
+  workplace?: string;
+  description?: string;
+  requirements?: string;
+  benefits?: string;
+  url?: string;
+};
+
+type WorkableAccount = {
+  name: string;
+  slug: string;
+};
+
+type TechmapRssItem = {
+  title?: unknown;
+  link?: unknown;
+  guid?: unknown;
+  id?: unknown;
+  pubDate?: unknown;
+  published?: unknown;
+  updated?: unknown;
+  description?: unknown;
+  summary?: unknown;
+  content?: unknown;
+  "content:encoded"?: unknown;
+  category?: unknown;
+  author?: unknown;
+  "dc:creator"?: unknown;
+  source?: unknown;
+  company?: unknown;
+  location?: unknown;
+};
+
+type TechmapRssFeed = {
+  name: string;
+  url: string;
 };
 
 type AmazonJob = {
@@ -387,6 +444,7 @@ const defaultAdzunaQueries = [
   "mdm"
 ];
 const defaultAshbyBoards = ["docker"];
+const defaultWorkableAccounts: WorkableAccount[] = [];
 const defaultAmazonQueries = [
   "macOS Client Engineering",
   "systems engineer macOS",
@@ -497,10 +555,12 @@ const supportedProviders = [
   "lever",
   "muse",
   "ashby",
+  "workable",
   "amazon",
   "workday",
   "jibe",
   "activate",
+  "techmaprss",
   "adzuna"
 ] as const;
 type SupportedProvider = (typeof supportedProviders)[number];
@@ -616,6 +676,10 @@ async function fetchProviderJobs(
     return fetchAshbyJobs(url, fetchedAt);
   }
 
+  if (jobProvider === "workable") {
+    return fetchWorkableJobs(url, fetchedAt);
+  }
+
   if (jobProvider === "amazon") {
     return fetchAmazonJobs(url, fetchedAt);
   }
@@ -630,6 +694,10 @@ async function fetchProviderJobs(
 
   if (jobProvider === "activate") {
     return fetchActivateJobs(url, fetchedAt);
+  }
+
+  if (jobProvider === "techmaprss") {
+    return fetchTechmapRssJobs(url, fetchedAt);
   }
 
   const payload = await fetchRemotive(url);
@@ -735,6 +803,35 @@ async function fetchAshbyJobs(url: string, fetchedAt: Date) {
   return jobs;
 }
 
+async function fetchWorkableJobs(url: string, fetchedAt: Date) {
+  const accounts = getWorkableAccounts();
+  const jobs: Array<Job | null> = [];
+  let successfulAccounts = 0;
+
+  if (accounts.length === 0) {
+    throw new Error("JOB_WORKABLE_ACCOUNTS is required for the Workable provider");
+  }
+
+  for (const account of accounts) {
+    try {
+      const payload = await fetchWorkableAccount(url, account.slug);
+      successfulAccounts += 1;
+      jobs.push(...payload.map((job) => normalizeWorkableJob(job, account, fetchedAt)));
+      console.log(`Fetched ${payload.length} raw jobs from Workable/${account.slug}`);
+    } catch (error) {
+      console.warn(
+        `Skipping Workable/${account.slug}: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
+  }
+
+  if (successfulAccounts === 0) {
+    throw new Error("No Workable accounts returned jobs");
+  }
+
+  return jobs;
+}
+
 async function fetchAmazonJobs(url: string, fetchedAt: Date) {
   const queries = getCsvConfig("JOB_AMAZON_QUERIES", defaultAmazonQueries);
   const jobs: Array<Job | null> = [];
@@ -779,6 +876,31 @@ async function fetchActivateJobs(url: string, fetchedAt: Date) {
   return jobs;
 }
 
+async function fetchTechmapRssJobs(url: string, fetchedAt: Date) {
+  const feeds = getTechmapRssFeeds(url);
+  const jobs: Array<Job | null> = [];
+  let successfulFeeds = 0;
+
+  for (const feed of feeds) {
+    try {
+      const payload = await fetchTechmapRssFeed(feed);
+      successfulFeeds += 1;
+      jobs.push(...payload.map((job) => normalizeTechmapRssJob(job, feed, fetchedAt)));
+      console.log(`Fetched ${payload.length} raw jobs from Techmap RSS/${feed.name}`);
+    } catch (error) {
+      console.warn(
+        `Skipping Techmap RSS/${feed.name}: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
+  }
+
+  if (successfulFeeds === 0) {
+    throw new Error("No Techmap RSS feeds returned jobs");
+  }
+
+  return jobs;
+}
+
 async function fetchJibeJobs(url: string, fetchedAt: Date) {
   const sites = getJibeSites(url);
   const jobs: Array<Job | null> = [];
@@ -792,6 +914,152 @@ async function fetchJibeJobs(url: string, fetchedAt: Date) {
   }
 
   return jobs;
+}
+
+async function fetchWorkableAccount(baseUrl: string, slug: string) {
+  const jobs: WorkableJob[] = [];
+  const maxPages = Math.max(1, Number(process.env.JOB_WORKABLE_MAX_PAGES ?? 3));
+  let token: string | undefined;
+
+  for (let page = 0; page < maxPages; page += 1) {
+    const payload = await fetchWorkableListPage(buildWorkableListUrl(baseUrl, slug), slug, token);
+    const results = getWorkableResults(payload);
+    jobs.push(...results);
+
+    token = getString((payload as { nextPage?: unknown }).nextPage)
+      ?? getString((payload as { paging?: { next?: unknown } }).paging?.next);
+
+    if (!token) {
+      break;
+    }
+  }
+
+  if (process.env.JOB_WORKABLE_FETCH_DETAILS === "false") {
+    return jobs;
+  }
+
+  const detailedJobs: WorkableJob[] = [];
+
+  for (const job of jobs) {
+    const shortcode = cleanText(job.shortcode ?? String(job.id ?? ""));
+
+    if (!shortcode) {
+      detailedJobs.push(job);
+      continue;
+    }
+
+    try {
+      const detail = await fetchWorkableDetail(slug, shortcode);
+      detailedJobs.push({ ...job, ...detail });
+    } catch (error) {
+      console.warn(
+        `Skipping Workable/${slug}/${shortcode} detail: ${error instanceof Error ? error.message : String(error)}`
+      );
+      detailedJobs.push(job);
+    }
+  }
+
+  return detailedJobs;
+}
+
+async function fetchWorkableListPage(url: string, slug: string, token?: string) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+      "user-agent": "EndpointJobs/1.0 (+https://github.com/)"
+    },
+    body: JSON.stringify(token ? { token } : {})
+  });
+
+  if (!response.ok) {
+    throw new Error(`Workable ${slug} request failed: ${response.status} ${response.statusText}`);
+  }
+
+  const json: unknown = await response.json();
+
+  if (!json || typeof json !== "object") {
+    throw new Error(`Workable ${slug} response was not an object`);
+  }
+
+  return json;
+}
+
+async function fetchWorkableDetail(slug: string, shortcode: string) {
+  const response = await fetch(buildWorkableDetailUrl(slug, shortcode), {
+    headers: {
+      accept: "application/json",
+      "user-agent": "EndpointJobs/1.0 (+https://github.com/)"
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Workable detail request failed: ${response.status} ${response.statusText}`);
+  }
+
+  const json: unknown = await response.json();
+
+  if (!isWorkableJob(json)) {
+    throw new Error("Workable detail response was not a job object");
+  }
+
+  return json;
+}
+
+function getWorkableResults(payload: unknown) {
+  if (!payload || typeof payload !== "object") {
+    return [];
+  }
+
+  const candidate = payload as { results?: unknown; jobs?: unknown };
+  const values = Array.isArray(candidate.results)
+    ? candidate.results
+    : Array.isArray(candidate.jobs)
+      ? candidate.jobs
+      : [];
+
+  return values.filter(isWorkableJob);
+}
+
+async function fetchTechmapRssFeed(feed: TechmapRssFeed) {
+  const authHeader = process.env.JOB_TECHMAP_RSS_AUTH_HEADER
+    ?? (process.env.TECHMAP_RSS_TOKEN ? `Bearer ${process.env.TECHMAP_RSS_TOKEN}` : undefined);
+  const response = await fetch(feed.url, {
+    headers: {
+      accept: "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
+      "user-agent": "EndpointJobs/1.0 (+https://github.com/)",
+      ...(authHeader ? { authorization: authHeader } : {})
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Techmap RSS ${feed.name} request failed: ${response.status} ${response.statusText}`);
+  }
+
+  const xml = await response.text();
+  const parser = new XMLParser({
+    attributeNamePrefix: "@_",
+    ignoreAttributes: false,
+    trimValues: true
+  });
+  const parsed = parser.parse(xml) as unknown;
+  return getRssItems(parsed);
+}
+
+function getRssItems(parsed: unknown): TechmapRssItem[] {
+  if (!parsed || typeof parsed !== "object") {
+    return [];
+  }
+
+  const root = parsed as {
+    rss?: { channel?: { item?: unknown } };
+    feed?: { entry?: unknown };
+    channel?: { item?: unknown };
+  };
+  const items = root.rss?.channel?.item ?? root.feed?.entry ?? root.channel?.item;
+
+  return toArray(items).filter((item): item is TechmapRssItem => Boolean(item && typeof item === "object"));
 }
 
 async function fetchAshbyBoard(url: string, board: string) {
@@ -1174,6 +1442,15 @@ function isAdzunaJob(value: unknown): value is AdzunaJob {
 
   const candidate = value as AdzunaJob;
   return Boolean(candidate.id && candidate.title && candidate.company?.display_name && candidate.redirect_url);
+}
+
+function isWorkableJob(value: unknown): value is WorkableJob {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as WorkableJob;
+  return Boolean((candidate.shortcode || candidate.id) && candidate.title);
 }
 
 function isAshbyJob(value: unknown): value is AshbyJob {
@@ -1756,6 +2033,135 @@ function normalizeAshbyJob(raw: AshbyJob, board: string, fetchedAt: Date): Job |
   };
 }
 
+function normalizeWorkableJob(raw: WorkableJob, account: WorkableAccount, fetchedAt: Date): Job | null {
+  const title = cleanText(raw.title);
+  const company = account.name;
+  const shortcode = cleanText(raw.shortcode ?? String(raw.id ?? ""));
+  const sourceJobUrl = cleanUrl(raw.url) ?? buildWorkableJobUrl(account.slug, shortcode);
+
+  if (!title || !company || !shortcode || !sourceJobUrl) {
+    return null;
+  }
+
+  const locationParts = [raw.location?.city, raw.location?.region, raw.location?.country]
+    .map(cleanText)
+    .filter(Boolean);
+  const location = locationParts.join(", ");
+  const description = stripHtml([raw.description, raw.requirements, raw.benefits].join(" "));
+  const department = Array.isArray(raw.department) ? raw.department.join("; ") : raw.department;
+  const employmentType = normalizeWorkableEmploymentType(raw.type ?? raw.employment_type);
+  const sourceTags = [department, employmentType, raw.workplace, raw.location?.workplace]
+    .map(cleanText)
+    .filter(Boolean);
+  const haystack = normalizeSearchText([title, company, location, sourceTags.join(" "), description].join(" "));
+  const tools = deriveTools(haystack);
+  const platforms = derivePlatforms(haystack);
+  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
+
+  if (!isEndpointRelevant(haystack, title, tools)) {
+    return null;
+  }
+
+  const published = raw.published ?? raw.published_on;
+  const postedAt = published && !Number.isNaN(new Date(published).getTime())
+    ? new Date(published).toISOString()
+    : fetchedAt.toISOString();
+  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
+  const workplace = raw.remote
+    ? "Remote"
+    : inferWorkplace(location, `${haystack} ${raw.workplace ?? ""} ${raw.location?.workplace ?? ""}`);
+
+  return {
+    id: `workable-${account.slug}-${shortcode}`,
+    title,
+    company,
+    location: location || "Unknown",
+    workplace,
+    postedAt,
+    fetchedAt: fetchedAt.toISOString(),
+    staleAfter,
+    expiresAt: staleAfter,
+    source: "Workable",
+    sourceUrl: sourceJobUrl,
+    applyUrl: sourceJobUrl,
+    attributionLabel: `Workable / ${company}`,
+    termsProfile: "public-api",
+    summary: summarize(description),
+    tags: normalizeTags(sourceTags, tools, platforms),
+    matchReasons,
+    tools,
+    platforms,
+    roleFamily: inferRoleFamily(haystack, tools, platforms),
+    seniority: inferSeniority(haystack),
+    employmentType: employmentType || inferEmploymentType(haystack)
+  };
+}
+
+function normalizeTechmapRssJob(raw: TechmapRssItem, feed: TechmapRssFeed, fetchedAt: Date): Job | null {
+  const title = cleanText(getXmlText(raw.title));
+  const sourceJobUrl = cleanUrl(getXmlText(raw.link)) ?? cleanUrl(getXmlText(raw.guid));
+  const company = cleanText(
+    getXmlText(raw.company)
+      ?? getXmlText(raw.author)
+      ?? getXmlText(raw["dc:creator"])
+      ?? getXmlText(raw.source)
+      ?? feed.name
+  );
+
+  if (!title || !company || !sourceJobUrl) {
+    return null;
+  }
+
+  const description = stripHtml(
+    [raw.description, raw.summary, raw.content, raw["content:encoded"]]
+      .map((value) => getXmlText(value) ?? "")
+      .join(" ")
+  );
+  const categories = flattenXmlValues(raw.category).map(cleanText).filter(Boolean);
+  const location = cleanText(getXmlText(raw.location));
+  const sourceTags = [feed.name, ...categories].filter(Boolean);
+  const haystack = normalizeSearchText([title, company, location, sourceTags.join(" "), description].join(" "));
+  const tools = deriveTools(haystack);
+  const platforms = derivePlatforms(haystack);
+  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
+
+  if (!isEndpointRelevant(haystack, title, tools)) {
+    return null;
+  }
+
+  const rawDate = getXmlText(raw.pubDate) ?? getXmlText(raw.published) ?? getXmlText(raw.updated);
+  const postedAt = rawDate && !Number.isNaN(new Date(rawDate).getTime())
+    ? new Date(rawDate).toISOString()
+    : fetchedAt.toISOString();
+  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
+  const idSource = cleanText(getXmlText(raw.guid) ?? getXmlText(raw.id) ?? sourceJobUrl ?? title);
+
+  return {
+    id: `techmaprss-${normalizeIdPart(feed.name)}-${normalizeIdPart(idSource)}`,
+    title,
+    company,
+    location: location || "Unknown",
+    workplace: inferWorkplace(location, haystack),
+    postedAt,
+    fetchedAt: fetchedAt.toISOString(),
+    staleAfter,
+    expiresAt: staleAfter,
+    source: "Techmap RSS",
+    sourceUrl: sourceJobUrl,
+    applyUrl: sourceJobUrl,
+    attributionLabel: `Techmap RSS / ${feed.name}`,
+    termsProfile: "partner-terms",
+    summary: summarize(description),
+    tags: normalizeTags(sourceTags, tools, platforms),
+    matchReasons,
+    tools,
+    platforms,
+    roleFamily: inferRoleFamily(haystack, tools, platforms),
+    seniority: inferSeniority(haystack),
+    employmentType: inferEmploymentType(haystack)
+  };
+}
+
 function normalizeAmazonJob(raw: AmazonJob, fetchedAt: Date): Job | null {
   const title = cleanText(raw.title);
   const company = cleanText(raw.company_name) || "Amazon";
@@ -2252,6 +2658,14 @@ function stripHtml(value: string) {
     .replace(/<[^>]+>/g, " ");
 }
 
+function getString(value: unknown) {
+  if (typeof value === "string" || typeof value === "number") {
+    return String(value);
+  }
+
+  return undefined;
+}
+
 function cleanText(value: unknown) {
   return decodeEntities(value == null ? "" : String(value))
     .replace(/\s+/g, " ")
@@ -2336,6 +2750,10 @@ function addDays(value: Date, days: number) {
 }
 
 function getConfiguredSourceUrl(provider: SupportedProvider, allowLegacyUrl: boolean) {
+  if (provider === "techmaprss" && process.env.JOB_TECHMAP_RSS_API_URL) {
+    return process.env.JOB_TECHMAP_RSS_API_URL;
+  }
+
   const overrideKey = `JOB_${provider.toUpperCase()}_API_URL`;
   const providerOverride = process.env[overrideKey];
 
@@ -2383,6 +2801,10 @@ function getDefaultSourceUrl(jobProvider: SupportedProvider) {
     return "https://api.ashbyhq.com/posting-api/job-board";
   }
 
+  if (jobProvider === "workable") {
+    return "https://apply.workable.com/api/v3/accounts";
+  }
+
   if (jobProvider === "amazon") {
     return "https://www.amazon.jobs/en/search.json";
   }
@@ -2397,6 +2819,10 @@ function getDefaultSourceUrl(jobProvider: SupportedProvider) {
 
   if (jobProvider === "activate") {
     return "https://jobs.cardinalhealth.com/search/searchresultslist";
+  }
+
+  if (jobProvider === "techmaprss") {
+    return getFirstTechmapRssFeedUrl() || "https://techmap.example/rss";
   }
 
   return "https://remotive.com/api/remote-jobs";
@@ -2473,6 +2899,13 @@ function getSourceMetadata(jobProvider: SupportedProvider, url: string) {
     };
   }
 
+  if (jobProvider === "workable") {
+    return {
+      name: "Workable",
+      url
+    };
+  }
+
   if (jobProvider === "amazon") {
     return {
       name: "Amazon Jobs",
@@ -2501,6 +2934,13 @@ function getSourceMetadata(jobProvider: SupportedProvider, url: string) {
     };
   }
 
+  if (jobProvider === "techmaprss") {
+    return {
+      name: "Techmap RSS",
+      url
+    };
+  }
+
   return {
     name: "Remotive",
     url
@@ -2514,12 +2954,100 @@ function getCsvConfig(envKey: string, fallback: string[]) {
   return values.map((value) => value.trim()).filter(Boolean);
 }
 
+function getWorkableAccounts() {
+  const configured = process.env.JOB_WORKABLE_ACCOUNTS;
+
+  if (!configured) {
+    return defaultWorkableAccounts;
+  }
+
+  return configured
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => parseWorkableAccountEntry(entry));
+}
+
+function parseWorkableAccountEntry(entry: string): WorkableAccount {
+  const separatorIndex = entry.indexOf("|");
+  const namePart = separatorIndex === -1 ? undefined : cleanText(entry.slice(0, separatorIndex));
+  const slug = cleanText(separatorIndex === -1 ? entry : entry.slice(separatorIndex + 1)).toLowerCase();
+
+  if (!slug || (separatorIndex !== -1 && !namePart)) {
+    throw new Error(`Invalid JOB_WORKABLE_ACCOUNTS entry: ${entry}`);
+  }
+
+  return {
+    name: namePart ?? formatSourceAccountName(slug),
+    slug
+  };
+}
+
+function getTechmapRssFeeds(defaultUrl: string) {
+  const configured = process.env.JOB_TECHMAP_RSS_FEEDS;
+  const values = configured
+    ? configured.split(",")
+    : defaultUrl && !defaultUrl.includes("techmap.example")
+      ? [defaultUrl]
+      : [];
+
+  if (values.length === 0) {
+    throw new Error("JOB_TECHMAP_RSS_FEEDS is required for the Techmap RSS provider");
+  }
+
+  return values
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry, index) => parseNamedUrlEntry(entry, `Techmap ${index + 1}`, "JOB_TECHMAP_RSS_FEEDS"));
+}
+
+function getFirstTechmapRssFeedUrl() {
+  return process.env.JOB_TECHMAP_RSS_FEEDS
+    ?.split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry, index) => parseNamedUrlEntry(entry, `Techmap ${index + 1}`, "JOB_TECHMAP_RSS_FEEDS").url)
+    .find(Boolean);
+}
+
+function parseNamedUrlEntry(entry: string, fallbackName: string, envKey: string): TechmapRssFeed {
+  const separatorIndex = entry.indexOf("|");
+  const name = separatorIndex === -1 ? fallbackName : cleanText(entry.slice(0, separatorIndex));
+  const url = cleanUrl(separatorIndex === -1 ? entry : entry.slice(separatorIndex + 1));
+
+  if (!entry || !name || !url) {
+    throw new Error(`Invalid ${envKey} entry: ${entry}`);
+  }
+
+  return { name, url };
+}
+
 function buildAshbyBoardUrl(baseUrl: string, board: string) {
   if (baseUrl.includes("{board}")) {
     return baseUrl.replace("{board}", encodeURIComponent(board));
   }
 
   return `${baseUrl.replace(/\/+$/, "")}/${encodeURIComponent(board)}`;
+}
+
+function buildWorkableListUrl(baseUrl: string, slug: string) {
+  return baseUrl.includes("{account}")
+    ? baseUrl.replace("{account}", encodeURIComponent(slug))
+    : `${baseUrl.replace(/\/+$/, "")}/${encodeURIComponent(slug)}/jobs`;
+}
+
+function buildWorkableDetailUrl(slug: string, shortcode: string) {
+  const detailBaseUrl = process.env.JOB_WORKABLE_DETAIL_API_URL
+    ?? "https://apply.workable.com/api/v1/accounts";
+  return `${detailBaseUrl.replace(/\/+$/, "")}/${encodeURIComponent(slug)}/jobs/${encodeURIComponent(shortcode)}`;
+}
+
+function buildWorkableJobUrl(slug: string, shortcode: string) {
+  if (!shortcode) {
+    return undefined;
+  }
+
+  return `https://apply.workable.com/${encodeURIComponent(slug)}/j/${encodeURIComponent(shortcode)}/`;
 }
 
 function buildAmazonSearchUrl(baseUrl: string, query: string) {
@@ -2535,6 +3063,25 @@ function buildAmazonSearchUrl(baseUrl: string, query: string) {
   }
 
   return url.toString();
+}
+
+function normalizeWorkableEmploymentType(value: string | undefined) {
+  const normalized = normalizeSearchText(value ?? "");
+  const employmentTypes: Record<string, string> = {
+    full: "Full-time",
+    fulltime: "Full-time",
+    "full-time": "Full-time",
+    full_time: "Full-time",
+    part: "Part-time",
+    parttime: "Part-time",
+    "part-time": "Part-time",
+    part_time: "Part-time",
+    contract: "Contract",
+    temporary: "Temporary",
+    internship: "Internship"
+  };
+
+  return employmentTypes[normalized] ?? cleanText(value);
 }
 
 function getAmazonTeamLabel(value: AmazonJob["team"]) {
@@ -2718,6 +3265,42 @@ function buildMusePageUrl(baseUrl: string, page: number) {
   return url.toString();
 }
 
+function getXmlText(value: unknown): string | undefined {
+  if (typeof value === "string" || typeof value === "number") {
+    return String(value);
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(getXmlText).filter(Boolean).join("; ") || undefined;
+  }
+
+  if (value && typeof value === "object") {
+    const candidate = value as Record<string, unknown>;
+    return getXmlText(candidate["#text"])
+      ?? getXmlText(candidate["#cdata"])
+      ?? getXmlText(candidate.href)
+      ?? getXmlText(candidate["@_href"])
+      ?? getXmlText(candidate.url)
+      ?? getXmlText(candidate["@_url"]);
+  }
+
+  return undefined;
+}
+
+function flattenXmlValues(value: unknown): string[] {
+  return toArray(value).flatMap((entry) => {
+    const text = getXmlText(entry);
+    return text ? [text] : [];
+  });
+}
+
+function toArray<T>(value: T | T[] | undefined | null): T[] {
+  if (value === undefined || value === null) {
+    return [];
+  }
+
+  return Array.isArray(value) ? value : [value];
+}
 function parseActivateJobs(html: string, siteUrl: string) {
   const itemPattern = new RegExp(String.raw`<li class="job-item[^"]*"[^>]*>[\s\S]*?<\/li>`, "gi");
   const titlePattern = new RegExp(String.raw`<h3[^>]*>([\s\S]*?)<\/h3>`, "i");

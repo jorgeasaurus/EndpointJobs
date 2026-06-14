@@ -116,3 +116,46 @@ Result: Expanded coverage fetched 1,948 raw jobs from 11 successful providers an
 - [x] Run typecheck, lint, build, commit, push, and verify production.
 
 Result: Expanded coverage fetched 2,581 raw jobs from 12 successful providers and wrote 49 endpoint-qualified listings. Captured target roles from Leidos, Cardinal Health, Commvault, UT Austin, DoorDash, Dexcom, Kaseya, Kymera, Hermeus, Blue Origin, and Omnidian; Delta, The Planet Group, WME, Pennant, and Providence still need stable public API coverage before default inclusion.
+
+## Mobile UI Cleanup
+
+- [x] Remove visible source buttons/links while preserving provider labels.
+- [x] Tighten mobile header, search, filters, and job cards for small screens.
+- [x] Verify lint/build and mobile rendering.
+
+Result: Removed source CTAs from the header, cards, and footer; kept non-clickable provider attribution; tightened mobile spacing and card density; fixed mobile flex overflow found in Playwright snapshots. Verified lint, typecheck, build, local rendered HTML, and 320/375px browser snapshots.
+
+## NPM Doctor And Thermo-Nuclear Review
+
+- [x] Run npm doctor and capture issues.
+- [x] Inspect current branch diff and affected file sizes.
+- [x] Review structural quality, mobile CSS maintainability, and source-button removal.
+- [x] Report findings with verification status.
+
+Result: npm doctor exited 1 because npm 11.16.0 is behind recommended 11.17.0 and `/opt/homebrew/bin/__pycache__/vba_extract.cpython-313.pyc` is missing executable permission; registry, node, git, PATH, cache, and project permissions passed. Review found one structural CSS maintainability blocker and one mobile chip-row design concern.
+
+## Review Finding Fixes
+
+- [x] Split job-board styles out of the oversized global stylesheet.
+- [x] Remove hidden horizontal scrolling from card metadata/tag rows on mobile.
+- [x] Verify lint, typecheck, build, and narrow mobile layout.
+
+Result: Split styles into `globals.css` (104 lines), `job-board.css` (784 lines), and `job-board-responsive.css` (328 lines); card chips now wrap on mobile while the platform filter strip remains horizontally scrollable. Updated npm to 11.17.0 and fixed the Homebrew bin permission issue. Verified lint, typecheck, build, npm doctor, rendered HTML, and 320/375px Playwright snapshots.
+
+## Workable And Techmap Source Wiring
+
+- [x] Confirm existing Greenhouse, Ashby, and Lever support.
+- [x] Verify Workable and Techmap RSS endpoint shapes.
+- [x] Add missing Workable and Techmap RSS providers.
+- [x] Update GitHub Action and README provider docs.
+- [x] Run refresh, typecheck, lint, build, and source-specific checks.
+
+Result: Greenhouse, Ashby, and Lever were already wired. Added Workable account ingestion and configurable Techmap RSS ingestion, including workflow env/secrets and README setup notes. Verified Workable and Techmap RSS with local mock feeds, `npm run typecheck`, `npm run lint`, `npm run build`, and a temp full refresh that wrote 49 endpoint jobs from 12 providers. `npm audit --audit-level=moderate` still reports the existing Next/PostCSS advisory; npm only offers `npm audit fix --force`, so no forced breaking remediation was applied.
+## Publish Current Changes
+
+- [x] Confirm working tree scope.
+- [x] Run final local verification.
+- [ ] Commit and push to GitHub.
+- [ ] Deploy production to Vercel.
+
+Result: Pending.

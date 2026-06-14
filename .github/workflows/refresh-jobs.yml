@@ -27,14 +27,18 @@ jobs:
       - name: Refresh endpoint jobs
         run: npm run jobs:refresh
         env:
-          JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,amazon,workday,jibe,activate,adzuna
+          JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,techmaprss,adzuna
           JOB_GREENHOUSE_BOARDS: jamf,automox,tanium,okta,sonyinteractiveentertainmentglobal,verkada,anthropic,doordashusa,commvault,kaseya,kymeratherapeutics
           JOB_LEVER_COMPANIES: jumpcloud,brightonjones,hermeus,omnidian
           JOB_ASHBY_BOARDS: docker
+          JOB_WORKABLE_ACCOUNTS: ${{ vars.JOB_WORKABLE_ACCOUNTS }}
           JOB_AMAZON_QUERIES: macOS Client Engineering,systems engineer macOS,client engineering,endpoint engineer,intune engineer,end user computer
           JOB_WORKDAY_SITES: accenture|https://accenture.wd103.myworkdayjobs.com/wday/cxs/accenture/AccentureCareers/jobs|Intune Engineer;Endpoint Engineer;Client Engineering;End User Computer;Workplace Engineer;;goodwin|https://goodwinprocter.wd5.myworkdayjobs.com/wday/cxs/goodwinprocter/External_Careers/jobs|Manager Desktop Engineering;Desktop Engineering;Endpoint Engineer;;gdit|https://gdit.wd5.myworkdayjobs.com/wday/cxs/gdit/External_Career_Site/jobs|Endpoint Engineer;Endpoint;Intune;Desktop Engineer;;ut-austin|https://utaustin.wd1.myworkdayjobs.com/wday/cxs/utaustin/UTstaff/jobs|Senior Endpoint Engineer;Endpoint Engineer;Intune;;blue-origin|https://blueorigin.wd5.myworkdayjobs.com/wday/cxs/blueorigin/BlueOrigin/jobs|Endpoint Experience Administrator;Endpoint Experience;Intune;;dexcom|https://dexcom.wd1.myworkdayjobs.com/wday/cxs/dexcom/Dexcom/jobs|Sr Staff Desktop Systems Engineer;Desktop Systems Engineer;Endpoint Engineer;;leidos|https://leidos.wd5.myworkdayjobs.com/wday/cxs/leidos/External/jobs|End-Point Protection Engineer;Endpoint Protection Engineer;Endpoint Engineer;Unified Endpoint Management
           JOB_JIBE_SITES: mcgraw-hill|https://careers.mheducation.com/api/jobs|Endpoint Engineering Lead;Endpoint Engineer;Jamf;Intune
           JOB_ACTIVATE_SITES: cardinal-health|https://jobs.cardinalhealth.com/search/searchresultslist|Senior Engineer, IT Client Services;IT Client Services;Endpoint
+          JOB_TECHMAP_RSS_FEEDS: ${{ secrets.JOB_TECHMAP_RSS_FEEDS }}
+          JOB_TECHMAP_RSS_AUTH_HEADER: ${{ secrets.JOB_TECHMAP_RSS_AUTH_HEADER }}
+          TECHMAP_RSS_TOKEN: ${{ secrets.TECHMAP_RSS_TOKEN }}
           JOB_MUSE_PAGES: "5"
           JOB_ADZUNA_COUNTRY: us
           JOB_ADZUNA_QUERIES: endpoint engineer,desktop engineer,macos engineer,windows engineer,workplace engineer,client engineering,end user computer,device management,intune,jamf,sccm,mdm
