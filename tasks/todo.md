@@ -105,3 +105,12 @@ Result: Expanded coverage fetched 1,450 raw jobs from 10 successful providers an
 - [x] Run typecheck, lint, build, commit, push, and verify production.
 
 Result: Expanded coverage fetched 1,948 raw jobs from 11 successful providers and wrote 28 endpoint-qualified listings. Captured target roles from Verkada, Anthropic, McGraw Hill, Goodwin, and GDIT; Gartner, Honeywell, MSM Technology, and Intuitive Machines still need stable public API coverage before default inclusion.
+
+## Broad Endpoint Coverage Batch
+
+- [x] Record target examples: Delta, Leidos, Cardinal Health, Commvault, UT Austin, DoorDash, The Planet Group, Dexcom, Kaseya, Kymera, WME, Hermeus, Pennant, Blue Origin, Providence, and Omnidian.
+- [x] Probe stable public ATS/search APIs for those employers.
+- [x] Add source/query coverage for stable matches without scraping LinkedIn.
+- [x] Adjust relevance rules only where target examples prove a gap.
+- [x] Refresh jobs and verify new target-style matches appear.
+- [ ] Run typecheck, lint, build, commit, push, and verify production.

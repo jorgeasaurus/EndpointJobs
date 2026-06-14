@@ -175,6 +175,20 @@ type AmazonJob = {
   team?: string | { label?: string };
 };
 
+type ActivateJob = {
+  id?: string;
+  title?: string;
+  location?: string;
+  sourceJobUrl?: string;
+  summary?: string;
+};
+
+type ActivateSite = {
+  name: string;
+  url: string;
+  queries: string[];
+};
+
 type JibeJob = {
   data?: {
     slug?: string;
@@ -274,8 +288,11 @@ const platformAliases: Array<{ platform: Platform; aliases: string[] }> = [
 
 const endpointRoleTerms = [
   "endpoint",
+  "end-point",
+  "end-point protection",
   "desktop engineer",
   "desktop engineering",
+  "desktop systems",
   "desktop administrator",
   "desktop infrastructure",
   "client platform",
@@ -288,10 +305,13 @@ const endpointRoleTerms = [
   "device fleet",
   "end user computer",
   "end user computing",
+  "end user technology",
   "end user services",
   "end-user computer",
   "end-user computing",
   "enterprise engineering",
+  "digital workplace",
+  "it client services",
   "studio it",
   "workplace engineer",
   "workplace systems",
@@ -345,9 +365,13 @@ const defaultGreenhouseBoards = [
   "okta",
   "sonyinteractiveentertainmentglobal",
   "verkada",
-  "anthropic"
+  "anthropic",
+  "doordashusa",
+  "commvault",
+  "kaseya",
+  "kymeratherapeutics"
 ];
-const defaultLeverCompanies = ["jumpcloud", "brightonjones"];
+const defaultLeverCompanies = ["jumpcloud", "brightonjones", "hermeus", "omnidian"];
 const defaultAdzunaQueries = [
   "endpoint engineer",
   "desktop engineer",
@@ -392,6 +416,33 @@ const defaultWorkdaySites: WorkdaySite[] = [
     name: "GDIT",
     url: "https://gdit.wd5.myworkdayjobs.com/wday/cxs/gdit/External_Career_Site/jobs",
     queries: ["Endpoint Engineer", "Endpoint", "Intune", "Desktop Engineer"]
+  },
+  {
+    name: "UT Austin",
+    url: "https://utaustin.wd1.myworkdayjobs.com/wday/cxs/utaustin/UTstaff/jobs",
+    queries: ["Senior Endpoint Engineer", "Endpoint Engineer", "Intune"]
+  },
+  {
+    name: "Blue Origin",
+    url: "https://blueorigin.wd5.myworkdayjobs.com/wday/cxs/blueorigin/BlueOrigin/jobs",
+    queries: ["Endpoint Experience Administrator", "Endpoint Experience", "Intune"]
+  },
+  {
+    name: "Dexcom",
+    url: "https://dexcom.wd1.myworkdayjobs.com/wday/cxs/dexcom/Dexcom/jobs",
+    queries: ["Sr Staff Desktop Systems Engineer", "Desktop Systems Engineer", "Endpoint Engineer"]
+  },
+  {
+    name: "Leidos",
+    url: "https://leidos.wd5.myworkdayjobs.com/wday/cxs/leidos/External/jobs",
+    queries: ["End-Point Protection Engineer", "Endpoint Protection Engineer", "Endpoint Engineer", "Unified Endpoint Management"]
+  }
+];
+const defaultActivateSites: ActivateSite[] = [
+  {
+    name: "Cardinal Health",
+    url: "https://jobs.cardinalhealth.com/search/searchresultslist",
+    queries: ["Senior Engineer, IT Client Services", "IT Client Services", "Endpoint"]
   }
 ];
 const defaultJibeSites: JibeSite[] = [
@@ -449,6 +500,7 @@ const supportedProviders = [
   "amazon",
   "workday",
   "jibe",
+  "activate",
   "adzuna"
 ] as const;
 type SupportedProvider = (typeof supportedProviders)[number];
@@ -464,7 +516,8 @@ const defaultProviders: SupportedProvider[] = [
   "ashby",
   "amazon",
   "workday",
-  "jibe"
+  "jibe",
+  "activate"
 ];
 
 function isSupportedProvider(value: string): value is SupportedProvider {
@@ -573,6 +626,10 @@ async function fetchProviderJobs(
 
   if (jobProvider === "jibe") {
     return fetchJibeJobs(url, fetchedAt);
+  }
+
+  if (jobProvider === "activate") {
+    return fetchActivateJobs(url, fetchedAt);
   }
 
   const payload = await fetchRemotive(url);
@@ -707,6 +764,21 @@ async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
   return jobs;
 }
 
+async function fetchActivateJobs(url: string, fetchedAt: Date) {
+  const sites = getActivateSites(url);
+  const jobs: Array<Job | null> = [];
+
+  for (const site of sites) {
+    for (const query of site.queries) {
+      const payload = await fetchActivateSearch(site.url, query, site.name);
+      jobs.push(...payload.map((job) => normalizeActivateJob(job, site, query, fetchedAt)));
+      console.log(`Fetched ${payload.length} raw jobs from Activate/${site.name} query ${query}`);
+    }
+  }
+
+  return jobs;
+}
+
 async function fetchJibeJobs(url: string, fetchedAt: Date) {
   const sites = getJibeSites(url);
   const jobs: Array<Job | null> = [];
@@ -795,6 +867,30 @@ async function fetchWorkdaySearch(url: string, query: string) {
   }
 
   return (json as { jobPostings: unknown[] }).jobPostings.filter(isWorkdayJob);
+}
+
+async function fetchActivateSearch(url: string, query: string, siteName: string) {
+  const queryUrl = buildActivateSearchUrl(url, query);
+  const response = await fetch(queryUrl, {
+    headers: {
+      accept: "application/json, text/javascript, */*; q=0.01",
+      referer: new URL(url).origin,
+      "user-agent": "Mozilla/5.0",
+      "x-requested-with": "XMLHttpRequest"
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Activate ${siteName} request failed: ${response.status} ${response.statusText}`);
+  }
+
+  const json: unknown = await response.json();
+
+  if (!json || typeof json !== "object" || typeof (json as { jobsHtml?: unknown }).jobsHtml !== "string") {
+    throw new Error(`Activate ${siteName} response did not include jobsHtml`);
+  }
+
+  return parseActivateJobs((json as { jobsHtml: string }).jobsHtml, url);
 }
 
 async function fetchJibeSearch(url: string, query: string, siteName: string) {
@@ -1096,6 +1192,15 @@ function isAmazonJob(value: unknown): value is AmazonJob {
 
   const candidate = value as AmazonJob;
   return Boolean(candidate.id && candidate.title && candidate.job_path);
+}
+
+function isActivateJob(value: unknown): value is ActivateJob {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as ActivateJob;
+  return Boolean(candidate.id && candidate.title && candidate.sourceJobUrl);
 }
 
 function isJibeJob(value: unknown): value is JibeJob {
@@ -1707,6 +1812,59 @@ function normalizeAmazonJob(raw: AmazonJob, fetchedAt: Date): Job | null {
   };
 }
 
+function normalizeActivateJob(raw: ActivateJob, site: ActivateSite, query: string, fetchedAt: Date): Job | null {
+  if (!isActivateJob(raw)) {
+    return null;
+  }
+
+  const title = cleanText(raw.title);
+  const company = site.name;
+  const sourceJobUrl = cleanUrl(raw.sourceJobUrl);
+
+  if (!title || !company || !sourceJobUrl) {
+    return null;
+  }
+
+  const location = cleanText(raw.location);
+  const description = cleanText([query, raw.summary].filter(Boolean).join(" "));
+  const haystack = normalizeSearchText([title, company, location, description].join(" "));
+  const tools = deriveTools(haystack);
+  const platforms = derivePlatforms(haystack);
+  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
+
+  if (!isEndpointRelevant(haystack, title, tools)) {
+    return null;
+  }
+
+  const postedAt = fetchedAt.toISOString();
+  const staleAfter = addDays(fetchedAt, staleDays).toISOString();
+
+  return {
+    id: `activate-${normalizeIdPart(site.name)}-${normalizeIdPart(raw.id ?? sourceJobUrl)}`,
+    title,
+    company,
+    location: location || "Unknown",
+    workplace: inferWorkplace(location, haystack),
+    postedAt,
+    fetchedAt: fetchedAt.toISOString(),
+    staleAfter,
+    expiresAt: staleAfter,
+    source: "Activate",
+    sourceUrl: sourceJobUrl,
+    applyUrl: sourceJobUrl,
+    attributionLabel: `Activate / ${site.name}`,
+    termsProfile: "public-api",
+    summary: summarize(description),
+    tags: normalizeTags([query], tools, platforms),
+    matchReasons,
+    tools,
+    platforms,
+    roleFamily: inferRoleFamily(haystack, tools, platforms),
+    seniority: inferSeniority(haystack),
+    employmentType: inferEmploymentType(haystack)
+  };
+}
+
 function normalizeJibeJob(raw: JibeJob, site: JibeSite, query: string, fetchedAt: Date): Job | null {
   const data = raw.data ?? {};
   const title = cleanText(data.title);
@@ -2237,6 +2395,10 @@ function getDefaultSourceUrl(jobProvider: SupportedProvider) {
     return "https://careers.mheducation.com/api/jobs";
   }
 
+  if (jobProvider === "activate") {
+    return "https://jobs.cardinalhealth.com/search/searchresultslist";
+  }
+
   return "https://remotive.com/api/remote-jobs";
 }
 
@@ -2332,6 +2494,13 @@ function getSourceMetadata(jobProvider: SupportedProvider, url: string) {
     };
   }
 
+  if (jobProvider === "activate") {
+    return {
+      name: "Activate",
+      url
+    };
+  }
+
   return {
     name: "Remotive",
     url
@@ -2382,6 +2551,35 @@ function buildAmazonJobUrl(jobPath: string | undefined) {
   } catch {
     return undefined;
   }
+}
+
+function getActivateSites(defaultUrl: string) {
+  const configured = process.env.JOB_ACTIVATE_SITES;
+
+  if (!configured) {
+    return defaultActivateSites.map((site) => ({
+      ...site,
+      url: site.url || defaultUrl
+    }));
+  }
+
+  return configured
+    .split(";;")
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      const [name, url, queries] = entry.split("|");
+
+      if (!name || !url || !queries) {
+        throw new Error(`Invalid JOB_ACTIVATE_SITES entry: ${entry}`);
+      }
+
+      return {
+        name: cleanText(name),
+        url: cleanText(url),
+        queries: queries.split(";").map(cleanText).filter(Boolean)
+      };
+    });
 }
 
 function getJibeSites(defaultUrl: string) {
@@ -2440,6 +2638,12 @@ function getWorkdaySites(defaultUrl: string) {
         queries: queries.split(";").map(cleanText).filter(Boolean)
       };
     });
+}
+
+function buildActivateSearchUrl(siteUrl: string, query: string) {
+  const url = new URL(siteUrl);
+  url.searchParams.set("Keyword", query);
+  return url.toString();
 }
 
 function buildJibeSearchUrl(siteUrl: string, query: string) {
@@ -2514,6 +2718,36 @@ function buildMusePageUrl(baseUrl: string, page: number) {
   return url.toString();
 }
 
+function parseActivateJobs(html: string, siteUrl: string) {
+  const itemPattern = new RegExp(String.raw`<li class="job-item[^"]*"[^>]*>[\s\S]*?<\/li>`, "gi");
+  const titlePattern = new RegExp(String.raw`<h3[^>]*>([\s\S]*?)<\/h3>`, "i");
+  const locationPattern = new RegExp(
+    String.raw`<div class="job-detail (?:city-state|country)-column">[\s\S]*?<dd>([\s\S]*?)<\/dd>`,
+    "gi"
+  );
+  const items = [...html.matchAll(itemPattern)].map((match) => match[0]);
+
+  return items
+    .map((item) => {
+      const id = cleanText(item.match(/data-record-key="([^"]+)"/i)?.[1]);
+      const title = stripHtml(item.match(titlePattern)?.[1] ?? "");
+      const href = item.match(/<a[^>]+href="([^"]+)"[^>]*class="view-details-link"/i)?.[1];
+      const locationParts = [...item.matchAll(locationPattern)]
+        .map((match) => stripHtml(match[1]))
+        .filter(Boolean);
+      const sourceJobUrl = href ? new URL(href, new URL(siteUrl).origin).toString() : undefined;
+
+      return {
+        id,
+        title,
+        location: locationParts.join(", "),
+        sourceJobUrl,
+        summary: stripHtml(item)
+      } satisfies ActivateJob;
+    })
+    .filter(isActivateJob);
+}
+
 function buildAdzunaSearchUrl(baseUrl: string, query: string, appId: string, appKey: string) {
   const country = process.env.JOB_ADZUNA_COUNTRY ?? "us";
   const page = process.env.JOB_ADZUNA_PAGE ?? "1";
@@ -2537,8 +2771,12 @@ function formatSourceAccountName(slug: string) {
     anthropic: "Anthropic",
     automox: "Automox",
     brightonjones: "Brighton Jones",
+    commvault: "Commvault",
+    doordashusa: "DoorDash",
     jamf: "Jamf",
+    kaseya: "Kaseya",
     jumpcloud: "JumpCloud",
+    kymeratherapeutics: "Kymera Therapeutics",
     okta: "Okta",
     sonyinteractiveentertainmentglobal: "PlayStation",
     tanium: "Tanium",
