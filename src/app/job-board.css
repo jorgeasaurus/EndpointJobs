@@ -261,7 +261,7 @@ h1 {
 
 .search-strip {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 12px;
   margin-bottom: 14px;
 }
@@ -633,6 +633,70 @@ h1 {
   line-height: 1.55;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+}
+
+.description-details {
+  max-width: 920px;
+  margin-top: 12px;
+  overflow: hidden;
+  background: rgb(255 255 255 / 3%);
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 18px;
+  backdrop-filter: blur(16px);
+  transition:
+    background 180ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 180ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.description-details:hover,
+.description-details[open] {
+  background: rgb(255 255 255 / 5%);
+  border-color: rgb(204 255 0 / 40%);
+}
+
+.description-details summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 42px;
+  padding: 0 14px;
+  color: var(--white-60);
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  list-style: none;
+  text-transform: uppercase;
+}
+
+.description-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.description-details summary svg {
+  flex: 0 0 auto;
+  color: var(--lime);
+  transition: transform 180ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.description-details[open] summary svg {
+  transform: rotate(180deg);
+}
+
+.description-body {
+  max-height: 280px;
+  overflow: auto;
+  padding: 0 14px 14px;
+  border-top: 1px solid rgb(255 255 255 / 8%);
+}
+
+.description-body p {
+  margin: 12px 0 0;
+  color: var(--white-60);
+  font-size: 0.92rem;
+  line-height: 1.6;
 }
 
 .match-row {

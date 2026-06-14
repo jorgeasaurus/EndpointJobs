@@ -8,7 +8,7 @@ import { publicJobBoardProviders } from "./job-refresh/providers/public-job-boar
 import { serpApiProvider } from "./job-refresh/providers/serpapi";
 import { techmapRssProvider } from "./job-refresh/providers/techmap-rss";
 import { theirStackProvider } from "./job-refresh/providers/theirstack";
-import { normalizeSearchText } from "./job-refresh/shared";
+import { extractSalaryFromText, normalizeSearchText } from "./job-refresh/shared";
 
 import type { Job, JobsFeed } from "../src/types/job";
 
@@ -23,6 +23,7 @@ async function main() {
   const normalizedJobs = dedupeJobs(
     result.jobs
       .filter((job): job is Job => Boolean(job))
+      .map(addExtractedSalary)
       .filter((job) => new Date(job.staleAfter).getTime() >= fetchedAt.getTime())
   )
     .sort((first, second) => new Date(second.postedAt).getTime() - new Date(first.postedAt).getTime())
@@ -177,6 +178,15 @@ function getFeedSourceMetadata(providers: SupportedProvider[]) {
     name: providers.map((provider) => getProviderAdapter(provider).displayName).join(" + "),
     url: process.env.JOB_FEED_SOURCE_URL ?? "https://github.com/jorgeasaurus/EndpointJobs"
   };
+}
+
+function addExtractedSalary(job: Job): Job {
+  if (job.salary?.min || job.salary?.max) {
+    return job;
+  }
+
+  const salary = extractSalaryFromText([job.summary, job.description].filter(Boolean).join(" "));
+  return salary ? { ...job, salary } : job;
 }
 
 function dedupeJobs(jobs: Job[]) {

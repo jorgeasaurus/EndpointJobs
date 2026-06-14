@@ -232,3 +232,57 @@ Result: Split shared endpoint normalization into `scripts/job-refresh/shared.ts`
 - [x] Verify full refresh behavior, provider mocks, typecheck, lint, build, and diff hygiene.
 
 Result: Split public boards, ATS boards, company ATS, and Techmap RSS into focused provider modules. `scripts/refresh-jobs.ts` is now 228 lines; all provider modules are under 1,000 lines. Verified local mocks for Remote OK, Greenhouse, Amazon, Techmap RSS, TheirStack, and SerpAPI; live temp refresh wrote 54 jobs from 12 providers; `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`, and secret-pattern scan passed.
+
+## Expandable Job Descriptions
+
+- [x] Add a sanitized full-description field to the job data model.
+- [x] Persist bounded descriptions from every provider that exposes them.
+- [x] Add accessible expandable descriptions under job summaries.
+- [x] Refresh the feed and verify description coverage.
+- [x] Run typecheck, lint, build, and browser/mobile checks.
+
+Result: Added bounded plain-text descriptions to the feed and a native expandable description panel under every job card. Refreshed feed now has descriptions for 54 of 54 jobs; 26 have longer full descriptions and 28 expose provider snippets only. Verified `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`, and Playwright mobile/desktop layout checks with no horizontal overflow.
+
+## Rebase After Action Refresh
+
+- [x] Save local expandable-description work before rebasing.
+- [x] Fetch and rebase onto the latest `origin/main`.
+- [x] Reapply local description changes without losing refreshed job posts.
+- [x] Refresh/verify the feed and quality gates.
+
+Result: Rebased `main` onto GitHub Action commit `9ec01c1`, reapplied the expandable-description work, and regenerated `src/data/jobs.json` with the description-aware refresh pipeline. Feed now has 54 jobs, 54 descriptions, 26 longer full descriptions, and 28 provider snippets. Verified `npm run typecheck`, `npm run lint`, `npm run build`, and `git diff --check`.
+
+## Duplicate Description Cleanup
+
+- [x] Stop persisting provider snippets as descriptions.
+- [x] Render only description text that adds content beyond the summary.
+- [x] Refresh the feed and verify expander count drops to meaningful descriptions only.
+- [x] Run typecheck, lint, build, and UI checks.
+
+Result: Description fields now require meaningful long-form text, so Workday and Activate snippets stay as summaries only. The UI renders 26 expanders instead of 54 and shows only the text after the visible summary prefix. Verified no exact duplicate descriptions in the feed, `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`, and a mobile Playwright DOM check with no horizontal overflow.
+
+## Pay Range Extraction
+
+- [x] Add text-based annual pay range extraction from provider descriptions.
+- [x] Wire extraction as a fallback across all refreshed jobs.
+- [x] Refresh the feed and verify salary coverage.
+- [x] Run typecheck, lint, build, and diff hygiene.
+
+Result: Added conservative annual salary extraction during refresh. Regenerated feed has 54 jobs, 26 meaningful descriptions, and 16 salary ranges with no invalid bounds found. Verified `npm run jobs:refresh`, `npm run typecheck`, `npm run lint`, `npm run build`, and `git diff --check`.
+
+## Salary Range Filter
+
+- [x] Add salary-range-only filter state and behavior.
+- [x] Add a hero search-strip button for salary-visible jobs.
+- [x] Verify counts, reset behavior, typecheck, lint, build, and diff hygiene.
+
+Result: Added a `Salary shown` toggle beside Remote. It filters to jobs with parsed salary min/max ranges and currently shows 16 matching listings. Verified `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`, and a mobile browser click test.
+
+## Publish Salary Work
+
+- [ ] Run final verification.
+- [ ] Commit and push salary extraction/filter changes.
+- [ ] Trigger the job refresh GitHub Action.
+- [ ] Deploy production to Vercel and verify.
+
+Result: Pending.

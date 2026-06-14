@@ -127,6 +127,16 @@ const technicalRoleTitleTerms = [
   "professional services engineer"
 ];
 const staleDays = Number(process.env.JOB_STALE_DAYS ?? 45);
+const configuredDescriptionMaxLength = Number(process.env.JOB_DESCRIPTION_MAX_LENGTH ?? 12000);
+const configuredDescriptionMinLength = Number(process.env.JOB_DESCRIPTION_MIN_LENGTH ?? 420);
+const descriptionMaxLength =
+  Number.isFinite(configuredDescriptionMaxLength) && configuredDescriptionMaxLength >= 1000
+    ? configuredDescriptionMaxLength
+    : 12000;
+const descriptionMinLength =
+  Number.isFinite(configuredDescriptionMinLength) && configuredDescriptionMinLength >= 261
+    ? configuredDescriptionMinLength
+    : 420;
 
 export type JobCandidate = {
   id: string;
@@ -202,6 +212,7 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
     attributionLabel: candidate.attributionLabel,
     termsProfile: candidate.termsProfile,
     summary: summarize(description),
+    description: normalizeDescription(description),
     tags: normalizeTags(sourceTags, tools, platforms),
     matchReasons,
     tools,
@@ -422,6 +433,20 @@ export function normalizeTags(
     .slice(0, 12);
 }
 
+const salaryAmountPattern = String.raw`\$?\s*([0-9]{2,3}(?:,[0-9]{3})+(?:\.[0-9]{1,2})?|[0-9]{5,6}(?:\.[0-9]{1,2})?|[0-9]{2,3}(?:\.[0-9]{1,2})?)(\s*[kK])?`;
+const salaryRangeSeparatorPattern = String.raw`\s*(?:-|\u2013|\u2014|\bto\b|\band\b)\s*`;
+const salaryContextPattern = String.raw`(?:annual(?:ly)?|salary|compensation|base pay|pay range|pay transparency|hiring range|estimated annual pay range|targeted base salary range)`;
+const annualSalaryPatterns = [
+  new RegExp(
+    String.raw`${salaryContextPattern}[^\n]{0,420}?${salaryAmountPattern}${salaryRangeSeparatorPattern}${salaryAmountPattern}(?:\s*(?:usd|us dollars))?(?:\s*(?:annually|annual|per year|/year|a year|yearly))?`,
+    "gi"
+  ),
+  new RegExp(
+    String.raw`${salaryAmountPattern}${salaryRangeSeparatorPattern}${salaryAmountPattern}\s*(?:usd|us dollars)?\s*(?:annually|annual|per year|/year|a year|yearly)`,
+    "gi"
+  )
+];
+
 export function normalizeSalary(min?: number, max?: number) {
   const salaryMin = min && min > 0 ? min : undefined;
   const salaryMax = max && max > 0 ? max : undefined;
@@ -443,6 +468,80 @@ export function normalizeSalary(min?: number, max?: number) {
   };
 }
 
+export function extractSalaryFromText(value: string | undefined): Job["salary"] | undefined {
+  const text = cleanText(stripHtml(value ?? ""));
+
+  if (!text) {
+    return undefined;
+  }
+
+  for (const pattern of annualSalaryPatterns) {
+    pattern.lastIndex = 0;
+
+    let match = pattern.exec(text);
+    while (match) {
+      const salary = salaryFromRangeMatch(text, match);
+
+      if (salary) {
+        return salary;
+      }
+
+      match = pattern.exec(text);
+    }
+  }
+
+  return undefined;
+}
+
+function salaryFromRangeMatch(text: string, match: RegExpExecArray) {
+  const context = text.slice(Math.max(0, match.index - 80), match.index + match[0].length + 80);
+
+  if (hasNonUsdCurrency(context)) {
+    return undefined;
+  }
+
+  const usesThousands = Boolean(match[2] || match[4]);
+  let min = parseSalaryAmount(match[1], match[2], usesThousands);
+  let max = parseSalaryAmount(match[3], match[4], usesThousands);
+
+  if (!min || !max) {
+    return undefined;
+  }
+
+  if (min > max) {
+    [min, max] = [max, min];
+  }
+
+  if (!isValidAnnualSalaryRange(min, max)) {
+    return undefined;
+  }
+
+  return normalizeSalary(min, max);
+}
+
+function parseSalaryAmount(value: string | undefined, suffix: string | undefined, usesThousands: boolean) {
+  if (!value) {
+    return undefined;
+  }
+
+  const amount = Number(value.replace(/,/g, ""));
+
+  if (!Number.isFinite(amount)) {
+    return undefined;
+  }
+
+  const normalized = suffix || (usesThousands && amount < 1000) ? amount * 1000 : amount;
+  return Math.round(normalized);
+}
+
+function isValidAnnualSalaryRange(min: number, max: number) {
+  return min >= 20_000 && max <= 1_000_000 && max / min <= 6;
+}
+
+function hasNonUsdCurrency(value: string) {
+  return /\b(?:cad|aud|gbp|eur|inr|sgd|nzd)\b|[\u00a3\u20ac]/i.test(value) && !/\busd\b/i.test(value);
+}
+
 function formatSalaryAmount(value: number) {
   if (value >= 1000) {
     return `${Math.round(value / 1000)}k`;
@@ -460,6 +559,20 @@ export function summarize(value: string) {
   }
 
   return `${compact.slice(0, 257).trim()}...`;
+}
+
+export function normalizeDescription(value: string | undefined) {
+  const compact = cleanText(stripHtml(value ?? ""));
+
+  if (!compact || compact.length < descriptionMinLength) {
+    return undefined;
+  }
+
+  if (compact.length <= descriptionMaxLength) {
+    return compact;
+  }
+
+  return `${compact.slice(0, descriptionMaxLength - 3).trimEnd()}...`;
 }
 
 export function stripHtml(value: string) {
@@ -511,7 +624,9 @@ function decodeEntities(value: string) {
     .replace(/&gt;/g, ">")
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, " ");
+    .replace(/&nbsp;/g, " ")
+    .replace(/&mdash;|&#8212;|&#x2014;/gi, "-")
+    .replace(/&ndash;|&#8211;|&#x2013;/gi, "-");
 }
 
 export function parseDateLike(value: string | undefined) {

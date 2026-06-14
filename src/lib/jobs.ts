@@ -123,6 +123,7 @@ export function getSearchText(job: Job) {
     job.company,
     job.location,
     job.summary,
+    job.description ?? "",
     job.seniority,
     job.employmentType,
     job.tags.join(" "),

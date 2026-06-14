@@ -55,6 +55,7 @@ export type Job = {
   attributionLabel: string;
   termsProfile: TermsProfile;
   summary: string;
+  description?: string;
   tags: string[];
   matchReasons: string[];
   tools: EndpointTool[];

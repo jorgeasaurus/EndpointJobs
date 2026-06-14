@@ -9,3 +9,4 @@
 - Aggregator-style source requests still need per-provider activation checks; Workable requires account slugs and paid RSS feeds require feed URL/auth secrets before they can add production coverage.
 - When decorative hero modules obscure the workflow, remove them and move core controls into the hero before adding more visual density.
 - Job IDs must include entropy from the full source URL or native job ID; truncating long ATS URLs can collapse distinct roles into the same React key.
+- Expandable content must add new information beyond the visible summary; provider snippets should not get expanders just because they are stored in a description-shaped field.

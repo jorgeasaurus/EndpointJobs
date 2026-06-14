@@ -3,8 +3,10 @@
 import {
   BriefcaseBusiness,
   CheckCircle2,
+  ChevronDown,
   Clock3,
   Cpu,
+  DollarSign,
   ExternalLink,
   Layers3,
   MapPin,
@@ -69,6 +71,7 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   const [selectedTools, setSelectedTools] = useState<EndpointTool[]>([]);
   const [remoteOnly, setRemoteOnly] = useState(false);
+  const [salaryOnly, setSalaryOnly] = useState(false);
   const [seniority, setSeniority] = useState<SeniorityFilter>("All");
   const [roleFamily, setRoleFamily] = useState<RoleFamilyFilter>("All");
   const [freshness, setFreshness] = useState<FreshnessFilter>("Any");
@@ -106,6 +109,10 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
           return false;
         }
 
+        if (salaryOnly && !hasSalaryRange(job)) {
+          return false;
+        }
+
         if (seniority !== "All" && job.seniority !== seniority) {
           return false;
         }
@@ -130,6 +137,7 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
     query,
     remoteOnly,
     roleFamily,
+    salaryOnly,
     selectedPlatforms,
     selectedTools,
     seniority,
@@ -140,6 +148,7 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
     selectedPlatforms.length +
     selectedTools.length +
     (remoteOnly ? 1 : 0) +
+    (salaryOnly ? 1 : 0) +
     (seniority !== "All" ? 1 : 0) +
     (roleFamily !== "All" ? 1 : 0) +
     (freshness !== "Any" ? 1 : 0) +
@@ -153,6 +162,7 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
     setSelectedPlatforms([]);
     setSelectedTools([]);
     setRemoteOnly(false);
+    setSalaryOnly(false);
     setSeniority("All");
     setRoleFamily("All");
     setFreshness("Any");
@@ -222,6 +232,16 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
             >
               <MapPin size={18} aria-hidden="true" />
               Remote
+            </button>
+
+            <button
+              className={salaryOnly ? "mode-button is-active" : "mode-button"}
+              type="button"
+              aria-pressed={salaryOnly}
+              onClick={() => setSalaryOnly((value) => !value)}
+            >
+              <DollarSign size={18} aria-hidden="true" />
+              Salary shown
             </button>
           </div>
 
@@ -394,6 +414,8 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
 }
 
 function JobCard({ job }: { job: Job }) {
+  const additionalDescription = getAdditionalDescription(job);
+
   return (
     <article className="job-card">
       <div className="job-card-top">
@@ -416,6 +438,18 @@ function JobCard({ job }: { job: Job }) {
       </div>
 
       <p className="summary">{job.summary}</p>
+
+      {additionalDescription ? (
+        <details className="description-details">
+          <summary>
+            <span>More description</span>
+            <ChevronDown size={16} aria-hidden="true" />
+          </summary>
+          <div className="description-body">
+            <p>{additionalDescription}</p>
+          </div>
+        </details>
+      ) : null}
 
       <div className="match-row" aria-label="Endpoint match reasons">
         {job.matchReasons.slice(0, 3).map((reason) => (
@@ -464,6 +498,27 @@ function JobCard({ job }: { job: Job }) {
   );
 }
 
+function getAdditionalDescription(job: Job) {
+  const description = job.description?.trim();
+
+  if (!description) {
+    return undefined;
+  }
+
+  const summaryPrefix = job.summary.trim().replace(/\.\.\.$/, "").trimEnd();
+
+  if (summaryPrefix && description.startsWith(summaryPrefix)) {
+    const remainder = description
+      .slice(summaryPrefix.length)
+      .replace(/^[\s.,;:–—-]+/, "")
+      .trim();
+
+    return remainder.length >= 160 ? remainder : undefined;
+  }
+
+  return description.length >= job.summary.length + 160 ? description : undefined;
+}
+
 function FacetButton({
   isActive,
   label,
@@ -483,6 +538,10 @@ function FacetButton({
       {label}
     </button>
   );
+}
+
+function hasSalaryRange(job: Job) {
+  return Boolean(job.salary?.min && job.salary?.max);
 }
 
 function toggleValue<T>(values: T[], value: T) {
