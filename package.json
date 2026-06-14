@@ -16,7 +16,8 @@
     "lucide-react": "^0.468.0",
     "next": "^16.0.0",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "slot-text": "^0.2.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

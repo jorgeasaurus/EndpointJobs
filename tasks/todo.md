@@ -160,3 +160,75 @@ Result: Greenhouse, Ashby, and Lever were already wired. Added Workable account 
 - [x] Deploy production to Vercel.
 
 Result: Pushed current changes to `main` and deployed production to https://endpoint-jobs.vercel.app. Vercel returned Ready and the live alias returned HTTP 200.
+
+## Desktop Background Card Grid
+
+- [x] Add 4-column desktop background card grid.
+- [x] Implement large 2x2 data-visualization card, tall 1x2 swatch card, and lime accent card.
+- [x] Apply rounded-[2.5rem], border-white/10, lime hover border, and noise texture.
+- [x] Verify lint/build and responsive rendering.
+
+Result: Superseded by the Hero Filter Stack Relocation correction below; the decorative signal card grid was removed after review.
+
+## Hero Filter Stack Relocation
+
+- [x] Remove the decorative signal card grid.
+- [x] Move Filter Stack controls into the hero command panel.
+- [x] Collapse results layout to a single listing column.
+- [x] Verify lint/build and desktop/mobile rendering.
+
+Result: Removed the decorative signal card grid shown in the screenshot, moved Seniority/Sort/Tools/Clear controls into the hero command panel, and made the listings area a single full-width column. Verified typecheck, lint, build, desktop DOM layout, and mobile no-overflow behavior.
+
+## Duplicate Job Key Fix
+
+- [x] Trace duplicate Workday job IDs in the feed.
+- [x] Make Workday IDs stable and unique beyond truncated location URLs.
+- [x] Migrate existing Workday feed IDs.
+- [x] Verify lint/build and browser console.
+
+Result: Workday job IDs now include title plus a stable hash of the full source URL, current feed IDs were migrated, and refresh validation now rejects duplicate IDs. Verified current feed and temp refresh output have zero duplicate IDs; `npm run typecheck`, `npm run lint`, `npm run build`, and browser reload checks passed with no duplicate-key console messages.
+
+## Slot Text Hero Enhancement
+
+- [x] Install and inspect `slot-text` React usage.
+- [x] Add restrained slot-text animation to hero metadata/count labels.
+- [x] Keep job cards and filter controls stable for scanning.
+- [x] Verify lint/build and browser behavior.
+
+Result: Installed `slot-text` and used its React component only for numeric status moments: tracked roles, visible opportunities, and the clear-filter count. Job cards and filter labels remain static for scanning; animated digits are hidden from assistive tech with stable labels. Verified `npm run typecheck`, `npm run lint`, `npm run build`, and mobile browser behavior with no duplicate-key warnings or horizontal overflow.
+
+## TheirStack API Wiring
+
+- [x] Add TheirStack as an env-gated refresh provider.
+- [x] Map TheirStack job fields into the existing `Job` model.
+- [x] Add GitHub Action secret wiring without storing the token in source.
+- [x] Verify source-specific refresh, typecheck, lint, build, and feed validation.
+
+Result: Added the `theirstack` provider using `POST /v1/jobs/search` with `THEIRSTACK_API_KEY`, normalized TheirStack jobs into the existing feed model, and wired the GitHub Action to read the token from secrets. Verified with a local mock TheirStack refresh, `npm run typecheck`, `npm run lint`, `npm run build`, and `git diff --check`; the real token was not written to source.
+
+## SerpAPI Google Jobs Wiring
+
+- [x] Add SerpAPI Google Jobs as an env-gated refresh provider.
+- [x] Map Google Jobs result fields into the existing `Job` model.
+- [x] Add GitHub Action secret wiring without storing the token in source.
+- [x] Verify source-specific refresh, typecheck, lint, build, and feed validation.
+
+Result: Added the `serpapi` provider using SerpAPI Google Jobs search JSON, normalized `jobs_results` into the existing feed model, and wired the GitHub Action to read `SERPAPI_API_KEY` from secrets. Verified with a local mock SerpAPI refresh, `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`, and a secret-shaped source scan; the real token was not written to source.
+
+## Thermo-Nuclear Finding Fixes
+
+- [x] Extract shared job normalization/building out of the provider monolith.
+- [x] Move TheirStack and SerpAPI into dedicated provider adapters.
+- [x] Replace repeated provider dispatch metadata with a registry.
+- [x] Verify mocked TheirStack/SerpAPI refreshes, typecheck, lint, build, and diff hygiene.
+
+Result: Split shared endpoint normalization into `scripts/job-refresh/shared.ts`, moved TheirStack and SerpAPI into provider adapters, and replaced repeated provider dispatch branches with a registry in `scripts/refresh-jobs.ts`. Main refresh script is now 2,811 lines, down from 4,129 after the provider additions. Verified mocked SerpAPI and TheirStack refreshes, `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`, and a tracked/untracked secret-shaped source scan.
+
+## Thermo-Nuclear Provider Decomposition
+
+- [x] Move remaining provider implementations out of `scripts/refresh-jobs.ts`.
+- [x] Split providers into focused modules below the 1k-line smell threshold.
+- [x] Keep `scripts/refresh-jobs.ts` as orchestration/feed output only.
+- [x] Verify full refresh behavior, provider mocks, typecheck, lint, build, and diff hygiene.
+
+Result: Split public boards, ATS boards, company ATS, and Techmap RSS into focused provider modules. `scripts/refresh-jobs.ts` is now 228 lines; all provider modules are under 1,000 lines. Verified local mocks for Remote OK, Greenhouse, Amazon, Techmap RSS, TheirStack, and SerpAPI; live temp refresh wrote 54 jobs from 12 providers; `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`, and secret-pattern scan passed.

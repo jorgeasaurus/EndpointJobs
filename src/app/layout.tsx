@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
 import "./globals.css";
+import "slot-text/style.css";
 import "./job-board.css";
 import "./job-board-responsive.css";
 

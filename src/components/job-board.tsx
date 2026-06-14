@@ -15,8 +15,8 @@ import {
   SlidersHorizontal,
   X
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
+import { SlotText } from "slot-text/react";
 import { useMemo, useState } from "react";
 
 import {
@@ -45,6 +45,24 @@ type SortKey = "newest" | "salary" | "company";
 type SeniorityFilter = "All" | Seniority;
 type RoleFamilyFilter = "All" | RoleFamily;
 type FreshnessFilter = "Any" | "7" | "14" | "30";
+
+const slotNumberOptions = {
+  bounce: 0.22,
+  direction: "up",
+  duration: 260,
+  stagger: 26
+} as const;
+
+function AnimatedNumber({ className, value }: { className: string; value: number }) {
+  return (
+    <SlotText
+      aria-hidden="true"
+      className={className}
+      text={value.toString()}
+      options={slotNumberOptions}
+    />
+  );
+}
 
 export function JobBoard({ feed }: { feed: JobsFeed }) {
   const [query, setQuery] = useState("");
@@ -118,8 +136,6 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
     sort
   ]);
 
-  const remoteCount = activeJobs.filter((job) => job.workplace === "Remote").length;
-  const toolCount = new Set(activeJobs.flatMap((job) => job.tools)).size;
   const activeFilterCount =
     selectedPlatforms.length +
     selectedTools.length +
@@ -128,6 +144,9 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
     (roleFamily !== "All" ? 1 : 0) +
     (freshness !== "Any" ? 1 : 0) +
     (query.trim() ? 1 : 0);
+  const activeFilterLabel = `${activeFilterCount} active ${
+    activeFilterCount === 1 ? "filter" : "filters"
+  }`;
 
   function clearFilters() {
     setQuery("");
@@ -174,9 +193,12 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
               </p>
             </div>
 
-            <div className="counter-stack" aria-label="Job feed totals">
-              <span>{activeJobs.length}</span>
-              <small>tracked roles</small>
+            <div className="counter-stack" aria-label={`${activeJobs.length} tracked roles`}>
+              <AnimatedNumber
+                className="slot-number slot-number--hero"
+                value={activeJobs.length}
+              />
+              <small aria-hidden="true">tracked roles</small>
             </div>
           </div>
 
@@ -251,88 +273,92 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
               />
             ))}
           </div>
+
+          <section className="hero-filter-stack" aria-label="Filter stack">
+            <div className="rail-heading">
+              <SlidersHorizontal size={18} aria-hidden="true" />
+              <span>Filter Stack</span>
+            </div>
+
+            <div className="hero-filter-controls">
+              <label className="field">
+                <span>Seniority</span>
+                <select
+                  value={seniority}
+                  onChange={(event) => setSeniority(event.target.value as SeniorityFilter)}
+                >
+                  <option value="All">All levels</option>
+                  {seniorityOptions.map((level) => (
+                    <option key={level} value={level}>
+                      {level}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="field">
+                <span>Sort</span>
+                <select
+                  value={sort}
+                  onChange={(event) => setSort(event.target.value as SortKey)}
+                >
+                  <option value="newest">Newest</option>
+                  <option value="salary">Compensation</option>
+                  <option value="company">Company</option>
+                </select>
+              </label>
+            </div>
+
+            <div className="facet-group hero-tool-group">
+              <div className="facet-title">
+                <Cpu size={17} aria-hidden="true" />
+                Tools
+              </div>
+              <div className="facet-list">
+                {toolOptions.map((tool) => (
+                  <FacetButton
+                    key={tool}
+                    isActive={selectedTools.includes(tool)}
+                    label={tool}
+                    onClick={() => setSelectedTools((current) => toggleValue(current, tool))}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {activeFilterCount > 0 ? (
+              <button
+                aria-label={`Clear ${activeFilterLabel}`}
+                className="clear-button"
+                type="button"
+                onClick={clearFilters}
+              >
+                <X size={17} aria-hidden="true" />
+                <span>Clear</span>
+                <AnimatedNumber
+                  className="slot-number slot-number--button"
+                  value={activeFilterCount}
+                />
+              </button>
+            ) : null}
+          </section>
         </div>
 
-        <aside className="signal-panel" aria-label="Feed signal">
-          <Image
-            src="/endpoint-signal.svg"
-            alt=""
-            width={900}
-            height={620}
-            priority
-          />
-          <div className="signal-metrics">
-            <Metric label="remote" value={remoteCount.toString()} />
-            <Metric label="tools" value={toolCount.toString()} />
-            <Metric label="shown" value={visibleJobs.length.toString()} />
-          </div>
-        </aside>
       </section>
 
       <section className="board-grid">
-        <aside className="filter-rail" aria-label="Job filters">
-          <div className="rail-heading">
-            <SlidersHorizontal size={18} aria-hidden="true" />
-            <span>Filter Stack</span>
-          </div>
-
-          <label className="field">
-            <span>Seniority</span>
-            <select
-              value={seniority}
-              onChange={(event) => setSeniority(event.target.value as SeniorityFilter)}
-            >
-              <option value="All">All levels</option>
-              {seniorityOptions.map((level) => (
-                <option key={level} value={level}>
-                  {level}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="field">
-            <span>Sort</span>
-            <select
-              value={sort}
-              onChange={(event) => setSort(event.target.value as SortKey)}
-            >
-              <option value="newest">Newest</option>
-              <option value="salary">Compensation</option>
-              <option value="company">Company</option>
-            </select>
-          </label>
-
-          <div className="facet-group">
-            <div className="facet-title">
-              <Cpu size={17} aria-hidden="true" />
-              Tools
-            </div>
-            <div className="facet-list">
-              {toolOptions.map((tool) => (
-                <FacetButton
-                  key={tool}
-                  isActive={selectedTools.includes(tool)}
-                  label={tool}
-                  onClick={() => setSelectedTools((current) => toggleValue(current, tool))}
-                />
-              ))}
-            </div>
-          </div>
-
-          {activeFilterCount > 0 ? (
-            <button className="clear-button" type="button" onClick={clearFilters}>
-              <X size={17} aria-hidden="true" />
-              Clear {activeFilterCount}
-            </button>
-          ) : null}
-        </aside>
-
         <section className="results-panel" aria-label="Job listings">
           <div className="results-heading">
             <div>
               <span className="section-kicker">Open roles</span>
-              <h2>{visibleJobs.length} endpoint opportunities</h2>
+              <h2>
+                <span className="sr-only">{visibleJobs.length} </span>
+                <AnimatedNumber
+                  className="slot-number slot-number--heading"
+                  value={visibleJobs.length}
+                />{" "}
+                endpoint opportunities
+              </h2>
             </div>
             <span className="feed-note">
               <Clock3 size={16} aria-hidden="true" />
@@ -435,15 +461,6 @@ function JobCard({ job }: { job: Job }) {
         )}
       </div>
     </article>
-  );
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <span>{value}</span>
-      <small>{label}</small>
-    </div>
   );
 }
 

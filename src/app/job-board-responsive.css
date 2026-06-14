@@ -26,21 +26,6 @@
     grid-template-columns: 1fr;
   }
 
-  .board-grid {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .results-panel {
-    order: 1;
-  }
-
-  .filter-rail {
-    position: static;
-    order: 2;
-  }
-
-  .filter-rail,
   .results-panel {
     width: 100%;
   }
@@ -99,20 +84,13 @@
   }
 
   .command-panel,
-  .filter-rail,
   .results-panel,
   .job-card {
     padding: 12px;
   }
 
-  .command-panel,
-  .signal-panel,
-  .signal-panel img {
+  .command-panel {
     min-height: auto;
-  }
-
-  .signal-panel {
-    display: none;
   }
 
   .eyebrow {
@@ -160,10 +138,21 @@
     font-size: 0.93rem;
   }
 
-  .high-signal-filters {
+  .high-signal-filters,
+  .hero-filter-controls {
     grid-template-columns: 1fr;
     gap: 8px;
     margin-bottom: 10px;
+  }
+
+  .hero-filter-stack {
+    gap: 10px;
+    padding-top: 12px;
+    margin-top: 12px;
+  }
+
+  .hero-filter-stack .clear-button {
+    width: 100%;
   }
 
   .mini-field {

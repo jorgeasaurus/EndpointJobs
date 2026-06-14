@@ -27,7 +27,7 @@ jobs:
       - name: Refresh endpoint jobs
         run: npm run jobs:refresh
         env:
-          JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,techmaprss,adzuna
+          JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,techmaprss,adzuna,theirstack,serpapi
           JOB_GREENHOUSE_BOARDS: jamf,automox,tanium,okta,sonyinteractiveentertainmentglobal,verkada,anthropic,doordashusa,commvault,kaseya,kymeratherapeutics
           JOB_LEVER_COMPANIES: jumpcloud,brightonjones,hermeus,omnidian
           JOB_ASHBY_BOARDS: docker
@@ -42,6 +42,16 @@ jobs:
           JOB_MUSE_PAGES: "5"
           JOB_ADZUNA_COUNTRY: us
           JOB_ADZUNA_QUERIES: endpoint engineer,desktop engineer,macos engineer,windows engineer,workplace engineer,client engineering,end user computer,device management,intune,jamf,sccm,mdm
+          THEIRSTACK_API_KEY: ${{ secrets.THEIRSTACK_API_KEY }}
+          JOB_THEIRSTACK_MAX_AGE_DAYS: "30"
+          JOB_THEIRSTACK_LIMIT: "100"
+          JOB_THEIRSTACK_COUNTRY_CODES: US
+          SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
+          JOB_SERPAPI_LOCATION: United States
+          JOB_SERPAPI_GL: us
+          JOB_SERPAPI_HL: en
+          JOB_SERPAPI_MAX_PAGES: "1"
+          JOB_SERPAPI_QUERIES: endpoint engineer,desktop engineer,macos engineer,windows endpoint engineer,client platform engineer,end user computing engineer,digital workplace engineer,intune engineer,jamf engineer,sccm engineer,mdm engineer
           ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
           ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
           JOB_FEED_SOURCE_URL: https://github.com/jorgeasaurus/EndpointJobs
