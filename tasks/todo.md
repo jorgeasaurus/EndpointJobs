@@ -431,3 +431,13 @@ Result: Published footer and description formatting commit fa3893b to GitHub mai
 - [x] Fast-forward local listings if the workflow commits refreshed jobs.
 
 Result: Initial run 27514957148 proved Adzuna and SerpAPI credentials are accepted, but failed because SerpAPI returned duplicate aggregator IDs. TheirStack authenticated but rejected the configured 100-result page size; current plan allows 25. Local mock verification confirmed duplicate SerpAPI job IDs now produce unique stable feed IDs. Rerun 27515140411 succeeded, wrote 80 endpoint jobs from 15 successful providers, and action commit 61b8279 was fast-forwarded locally. Raw API checks included Adzuna 300, TheirStack 25, and SerpAPI 107; accepted feed counts are SerpAPI 44, Adzuna 18, TheirStack 7, Greenhouse 5, Workday 4, and Activate 2.
+
+## Vercel Analytics
+
+- [x] Confirm current Vercel Analytics App Router integration.
+- [x] Install `@vercel/analytics`.
+- [x] Render the Analytics component in the root layout.
+- [x] Verify typecheck, lint, build, and diff hygiene.
+- [ ] Commit and push the change.
+
+Result: Added Vercel Web Analytics using the official `@vercel/analytics/next` App Router component. Verified `npm run typecheck`, `npm run lint`, `npm run build`, and `git diff --check`.

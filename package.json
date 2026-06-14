@@ -13,6 +13,7 @@
     "doctor": "react-doctor"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "fast-xml-parser": "^5.8.0",
     "lucide-react": "^0.468.0",
     "next": "^16.0.0",
