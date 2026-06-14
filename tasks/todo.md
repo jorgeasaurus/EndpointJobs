@@ -336,9 +336,9 @@ Result: Centralized the Edge-compatible literal `aria-pressed` branch in `Toggle
 
 ## Publish React Doctor And Diagnostics Work
 
-- [ ] Run final local verification.
-- [ ] Commit and push current changes to GitHub.
-- [ ] Trigger the job refresh GitHub Action and check result.
-- [ ] Deploy production to Vercel and verify live response.
+- [x] Run final local verification.
+- [x] Commit and push current changes to GitHub.
+- [x] Trigger the job refresh GitHub Action and check result.
+- [x] Deploy production to Vercel and verify live response.
 
-Result: Pending.
+Result: Verified typecheck, lint, React Doctor, diff hygiene, and production build; pushed `712bbc6`; triggered Refresh job listings run `27508084649`, which succeeded and wrote 54 jobs from 12 providers in action commit `f25fe7a`; deployed production to `https://endpointjobs.dev` and verified HTTP 200. Action logs still show env-gated providers skipped until their GitHub secrets are configured: Workable, Techmap RSS, Adzuna, TheirStack, and SerpAPI.
