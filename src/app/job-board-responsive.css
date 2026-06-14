@@ -79,10 +79,6 @@
     text-overflow: ellipsis;
   }
 
-  .feedback-link span {
-    display: none;
-  }
-
   .workbench {
     gap: 10px;
     margin-bottom: 10px;
@@ -198,6 +194,17 @@
     flex-direction: column;
   }
 
+  .footer-meta,
+  .footer-links {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .footer-link {
+    flex: 1 1 140px;
+    justify-content: center;
+  }
+
   .results-heading {
     gap: 8px;
     min-height: 0;
@@ -256,7 +263,8 @@
 
   .description-body {
     max-height: 220px;
-    padding: 0 12px 12px;
+    gap: 8px;
+    padding: 12px;
   }
 
   .description-body p {

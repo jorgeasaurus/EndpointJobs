@@ -67,7 +67,9 @@
 .company-line,
 .metadata-row span,
 .job-actions,
-.apply-link {
+.apply-link,
+.footer-meta,
+.footer-links {
   display: inline-flex;
   align-items: center;
 }
@@ -726,17 +728,20 @@ h1 {
 }
 
 .description-body {
+  display: grid;
+  gap: 10px;
   max-height: 280px;
   overflow: auto;
-  padding: 0 14px 14px;
+  padding: 14px;
   border-top: 1px solid rgb(255 255 255 / 8%);
 }
 
 .description-body p {
-  margin: 12px 0 0;
+  margin: 0;
   color: var(--white-60);
   font-size: 0.92rem;
-  line-height: 1.6;
+  line-height: 1.62;
+  overflow-wrap: anywhere;
 }
 
 .match-row {
@@ -850,6 +855,7 @@ h1 {
 
 .site-footer {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   padding: 24px 4px 4px;
@@ -857,4 +863,21 @@ h1 {
   font-size: 0.72rem;
   font-weight: 600;
   text-transform: uppercase;
+}
+
+.footer-meta,
+.footer-links {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.footer-link {
+  min-height: 36px;
+  color: var(--white-60);
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  color: var(--white);
+  border-color: rgb(204 255 0 / 40%);
 }

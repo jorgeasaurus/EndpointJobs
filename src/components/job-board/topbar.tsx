@@ -1,4 +1,4 @@
-import { MessageSquarePlus, MonitorSmartphone, RefreshCw } from "lucide-react";
+import { Github, MessageSquarePlus, MonitorSmartphone, RefreshCw } from "lucide-react";
 import Link from "next/link";
 
 import { formatUpdatedAt } from "@/lib/jobs";
@@ -14,17 +14,6 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
       </Link>
 
       <div className="topbar-actions">
-        <a
-          aria-label="Report an issue or request a feature on GitHub"
-          className="feedback-link"
-          href="https://github.com/jorgeasaurus/EndpointJobs/issues/new?template=report-or-request.yml"
-          rel="noopener noreferrer"
-          target="_blank"
-          title="Report an issue or request a feature"
-        >
-          <MessageSquarePlus size={15} aria-hidden="true" />
-          <span>Report / request</span>
-        </a>
         <span className="refresh-pill">
           <RefreshCw size={15} aria-hidden="true" />
           {formatUpdatedAt(updatedAt)}
@@ -37,8 +26,35 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
 export function SiteFooter({ updatedAt }: { updatedAt: string }) {
   return (
     <footer className="site-footer">
-      <span>Endpoint Jobs</span>
-      <span>{formatUpdatedAt(updatedAt)}</span>
+      <div className="footer-meta">
+        <span>Made by Jorgeasaurus</span>
+        <span>{formatUpdatedAt(updatedAt)}</span>
+      </div>
+
+      <nav className="footer-links" aria-label="Project links">
+        <a
+          aria-label="Report an issue or request a feature on GitHub"
+          className="feedback-link footer-link"
+          href="https://github.com/jorgeasaurus/EndpointJobs/issues/new?template=report-or-request.yml"
+          rel="noopener noreferrer"
+          target="_blank"
+          title="Report an issue or request a feature"
+        >
+          <MessageSquarePlus size={15} aria-hidden="true" />
+          <span>Report / request</span>
+        </a>
+        <a
+          aria-label="Open the Endpoint Jobs GitHub repository"
+          className="feedback-link footer-link"
+          href="https://github.com/jorgeasaurus/EndpointJobs"
+          rel="noopener noreferrer"
+          target="_blank"
+          title="Open GitHub repository"
+        >
+          <Github size={15} aria-hidden="true" />
+          <span>GitHub repo</span>
+        </a>
+      </nav>
     </footer>
   );
 }

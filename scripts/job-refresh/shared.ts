@@ -562,23 +562,29 @@ export function summarize(value: string) {
 }
 
 export function normalizeDescription(value: string | undefined) {
-  const compact = cleanText(stripHtml(value ?? ""));
+  const formatted = cleanMultilineText(stripHtml(value ?? ""));
+  const compact = cleanText(formatted);
 
-  if (!compact || compact.length < descriptionMinLength) {
+  if (!formatted || compact.length < descriptionMinLength) {
     return undefined;
   }
 
-  if (compact.length <= descriptionMaxLength) {
-    return compact;
+  if (formatted.length <= descriptionMaxLength) {
+    return formatted;
   }
 
-  return `${compact.slice(0, descriptionMaxLength - 3).trimEnd()}...`;
+  return `${formatted.slice(0, descriptionMaxLength - 3).trimEnd()}...`;
 }
 
 export function stripHtml(value: string) {
   return decodeEntities(value)
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/\r\n?/g, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<li[^>]*>/gi, "\n- ")
+    .replace(/<\/(?:li|p|div|section|article|header|footer|h[1-6]|ul|ol|tr|table|blockquote)>/gi, "\n")
+    .replace(/<(?:p|div|section|article|header|footer|h[1-6]|ul|ol|tr|table|blockquote)[^>]*>/gi, "\n")
     .replace(/<[^>]+>/g, " ");
 }
 
@@ -593,6 +599,15 @@ export function getString(value: unknown) {
 export function cleanText(value: unknown) {
   return decodeEntities(value == null ? "" : String(value))
     .replace(/\s+/g, " ")
+    .trim();
+}
+
+function cleanMultilineText(value: unknown) {
+  return decodeEntities(value == null ? "" : String(value))
+    .replace(/\r\n?/g, "\n")
+    .replace(/[^\S\n]+/g, " ")
+    .replace(/ *\n */g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
 

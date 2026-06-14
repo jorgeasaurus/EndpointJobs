@@ -403,3 +403,19 @@ Result: Added second-batch Greenhouse boards for Stripe, Robinhood, Box, Datadog
 - [x] Deploy production to Vercel and verify endpointjobs.dev.
 
 Result: Published source expansion commit 89c84bc to GitHub main, deployed Vercel production deployment dpl_5csPEMK99vqrJzv3XzuQoDWTaxWV, aliased it to https://endpointjobs.dev, and verified the live domain returned HTTP 200 with the Endpoint Jobs page content.
+
+## Footer Links And Description Formatting
+
+- [x] Move the issue/report action out of the topbar and into the page footer.
+- [x] Add footer credit and GitHub repository link.
+- [x] Preserve readable line breaks in stored/rendered long job descriptions.
+- [x] Refresh job data and verify quality gates.
+
+Result: Moved the report/request action to the footer, added Made by Jorgeasaurus and a GitHub repo link, preserved paragraph/list breaks during description normalization, and rendered expanded descriptions as separate text blocks. Refreshed feed has 61 jobs, 33 descriptions, and 32 multiline descriptions. Verified jobs refresh, typecheck, lint, build, duplicate IDs, diff hygiene, and browser DOM behavior.
+
+## Publish Footer And Description Formatting
+
+- [x] Run final local verification before publishing.
+- [ ] Commit footer and description formatting changes.
+- [ ] Push main to GitHub.
+- [ ] Deploy production to Vercel and verify endpointjobs.dev.
