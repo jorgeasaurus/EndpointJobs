@@ -451,3 +451,13 @@ Result: Added Vercel Web Analytics using the official `@vercel/analytics/next` A
 - [x] Commit and push refreshed screenshots.
 
 Result: Refreshed `docs/screenshots/readme-desktop.png` and `docs/screenshots/readme-mobile.png` from the current production page at 1440x1200 and 390x1200. Verified README paths, image dimensions, and `git diff --check`.
+
+## SEO Optimization
+
+- [x] Inspect current metadata, page structure, and public assets.
+- [x] Add canonical metadata, Open Graph, Twitter, robots, sitemap, and JSON-LD.
+- [x] Add a public Open Graph image.
+- [x] Verify generated metadata routes, HTML tags, typecheck, lint, build, and diff hygiene.
+- [x] Commit and push SEO optimization.
+
+Result: Added enriched root metadata, canonical URL, Open Graph and Twitter cards, `public/og-image.png`, `robots.txt`, `sitemap.xml`, and safe WebSite/Organization/CollectionPage JSON-LD. Verified `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`, and local HTTP responses for `/`, `/robots.txt`, `/sitemap.xml`, and `/og-image.png`.

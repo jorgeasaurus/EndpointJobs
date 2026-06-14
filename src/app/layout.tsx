@@ -1,6 +1,8 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 
+import { ogImage, siteDescription, siteKeywords, siteName, siteTitle, siteUrl } from "./site-metadata";
+
 import "./globals.css";
 import "slot-text/style.css";
 import "./parallax-background.css";
@@ -8,9 +10,47 @@ import "./job-board.css";
 import "./job-board-responsive.css";
 
 export const metadata: Metadata = {
-  title: "Endpoint Jobs",
-  description:
-    "A focused job board for Endpoint Engineering, macOS, Windows, MDM, UEM, and client platform roles."
+  metadataBase: new URL(siteUrl),
+  applicationName: siteName,
+  title: {
+    default: siteTitle,
+    template: `%s | ${siteName}`
+  },
+  description: siteDescription,
+  keywords: siteKeywords,
+  authors: [{ name: "Jorgeasaurus", url: "https://github.com/jorgeasaurus" }],
+  creator: "Jorgeasaurus",
+  publisher: "Jorgeasaurus",
+  category: "jobs",
+  alternates: {
+    canonical: "/"
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName,
+    title: siteTitle,
+    description: siteDescription,
+    locale: "en_US",
+    images: [ogImage]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteTitle,
+    description: siteDescription,
+    images: [ogImage.url]
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1
+    }
+  }
 };
 
 export const viewport: Viewport = {
