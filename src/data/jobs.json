@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-06-14T00:01:59.345Z",
+  "updatedAt": "2026-06-14T00:36:10.003Z",
   "source": {
-    "name": "Remotive + Arbeitnow + Jobicy + Remote OK + Greenhouse + Lever + The Muse",
+    "name": "Remotive + Arbeitnow + Jobicy + Remote OK + Greenhouse + Lever + The Muse + Ashby + Amazon Jobs + Workday",
     "url": "https://github.com/jorgeasaurus/EndpointJobs"
   },
   "jobs": [
@@ -12,9 +12,9 @@
       "location": "Bengaluru, India",
       "workplace": "Remote",
       "postedAt": "2026-06-12T00:54:10.000Z",
-      "fetchedAt": "2026-06-14T00:01:59.345Z",
-      "staleAfter": "2026-07-27T00:54:10.000Z",
-      "expiresAt": "2026-07-27T00:54:10.000Z",
+      "fetchedAt": "2026-06-14T00:36:10.003Z",
+      "staleAfter": "2026-07-29T00:36:10.003Z",
+      "expiresAt": "2026-07-29T00:36:10.003Z",
       "source": "Greenhouse",
       "sourceUrl": "https://www.okta.com/company/careers/opportunity/7821048?gh_jid=7821048",
       "applyUrl": "https://www.okta.com/company/careers/opportunity/7821048?gh_jid=7821048",
@@ -55,15 +55,211 @@
       "employmentType": "Full-time"
     },
     {
+      "id": "greenhouse-automox-5255271008",
+      "title": "IT Systems Administrator",
+      "company": "Automox",
+      "location": "Remote - Austin, TX - Denver, CO - Tampa, FL",
+      "workplace": "Remote",
+      "postedAt": "2026-06-11T18:27:47.000Z",
+      "fetchedAt": "2026-06-14T00:36:10.003Z",
+      "staleAfter": "2026-07-29T00:36:10.003Z",
+      "expiresAt": "2026-07-29T00:36:10.003Z",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/automox/jobs/5255271008",
+      "applyUrl": "https://job-boards.greenhouse.io/automox/jobs/5255271008",
+      "attributionLabel": "Greenhouse / Automox",
+      "termsProfile": "public-api",
+      "summary": "Are you ready to own something big? Automox is turning IT admins into IT heroes by replacing traditional tools with our award winning cloud-native endpoint management platform. Our product works autonomously and so do our teams. We value a ‘one team’ mental...",
+      "tags": [
+        "macOS",
+        "Windows",
+        "Jamf",
+        "Intune",
+        "IT Operations",
+        "United States"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "Endpoint engineering",
+        "MDM",
+        "PowerShell automation",
+        "Compliance evidence"
+      ],
+      "tools": [
+        "Jamf",
+        "Intune"
+      ],
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Lead",
+      "employmentType": "Full-time"
+    },
+    {
+      "id": "greenhouse-tanium-7967983",
+      "title": "Advanced Consulting Engineer",
+      "company": "Tanium",
+      "location": "Seoul, South Korea",
+      "workplace": "On-site",
+      "postedAt": "2026-06-08T09:58:38.000Z",
+      "fetchedAt": "2026-06-14T00:36:10.003Z",
+      "staleAfter": "2026-07-29T00:36:10.003Z",
+      "expiresAt": "2026-07-29T00:36:10.003Z",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/tanium/jobs/7967983",
+      "applyUrl": "https://job-boards.greenhouse.io/tanium/jobs/7967983",
+      "attributionLabel": "Greenhouse / Tanium",
+      "termsProfile": "public-api",
+      "summary": "The Basics: Advanced Consulting Engineers (ACEs) are post-sale product experts that communicate technical nuances to assist Tanium customers as they articulate their business objectives . A highly experienced technical resource, ACEs are engaged by Customer...",
+      "tags": [
+        "Windows",
+        "macOS",
+        "Tanium",
+        "Advanced Consulting Engineers",
+        "Seoul, South Korea Office"
+      ],
+      "matchReasons": [
+        "Tanium endpoint security",
+        "Endpoint engineering",
+        "PowerShell automation",
+        "Endpoint security"
+      ],
+      "tools": [
+        "Tanium"
+      ],
+      "platforms": [
+        "Windows",
+        "macOS"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Lead",
+      "employmentType": "Full-time"
+    },
+    {
+      "id": "workday-accenture-https-accenture-wd103-myworkdayjobs-com-accenturecareers-job-seattle-1191-2nd-avenue-corp-intune",
+      "title": "Intune Engineer",
+      "company": "Accenture",
+      "location": "Location Negotiable",
+      "workplace": "On-site",
+      "postedAt": "2026-06-06T00:36:10.003Z",
+      "fetchedAt": "2026-06-14T00:36:10.003Z",
+      "staleAfter": "2026-07-29T00:36:10.003Z",
+      "expiresAt": "2026-07-29T00:36:10.003Z",
+      "source": "Workday",
+      "sourceUrl": "https://accenture.wd103.myworkdayjobs.com/AccentureCareers/job/Seattle-1191-2nd-Avenue-Corp/Intune-Engineer_R00317532-1",
+      "applyUrl": "https://accenture.wd103.myworkdayjobs.com/AccentureCareers/job/Seattle-1191-2nd-Avenue-Corp/Intune-Engineer_R00317532-1",
+      "attributionLabel": "Workday / Accenture",
+      "termsProfile": "public-api",
+      "summary": "Intune Engineer Intune Engineer R00317532 Location Negotiable",
+      "tags": [
+        "Windows",
+        "macOS",
+        "Intune",
+        "Intune Engineer",
+        "R00317532",
+        "Location Negotiable"
+      ],
+      "matchReasons": [
+        "Intune"
+      ],
+      "tools": [
+        "Intune"
+      ],
+      "platforms": [
+        "Windows",
+        "macOS"
+      ],
+      "roleFamily": "Windows Platform",
+      "seniority": "Mid",
+      "employmentType": "Full-time"
+    },
+    {
+      "id": "muse-21799994",
+      "title": "IT Systems Administrator, Launch",
+      "company": "SpaceX",
+      "location": "Rockledge, FL",
+      "workplace": "On-site",
+      "postedAt": "2026-06-01T23:33:10.000Z",
+      "fetchedAt": "2026-06-14T00:36:10.003Z",
+      "staleAfter": "2026-07-16T23:33:10.000Z",
+      "expiresAt": "2026-07-16T23:33:10.000Z",
+      "source": "The Muse",
+      "sourceUrl": "https://www.themuse.com/jobs/spacex/it-systems-administrator-launch-5769c2",
+      "applyUrl": "https://www.themuse.com/jobs/spacex/it-systems-administrator-launch-5769c2",
+      "attributionLabel": "The Muse",
+      "termsProfile": "public-api",
+      "summary": "SpaceX was founded under the belief that a future where humanity is out exploring the stars is fundamentally more exciting than one where we are not. Today SpaceX is actively developing the technologies to make this possible, with the ultimate goal of enabl...",
+      "tags": [
+        "Windows",
+        "Linux",
+        "SCCM",
+        "Computer and IT",
+        "Mid Level",
+        "external"
+      ],
+      "matchReasons": [
+        "SCCM/MECM",
+        "PowerShell automation",
+        "Compliance evidence"
+      ],
+      "tools": [
+        "SCCM"
+      ],
+      "platforms": [
+        "Windows",
+        "Linux"
+      ],
+      "roleFamily": "Device Compliance",
+      "seniority": "Mid",
+      "employmentType": "external"
+    },
+    {
+      "id": "greenhouse-sonyinteractiveentertainmentglobal-5983598004",
+      "title": "Lead Systems Engineer",
+      "company": "PlayStation",
+      "location": "United States, Los Angeles, CA",
+      "workplace": "Hybrid",
+      "postedAt": "2026-05-29T17:16:30.000Z",
+      "fetchedAt": "2026-06-14T00:36:10.003Z",
+      "staleAfter": "2026-07-29T00:36:10.003Z",
+      "expiresAt": "2026-07-29T00:36:10.003Z",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/5983598004",
+      "applyUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/5983598004",
+      "attributionLabel": "Greenhouse / PlayStation",
+      "termsProfile": "public-api",
+      "summary": "Why Sony Interactive Entertainment? Sony Interactive Entertainment isn’t just the Best Place to Play — it’s also the Best Place to Work. Sony Interactive Entertainment (SIE) is the company behind the PlayStation brand. As a subsidiary of Sony Group Corporat...",
+      "tags": [
+        "Windows",
+        "Linux",
+        "Architecture & Engineering",
+        "USA-CA-Los Angeles-Jefferson",
+        "California, United States"
+      ],
+      "matchReasons": [
+        "PowerShell automation"
+      ],
+      "tools": [],
+      "platforms": [
+        "Windows",
+        "Linux"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Lead",
+      "employmentType": "Full-time"
+    },
+    {
       "id": "greenhouse-tanium-7874958",
       "title": "IT Security Engineer",
       "company": "Tanium",
       "location": "Addison, TX (Hybrid); Bellevue, WA (Hybrid); Durham, NC (Hybrid); Emeryville, CA (Hybrid)",
       "workplace": "Hybrid",
       "postedAt": "2026-05-28T21:41:13.000Z",
-      "fetchedAt": "2026-06-14T00:01:59.345Z",
-      "staleAfter": "2026-07-12T21:41:13.000Z",
-      "expiresAt": "2026-07-12T21:41:13.000Z",
+      "fetchedAt": "2026-06-14T00:36:10.003Z",
+      "staleAfter": "2026-07-29T00:36:10.003Z",
+      "expiresAt": "2026-07-29T00:36:10.003Z",
       "source": "Greenhouse",
       "sourceUrl": "https://job-boards.greenhouse.io/tanium/jobs/7874958",
       "applyUrl": "https://job-boards.greenhouse.io/tanium/jobs/7874958",
@@ -97,15 +293,130 @@
       "employmentType": "Full-time"
     },
     {
+      "id": "greenhouse-sonyinteractiveentertainmentglobal-6001347004",
+      "title": "Senior Systems Engineer",
+      "company": "PlayStation",
+      "location": "United States, Bellevue, WA",
+      "workplace": "Hybrid",
+      "postedAt": "2026-05-27T20:47:05.000Z",
+      "fetchedAt": "2026-06-14T00:36:10.003Z",
+      "staleAfter": "2026-07-29T00:36:10.003Z",
+      "expiresAt": "2026-07-29T00:36:10.003Z",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6001347004",
+      "applyUrl": "https://job-boards.greenhouse.io/sonyinteractiveentertainmentglobal/jobs/6001347004",
+      "attributionLabel": "Greenhouse / PlayStation",
+      "termsProfile": "public-api",
+      "summary": "Why Sony Interactive Entertainment? Sony Interactive Entertainment isn’t just the Best Place to Play — it’s also the Best Place to Work. Sony Interactive Entertainment (SIE) is the company behind the PlayStation brand. As a subsidiary of Sony Group Corporat...",
+      "tags": [
+        "Windows",
+        "Linux",
+        "Okta",
+        "Architecture & Engineering",
+        "USA-WA-Bellevue-106th Ave",
+        "Bellevue, Washington, United States"
+      ],
+      "matchReasons": [
+        "Okta"
+      ],
+      "tools": [
+        "Okta"
+      ],
+      "platforms": [
+        "Windows",
+        "Linux"
+      ],
+      "roleFamily": "Automation",
+      "seniority": "Staff",
+      "employmentType": "Full-time"
+    },
+    {
+      "id": "amazon-124b5df1-92cb-41fc-8230-d93b87b2c65e",
+      "title": "Systems Engineer MacOS, Client Engineering",
+      "company": "Amazon.com Services LLC",
+      "location": "Seattle, Washington, USA",
+      "workplace": "On-site",
+      "postedAt": "2026-05-27T07:00:00.000Z",
+      "fetchedAt": "2026-06-14T00:36:10.003Z",
+      "staleAfter": "2026-07-29T00:36:10.003Z",
+      "expiresAt": "2026-07-29T00:36:10.003Z",
+      "source": "Amazon Jobs",
+      "sourceUrl": "https://www.amazon.jobs/en/jobs/10432307/systems-engineer-macos-client-engineering",
+      "applyUrl": "https://www.amazon.jobs/en/jobs/10432307/systems-engineer-macos-client-engineering",
+      "attributionLabel": "Amazon Jobs",
+      "termsProfile": "public-api",
+      "summary": "Enterprise Engineering organization manages one of the largest macOS client fleets in the world. Our focus is to consistently raise Amazon's security bar while ensuring a smooth productivity experience for our end users. We are a team of builders managing t...",
+      "tags": [
+        "macOS",
+        "Systems, Quality, & Security Engineering",
+        "System Planning/Administration",
+        "full-time",
+        "engine"
+      ],
+      "matchReasons": [
+        "MDM"
+      ],
+      "tools": [],
+      "platforms": [
+        "macOS"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Lead",
+      "employmentType": "full-time"
+    },
+    {
+      "id": "amazon-16c53b36-c37d-44f7-8aa8-91372282764c",
+      "title": "System Development Engineer macOS, Client Engineering",
+      "company": "Amazon Development Center U.S., Inc.",
+      "location": "Seattle, Washington, USA",
+      "workplace": "On-site",
+      "postedAt": "2026-05-27T07:00:00.000Z",
+      "fetchedAt": "2026-06-14T00:36:10.003Z",
+      "staleAfter": "2026-07-29T00:36:10.003Z",
+      "expiresAt": "2026-07-29T00:36:10.003Z",
+      "source": "Amazon Jobs",
+      "sourceUrl": "https://www.amazon.jobs/en/jobs/10432306/system-development-engineer-macos-client-engineering",
+      "applyUrl": "https://www.amazon.jobs/en/jobs/10432306/system-development-engineer-macos-client-engineering",
+      "attributionLabel": "Amazon Jobs",
+      "termsProfile": "public-api",
+      "summary": "Enterprise Engineering organization manages one of the largest macOS client fleets in the world. Our focus is to consistently raise Amazon's security bar while ensuring a smooth productivity experience for our end users. We are a team of builders managing t...",
+      "tags": [
+        "macOS",
+        "Jamf",
+        "Kandji",
+        "Systems, Quality, & Security Engineering",
+        "System Development Engineering",
+        "full-time",
+        "engine"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "Kandji MDM",
+        "Endpoint engineering",
+        "MDM",
+        "PowerShell automation"
+      ],
+      "tools": [
+        "Jamf",
+        "Kandji"
+      ],
+      "platforms": [
+        "macOS"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Manager",
+      "employmentType": "full-time"
+    },
+    {
       "id": "greenhouse-jamf-5817592004",
       "title": "Enterprise Support Engineer (MDM)",
       "company": "Jamf",
       "location": "Bangalore, India",
       "workplace": "Hybrid",
       "postedAt": "2026-05-18T06:54:06.000Z",
-      "fetchedAt": "2026-06-14T00:01:59.345Z",
-      "staleAfter": "2026-07-02T06:54:06.000Z",
-      "expiresAt": "2026-07-02T06:54:06.000Z",
+      "fetchedAt": "2026-06-14T00:36:10.003Z",
+      "staleAfter": "2026-07-29T00:36:10.003Z",
+      "expiresAt": "2026-07-29T00:36:10.003Z",
       "source": "Greenhouse",
       "sourceUrl": "https://www.jamf.com/about/careers/jobs/?gh_jid=5817592004&gh_jid=5817592004",
       "applyUrl": "https://www.jamf.com/about/careers/jobs/?gh_jid=5817592004&gh_jid=5817592004",
@@ -130,6 +441,161 @@
       ],
       "roleFamily": "Endpoint Security",
       "seniority": "Manager",
+      "employmentType": "Full-time"
+    },
+    {
+      "id": "greenhouse-jamf-5659819004",
+      "title": "Enterprise Support Engineer, Japan",
+      "company": "Jamf",
+      "location": "Japan - Remote",
+      "workplace": "Remote",
+      "postedAt": "2026-05-14T16:42:52.000Z",
+      "fetchedAt": "2026-06-14T00:36:10.003Z",
+      "staleAfter": "2026-07-29T00:36:10.003Z",
+      "expiresAt": "2026-07-29T00:36:10.003Z",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.jamf.com/about/careers/jobs/?gh_jid=5659819004&gh_jid=5659819004",
+      "applyUrl": "https://www.jamf.com/about/careers/jobs/?gh_jid=5659819004&gh_jid=5659819004",
+      "attributionLabel": "Greenhouse / Jamf",
+      "termsProfile": "public-api",
+      "summary": "At Jamf, we believe in an open, flexible culture based on respect and trust. Our track record and thriving work environment all stem from the freedom we grant ourselves to get the job done right. We take pride in helping tens of thousands of customers aroun...",
+      "tags": [
+        "iOS",
+        "Jamf",
+        "Technical Support",
+        "Japan - Remote"
+      ],
+      "matchReasons": [
+        "Device management"
+      ],
+      "tools": [
+        "Jamf"
+      ],
+      "platforms": [
+        "iOS"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Manager",
+      "employmentType": "Full-time"
+    },
+    {
+      "id": "ashby-docker-74a8ba19-8430-4b18-84a7-36e3f8091415",
+      "title": "Senior IT Systems Administrator (Onsite: Seattle, Washington)",
+      "company": "Docker",
+      "location": "Seattle, WA",
+      "workplace": "Remote",
+      "postedAt": "2026-04-10T15:51:51.003Z",
+      "fetchedAt": "2026-06-14T00:36:10.003Z",
+      "staleAfter": "2026-07-29T00:36:10.003Z",
+      "expiresAt": "2026-07-29T00:36:10.003Z",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/docker/74a8ba19-8430-4b18-84a7-36e3f8091415",
+      "applyUrl": "https://jobs.ashbyhq.com/docker/74a8ba19-8430-4b18-84a7-36e3f8091415/application",
+      "attributionLabel": "Ashby / Docker",
+      "termsProfile": "public-api",
+      "summary": "Docker has been one of the most loved brands in developer tooling, trusted by more than 20 million monthly users and over 20 billion container image pulls. From solo founders to the world's largest companies, developers rely on Docker to build, share, and r...",
+      "tags": [
+        "macOS",
+        "Windows",
+        "Linux",
+        "General & Administrative",
+        "GA-IT",
+        "FullTime",
+        "Remote"
+      ],
+      "matchReasons": [
+        "Endpoint engineering",
+        "Compliance evidence"
+      ],
+      "tools": [],
+      "platforms": [
+        "macOS",
+        "Windows",
+        "Linux"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Lead",
+      "employmentType": "FullTime"
+    },
+    {
+      "id": "amazon-5dc8d3f4-a032-4e8a-a065-6b32b2d18a11",
+      "title": "Systems Development Manager, MacOS, Client Engineering",
+      "company": "Amazon.com Services LLC",
+      "location": "Seattle, Washington, USA",
+      "workplace": "On-site",
+      "postedAt": "2026-03-05T08:00:00.000Z",
+      "fetchedAt": "2026-06-14T00:36:10.003Z",
+      "staleAfter": "2026-07-29T00:36:10.003Z",
+      "expiresAt": "2026-07-29T00:36:10.003Z",
+      "source": "Amazon Jobs",
+      "sourceUrl": "https://www.amazon.jobs/en/jobs/3197233/systems-development-manager-macos-client-engineering",
+      "applyUrl": "https://www.amazon.jobs/en/jobs/3197233/systems-development-manager-macos-client-engineering",
+      "attributionLabel": "Amazon Jobs",
+      "termsProfile": "public-api",
+      "summary": "Are you ready to lead one of technology's largest device management operations, overseeing more than 1M+ devices globally? The Client Engineering team seeks a Systems Development Manager to spearhead our DevOps initiatives for Amazon's fleet management tech...",
+      "tags": [
+        "macOS",
+        "Windows",
+        "Linux",
+        "Software Development",
+        "System Development Engineering",
+        "full-time",
+        "engine"
+      ],
+      "matchReasons": [
+        "Endpoint engineering",
+        "Device management",
+        "Compliance evidence"
+      ],
+      "tools": [],
+      "platforms": [
+        "macOS",
+        "Windows",
+        "Linux"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Manager",
+      "employmentType": "full-time"
+    },
+    {
+      "id": "lever-brightonjones-62e60e7e-656d-42ef-a06d-ca720471b6b4",
+      "title": "Senior Systems Engineer",
+      "company": "Brighton Jones",
+      "location": "Seattle, WA",
+      "workplace": "Hybrid",
+      "postedAt": "2026-03-04T17:59:47.514Z",
+      "fetchedAt": "2026-06-14T00:36:10.003Z",
+      "staleAfter": "2026-07-29T00:36:10.003Z",
+      "expiresAt": "2026-07-29T00:36:10.003Z",
+      "source": "Lever",
+      "sourceUrl": "https://jobs.lever.co/brightonjones/62e60e7e-656d-42ef-a06d-ca720471b6b4",
+      "applyUrl": "https://jobs.lever.co/brightonjones/62e60e7e-656d-42ef-a06d-ca720471b6b4/apply",
+      "attributionLabel": "Lever / Brighton Jones",
+      "termsProfile": "public-api",
+      "summary": "Ready to make a meaningful impact? At Brighton Jones, we’re a purpose-driven, client-focused team committed to helping individuals live richer lives. As one of the largest RIAs in the nation, we’ve built a culture of continuous growth, collaboration, and co...",
+      "tags": [
+        "Windows",
+        "Intune",
+        "Entra ID",
+        "Defender",
+        "Data & Technology",
+        "Full-time",
+        "onsite"
+      ],
+      "matchReasons": [
+        "PowerShell automation",
+        "Compliance evidence"
+      ],
+      "tools": [
+        "Intune",
+        "Entra ID",
+        "Defender"
+      ],
+      "platforms": [
+        "Windows"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Lead",
       "employmentType": "Full-time"
     }
   ]

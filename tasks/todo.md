@@ -83,3 +83,14 @@ Result: 2026-06-13 workflow run 27482502661 on 992f112 fetched Remotive 29, Arbe
 - [x] Commit and push source expansion.
 
 Result: Expanded refresh fetched 848 raw jobs from 7 successful public providers and wrote 3 endpoint-qualified listings. Adzuna is wired but skipped until `ADZUNA_APP_ID` and `ADZUNA_APP_KEY` are set.
+
+## LinkedIn Coverage Correction
+
+- [x] Record screenshot examples as target coverage cases.
+- [x] Probe public ATS/search APIs for Accenture, GEICO, PlayStation/Sony, Providence, Docker, Brighton Jones, Amazon, and Robert Half.
+- [x] Add source or query coverage that can catch screenshot-style roles without scraping LinkedIn.
+- [x] Expand endpoint relevance terms for end-user compute and client engineering while avoiding generic support noise.
+- [x] Refresh jobs and verify target-style matches appear.
+- [x] Run typecheck, lint, build, commit, push, and verify production.
+
+Result: Expanded coverage fetched 1,450 raw jobs from 10 successful providers and wrote 15 endpoint-qualified listings. Captured screenshot-style targets from Accenture, PlayStation, Amazon, Docker, and Brighton Jones; GEICO and Providence need a stable public API before default inclusion.

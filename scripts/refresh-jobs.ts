@@ -139,6 +139,56 @@ type AdzunaJob = {
   salary_max?: number;
 };
 
+type AshbyJob = {
+  id?: string;
+  title?: string;
+  department?: string;
+  team?: string;
+  employmentType?: string;
+  location?: string;
+  publishedAt?: string;
+  isRemote?: boolean;
+  workplaceType?: string;
+  jobUrl?: string;
+  applyUrl?: string;
+  descriptionHtml?: string;
+  descriptionPlain?: string;
+};
+
+type AmazonJob = {
+  id?: string | number;
+  title?: string;
+  company_name?: string;
+  location?: string;
+  normalized_location?: string;
+  posted_date?: string;
+  updated_time?: string;
+  job_path?: string;
+  url_next_step?: string;
+  description?: string;
+  description_short?: string;
+  basic_qualifications?: string;
+  preferred_qualifications?: string;
+  job_category?: string;
+  job_family?: string;
+  job_schedule_type?: string;
+  team?: string | { label?: string };
+};
+
+type WorkdayJob = {
+  title?: string;
+  externalPath?: string;
+  postedOn?: string;
+  bulletFields?: string[];
+  locationsText?: string;
+};
+
+type WorkdaySite = {
+  name: string;
+  url: string;
+  queries: string[];
+};
+
 type ToolAlias = {
   tool: EndpointTool;
   aliases: string[];
@@ -192,9 +242,22 @@ const endpointRoleTerms = [
   "endpoint",
   "desktop engineer",
   "desktop administrator",
+  "desktop infrastructure",
   "client platform",
+  "client engineering",
+  "client management",
+  "client fleet",
+  "macos client",
   "device management",
   "device engineer",
+  "device fleet",
+  "end user computer",
+  "end user computing",
+  "end user services",
+  "end-user computer",
+  "end-user computing",
+  "enterprise engineering",
+  "studio it",
   "workplace engineer",
   "workplace systems",
   "modern management",
@@ -205,10 +268,13 @@ const endpointRoleTerms = [
   "windows engineer",
   "windows administrator",
   "mdm",
+  "m365",
+  "microsoft 365",
   "uem",
   "software packaging",
   "application packaging",
-  "patch management"
+  "patch management",
+  "workstation"
 ];
 
 const technicalRoleTitleTerms = [
@@ -218,6 +284,11 @@ const technicalRoleTitleTerms = [
   "it systems administrator",
   "endpoint administrator",
   "systems engineer",
+  "system engineer",
+  "system development engineer",
+  "systems development engineer",
+  "systems development manager",
+  "service engineer",
   "it engineer",
   "infrastructure engineer",
   "platform engineer",
@@ -232,19 +303,43 @@ const technicalRoleTitleTerms = [
   "professional services engineer"
 ];
 
-const defaultGreenhouseBoards = ["jamf", "automox", "tanium", "okta"];
-const defaultLeverCompanies = ["jumpcloud"];
+const defaultGreenhouseBoards = ["jamf", "automox", "tanium", "okta", "sonyinteractiveentertainmentglobal"];
+const defaultLeverCompanies = ["jumpcloud", "brightonjones"];
 const defaultAdzunaQueries = [
   "endpoint engineer",
   "desktop engineer",
   "macos engineer",
   "windows engineer",
   "workplace engineer",
+  "client engineering",
+  "end user computer",
   "device management",
   "intune",
   "jamf",
   "sccm",
   "mdm"
+];
+const defaultAshbyBoards = ["docker"];
+const defaultAmazonQueries = [
+  "macOS Client Engineering",
+  "systems engineer macOS",
+  "client engineering",
+  "endpoint engineer",
+  "intune engineer",
+  "end user computer"
+];
+const defaultWorkdaySites: WorkdaySite[] = [
+  {
+    name: "Accenture",
+    url: "https://accenture.wd103.myworkdayjobs.com/wday/cxs/accenture/AccentureCareers/jobs",
+    queries: [
+      "Intune Engineer",
+      "Endpoint Engineer",
+      "Client Engineering",
+      "End User Computer",
+      "Workplace Engineer"
+    ]
+  }
 ];
 
 async function main() {
@@ -290,7 +385,13 @@ const supportedProviders = [
   "greenhouse",
   "lever",
   "muse",
-  "adzuna"
+  "ashby",
+  "amazon",
+  "workday",
+  "adzuna",
+  "ashby",
+  "amazon",
+  "workday"
 ] as const;
 type SupportedProvider = (typeof supportedProviders)[number];
 
@@ -396,6 +497,18 @@ async function fetchProviderJobs(
     return fetchAdzunaJobs(url, fetchedAt);
   }
 
+  if (jobProvider === "ashby") {
+    return fetchAshbyJobs(url, fetchedAt);
+  }
+
+  if (jobProvider === "amazon") {
+    return fetchAmazonJobs(url, fetchedAt);
+  }
+
+  if (jobProvider === "workday") {
+    return fetchWorkdayJobs(url, fetchedAt);
+  }
+
   const payload = await fetchRemotive(url);
   return payload.map((job) => normalizeRemotiveJob(job, fetchedAt));
 }
@@ -472,6 +585,135 @@ async function fetchMuseJobs(url: string, fetchedAt: Date) {
   }
 
   return jobs;
+}
+
+async function fetchAshbyJobs(url: string, fetchedAt: Date) {
+  const boards = getCsvConfig("JOB_ASHBY_BOARDS", defaultAshbyBoards);
+  const jobs: Array<Job | null> = [];
+  let successfulBoards = 0;
+
+  for (const board of boards) {
+    const boardUrl = buildAshbyBoardUrl(url, board);
+
+    try {
+      const payload = await fetchAshbyBoard(boardUrl, board);
+      successfulBoards += 1;
+      jobs.push(...payload.map((job) => normalizeAshbyJob(job, board, fetchedAt)));
+      console.log(`Fetched ${payload.length} raw jobs from Ashby/${board}`);
+    } catch (error) {
+      console.warn(`Skipping Ashby/${board}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  if (successfulBoards === 0) {
+    throw new Error("No Ashby boards returned jobs");
+  }
+
+  return jobs;
+}
+
+async function fetchAmazonJobs(url: string, fetchedAt: Date) {
+  const queries = getCsvConfig("JOB_AMAZON_QUERIES", defaultAmazonQueries);
+  const jobs: Array<Job | null> = [];
+
+  for (const query of queries) {
+    const queryUrl = buildAmazonSearchUrl(url, query);
+    const payload = await fetchAmazonSearch(queryUrl);
+    jobs.push(...payload.map((job) => normalizeAmazonJob(job, fetchedAt)));
+    console.log(`Fetched ${payload.length} raw jobs from Amazon Jobs query ${query}`);
+  }
+
+  return jobs;
+}
+
+async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
+  const sites = getWorkdaySites(url);
+  const jobs: Array<Job | null> = [];
+
+  for (const site of sites) {
+    for (const query of site.queries) {
+      const payload = await fetchWorkdaySearch(site.url, query);
+      jobs.push(...payload.map((job) => normalizeWorkdayJob(job, site, query, fetchedAt)));
+      console.log(`Fetched ${payload.length} raw jobs from Workday/${site.name} query ${query}`);
+    }
+  }
+
+  return jobs;
+}
+
+async function fetchAshbyBoard(url: string, board: string) {
+  const response = await fetch(url, {
+    headers: {
+      accept: "application/json",
+      "user-agent": "EndpointJobs/1.0 (+https://github.com/)"
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Ashby ${board} request failed: ${response.status} ${response.statusText}`);
+  }
+
+  const json: unknown = await response.json();
+
+  if (!json || typeof json !== "object" || !Array.isArray((json as { jobs?: unknown }).jobs)) {
+    throw new Error(`Ashby ${board} response did not include a jobs array`);
+  }
+
+  return (json as { jobs: unknown[] }).jobs.filter(isAshbyJob);
+}
+
+async function fetchAmazonSearch(url: string) {
+  const response = await fetch(url, {
+    headers: {
+      accept: "application/json",
+      "user-agent": "EndpointJobs/1.0 (+https://github.com/)"
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Amazon Jobs request failed: ${response.status} ${response.statusText}`);
+  }
+
+  const json: unknown = await response.json();
+
+  if (!json || typeof json !== "object" || !Array.isArray((json as { jobs?: unknown }).jobs)) {
+    throw new Error("Amazon Jobs response did not include a jobs array");
+  }
+
+  return (json as { jobs: unknown[] }).jobs.filter(isAmazonJob);
+}
+
+async function fetchWorkdaySearch(url: string, query: string) {
+  const configuredLimit = Number(process.env.JOB_WORKDAY_RESULTS_PER_QUERY ?? 10);
+  const limit = Number.isFinite(configuredLimit) && configuredLimit > 0 ? configuredLimit : 10;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+      origin: new URL(url).origin,
+      referer: new URL(url).origin,
+      "user-agent": "Mozilla/5.0"
+    },
+    body: JSON.stringify({
+      appliedFacets: {},
+      limit,
+      offset: 0,
+      searchText: query
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Workday request failed: ${response.status} ${response.statusText}`);
+  }
+
+  const json: unknown = await response.json();
+
+  if (!json || typeof json !== "object" || !Array.isArray((json as { jobPostings?: unknown }).jobPostings)) {
+    throw new Error("Workday response did not include a jobPostings array");
+  }
+
+  return (json as { jobPostings: unknown[] }).jobPostings.filter(isWorkdayJob);
 }
 
 async function fetchAdzunaJobs(url: string, fetchedAt: Date) {
@@ -733,6 +975,33 @@ function isAdzunaJob(value: unknown): value is AdzunaJob {
 
   const candidate = value as AdzunaJob;
   return Boolean(candidate.id && candidate.title && candidate.company?.display_name && candidate.redirect_url);
+}
+
+function isAshbyJob(value: unknown): value is AshbyJob {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as AshbyJob;
+  return Boolean(candidate.id && candidate.title && candidate.jobUrl);
+}
+
+function isAmazonJob(value: unknown): value is AmazonJob {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as AmazonJob;
+  return Boolean(candidate.id && candidate.title && candidate.job_path);
+}
+
+function isWorkdayJob(value: unknown): value is WorkdayJob {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as WorkdayJob;
+  return Boolean(candidate.title && candidate.externalPath);
 }
 
 function normalizeRemoteOkJob(raw: RemoteOkJob, fetchedAt: Date): Job | null {
@@ -997,7 +1266,7 @@ function normalizeGreenhouseJob(raw: GreenhouseJob, board: string, fetchedAt: Da
     raw.updated_at && !Number.isNaN(new Date(raw.updated_at).getTime())
       ? new Date(raw.updated_at).toISOString()
       : new Date().toISOString();
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
+  const staleAfter = addDays(fetchedAt, staleDays).toISOString();
 
   return {
     id: `greenhouse-${board}-${raw.id}`,
@@ -1065,7 +1334,7 @@ function normalizeLeverJob(raw: LeverJob, companySlug: string, fetchedAt: Date):
     raw.createdAt && !Number.isNaN(new Date(raw.createdAt).getTime())
       ? new Date(raw.createdAt).toISOString()
       : new Date().toISOString();
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
+  const staleAfter = addDays(fetchedAt, staleDays).toISOString();
 
   return {
     id: `lever-${companySlug}-${raw.id}`,
@@ -1212,6 +1481,170 @@ function normalizeAdzunaJob(raw: AdzunaJob, fetchedAt: Date): Job | null {
   };
 }
 
+function normalizeAshbyJob(raw: AshbyJob, board: string, fetchedAt: Date): Job | null {
+  const title = cleanText(raw.title);
+  const company = formatSourceAccountName(board);
+  const sourceJobUrl = cleanUrl(raw.jobUrl);
+  const applyUrl = cleanUrl(raw.applyUrl) ?? sourceJobUrl;
+
+  if (!title || !company || !sourceJobUrl || !applyUrl) {
+    return null;
+  }
+
+  const description = stripHtml(raw.descriptionPlain ?? raw.descriptionHtml ?? "");
+  const sourceTags = [raw.department, raw.team, raw.employmentType, raw.workplaceType]
+    .map(cleanText)
+    .filter(Boolean);
+  const haystack = normalizeSearchText(
+    [title, company, raw.location, sourceTags.join(" "), description].join(" ")
+  );
+  const tools = deriveTools(haystack);
+  const platforms = derivePlatforms(haystack);
+  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
+
+  if (!isEndpointRelevant(haystack, title, tools)) {
+    return null;
+  }
+
+  const postedAt =
+    raw.publishedAt && !Number.isNaN(new Date(raw.publishedAt).getTime())
+      ? new Date(raw.publishedAt).toISOString()
+      : new Date().toISOString();
+  const staleAfter = addDays(fetchedAt, staleDays).toISOString();
+  const workplace = raw.isRemote ? "Remote" : inferWorkplace(raw.location, `${haystack} ${raw.workplaceType ?? ""}`);
+
+  return {
+    id: `ashby-${board}-${raw.id}`,
+    title,
+    company,
+    location: cleanText(raw.location) || "Unknown",
+    workplace,
+    postedAt,
+    fetchedAt: fetchedAt.toISOString(),
+    staleAfter,
+    expiresAt: staleAfter,
+    source: "Ashby",
+    sourceUrl: sourceJobUrl,
+    applyUrl,
+    attributionLabel: `Ashby / ${company}`,
+    termsProfile: "public-api",
+    summary: summarize(description),
+    tags: normalizeTags(sourceTags, tools, platforms),
+    matchReasons,
+    tools,
+    platforms,
+    roleFamily: inferRoleFamily(haystack, tools, platforms),
+    seniority: inferSeniority(haystack),
+    employmentType: cleanText(raw.employmentType) || inferEmploymentType(haystack)
+  };
+}
+
+function normalizeAmazonJob(raw: AmazonJob, fetchedAt: Date): Job | null {
+  const title = cleanText(raw.title);
+  const company = cleanText(raw.company_name) || "Amazon";
+  const sourceJobUrl = buildAmazonJobUrl(raw.job_path);
+
+  if (!title || !company || !sourceJobUrl) {
+    return null;
+  }
+
+  const description = stripHtml(
+    [raw.description, raw.description_short, raw.basic_qualifications, raw.preferred_qualifications]
+      .map((value) => value ?? "")
+      .join(" ")
+  );
+  const sourceTags = [raw.job_category, raw.job_family, raw.job_schedule_type, getAmazonTeamLabel(raw.team)]
+    .map(cleanText)
+    .filter(Boolean);
+  const location = cleanText(raw.normalized_location ?? raw.location);
+  const haystack = normalizeSearchText([title, company, location, sourceTags.join(" "), description].join(" "));
+  const tools = deriveTools(haystack);
+  const platforms = derivePlatforms(haystack);
+  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
+
+  if (!isEndpointRelevant(haystack, title, tools)) {
+    return null;
+  }
+
+  const postedAt = parseDateLike(raw.posted_date) ?? parseDateLike(raw.updated_time) ?? new Date().toISOString();
+  const staleAfter = addDays(fetchedAt, staleDays).toISOString();
+
+  return {
+    id: `amazon-${raw.id}`,
+    title,
+    company,
+    location: location || "Unknown",
+    workplace: inferWorkplace(location, haystack),
+    postedAt,
+    fetchedAt: fetchedAt.toISOString(),
+    staleAfter,
+    expiresAt: staleAfter,
+    source: "Amazon Jobs",
+    sourceUrl: sourceJobUrl,
+    applyUrl: sourceJobUrl,
+    attributionLabel: "Amazon Jobs",
+    termsProfile: "public-api",
+    summary: summarize(description),
+    tags: normalizeTags(sourceTags, tools, platforms),
+    matchReasons,
+    tools,
+    platforms,
+    roleFamily: inferRoleFamily(haystack, tools, platforms),
+    seniority: inferSeniority(haystack),
+    employmentType: cleanText(raw.job_schedule_type) || inferEmploymentType(haystack)
+  };
+}
+
+function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, fetchedAt: Date): Job | null {
+  const title = cleanText(raw.title);
+  const company = site.name;
+  const sourceJobUrl = buildWorkdayJobUrl(site.url, raw.externalPath);
+
+  if (!title || !company || !sourceJobUrl) {
+    return null;
+  }
+
+  const bulletFields = Array.isArray(raw.bulletFields) ? raw.bulletFields.map(cleanText).filter(Boolean) : [];
+  const location = cleanText(raw.locationsText) || bulletFields.find((field) => !/^[A-Z0-9-]+$/.test(field));
+  const description = cleanText([title, query, bulletFields.join(" ")].join(" "));
+  const haystack = normalizeSearchText([title, company, location, bulletFields.join(" ")].join(" "));
+  const tools = deriveTools(haystack);
+  const platforms = derivePlatforms(haystack);
+  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
+
+  if (!isEndpointRelevant(haystack, title, tools)) {
+    return null;
+  }
+
+  const postedAt = parseWorkdayPostedOn(raw.postedOn, fetchedAt) ?? fetchedAt.toISOString();
+  const staleAfter = addDays(fetchedAt, staleDays).toISOString();
+
+  return {
+    id: `workday-${normalizeIdPart(site.name)}-${normalizeIdPart(sourceJobUrl)}`,
+    title,
+    company,
+    location: location || "Unknown",
+    workplace: inferWorkplace(location, haystack),
+    postedAt,
+    fetchedAt: fetchedAt.toISOString(),
+    staleAfter,
+    expiresAt: staleAfter,
+    source: "Workday",
+    sourceUrl: sourceJobUrl,
+    applyUrl: sourceJobUrl,
+    attributionLabel: `Workday / ${company}`,
+    termsProfile: "public-api",
+    summary: summarize(description),
+    tags: normalizeTags([query, ...bulletFields], tools, platforms),
+    matchReasons,
+    tools,
+    platforms,
+    roleFamily: inferRoleFamily(haystack, tools, platforms),
+    seniority: inferSeniority(haystack),
+    employmentType: inferEmploymentType(haystack)
+  };
+}
+
 function isEndpointRelevant(
   haystack: string,
   title: string,
@@ -1230,12 +1663,34 @@ function isEndpointRelevant(
   const hasTechnicalTitle = technicalRoleTitleTerms.some((term) =>
     containsAlias(normalizedTitle, term)
   );
+  const titleLooksTechnical =
+    hasTechnicalTitle ||
+    containsAlias(normalizedTitle, "engineer") ||
+    containsAlias(normalizedTitle, "administrator") ||
+    containsAlias(normalizedTitle, "admin");
+  const titleHasStrongTool = toolAliases.some(
+    ({ aliases, strong }) => strong && aliases.some((alias) => containsAlias(normalizedTitle, alias))
+  );
+  const hasEndUserOpsSignal = [
+    "desktop",
+    "workstation",
+    "end user",
+    "end-user",
+    "studio it",
+    "client fleet",
+    "device fleet",
+    "m365",
+    "microsoft 365",
+    "intune",
+    "jamf",
+    "macos client"
+  ].some((term) => containsAlias(haystack, term));
   const looksLikeFrontlineSupport =
-    containsAlias(haystack, "service desk") ||
-    containsAlias(haystack, "help desk") ||
-    containsAlias(haystack, "customer support") ||
-    containsAlias(haystack, "technical support") ||
-    containsAlias(haystack, "support analyst");
+    containsAlias(normalizedTitle, "service desk") ||
+    containsAlias(normalizedTitle, "help desk") ||
+    containsAlias(normalizedTitle, "customer support") ||
+    containsAlias(normalizedTitle, "technical support") ||
+    containsAlias(normalizedTitle, "support analyst");
   const looksLikeEntrySupport =
     containsAlias(normalizedTitle, "customer support") ||
     containsAlias(normalizedTitle, "tier 1") ||
@@ -1245,16 +1700,34 @@ function isEndpointRelevant(
   const looksLikeApplicationSecurity =
     containsAlias(normalizedTitle, "application security") ||
     containsAlias(normalizedTitle, "appsec");
+  const looksLikeSoftwareProductRole =
+    containsAlias(normalizedTitle, "software engineer") ||
+    containsAlias(normalizedTitle, "software development engineer") ||
+    containsAlias(normalizedTitle, "developer");
+  const hasClientEngineeringTitle = [
+    "client engineering",
+    "macos client",
+    "end user computer",
+    "end-user computer",
+    "systems engineer macos",
+    "system development engineer macos"
+  ].some((term) => containsAlias(normalizedTitle, term));
 
   if (
     looksLikeEntrySupport ||
     (looksLikeFrontlineSupport && !hasEndpointTitle) ||
-    (looksLikeApplicationSecurity && !hasEndpointTitle)
+    (looksLikeApplicationSecurity && !hasEndpointTitle) ||
+    (looksLikeSoftwareProductRole && !hasClientEngineeringTitle)
   ) {
     return false;
   }
 
-  return hasEndpointTitle || (hasStrongTool && hasEndpointRole && hasTechnicalTitle);
+  return (
+    hasEndpointTitle ||
+    (titleHasStrongTool && titleLooksTechnical) ||
+    (hasStrongTool && hasTechnicalTitle) ||
+    (hasTechnicalTitle && hasEndpointRole && hasEndUserOpsSignal)
+  );
 }
 
 function deriveTools(haystack: string) {
@@ -1450,8 +1923,8 @@ function stripHtml(value: string) {
     .replace(/<[^>]+>/g, " ");
 }
 
-function cleanText(value: string | undefined) {
-  return decodeEntities(value ?? "")
+function cleanText(value: unknown) {
+  return decodeEntities(value == null ? "" : String(value))
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -1487,6 +1960,48 @@ function decodeEntities(value: string) {
     .replace(/&nbsp;/g, " ");
 }
 
+function parseDateLike(value: string | undefined) {
+  if (!value) {
+    return undefined;
+  }
+
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
+}
+
+function parseWorkdayPostedOn(value: string | undefined, fetchedAt: Date) {
+  const text = normalizeSearchText(value ?? "");
+
+  if (!text) {
+    return undefined;
+  }
+
+  if (containsAlias(text, "today") || containsAlias(text, "yesterday") || containsAlias(text, "just posted")) {
+    return containsAlias(text, "yesterday")
+      ? addDays(fetchedAt, -1).toISOString()
+      : fetchedAt.toISOString();
+  }
+
+  const match = text.match(/posted\s+(\d+)\+?\s+(day|week|month)s?\s+ago/);
+
+  if (!match) {
+    return undefined;
+  }
+
+  const amount = Number(match[1]);
+  const unit = match[2];
+  const days = unit === "month" ? amount * 30 : unit === "week" ? amount * 7 : amount;
+
+  return addDays(fetchedAt, -days).toISOString();
+}
+
+function normalizeIdPart(value: string) {
+  return normalizeSearchText(value)
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 96);
+}
+
 function addDays(value: Date, days: number) {
   return new Date(value.getTime() + days * 24 * 60 * 60 * 1000);
 }
@@ -1499,7 +2014,7 @@ function getConfiguredSourceUrl(provider: SupportedProvider, allowLegacyUrl: boo
     return providerOverride;
   }
 
-  if (allowLegacyUrl && process.env.JOB_API_URL) {
+  if (allowLegacyUrl && provider !== "workday" && process.env.JOB_API_URL) {
     return process.env.JOB_API_URL;
   }
 
@@ -1533,6 +2048,18 @@ function getDefaultSourceUrl(jobProvider: SupportedProvider) {
 
   if (jobProvider === "adzuna") {
     return "https://api.adzuna.com/v1/api/jobs/{country}/search/{page}";
+  }
+
+  if (jobProvider === "ashby") {
+    return "https://api.ashbyhq.com/posting-api/job-board";
+  }
+
+  if (jobProvider === "amazon") {
+    return "https://www.amazon.jobs/en/search.json";
+  }
+
+  if (jobProvider === "workday") {
+    return "https://accenture.wd103.myworkdayjobs.com/wday/cxs/accenture/AccentureCareers/jobs";
   }
 
   return "https://remotive.com/api/remote-jobs";
@@ -1602,6 +2129,27 @@ function getSourceMetadata(jobProvider: SupportedProvider, url: string) {
     };
   }
 
+  if (jobProvider === "ashby") {
+    return {
+      name: "Ashby",
+      url
+    };
+  }
+
+  if (jobProvider === "amazon") {
+    return {
+      name: "Amazon Jobs",
+      url
+    };
+  }
+
+  if (jobProvider === "workday") {
+    return {
+      name: "Workday",
+      url
+    };
+  }
+
   return {
     name: "Remotive",
     url
@@ -1613,6 +2161,89 @@ function getCsvConfig(envKey: string, fallback: string[]) {
   const values = configured ? configured.split(",") : fallback;
 
   return values.map((value) => value.trim()).filter(Boolean);
+}
+
+function buildAshbyBoardUrl(baseUrl: string, board: string) {
+  if (baseUrl.includes("{board}")) {
+    return baseUrl.replace("{board}", encodeURIComponent(board));
+  }
+
+  return `${baseUrl.replace(/\/+$/, "")}/${encodeURIComponent(board)}`;
+}
+
+function buildAmazonSearchUrl(baseUrl: string, query: string) {
+  const url = new URL(baseUrl);
+  const location = process.env.JOB_AMAZON_LOCATION;
+
+  url.searchParams.set("base_query", query);
+  url.searchParams.set("offset", "0");
+  url.searchParams.set("result_limit", process.env.JOB_AMAZON_RESULT_LIMIT ?? "25");
+
+  if (location) {
+    url.searchParams.set("loc_query", location);
+  }
+
+  return url.toString();
+}
+
+function getAmazonTeamLabel(value: AmazonJob["team"]) {
+  return typeof value === "string" ? value : value?.label;
+}
+
+function buildAmazonJobUrl(jobPath: string | undefined) {
+  if (!jobPath) {
+    return undefined;
+  }
+
+  try {
+    return new URL(jobPath, "https://www.amazon.jobs").toString();
+  } catch {
+    return undefined;
+  }
+}
+
+function getWorkdaySites(defaultUrl: string) {
+  const configured = process.env.JOB_WORKDAY_SITES;
+
+  if (!configured) {
+    return defaultWorkdaySites.map((site) => ({
+      ...site,
+      url: site.url || defaultUrl
+    }));
+  }
+
+  return configured
+    .split(";;")
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      const [name, url, queries] = entry.split("|");
+
+      if (!name || !url || !queries) {
+        throw new Error(`Invalid JOB_WORKDAY_SITES entry: ${entry}`);
+      }
+
+      return {
+        name: cleanText(name),
+        url: cleanText(url),
+        queries: queries.split(";").map(cleanText).filter(Boolean)
+      };
+    });
+}
+
+function buildWorkdayJobUrl(siteUrl: string, externalPath: string | undefined) {
+  if (!externalPath) {
+    return undefined;
+  }
+
+  try {
+    const url = new URL(siteUrl);
+    const [, sitePath] = url.pathname.match(/\/wday\/cxs\/[^/]+\/([^/]+)\/jobs/) ?? [];
+    const visibleSitePath = sitePath ? `/${sitePath}` : "";
+    return new URL(`${visibleSitePath}${externalPath}`, url.origin).toString();
+  } catch {
+    return undefined;
+  }
 }
 
 function buildGreenhouseBoardUrl(baseUrl: string, board: string) {
@@ -1675,9 +2306,11 @@ function buildAdzunaSearchUrl(baseUrl: string, query: string, appId: string, app
 function formatSourceAccountName(slug: string) {
   const knownNames: Record<string, string> = {
     automox: "Automox",
+    brightonjones: "Brighton Jones",
     jamf: "Jamf",
     jumpcloud: "JumpCloud",
     okta: "Okta",
+    sonyinteractiveentertainmentglobal: "PlayStation",
     tanium: "Tanium"
   };
   const normalized = slug.trim().toLowerCase();
