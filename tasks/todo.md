@@ -398,6 +398,8 @@ Result: Added second-batch Greenhouse boards for Stripe, Robinhood, Box, Datadog
 ## Publish Company Source Expansion
 
 - [x] Run final local verification before publishing.
-- [ ] Commit source expansion and refreshed feed.
-- [ ] Push main to GitHub.
-- [ ] Deploy production to Vercel and verify endpointjobs.dev.
+- [x] Commit source expansion and refreshed feed.
+- [x] Push main to GitHub.
+- [x] Deploy production to Vercel and verify endpointjobs.dev.
+
+Result: Published source expansion commit 89c84bc to GitHub main, deployed Vercel production deployment dpl_5csPEMK99vqrJzv3XzuQoDWTaxWV, aliased it to https://endpointjobs.dev, and verified the live domain returned HTTP 200 with the Endpoint Jobs page content.
