@@ -427,7 +427,7 @@ Result: Published footer and description formatting commit fa3893b to GitHub mai
 - [x] Trigger the Refresh job listings workflow.
 - [x] Inspect provider logs for Adzuna, TheirStack, and SerpAPI.
 - [x] Fix SerpAPI duplicate feed IDs and TheirStack page limit.
-- [ ] Re-run the workflow and verify provider counts.
-- [ ] Fast-forward local listings if the workflow commits refreshed jobs.
+- [x] Re-run the workflow and verify provider counts.
+- [x] Fast-forward local listings if the workflow commits refreshed jobs.
 
-Result: Initial run 27514957148 proved Adzuna and SerpAPI credentials are accepted, but failed because SerpAPI returned duplicate aggregator IDs. TheirStack authenticated but rejected the configured 100-result page size; current plan allows 25. Local mock verification confirmed duplicate SerpAPI job IDs now produce unique stable feed IDs.
+Result: Initial run 27514957148 proved Adzuna and SerpAPI credentials are accepted, but failed because SerpAPI returned duplicate aggregator IDs. TheirStack authenticated but rejected the configured 100-result page size; current plan allows 25. Local mock verification confirmed duplicate SerpAPI job IDs now produce unique stable feed IDs. Rerun 27515140411 succeeded, wrote 80 endpoint jobs from 15 successful providers, and action commit 61b8279 was fast-forwarded locally. Raw API checks included Adzuna 300, TheirStack 25, and SerpAPI 107; accepted feed counts are SerpAPI 44, Adzuna 18, TheirStack 7, Greenhouse 5, Workday 4, and Activate 2.
