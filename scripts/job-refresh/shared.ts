@@ -639,6 +639,35 @@ export function normalizeSearchText(value: string) {
   return cleanText(value).toLowerCase();
 }
 
+export function normalizeEmploymentTypeLabel(value: unknown) {
+  const label = cleanText(value);
+
+  if (!label) {
+    return undefined;
+  }
+
+  const normalized = normalizeSearchText(label);
+
+  if (normalized.includes("contract")) return "Contract";
+  if (normalized.includes("part")) return "Part-time";
+  if (normalized.includes("temp")) return "Temporary";
+  if (normalized.includes("intern")) return "Internship";
+  if (normalized.includes("full")) return "Full-time";
+  return formatSlugLabel(label);
+}
+
+export function normalizeFirstEmploymentType(values: unknown[]) {
+  for (const value of values) {
+    const employmentType = normalizeEmploymentTypeLabel(value);
+
+    if (employmentType) {
+      return employmentType;
+    }
+  }
+
+  return undefined;
+}
+
 export function containsAlias(haystack: string, alias: string) {
   const escaped = alias.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return new RegExp(`(^|[^a-z0-9])${escaped}([^a-z0-9]|$)`, "i").test(haystack);

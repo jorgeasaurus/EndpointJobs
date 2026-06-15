@@ -5,11 +5,9 @@ import { useMemo, useRef } from "react";
 import { isStale } from "@/lib/jobs";
 import type { JobsFeed } from "@/types/job";
 
+import { getActiveFilterItems } from "./job-board/active-filters";
 import { CommandPanel } from "./job-board/controls";
-import {
-  filterJobs,
-  getActiveFilterItems
-} from "./job-board/filter-model";
+import { filterJobs } from "./job-board/filter-model";
 import { ParallaxBackground } from "./job-board/parallax-background";
 import { ResultsPanel } from "./job-board/results-panel";
 import { SiteFooter, Topbar } from "./job-board/topbar";

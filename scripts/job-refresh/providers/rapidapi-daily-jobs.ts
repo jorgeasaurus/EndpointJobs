@@ -7,6 +7,7 @@ import {
   cleanUrl,
   formatSlugLabel,
   getCsvConfig,
+  normalizeFirstEmploymentType,
   normalizeSalary,
   normalizeSearchText,
   parseDateLike,
@@ -316,25 +317,11 @@ function normalizeRapidApiDailyJobEmploymentType(
   raw: RapidApiDailyJob,
   jsonLd: RapidApiJsonLd | undefined
 ) {
-  const values = [
+  return normalizeFirstEmploymentType([
     ...toArray(jsonLd?.employmentType),
     ...toArray(raw.workType),
     ...toArray(raw.contractType)
-  ].map(cleanText).filter(Boolean);
-  const [first] = values;
-
-  if (!first) {
-    return undefined;
-  }
-
-  const normalized = normalizeSearchText(first);
-
-  if (normalized.includes("contract")) return "Contract";
-  if (normalized.includes("part")) return "Part-time";
-  if (normalized.includes("temp")) return "Temporary";
-  if (normalized.includes("intern")) return "Internship";
-  if (normalized.includes("full")) return "Full-time";
-  return first;
+  ]);
 }
 
 function toNumber(value: unknown) {

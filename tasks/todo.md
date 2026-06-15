@@ -522,3 +522,14 @@ Result: Added centralized endpoint search/company monitoring defaults, wired the
 - [x] Treat SerpAPI no-result query errors as empty query pages instead of provider failures.
 - [x] Verify with a local SerpAPI mock containing one no-result query and one valid endpoint job.
 - [x] Re-run typecheck, lint, React Doctor, build, diff hygiene, and the GitHub Action.
+
+## Thermo-Nuclear Dev Branch Cleanup
+
+- [x] Remove duplicated provider query lists from the GitHub Action and keep defaults in code.
+- [x] Move Adzuna onto the shared endpoint search configuration.
+- [x] Decompose `filter-model.ts` so URL serialization and active chip modeling live in focused modules.
+- [x] Make TheirStack page fetching return results instead of mutating a shared accumulator.
+- [x] Consolidate repeated provider employment-type normalization in the shared refresh layer.
+- [x] Re-run typecheck, lint, React Doctor, build, diff hygiene, and targeted behavior checks.
+
+Result: Removed workflow-owned query duplicates, centralized employment normalization, split URL/chip filter modules, returned TheirStack pages as arrays, stripped Adzuna tracking IDs, and verified typecheck, lint, React Doctor, build, and hygiene checks.

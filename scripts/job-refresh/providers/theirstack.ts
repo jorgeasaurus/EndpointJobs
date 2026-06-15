@@ -7,6 +7,7 @@ import {
   cleanUrl,
   formatSlugLabel,
   getCsvConfig,
+  normalizeFirstEmploymentType,
   normalizeSalary,
   parseDateLike,
   summarize,
@@ -76,58 +77,56 @@ export const theirStackProvider: ProviderAdapter<"theirstack"> = {
 
 async function fetchTheirStackJobs(url: string, fetchedAt: Date) {
   const maxPages = Math.max(1, Number(process.env.JOB_THEIRSTACK_MAX_PAGES ?? 1));
-  const jobs: Array<Job | null> = [];
-
-  await fetchTheirStackPages({
+  const roleJobs = await fetchTheirStackPages({
     url,
     fetchedAt,
-    jobs,
     maxPages,
     label: "role query"
   });
-
-  await fetchTheirStackCompanyPages({
+  const companyJobs = await fetchTheirStackCompanyPages({
     url,
     fetchedAt,
-    jobs,
     maxPages
   });
 
-  return jobs;
+  return [...roleJobs, ...companyJobs];
 }
 
 type TheirStackPageFetchOptions = {
   url: string;
   fetchedAt: Date;
-  jobs: Array<Job | null>;
   maxPages: number;
   label: string;
   companyNames?: string[];
 };
 
 async function fetchTheirStackPages(options: TheirStackPageFetchOptions) {
+  const jobs: Array<Job | null> = [];
+
   for (let page = 0; page < options.maxPages; page += 1) {
     const payload = await fetchTheirStackSearch(options.url, page, {
       companyNames: options.companyNames
     });
-    options.jobs.push(...payload.map((job) => normalizeTheirStackJob(job, options.fetchedAt)));
+    jobs.push(...payload.map((job) => normalizeTheirStackJob(job, options.fetchedAt)));
     console.log(`Fetched ${payload.length} raw jobs from TheirStack ${options.label} page ${page}`);
 
     if (payload.length === 0) {
       break;
     }
   }
+
+  return jobs;
 }
 
 async function fetchTheirStackCompanyPages(options: Omit<TheirStackPageFetchOptions, "label" | "companyNames">) {
   const companyNames = getCsvConfig("JOB_THEIRSTACK_COMPANY_NAMES", monitoredCompanyNames);
 
   if (companyNames.length === 0) {
-    return;
+    return [];
   }
 
   try {
-    await fetchTheirStackPages({
+    return await fetchTheirStackPages({
       ...options,
       label: "company monitor",
       companyNames
@@ -136,6 +135,7 @@ async function fetchTheirStackCompanyPages(options: Omit<TheirStackPageFetchOpti
     console.warn(
       `Skipping TheirStack company monitor: ${error instanceof Error ? error.message : String(error)}`
     );
+    return [];
   }
 }
 
@@ -353,26 +353,7 @@ function normalizeTheirStackSalary(raw: TheirStackJob) {
 }
 
 function normalizeTheirStackEmploymentType(values: string[] | undefined) {
-  const [first] = values ?? [];
-
-  if (!first) {
-    return undefined;
-  }
-
-  const normalized = first.trim().toLowerCase();
-  const employmentTypes: Record<string, string> = {
-    contract: "Contract",
-    contractor: "Contract",
-    fulltime: "Full-time",
-    full_time: "Full-time",
-    full: "Full-time",
-    internship: "Internship",
-    parttime: "Part-time",
-    part_time: "Part-time",
-    temporary: "Temporary"
-  };
-
-  return employmentTypes[normalized] ?? formatSlugLabel(first);
+  return normalizeFirstEmploymentType(values ?? []);
 }
 
 function normalizeTheirStackSeniority(value: string | undefined): Seniority | undefined {

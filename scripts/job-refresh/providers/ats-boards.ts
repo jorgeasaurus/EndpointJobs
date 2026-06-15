@@ -14,6 +14,7 @@ import {
   inferSeniority,
   inferWorkplace,
   isEndpointRelevant,
+  normalizeEmploymentTypeLabel,
   normalizeSearchText,
   normalizeDescription,
   normalizeTags,
@@ -770,22 +771,7 @@ function buildWorkableJobUrl(slug: string, shortcode: string) {
 }
 
 function normalizeWorkableEmploymentType(value: string | undefined) {
-  const normalized = normalizeSearchText(value ?? "");
-  const employmentTypes: Record<string, string> = {
-    full: "Full-time",
-    fulltime: "Full-time",
-    "full-time": "Full-time",
-    full_time: "Full-time",
-    part: "Part-time",
-    parttime: "Part-time",
-    "part-time": "Part-time",
-    part_time: "Part-time",
-    contract: "Contract",
-    temporary: "Temporary",
-    internship: "Internship"
-  };
-
-  return employmentTypes[normalized] ?? cleanText(value);
+  return normalizeEmploymentTypeLabel(value);
 }
 
 function getWorkableResults(payload: unknown) {

@@ -1,12 +1,11 @@
 import { useCallback, useSyncExternalStore } from "react";
 
-import {
-  filterReducer,
-  filterStateFromSearchParams,
-  initialFilterState,
-  mergeFilterStateIntoSearchParams
-} from "./filter-model";
+import { filterReducer, initialFilterState } from "./filter-model";
 import type { FilterAction, FilterState } from "./filter-model";
+import {
+  filterStateFromSearchParams,
+  mergeFilterStateIntoSearchParams
+} from "./filter-url";
 
 const filterUrlStoreEvent = "endpointjobs:filters-changed";
 let cachedSearch = "";

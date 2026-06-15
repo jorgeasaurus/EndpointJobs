@@ -1,5 +1,6 @@
 import type { Job } from "../../../src/types/job";
 import type { ProviderAdapter } from "../provider";
+import { defaultEndpointSearchQueries } from "../search-config";
 import {
   addDays,
   cleanText,
@@ -118,21 +119,6 @@ type AdzunaJob = {
 
 const staleDays = Number(process.env.JOB_STALE_DAYS ?? 45);
 
-const defaultAdzunaQueries = [
-  "endpoint engineer",
-  "desktop engineer",
-  "macos engineer",
-  "windows engineer",
-  "workplace engineer",
-  "client engineering",
-  "end user computer",
-  "device management",
-  "intune",
-  "jamf",
-  "sccm",
-  "mdm"
-];
-
 export const publicJobBoardProviders = [
   {
     id: "remoteok",
@@ -212,7 +198,7 @@ async function fetchAdzunaJobs(url: string, fetchedAt: Date) {
     throw new Error("ADZUNA_APP_ID and ADZUNA_APP_KEY are required");
   }
 
-  const queries = getCsvConfig("JOB_ADZUNA_QUERIES", defaultAdzunaQueries);
+  const queries = getCsvConfig("JOB_ADZUNA_QUERIES", defaultEndpointSearchQueries);
   const jobs: Array<Job | null> = [];
 
   for (const query of queries) {
@@ -650,7 +636,7 @@ function normalizeMuseJob(raw: MuseJob, fetchedAt: Date): Job | null {
 function normalizeAdzunaJob(raw: AdzunaJob, fetchedAt: Date): Job | null {
   const title = cleanText(raw.title);
   const company = cleanText(raw.company?.display_name);
-  const sourceJobUrl = cleanUrl(raw.redirect_url);
+  const sourceJobUrl = cleanAdzunaJobUrl(raw.redirect_url);
 
   if (!title || !company || !sourceJobUrl) {
     return null;
@@ -736,6 +722,20 @@ function buildMusePageUrl(baseUrl: string, page: number) {
   if (!url.searchParams.has("page")) {
     url.searchParams.set("page", page.toString());
   }
+
+  return url.toString();
+}
+
+function cleanAdzunaJobUrl(value: string | undefined) {
+  const sourceUrl = cleanUrl(value);
+
+  if (!sourceUrl) {
+    return undefined;
+  }
+
+  const url = new URL(sourceUrl);
+  url.searchParams.delete("utm_medium");
+  url.searchParams.delete("utm_source");
 
   return url.toString();
 }

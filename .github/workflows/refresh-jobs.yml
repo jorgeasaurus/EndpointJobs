@@ -41,21 +41,15 @@ jobs:
           TECHMAP_RSS_TOKEN: ${{ secrets.TECHMAP_RSS_TOKEN }}
           JOB_MUSE_PAGES: "5"
           JOB_ADZUNA_COUNTRY: us
-          JOB_ADZUNA_QUERIES: >-
-            endpoint engineer,endpoint administrator,desktop engineer,desktop administrator,desktop systems engineer,systems engineer macos,macos engineer,windows engineer,windows endpoint engineer,client platform engineer,client platform,client infrastructure engineer,client infrastructure,client engineering,end user computing engineer,digital workplace engineer,digital workplace,employee experience engineer,employee experience technology,digital employee experience,corporate engineering,enterprise engineering,device trust engineer,device trust,zero-touch deployment,zero touch deployment,it systems engineer,tech operations engineer,tech operations,technology operations engineer,workplace engineer,intune engineer,jamf engineer,sccm engineer,mdm engineer
           THEIRSTACK_API_KEY: ${{ secrets.THEIRSTACK_API_KEY }}
           JOB_THEIRSTACK_MAX_AGE_DAYS: "30"
           JOB_THEIRSTACK_LIMIT: "25"
           JOB_THEIRSTACK_COUNTRY_CODES: US
-          JOB_THEIRSTACK_COMPANY_NAMES: >-
-            Kandji,Fleet,NinjaOne,Addigy,Mosyle,CrowdStrike,SentinelOne,Palo Alto Networks,1Password,Bitwarden,BeyondTrust,Apple,Microsoft,Adobe,Salesforce,ServiceNow,Block,Capital One,Bloomberg,Netflix
           SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
           JOB_SERPAPI_LOCATION: United States
           JOB_SERPAPI_GL: us
           JOB_SERPAPI_HL: en
           JOB_SERPAPI_MAX_PAGES: "1"
-          JOB_SERPAPI_QUERIES: >-
-            endpoint engineer,endpoint administrator,desktop engineer,desktop administrator,desktop systems engineer,systems engineer macos,macos engineer,windows engineer,windows endpoint engineer,client platform engineer,client platform,client infrastructure engineer,client infrastructure,client engineering,end user computing engineer,digital workplace engineer,digital workplace,employee experience engineer,employee experience technology,digital employee experience,corporate engineering,enterprise engineering,device trust engineer,device trust,zero-touch deployment,zero touch deployment,it systems engineer,tech operations engineer,tech operations,technology operations engineer,workplace engineer,intune engineer,jamf engineer,sccm engineer,mdm engineer,Kandji endpoint engineer,Fleet endpoint engineer,NinjaOne endpoint engineer,Addigy endpoint engineer,Mosyle endpoint engineer,CrowdStrike endpoint engineer,SentinelOne endpoint engineer,Palo Alto Networks endpoint engineer,1Password endpoint engineer,Bitwarden endpoint engineer,BeyondTrust endpoint engineer,Apple endpoint engineer,Microsoft endpoint engineer,Adobe endpoint engineer,Salesforce endpoint engineer,ServiceNow endpoint engineer,Block endpoint engineer,Capital One endpoint engineer,Bloomberg endpoint engineer,Netflix endpoint engineer
           RAPIDAPI_DAILY_JOBS_KEY: ${{ secrets.RAPIDAPI_DAILY_JOBS_KEY }}
           JOB_RAPIDAPI_COUNTRY_CODE: us
           JOB_RAPIDAPI_HAS_SALARY: "true"

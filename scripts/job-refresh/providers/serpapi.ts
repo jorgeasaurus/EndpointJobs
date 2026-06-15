@@ -8,7 +8,7 @@ import {
   cleanUrl,
   getCsvConfig,
   getString,
-  normalizeSearchText,
+  normalizeEmploymentTypeLabel,
   parseRelativeAgeDate,
   summarize,
   toEndpointJob
@@ -255,16 +255,5 @@ function normalizeSerpApiGoogleJobsEmploymentType(raw: SerpApiGoogleJob) {
   const schedule = cleanText(raw.detected_extensions?.schedule_type)
     || (raw.extensions ?? []).map(cleanText).find((value) => /full-time|part-time|contract|temporary|intern/i.test(value));
 
-  if (!schedule) {
-    return undefined;
-  }
-
-  const normalized = normalizeSearchText(schedule);
-
-  if (normalized.includes("contract")) return "Contract";
-  if (normalized.includes("part")) return "Part-time";
-  if (normalized.includes("temp")) return "Temporary";
-  if (normalized.includes("intern")) return "Internship";
-  if (normalized.includes("full")) return "Full-time";
-  return schedule;
+  return normalizeEmploymentTypeLabel(schedule);
 }

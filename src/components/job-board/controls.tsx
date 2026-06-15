@@ -21,17 +21,10 @@ import {
 import type { EndpointTool, Platform } from "@/types/job";
 
 import { AnimatedNumber } from "./animated-number";
+import type { ActiveFilterItem } from "./active-filters";
 import { ToggleButton } from "./toggle-button";
-import {
-  freshnessFilterOptions,
-  sortOptions,
-  toFreshnessFilter,
-  toRoleFamilyFilter,
-  toSeniorityFilter,
-  toSortKey
-} from "./filter-model";
+import { freshnessFilterOptions, sortOptions } from "./filter-model";
 import type {
-  ActiveFilterItem,
   FilterDispatch,
   FilterState,
   FreshnessFilter,
@@ -39,6 +32,12 @@ import type {
   SeniorityFilter,
   SortKey
 } from "./filter-model";
+import {
+  toFreshnessFilter,
+  toRoleFamilyFilter,
+  toSeniorityFilter,
+  toSortKey
+} from "./filter-url";
 
 export function CommandPanel({
   activeFilterCount,
