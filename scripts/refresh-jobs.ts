@@ -4,6 +4,7 @@ import { dirname, resolve } from "node:path";
 import type { ProviderAdapter } from "./job-refresh/provider";
 import { atsBoardProviders } from "./job-refresh/providers/ats-boards";
 import { companyAtsProviders } from "./job-refresh/providers/company-ats";
+import { curatedJobProvider } from "./job-refresh/providers/curated-jobs";
 import { publicJobBoardProviders } from "./job-refresh/providers/public-job-boards";
 import { rapidApiDailyJobsProvider } from "./job-refresh/providers/rapidapi-daily-jobs";
 import { serpApiProvider } from "./job-refresh/providers/serpapi";
@@ -21,14 +22,16 @@ async function main() {
   const configuredProviders = getConfiguredProviders();
   const fetchedAt = new Date();
   const result = await fetchConfiguredProviderJobs(configuredProviders, fetchedAt);
-  const normalizedJobs = dedupeJobs(
-    result.jobs
-      .filter((job): job is Job => Boolean(job))
-      .map(addExtractedSalary)
-      .filter((job) => new Date(job.staleAfter).getTime() >= fetchedAt.getTime())
-  )
-    .sort((first, second) => new Date(second.postedAt).getTime() - new Date(first.postedAt).getTime())
-    .slice(0, maxJobs);
+  const normalizedJobs = limitFeedJobs(
+    dedupeJobs(
+      result.jobs
+        .filter((job): job is Job => Boolean(job))
+        .map(addExtractedSalary)
+        .filter((job) => new Date(job.staleAfter).getTime() >= fetchedAt.getTime())
+    ).sort(compareJobsByPostedAtDesc),
+    maxJobs,
+    new Set(result.reservedJobIds)
+  );
 
   const feed: JobsFeed = {
     updatedAt: fetchedAt.toISOString(),
@@ -57,6 +60,7 @@ const providerAdapters = [
   ...publicJobBoardProviders,
   ...atsBoardProviders,
   ...companyAtsProviders,
+  curatedJobProvider,
   techmapRssProvider,
   theirStackProvider,
   serpApiProvider,
@@ -76,7 +80,8 @@ const defaultProviders: SupportedProvider[] = [
   "amazon",
   "workday",
   "jibe",
-  "activate"
+  "activate",
+  "curated"
 ];
 
 function getProviderAdapter(provider: SupportedProvider): ProviderAdapter {
@@ -121,9 +126,14 @@ function normalizeProviderName(value: string): SupportedProvider {
 async function fetchConfiguredProviderJobs(
   providers: SupportedProvider[],
   fetchedAt: Date
-): Promise<{ jobs: Array<Job | null>; providers: SupportedProvider[] }> {
+): Promise<{
+  jobs: Array<Job | null>;
+  providers: SupportedProvider[];
+  reservedJobIds: string[];
+}> {
   const jobs: Array<Job | null> = [];
   const successfulProviders: SupportedProvider[] = [];
+  const reservedJobIds: string[] = [];
 
   for (const provider of providers) {
     const adapter = getProviderAdapter(provider);
@@ -133,6 +143,11 @@ async function fetchConfiguredProviderJobs(
       const providerJobs = await adapter.fetchJobs({ url: sourceUrl, fetchedAt });
       successfulProviders.push(provider);
       jobs.push(...providerJobs);
+
+      if (adapter.reserveFeedSlots) {
+        reservedJobIds.push(...providerJobs.flatMap((job) => job?.id ? [job.id] : []));
+      }
+
       console.log(`Fetched ${providerJobs.length} raw jobs from ${adapter.displayName}`);
     } catch (error) {
       console.warn(`Skipping ${provider}: ${error instanceof Error ? error.message : String(error)}`);
@@ -143,7 +158,7 @@ async function fetchConfiguredProviderJobs(
     throw new Error("All configured job providers failed");
   }
 
-  return { jobs, providers: successfulProviders };
+  return { jobs, providers: successfulProviders, reservedJobIds };
 }
 
 function getConfiguredSourceUrl(provider: SupportedProvider, allowLegacyUrl: boolean) {
@@ -189,6 +204,26 @@ function addExtractedSalary(job: Job): Job {
 
   const salary = extractSalaryFromText([job.summary, job.description].filter(Boolean).join(" "));
   return salary ? { ...job, salary } : job;
+}
+
+function limitFeedJobs(jobs: Job[], limit: number, reservedJobIds: Set<string>) {
+  if (jobs.length <= limit) {
+    return jobs;
+  }
+
+  const reservedJobs = jobs.filter((job) => reservedJobIds.has(job.id));
+  const regularLimit = Math.max(0, limit - reservedJobs.length);
+  const regularJobs = jobs
+    .filter((job) => !reservedJobIds.has(job.id))
+    .slice(0, regularLimit);
+
+  return [...regularJobs, ...reservedJobs]
+    .sort(compareJobsByPostedAtDesc)
+    .slice(0, limit);
+}
+
+function compareJobsByPostedAtDesc(first: Job, second: Job) {
+  return new Date(second.postedAt).getTime() - new Date(first.postedAt).getTime();
 }
 
 function dedupeJobs(jobs: Job[]) {

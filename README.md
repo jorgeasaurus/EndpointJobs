@@ -42,7 +42,7 @@ The refresh script keeps the site cheap to host: there is no database, queue, or
 
 Broader aggregator scanning includes Endpoint/UEM/security vendors and enterprise employers such as Kandji, Fleet, NinjaOne, Addigy, Mosyle, CrowdStrike, SentinelOne, Palo Alto Networks, 1Password, Bitwarden, BeyondTrust, Apple, Microsoft, Adobe, Salesforce, ServiceNow, Block, Capital One, Bloomberg, and Netflix. Search defaults also include client platform, client infrastructure, employee experience, digital workplace, corporate engineering, enterprise engineering, device trust, zero-touch, IT systems engineer, and tech operations language.
 
-Current default public providers: Remotive, Arbeitnow, Jobicy, Remote OK, Greenhouse, Lever, The Muse, Ashby, Amazon Jobs, Workday, Jibe, and Activate.
+Current default public providers: Remotive, Arbeitnow, Jobicy, Remote OK, Greenhouse, Lever, The Muse, Ashby, Amazon Jobs, Workday, Jibe, Activate, and Curated Jobs.
 
 Optional configured providers: Workable, Techmap RSS, Adzuna, TheirStack, SerpAPI Google Jobs, and RapidAPI Daily International Jobs.
 
@@ -67,7 +67,7 @@ npm run dev
 npm run jobs:refresh
 ```
 
-Use `JOB_PROVIDERS=remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,techmaprss,adzuna,theirstack,serpapi,rapidapi` to choose sources.
+Use `JOB_PROVIDERS=remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,curated,techmaprss,adzuna,theirstack,serpapi,rapidapi` to choose sources.
 
 Single-provider legacy mode still works with `JOB_PROVIDER=remoteok` and `JOB_API_URL=https://remoteok.com/api`.
 
@@ -76,6 +76,8 @@ Override individual URLs with `JOB_REMOTIVE_API_URL`, `JOB_ARBEITNOW_API_URL`, `
 Career-board defaults include Greenhouse boards for Jamf, Automox, Tanium, Okta, PlayStation, Verkada, Anthropic, DoorDash, Commvault, Kaseya, Kymera, Databricks, Zscaler, Samsara, Scale AI, Wiz, Stripe, Robinhood, Box, Datadog, Elastic, Lyft, and Instacart; Lever companies JumpCloud, Brighton Jones, Hermeus, and Omnidian; Ashby boards Docker, Cursor, Perplexity, OpenAI, Cohere, ElevenLabs, and Watershed; targeted Amazon, Workday, Jibe, and Activate searches; and `JOB_MUSE_PAGES=5`.
 
 Workable uses `JOB_WORKABLE_ACCOUNTS=slug` or `Display Name|slug` entries, with optional `JOB_WORKABLE_DETAIL_API_URL` for v1 detail overrides.
+
+Curated jobs are explicit reviewed listings in `scripts/job-refresh/providers/curated-jobs.ts`; the default curated listing is the Greentube EUC Engineer role.
 
 Techmap RSS uses `JOB_TECHMAP_RSS_FEEDS=url` or `Feed Name|url` entries, with optional `JOB_TECHMAP_RSS_AUTH_HEADER` or `TECHMAP_RSS_TOKEN`.
 

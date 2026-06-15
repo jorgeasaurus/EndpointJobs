@@ -27,7 +27,7 @@ jobs:
       - name: Refresh endpoint jobs
         run: npm run jobs:refresh
         env:
-          JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,techmaprss,adzuna,theirstack,serpapi,rapidapi
+          JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,curated,techmaprss,adzuna,theirstack,serpapi,rapidapi
           JOB_GREENHOUSE_BOARDS: jamf,automox,tanium,okta,sonyinteractiveentertainmentglobal,verkada,anthropic,doordashusa,commvault,kaseya,kymeratherapeutics,databricks,zscaler,samsara,scaleai,wizinc,stripe,robinhood,boxinc,datadog,elastic,lyft,instacart
           JOB_LEVER_COMPANIES: jumpcloud,brightonjones,hermeus,omnidian
           JOB_ASHBY_BOARDS: docker,cursor,perplexity,openai,cohere,elevenlabs,watershed

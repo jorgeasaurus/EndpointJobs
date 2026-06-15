@@ -136,7 +136,7 @@ export function filterJobs(jobs: Job[], filters: FilterState) {
         return false;
       }
 
-      if (filters.salaryOnly && !hasSalaryRange(job)) {
+      if (filters.salaryOnly && !hasSalaryShown(job)) {
         return false;
       }
 
@@ -163,10 +163,10 @@ export function filterJobs(jobs: Job[], filters: FilterState) {
     .sort((first, second) => sortJobs(first, second, filters.sort));
 }
 
-function hasSalaryRange(job: Job) {
+function hasSalaryShown(job: Job) {
   return (
-    typeof job.salary?.min === "number" &&
-    typeof job.salary.max === "number"
+    typeof job.salary?.min === "number" ||
+    typeof job.salary?.max === "number"
   );
 }
 

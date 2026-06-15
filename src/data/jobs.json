@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-06-15T02:52:39.381Z",
+  "updatedAt": "2026-06-15T10:23:03.921660Z",
   "source": {
-    "name": "Remotive + Arbeitnow + Jobicy + Remote OK + Greenhouse + Lever + The Muse + Ashby + Amazon Jobs + Workday + Jibe + Activate + Adzuna + TheirStack + SerpAPI Google Jobs + RapidAPI Daily International Jobs",
+    "name": "Remotive + Arbeitnow + Jobicy + Remote OK + Greenhouse + Lever + The Muse + Ashby + Amazon Jobs + Workday + Jibe + Activate + Adzuna + TheirStack + SerpAPI Google Jobs + RapidAPI Daily International Jobs + Curated Jobs",
     "url": "https://github.com/jorgeasaurus/EndpointJobs"
   },
   "jobs": [
@@ -3445,58 +3445,62 @@
       }
     },
     {
-      "id": "theirstack-726839017",
-      "title": "Client Platform Engineer (AI & Automation)",
-      "company": "Nextdoor",
-      "location": "San Francisco, CA",
-      "workplace": "Remote",
-      "postedAt": "2026-06-14T00:00:00.000Z",
-      "fetchedAt": "2026-06-15T02:52:39.381Z",
-      "staleAfter": "2026-07-29T00:00:00.000Z",
-      "expiresAt": "2026-07-29T00:00:00.000Z",
-      "source": "TheirStack",
-      "sourceUrl": "https://about.nextdoor.com/careers-list/?gh_jid=7931238",
-      "applyUrl": "https://about.nextdoor.com/careers-list/?gh_jid=7931238",
-      "attributionLabel": "TheirStack",
-      "termsProfile": "partner-terms",
-      "summary": "- As a Client Platform Engineer, you will connect IT and Engineering for AI tools and automation at Nextdoor. As more teams start using AI agents, assistants, and connectors, you will manage the IT platforms that keep these tools safe and scalable - This in...",
-      "description": "- As a Client Platform Engineer, you will connect IT and Engineering for AI tools and automation at Nextdoor. As more teams start using AI agents, assistants, and connectors, you will manage the IT platforms that keep these tools safe and scalable\n- This includes handling identity and access for non-human and user-delegated agent identities in Okta, overseeing governance and reviews for new agents and MCP connectors, tracking usage and adoption, and managing costs and licenses to keep our AI use sustainable\n- You will work with teams in Business Technology, Engineering, Security, and Finance to create processes that help teams launch AI tools quickly while following IT guidelines. Your work will help make AI a valuable resource across the company\n- At Nextdoor, we operate in an AI-first environment and expect every team member to actively use AI tools as part of their workflow. We aren’t looking for prompt engineers; we’re looking for people who use tools like Claude, Gemini, ChatGPT, and Glean to challenge their own thinking and take full ownership of AI-assisted outputs\n- If you have experience making IT platforms reliable, secure, and easy to use, and you want to apply those skills to AI tools across the business, this role could be a great fit\n- You will set the standards for how every AI agent at Nextdoor authenticates, what it can access, what it costs, and how teams are alerted if issues arise. You will be responsible for the standards, review processes, and monitoring that turn one-off AI projects into a dependable platform for the company\n- Design and operate the identity, access, and credential lifecycle for AI agents at Nextdoor, including non-human and user-delegated identities in Okta, OAuth 2.0, and OIDC scope minimization, and canonical authentication patterns (user OAuth, service accounts, workload identity federation) that teams default to alongside Nextdoor’s existing Network and AV Standards\n- Build and run review processes for AI agents and connectors, covering pre-production review of agent tool surfaces, data scopes, and blast radius; intake review for new MCP servers and third-party connectors (vendor diligence, OAuth scope approval, hosted vs. self-hosted decisions); and the underlying policy framework for registration, data classification, and human-in-the-loop requirements\n- Maintain a centralized registry of AI agents and tooling deployed across Nextdoor, and own the associated telemetry, including Datadog dashboards, vendor analytics ingestion (e.g., the Anthropic Enterprise Analytics API), and recurring department-level adoption reporting for IT and executive leadership\n- Own seat governance and cost controls across Nextdoor’s AI tool portfolio (Claude Enterprise, Cursor, Copilot, and emerging tools), including per-user and per-org spend caps, multi-tenant license allocation across vendor organizations, quarterly access reconciliation against Okta, and monthly budget reviews for IT and Finance\n- Participate in in-person Nextdoor events such as trainings, off-sites, volunteer days, and team building exercises\n- Build in-person relationships with team members and contribute to Nextdoor’s company culture\n\n### Benefits\n\n- Monthly wellness stipend\n- 12 weeks of parental, family or medical leave\n- Global end of year shutdown\n- Learning and development stipend\n- Work from home opportunities\n- Health insurance- Working knowledge of OAuth 2.0, OIDC, and service account or workload identity patterns across Google Cloud and AWS, including the ability to spot anti-patterns (e.g., domain-wide delegation, over-scoped service account keys) before they reach production\n- Comfortable writing scripts to automate IT operations in Python, Bash, or similar, and experience operating CI/CD or scheduled-job patterns (GitHub Actions, cron) for IT automation\n- Strong written communication and the ability to author internal standards, runbooks, and review documentation that other teams will actually use\n- 5+ years in IT engineering, client platform engineering, or IAM-focused security engineering, with clear ownership of production identity and access systems. And/or the ability to perform at an advanced level in the domain\n- Familiarity with at least one observability platform, with Datadog preferred, including building dashboards, alerts, and ingestion pipelines from third-party APIs\n- Deep hands-on Okta administration experience, including SSO/SAML/OIDC, SCIM, group rules, sign-on policies, and access certification, with a strong understanding of audit and SOX implications\n- Hands-on experience with AI development tools (Claude, GitHub Copilot, LangChain, etc.) as a practitioner, not just an administrator\n- Direct experience with Claude Enterprise, GitHub Copilot, Cursor, or comparable AI tooling deployed at enterprise scale, including license and seat governance\n- Working knowledge of MCP (Model Context Protocol), agent integration patterns, or comparable agent-to-tool connector frameworks\n- Background working alongside Engineering on shared platform tooling, with the ability to operate at the boundary of IT and Engineering ownership\n- Experience with Jamf Pro and macOS endpoint management\n- Prior involvement in SOX access certification or quarterly UAR processes\n- Experience evaluating SaaS vendors and MCP or connector marketplaces for security posture, data flow, and supply-chain risk\n- Experience with AI governance frameworks (NIST AI RMF, ISO 42001, EU AI Act)\n- Familiarity with Workato, Tray.io, Okta Workflows, or other iPaaS platforms\n- IT certifications (Okta, Jamf, Google Cloud, AWS, or similar)",
+      "id": "curated-greentube-gmbh-euc-engineer-endpoint-management-f-m-d-58ce884f6c",
+      "title": "EUC Engineer – Endpoint Management (f/m/d)",
+      "company": "Greentube GmbH",
+      "location": "Vienna",
+      "workplace": "Hybrid",
+      "postedAt": "2026-06-05T00:00:00.000Z",
+      "fetchedAt": "2026-06-15T10:22:40.746Z",
+      "staleAfter": "2026-07-20T00:00:00.000Z",
+      "expiresAt": "2026-07-20T00:00:00.000Z",
+      "source": "Curated Jobs",
+      "sourceUrl": "https://careers.greentube.com/EUC-Engineer-Endpoint-Management-fmd-eng-j624.html",
+      "applyUrl": "https://careers.greentube.com/EUC-Engineer-Endpoint-Management-fmd-eng-j624.html",
+      "attributionLabel": "Greentube GmbH",
+      "termsProfile": "seed",
+      "summary": "As an EUC Engineer - Endpoint Management, this role plays a key part in delivering a secure, scalable, and modern workplace experience across the business. Working closely with Infrastructure, Security, and Identity teams, this position drives innovation ac...",
+      "description": "As an EUC Engineer - Endpoint Management, this role plays a key part in delivering a secure, scalable, and modern workplace experience across the business. Working closely with Infrastructure, Security, and Identity teams, this position drives innovation across endpoint management while helping shape the future of Greentube's Microsoft-based workplace environment.\nYour tasks\n- Design, implement, and continuously enhance endpoint management solutions using Microsoft Intune across Windows, macOS, iOS, and Android devices.\n- Lead and optimize Windows Autopilot onboarding processes to improve the device lifecycle experience from deployment through retirement.\n- Drive endpoint update and patch management strategies through Windows Autopatch and update ring configurations.\n- Support and further develop Windows 365 Cloud PC environments across physical and virtual endpoints.\n- Strengthen Zero Trust initiatives, including BitLocker, Conditional Access, compliance-driven access, Entra Private Access, Entra Internet Access, and Global Secure Access.\n- Operate within ITIL and change management frameworks using ServiceNow while maintaining technical documentation and operational runbooks.\n- Automate operational processes to reduce manual effort and improve endpoint estate efficiency.\nYour profile\n- Strong hands-on experience managing enterprise endpoint environments using Microsoft Intune and Windows Autopilot.\n- Solid understanding of Microsoft Entra ID and modern device management concepts within security-focused environments.\n- Experience supporting Windows, macOS, iOS, and Android devices at scale.\n- Strong troubleshooting skills for remote and physical device issues.\n- Experience with PowerShell, Microsoft Graph API, Ansible, or similar automation is an advantage.\n- Exposure to Microsoft Defender for Endpoint, Azure Virtual Desktop, Citrix DaaS, BeyondTrust EPM, Robopack, Nexthink, or relevant Microsoft certifications is a plus.\nCompensation\n- Published base salary is 60.000 EUR gross/year, paid in 14 salaries.",
       "tags": [
         "macOS",
+        "Windows",
         "iOS",
-        "Jamf",
-        "Okta",
-        "Mid Level",
-        "Nextdoor.Co.Uk",
-        "Full Time",
-        "Artificial Intelligence",
-        "Information Technology",
-        "Microsoft Certification",
-        "Model Context Protocol Mcp",
-        "Insurance Consulting And Technology"
+        "Android",
+        "Intune",
+        "Entra ID",
+        "Autopilot",
+        "Defender",
+        "Curated",
+        "Presence / Mobile",
+        "Windows 365",
+        "Zero Trust"
       ],
       "matchReasons": [
-        "Jamf + macOS",
+        "Intune + Autopilot",
         "Endpoint engineering",
-        "Client platform",
+        "Device management",
+        "PowerShell automation",
         "Compliance evidence"
       ],
       "tools": [
-        "Jamf",
-        "Okta"
+        "Intune",
+        "Entra ID",
+        "Autopilot",
+        "Defender"
       ],
       "platforms": [
         "macOS",
-        "iOS"
+        "Windows",
+        "iOS",
+        "Android"
       ],
       "roleFamily": "Endpoint Security",
-      "seniority": "Mid",
+      "seniority": "Lead",
       "employmentType": "Full-time",
       "salary": {
-        "min": 140000,
-        "max": 150000,
-        "currency": "USD",
-        "label": "$140k-$150k"
+        "min": 60000,
+        "currency": "EUR",
+        "label": "EUR 60k gross/year"
       }
     }
   ]

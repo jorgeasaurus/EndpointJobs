@@ -543,3 +543,46 @@ Result: Removed workflow-owned query duplicates, centralized employment normaliz
 - [x] Verify mobile overflow, lint, typecheck, and build.
 
 Result: Mobile now shows the results panel around 447px and the first job around 524px at 390px width, salary ranges render as dedicated lime compensation pills, and there is no document-level horizontal overflow.
+
+## Greentube Curated Job Addition
+
+- [x] Add a curated job URL provider so handpicked jobs survive refreshes.
+- [x] Include the Greentube EUC Engineer Endpoint Management listing.
+- [x] Refresh the feed and verify the Greentube job appears.
+- [x] Run typecheck, lint, build, and diff checks.
+
+Result: Added a default `curated` provider for the Greentube EUC Engineer Endpoint Management page, preserved the existing 80-job feed mix, and verified Greentube appears with Hybrid/Vienna metadata, EUR 60k salary, Intune/Autopilot tooling, and bullet-preserved description text. Verified `npm run jobs:refresh` with `JOB_PROVIDERS=curated`, `npm run typecheck`, `npm run lint`, `npm run build`, and `git diff --check`.
+
+## Thermo-Nuclear Review: Greentube Addition
+
+- [x] Audit the current curated-provider diff for structural regressions.
+- [x] Replace brittle or over-generic code with a simpler canonical shape.
+- [x] Verify the Greentube job still appears with salary and multiline description.
+- [x] Run typecheck, lint, build, refresh, and diff checks.
+
+Result: Replaced the brittle generic HTML page scraper with an explicit curated job provider that still uses the canonical `toEndpointJob` normalizer. Narrowed feed-cap reservation to `Curated Jobs`, kept the salary-shown filter aligned with its label, and verified Greentube remains present with Hybrid/Vienna metadata, EUR 60k salary, and multiline bullets. Verified `JOB_PROVIDERS=curated npm run jobs:refresh`, `npm run typecheck`, `npm run lint`, `npm run build`, and `git diff --check`.
+
+## Curated Listing Availability Check
+
+- [x] Add a conservative availability check for curated job source URLs.
+- [x] Verify unavailable listings are excluded only on strong evidence.
+- [x] Verify the current Greentube listing still appears while available.
+- [x] Run typecheck, lint, build, refresh, and diff checks.
+
+Result: Curated jobs now fetch the source page during refresh and are removed only for strong unavailable evidence: HTTP 404/410, explicit closed-job text, or missing required page markers. Transient network, timeout, 429, or 5xx failures keep the curated job and log a warning. Verified Greentube still appears from `JOB_PROVIDERS=curated npm run jobs:refresh`, plus `npm run typecheck`, `npm run lint`, `npm run build`, and `git diff --check`.
+
+## Thermo-Nuclear Review: Curated Availability
+
+- [x] Audit the curated availability implementation for structural regressions.
+- [x] Address findings with simpler boundaries and less provider-level complexity.
+- [x] Verify the Greentube curated listing still passes availability while active.
+- [x] Run typecheck, lint, build, refresh, and diff checks.
+
+Result: Removed provider-specific feed reservation from refresh orchestration by adding `reserveFeedSlots` to the provider contract and reserving by normalized job ID. Tightened curated availability matching to require stable identity markers only and removed over-broad soft-404 text phrases. Verified `JOB_PROVIDERS=curated npm run jobs:refresh`, `npm run typecheck`, `npm run lint`, `npm run build`, and `git diff --check`.
+
+## Push Dev And Vercel Preview
+
+- [ ] Review final working tree status.
+- [ ] Commit curated job and availability changes on `dev`.
+- [ ] Push `dev` to GitHub.
+- [ ] Create and inspect a Vercel preview deployment.

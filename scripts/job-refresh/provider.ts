@@ -9,5 +9,6 @@ export type ProviderAdapter<Id extends string = string> = {
   id: Id;
   displayName: string;
   defaultUrl: string;
+  reserveFeedSlots?: boolean;
   fetchJobs: (context: ProviderFetchContext) => Promise<Array<Job | null>>;
 };
