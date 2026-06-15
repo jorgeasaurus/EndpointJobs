@@ -69,10 +69,12 @@ Result: React Doctor was already clean and stayed `100 / 100`. The strict review
 
 ## Publish Location Filters
 
-- [ ] Commit location-filter and review cleanup changes.
-- [ ] Push `dev` to GitHub.
-- [ ] Deploy a Vercel preview.
+- [x] Commit location-filter and review cleanup changes.
+- [x] Push `dev` to GitHub.
+- [x] Deploy a Vercel preview.
 - [ ] Dispatch the refresh workflow against `dev`.
+
+Result: Pushed `451f765` to `dev` and deployed preview `https://endpoint-jobs-mj2tqi9jc-jorgeasaurus-projects.vercel.app`.
 
 ## Repo Move And Publish
 
