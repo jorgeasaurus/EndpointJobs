@@ -14,6 +14,8 @@ import "./globals.css";
 import "slot-text/style.css";
 import "./parallax-background.css";
 import "./job-board.css";
+import "./job-board-filters.css";
+import "./job-board-location.css";
 import "./job-board-responsive.css";
 
 export const metadata: Metadata = {

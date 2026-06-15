@@ -123,31 +123,7 @@
     display: none;
   }
 
-  .search-strip {
-    position: relative;
-    z-index: 5;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 7px;
-    padding: 7px;
-    margin: 0 0 8px;
-    background: rgb(0 0 0 / 42%);
-    border: 1px solid rgb(255 255 255 / 10%);
-    border-radius: 14px;
-    box-shadow: 0 14px 50px rgb(0 0 0 / 28%);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
 
-  .search-box {
-    grid-column: 1 / -1;
-    min-height: 44px;
-    gap: 8px;
-    padding: 0 12px;
-  }
-
-  .search-box input {
-    font-size: 0.93rem;
-  }
 
   .high-signal-filters,
   .hero-filter-controls {
@@ -400,9 +376,6 @@
     display: none;
   }
 
-  .search-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 
   .mode-button {
     width: 100%;

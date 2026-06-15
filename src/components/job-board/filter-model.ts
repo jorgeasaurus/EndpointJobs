@@ -8,19 +8,29 @@ import type {
   Job,
   Platform,
   RoleFamily,
-  Seniority
+  Seniority,
+  Workplace
 } from "@/types/job";
 
 export type SortKey = "newest" | "salary" | "company";
 export type SeniorityFilter = "All" | Seniority;
 export type RoleFamilyFilter = "All" | RoleFamily;
 export type FreshnessFilter = "Any" | "7" | "14" | "30";
+export type WorkplaceFilter = "Any" | Exclude<Workplace, "Unknown">;
+
+export type LocationOption = {
+  count: number;
+  label: string;
+  value: string;
+};
 
 export type FilterState = {
   query: string;
+  locationQuery: string;
+  selectedLocations: string[];
   selectedPlatforms: Platform[];
   selectedTools: EndpointTool[];
-  remoteOnly: boolean;
+  workplace: WorkplaceFilter;
   salaryOnly: boolean;
   seniority: SeniorityFilter;
   roleFamily: RoleFamilyFilter;
@@ -30,10 +40,12 @@ export type FilterState = {
 
 export type FilterAction =
   | { type: "setQuery"; value: string }
+  | { type: "setLocationQuery"; value: string }
+  | { type: "toggleLocation"; value: string }
   | { type: "togglePlatform"; value: Platform }
   | { type: "toggleTool"; value: EndpointTool }
-  | { type: "toggleRemoteOnly" }
   | { type: "toggleSalaryOnly" }
+  | { type: "setWorkplace"; value: WorkplaceFilter }
   | { type: "setSeniority"; value: SeniorityFilter }
   | { type: "setRoleFamily"; value: RoleFamilyFilter }
   | { type: "setFreshness"; value: FreshnessFilter }
@@ -45,9 +57,11 @@ export type FilterDispatch = (action: FilterAction) => void;
 
 export const initialFilterState: FilterState = {
   query: "",
+  locationQuery: "",
+  selectedLocations: [],
   selectedPlatforms: [],
   selectedTools: [],
-  remoteOnly: false,
+  workplace: "Any",
   salaryOnly: false,
   seniority: "All",
   roleFamily: "All",
@@ -65,6 +79,16 @@ export const freshnessFilterOptions: {
   { value: "30", label: "Last 30 days" }
 ];
 
+export const workplaceFilterOptions: {
+  value: WorkplaceFilter;
+  label: string;
+}[] = [
+  { value: "Any", label: "Any workplace" },
+  { value: "Remote", label: "Remote" },
+  { value: "Hybrid", label: "Hybrid" },
+  { value: "On-site", label: "On-site" }
+];
+
 export const sortOptions: { value: SortKey; label: string }[] = [
   { value: "newest", label: "Newest" },
   { value: "salary", label: "Compensation" },
@@ -78,6 +102,18 @@ export function filterReducer(
   switch (action.type) {
     case "setQuery":
       return { ...state, query: action.value };
+    case "setLocationQuery":
+      return { ...state, locationQuery: action.value };
+    case "toggleLocation": {
+      const location = normalizeLocationValue(action.value);
+
+      return location
+        ? {
+            ...state,
+            selectedLocations: toggleValue(state.selectedLocations, location)
+          }
+        : state;
+    }
     case "togglePlatform":
       return {
         ...state,
@@ -88,10 +124,10 @@ export function filterReducer(
         ...state,
         selectedTools: toggleValue(state.selectedTools, action.value)
       };
-    case "toggleRemoteOnly":
-      return { ...state, remoteOnly: !state.remoteOnly };
     case "toggleSalaryOnly":
       return { ...state, salaryOnly: !state.salaryOnly };
+    case "setWorkplace":
+      return { ...state, workplace: action.value };
     case "setSeniority":
       return { ...state, seniority: action.value };
     case "setRoleFamily":
@@ -109,10 +145,28 @@ export function filterReducer(
 
 export function filterJobs(jobs: Job[], filters: FilterState) {
   const normalizedQuery = filters.query.trim().toLowerCase();
+  const normalizedLocationQuery = normalizeFilterText(filters.locationQuery);
+  const selectedLocationKeys = new Set(
+    filters.selectedLocations.map(normalizeFilterText).filter(Boolean)
+  );
 
   return jobs
     .filter((job) => {
       if (normalizedQuery && !getSearchText(job).includes(normalizedQuery)) {
+        return false;
+      }
+
+      if (
+        normalizedLocationQuery &&
+        !getLocationSearchText(job).includes(normalizedLocationQuery)
+      ) {
+        return false;
+      }
+
+      if (
+        selectedLocationKeys.size > 0 &&
+        !selectedLocationKeys.has(normalizeFilterText(job.location))
+      ) {
         return false;
       }
 
@@ -132,7 +186,7 @@ export function filterJobs(jobs: Job[], filters: FilterState) {
         return false;
       }
 
-      if (filters.remoteOnly && job.workplace !== "Remote") {
+      if (filters.workplace !== "Any" && job.workplace !== filters.workplace) {
         return false;
       }
 
@@ -163,6 +217,32 @@ export function filterJobs(jobs: Job[], filters: FilterState) {
     .sort((first, second) => sortJobs(first, second, filters.sort));
 }
 
+export function getLocationOptions(
+  jobs: Job[],
+  limit = 12
+): LocationOption[] {
+  const counts = new Map<string, number>();
+
+  for (const job of jobs) {
+    const location = normalizeLocationValue(job.location);
+
+    if (!location || location.toLowerCase() === "unknown") {
+      continue;
+    }
+
+    counts.set(location, (counts.get(location) ?? 0) + 1);
+  }
+
+  return [...counts.entries()]
+    .sort(([firstLocation, firstCount], [secondLocation, secondCount]) => {
+      return (
+        secondCount - firstCount || firstLocation.localeCompare(secondLocation)
+      );
+    })
+    .slice(0, limit)
+    .map(([location, count]) => ({ count, label: location, value: location }));
+}
+
 function hasSalaryShown(job: Job) {
   return (
     typeof job.salary?.min === "number" ||
@@ -186,4 +266,16 @@ function sortJobs(first: Job, second: Job, sort: SortKey) {
   }
 
   return new Date(second.postedAt).getTime() - new Date(first.postedAt).getTime();
+}
+
+function getLocationSearchText(job: Job) {
+  return normalizeFilterText(`${job.location} ${job.workplace}`);
+}
+
+function normalizeLocationValue(value: string) {
+  return value.replace(/\s+/g, " ").trim();
+}
+
+function normalizeFilterText(value: string) {
+  return normalizeLocationValue(value).toLowerCase();
 }

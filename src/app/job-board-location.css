@@ -1,0 +1,116 @@
+.location-filter-panel {
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+  margin-bottom: 14px;
+  background: rgb(255 255 255 / 3%);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.location-filter-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.42fr);
+  gap: 10px;
+}
+
+.location-search-box {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 14px;
+  color: var(--white);
+  background: rgb(0 0 0 / 34%);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+}
+
+.location-search-box:focus-within {
+  border-color: var(--lime);
+  box-shadow: 0 0 0 4px rgb(204 255 0 / 12%);
+}
+
+.location-search-box input {
+  width: 100%;
+  min-width: 0;
+  color: var(--white);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font-size: 0.98rem;
+}
+
+.location-search-box input::placeholder {
+  color: var(--white-30);
+}
+
+.location-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.location-chip {
+  max-width: 100%;
+  min-width: 0;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.location-chip span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.location-chip small {
+  flex: 0 0 auto;
+  color: var(--lime);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.location-chip.is-active small {
+  color: rgb(0 0 0 / 68%);
+}
+
+@media (max-width: 760px) {
+  .location-filter-panel {
+    gap: 7px;
+    padding: 7px;
+    margin-bottom: 8px;
+    background: rgb(0 0 0 / 34%);
+    border-radius: 14px;
+  }
+
+  .location-filter-row {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .location-search-box {
+    min-height: 42px;
+    gap: 8px;
+    padding: 0 12px;
+  }
+
+  .location-search-box input {
+    font-size: 0.92rem;
+  }
+
+  .location-chip-list {
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .location-chip {
+    flex: 1 1 142px;
+    min-width: 0;
+  }
+}

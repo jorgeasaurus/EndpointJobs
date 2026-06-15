@@ -1,5 +1,15 @@
-import type { FilterAction, FilterState, FreshnessFilter, SortKey } from "./filter-model";
-import { freshnessFilterOptions, sortOptions } from "./filter-model";
+import type {
+  FilterAction,
+  FilterState,
+  FreshnessFilter,
+  SortKey,
+  WorkplaceFilter
+} from "./filter-model";
+import {
+  freshnessFilterOptions,
+  sortOptions,
+  workplaceFilterOptions
+} from "./filter-model";
 
 export type ActiveFilterItem = {
   clearAction: FilterAction;
@@ -11,6 +21,7 @@ export type ActiveFilterItem = {
 export function getActiveFilterItems(filters: FilterState): ActiveFilterItem[] {
   const items: ActiveFilterItem[] = [];
   const query = filters.query.trim();
+  const locationQuery = filters.locationQuery.trim();
 
   if (query) {
     items.push({
@@ -20,11 +31,27 @@ export function getActiveFilterItems(filters: FilterState): ActiveFilterItem[] {
     });
   }
 
-  if (filters.remoteOnly) {
+  if (locationQuery) {
     items.push({
-      clearAction: { type: "toggleRemoteOnly" },
-      id: "remote",
-      label: "Remote"
+      clearAction: { type: "setLocationQuery", value: "" },
+      id: "location-query",
+      label: `Location: ${locationQuery}`
+    });
+  }
+
+  for (const location of filters.selectedLocations) {
+    items.push({
+      clearAction: { type: "toggleLocation", value: location },
+      id: `location:${location}`,
+      label: location
+    });
+  }
+
+  if (filters.workplace !== "Any") {
+    items.push({
+      clearAction: { type: "setWorkplace", value: "Any" },
+      id: "workplace",
+      label: getWorkplaceFilterLabel(filters.workplace)
     });
   }
 
@@ -95,4 +122,9 @@ function getFreshnessFilterLabel(value: FreshnessFilter) {
 
 function getSortFilterLabel(value: SortKey) {
   return sortOptions.find((option) => option.value === value)?.label ?? value;
+}
+
+function getWorkplaceFilterLabel(value: WorkplaceFilter) {
+  return workplaceFilterOptions.find((option) => option.value === value)?.label ??
+    value;
 }

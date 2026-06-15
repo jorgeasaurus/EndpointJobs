@@ -31,6 +31,32 @@ Verified:
 
 Note: Remotive currently returned zero strict endpoint matches, so refresh leaves the curated seed feed unchanged unless the API returns relevant roles.
 
+## Location Filtering
+
+- [x] Add multi-select location chips from real feed locations.
+- [x] Add free-text location search.
+- [x] Add separate workplace type filtering.
+- [x] URL-sync the new filters.
+- [x] Verify typecheck, lint, build, and mobile layout.
+
+Result: Added feed-derived location chips, free-text location search, and separate workplace filtering with URL sync. Verified typecheck, lint, build, and 390px mobile browser behavior with no horizontal overflow.
+
+## Thermo-Nuclear Location Filter Review
+
+- [x] Extract location UI out of the general controls component.
+- [x] Move location-specific styles out of the oversized base stylesheet.
+- [x] Simplify location URL parsing to the canonical repeated-param model.
+- [x] Re-run typecheck, lint, build, and mobile browser checks.
+
+Result: Split location controls into `location-filters.tsx`, moved search and location styles into focused CSS files, brought `job-board.css` below 1k lines, and removed the legacy double-encoded location parser branch.
+
+## Publish Location Filters
+
+- [ ] Commit location-filter and review cleanup changes.
+- [ ] Push `dev` to GitHub.
+- [ ] Deploy a Vercel preview.
+- [ ] Dispatch the refresh workflow against `dev`.
+
 ## Repo Move And Publish
 
 - [x] Move repo to `~/Code/EndpointJobs`.
