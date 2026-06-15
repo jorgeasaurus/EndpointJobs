@@ -582,7 +582,9 @@ Result: Removed provider-specific feed reservation from refresh orchestration by
 
 ## Push Dev And Vercel Preview
 
-- [ ] Review final working tree status.
-- [ ] Commit curated job and availability changes on `dev`.
-- [ ] Push `dev` to GitHub.
-- [ ] Create and inspect a Vercel preview deployment.
+- [x] Review final working tree status.
+- [x] Commit curated job and availability changes on `dev`.
+- [x] Push `dev` to GitHub.
+- [x] Create and inspect a Vercel preview deployment.
+
+Result: Pushed the curated job availability work to `dev` and created a Ready Vercel preview deployment. Direct unauthenticated HTTP requests return Vercel Deployment Protection `401`, so preview access may require Vercel auth or a bypass configuration.
