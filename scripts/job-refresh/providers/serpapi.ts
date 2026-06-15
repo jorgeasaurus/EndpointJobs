@@ -116,7 +116,13 @@ async function fetchSerpApiGoogleJobsPage(url: string): Promise<SerpApiGoogleJob
   };
 
   if (candidate.error) {
-    throw new Error(`SerpAPI returned an error: ${cleanText(candidate.error)}`);
+    const message = cleanText(candidate.error);
+
+    if (isSerpApiNoResultsError(message)) {
+      return { jobs: [], nextPageToken: undefined };
+    }
+
+    throw new Error(`SerpAPI returned an error: ${message}`);
   }
 
   const jobs = Array.isArray(candidate.jobs_results)
@@ -127,6 +133,10 @@ async function fetchSerpApiGoogleJobsPage(url: string): Promise<SerpApiGoogleJob
     jobs,
     nextPageToken: getString(candidate.serpapi_pagination?.next_page_token)
   };
+}
+
+function isSerpApiNoResultsError(value: string) {
+  return /no results|hasn['’]t returned any results/i.test(value);
 }
 
 function isSerpApiGoogleJob(value: unknown): value is SerpApiGoogleJob {

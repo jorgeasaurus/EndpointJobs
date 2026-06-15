@@ -515,3 +515,10 @@ Result: Reworked filters so the URL is the canonical external store, dispatch wr
 - [x] Verify provider behavior, typecheck, lint, build, React Doctor, and diff hygiene.
 
 Result: Added centralized endpoint search/company monitoring defaults, wired them into TheirStack and SerpAPI, added an env-gated RapidAPI Daily International Jobs provider, configured the GitHub Actions secret name, and documented setup. Verified RapidAPI with a local mock refresh and a real HTTP 200 key check; typecheck, lint, React Doctor, build, YAML parsing, and secret hygiene passed.
+
+## SerpAPI No-Results Resilience
+
+- [x] Inspect the refresh action behavior after broader company query rollout.
+- [x] Treat SerpAPI no-result query errors as empty query pages instead of provider failures.
+- [x] Verify with a local SerpAPI mock containing one no-result query and one valid endpoint job.
+- [x] Re-run typecheck, lint, React Doctor, build, diff hygiene, and the GitHub Action.
