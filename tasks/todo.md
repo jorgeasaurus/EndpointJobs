@@ -78,11 +78,13 @@ Result: Pushed `451f765` to `dev` and deployed preview `https://endpoint-jobs-mj
 
 ## Merge Dev To Production
 
-- [ ] Merge `dev` into `main`.
-- [ ] Verify React Doctor, typecheck, lint, build, and diff hygiene on `main`.
-- [ ] Push `main` to GitHub.
-- [ ] Deploy Vercel production.
-- [ ] Document production URL.
+- [x] Merge `dev` into `main`.
+- [x] Verify React Doctor, typecheck, lint, build, and diff hygiene on `main`.
+- [x] Push `main` to GitHub.
+- [x] Deploy Vercel production.
+- [x] Document production URL.
+
+Result: Fast-forwarded `main` to `7df5b2b`, pushed to GitHub, and deployed production `dpl_GGowY2vwkvyA9ow4T6akzztcLyYg`, aliased at `https://endpointjobs.dev`.
 
 ## Repo Move And Publish
 
