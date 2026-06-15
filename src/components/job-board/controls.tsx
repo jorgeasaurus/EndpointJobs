@@ -314,13 +314,70 @@ function FilterStack({
   seniority: SeniorityFilter;
   sort: SortKey;
 }) {
-  return (
-    <section className="hero-filter-stack" aria-label="Filter stack">
-      <div className="rail-heading">
-        <SlidersHorizontal size={18} aria-hidden="true" />
-        <span>Filter Stack</span>
-      </div>
+  const contentProps = {
+    activeFilterCount,
+    activeFilterLabel,
+    clearFilters,
+    dispatch,
+    selectedTools,
+    seniority,
+    sort
+  };
 
+  return (
+    <>
+      <section
+        className="hero-filter-stack hero-filter-stack--desktop"
+        aria-label="Filter stack"
+      >
+        <FilterStackHeading />
+        <FilterStackContent {...contentProps} />
+      </section>
+
+      <details className="hero-filter-stack hero-filter-stack--mobile">
+        <summary className="mobile-filter-summary">
+          <span>
+            <SlidersHorizontal size={17} aria-hidden="true" />
+            More filters
+          </span>
+          <span className="mobile-filter-summary-count">
+            {activeFilterCount > 0 ? activeFilterLabel : "Optional"}
+          </span>
+        </summary>
+        <FilterStackContent {...contentProps} />
+      </details>
+    </>
+  );
+}
+
+function FilterStackHeading() {
+  return (
+    <div className="rail-heading">
+      <SlidersHorizontal size={18} aria-hidden="true" />
+      <span>Filter Stack</span>
+    </div>
+  );
+}
+
+function FilterStackContent({
+  activeFilterCount,
+  activeFilterLabel,
+  clearFilters,
+  dispatch,
+  selectedTools,
+  seniority,
+  sort
+}: {
+  activeFilterCount: number;
+  activeFilterLabel: string;
+  clearFilters: () => void;
+  dispatch: FilterDispatch;
+  selectedTools: EndpointTool[];
+  seniority: SeniorityFilter;
+  sort: SortKey;
+}) {
+  return (
+    <>
       <div className="hero-filter-controls">
         <label className="field">
           <span>Seniority</span>
@@ -394,7 +451,7 @@ function FilterStack({
           />
         </button>
       ) : null}
-    </section>
+    </>
   );
 }
 

@@ -5,6 +5,7 @@ import {
   CheckCircle2,
   ChevronDown,
   Clock3,
+  DollarSign,
   ExternalLink,
   MapPin
 } from "lucide-react";
@@ -42,6 +43,18 @@ export function JobCard({ job, query }: { job: Job; query: string }) {
         <span className="workplace">{job.workplace}</span>
       </div>
 
+      {job.salary ? (
+        <div className="salary-row">
+          <span
+            aria-label={`Salary ${job.salary.label}`}
+            className="salary-pill"
+          >
+            <DollarSign size={15} aria-hidden="true" />
+            {job.salary.label}
+          </span>
+        </div>
+      ) : null}
+
       <p className="summary">
         <HighlightedText query={query} text={job.summary} />
       </p>
@@ -78,7 +91,6 @@ export function JobCard({ job, query }: { job: Job; query: string }) {
         <span>{job.roleFamily}</span>
         <span>{job.seniority}</span>
         <span>{job.employmentType}</span>
-        {job.salary ? <span>{job.salary.label}</span> : null}
       </div>
 
       <div className="tag-row" aria-label="Matched tools and platforms">

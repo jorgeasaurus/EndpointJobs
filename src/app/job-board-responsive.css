@@ -37,7 +37,7 @@
 
 @media (max-width: 760px) {
   .site-frame {
-    padding: 10px;
+    padding: 8px;
   }
 
   .site-frame::before,
@@ -47,11 +47,11 @@
   }
 
   .topbar {
-    top: 8px;
+    top: 6px;
     gap: 8px;
-    min-height: 52px;
-    padding: 8px;
-    margin-bottom: 12px;
+    min-height: 46px;
+    padding: 6px;
+    margin-bottom: 10px;
   }
 
   .brand {
@@ -60,8 +60,8 @@
   }
 
   .brand-mark {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
   }
 
   .topbar-actions {
@@ -71,11 +71,11 @@
   .refresh-pill,
   .feedback-link {
     min-width: 0;
-    min-height: 34px;
+    min-height: 32px;
     justify-content: center;
     padding: 0 8px;
     overflow: hidden;
-    font-size: 0.62rem;
+    font-size: 0.6rem;
     text-overflow: ellipsis;
   }
 
@@ -106,13 +106,13 @@
 
   .title-row {
     grid-template-columns: 1fr;
-    gap: 10px;
-    margin-bottom: 14px;
+    gap: 6px;
+    margin-bottom: 10px;
   }
 
   h1 {
-    font-size: 2.1rem;
-    line-height: 0.98;
+    font-size: 1.72rem;
+    line-height: 1;
   }
 
   .title-row p {
@@ -124,23 +124,23 @@
   }
 
   .search-strip {
-    position: sticky;
-    top: 66px;
-    z-index: 20;
-    grid-template-columns: minmax(0, 1fr) repeat(2, minmax(96px, auto));
-    gap: 8px;
-    padding: 8px;
-    margin: 0 -6px 10px;
-    background: rgb(10 10 10 / 84%);
+    position: relative;
+    z-index: 5;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    padding: 7px;
+    margin: 0 0 8px;
+    background: rgb(0 0 0 / 42%);
     border: 1px solid rgb(255 255 255 / 10%);
-    border-radius: 16px;
-    box-shadow: 0 18px 70px rgb(0 0 0 / 34%);
+    border-radius: 14px;
+    box-shadow: 0 14px 50px rgb(0 0 0 / 28%);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
   }
 
   .search-box {
-    min-height: 48px;
+    grid-column: 1 / -1;
+    min-height: 44px;
     gap: 8px;
     padding: 0 12px;
   }
@@ -152,29 +152,57 @@
   .high-signal-filters,
   .hero-filter-controls {
     grid-template-columns: 1fr;
-    gap: 8px;
-    margin-bottom: 10px;
+    gap: 7px;
+    margin-bottom: 8px;
   }
 
-  .hero-filter-stack {
-    gap: 10px;
-    padding-top: 12px;
-    margin-top: 12px;
+  .hero-filter-stack--desktop {
+    display: none;
+  }
+
+  .hero-filter-stack--mobile {
+    display: grid;
+    gap: 9px;
+    padding-top: 8px;
+    margin-top: 8px;
   }
 
   .hero-filter-stack .clear-button {
     width: 100%;
   }
 
+  .hero-filter-stack .facet-list {
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+    overflow-x: auto;
+  }
+
+  .hero-filter-stack .facet-list::-webkit-scrollbar {
+    display: none;
+  }
+
   .mini-field {
-    min-height: 42px;
+    min-height: 38px;
+    padding: 0 10px;
+  }
+
+  .mini-field span,
+  .field span,
+  .facet-title {
+    font-size: 0.64rem;
+  }
+
+  .mini-field select,
+  .field select {
+    font-size: 0.92rem;
   }
 
   .mode-button {
-    width: auto;
+    width: 100%;
     min-width: 0;
-    min-height: 48px;
+    min-height: 42px;
     padding: 0 10px;
+    font-size: 0.92rem;
   }
 
 
@@ -206,11 +234,14 @@
 
   .facet-button {
     flex: 0 0 auto;
-    min-height: 38px;
+    min-height: 34px;
+    padding: 0 10px;
+    font-size: 0.82rem;
   }
 
   .results-panel {
     min-height: 0;
+    margin-top: 0;
   }
 
   .results-heading,
@@ -267,6 +298,16 @@
 
   .workplace {
     width: fit-content;
+  }
+
+  .salary-row {
+    margin-top: 10px;
+  }
+
+  .salary-pill {
+    min-height: 32px;
+    padding: 0 10px;
+    font-size: 0.68rem;
   }
 
   .summary {
@@ -352,7 +393,7 @@
   }
 
   h1 {
-    font-size: 1.95rem;
+    font-size: 1.55rem;
   }
 
   .eyebrow {
@@ -360,15 +401,11 @@
   }
 
   .search-strip {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .mode-button {
     width: 100%;
-  }
-
-  .search-strip {
-    grid-template-columns: 1fr;
   }
 
   .source-pill,

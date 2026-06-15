@@ -533,3 +533,13 @@ Result: Added centralized endpoint search/company monitoring defaults, wired the
 - [x] Re-run typecheck, lint, React Doctor, build, diff hygiene, and targeted behavior checks.
 
 Result: Removed workflow-owned query duplicates, centralized employment normalization, split URL/chip filter modules, returned TheirStack pages as arrays, stripped Adzuna tracking IDs, and verified typecheck, lint, React Doctor, build, and hygiene checks.
+
+## Mobile First View Optimization
+
+- [x] Shorten the mobile hero and search controls so listings begin sooner.
+- [x] Put advanced seniority/sort/tools filters behind a mobile-only drawer.
+- [x] Highlight salary ranges with a dedicated compensation pill when present.
+- [x] Keep desktop filter stack behavior unchanged.
+- [x] Verify mobile overflow, lint, typecheck, and build.
+
+Result: Mobile now shows the results panel around 447px and the first job around 524px at 390px width, salary ranges render as dedicated lime compensation pills, and there is no document-level horizontal overflow.
