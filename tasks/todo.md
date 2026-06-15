@@ -479,3 +479,39 @@ Result: Fixed route-level SEO metadata leakage by moving robots directives from 
 - [x] Document the publish result.
 
 Result: Pushed review commit `bd9cd4e`, deployed production deployment `dpl_Bm6GRf9XGE7C61FPcRdVWqRy48ac`, and verified https://endpointjobs.dev returned HTTP 200 with parsable JSON-LD. Triggered Refresh job listings run `27516857041`, which succeeded and pushed action commit `c3a74fa` with 80 endpoint jobs from 15 providers. Workable and Techmap RSS were skipped because their account/feed configuration is still empty.
+
+## UX/UI Improvement Loop 1
+
+- [x] Create and work from the `dev` branch.
+- [x] Add shareable URL-backed filters and `/` search focus.
+- [x] Add active filter chips and search-term highlighting inside listings.
+- [x] Improve mobile filter ergonomics without disrupting the current glass aesthetic.
+- [x] Verify typecheck, lint, build, React Doctor, diff hygiene, and desktop/mobile rendering.
+
+Result: Created `dev`, added URL-restored filters with shareable query params, `/` search focus, active removable filter chips, and highlighted search matches in listings. Verified `npm run typecheck`, `npm run lint`, `npm run build`, `npm run doctor -- --verbose` at 100/100, `git diff --check`, and Playwright desktop/mobile checks for URL restoration, highlights, chip scrolling, and no horizontal overflow.
+
+## UX/UI Loop 1 Review Fixes
+
+- [x] Replace duplicated active-filter conditions with one canonical active-filter item model.
+- [x] Preserve unrelated URL query params while syncing known job-board filter params.
+- [x] Extract URL sync and search-focus browser effects out of `JobBoard`.
+- [x] Verify typecheck, lint, build, React Doctor, diff hygiene, and desktop/mobile URL behavior.
+
+Result: Reworked filters so the URL is the canonical external store, dispatch writes known filter params while preserving unrelated params, active chips/counts derive from one `getActiveFilterItems` model, and `JobBoard` delegates URL sync plus search-focus behavior to focused hooks. Verified typecheck, lint, production build, React Doctor 100/100, diff hygiene, and Chromium checks for sort-only chips, UTM preservation, `/` focus, dense chips, and mobile no-overflow behavior.
+
+## Publish Dev Preview
+
+- [ ] Run final local verification before publishing.
+- [ ] Commit UX loop and review-fix changes on `dev`.
+- [ ] Push `dev` to GitHub.
+- [ ] Create a Vercel preview deployment and verify it is ready.
+
+## RapidAPI And Broader Company Monitoring
+
+- [x] Add broader Endpoint/UEM/security/productivity companies to TheirStack and SerpAPI monitoring.
+- [x] Add missing endpoint-adjacent search terms to relevance and query defaults.
+- [x] Add RapidAPI Daily International Job Postings as an env-gated provider.
+- [x] Wire GitHub Actions and README docs without committing API keys.
+- [x] Verify provider behavior, typecheck, lint, build, React Doctor, and diff hygiene.
+
+Result: Added centralized endpoint search/company monitoring defaults, wired them into TheirStack and SerpAPI, added an env-gated RapidAPI Daily International Jobs provider, configured the GitHub Actions secret name, and documented setup. Verified RapidAPI with a local mock refresh and a real HTTP 200 key check; typecheck, lint, React Doctor, build, YAML parsing, and secret hygiene passed.

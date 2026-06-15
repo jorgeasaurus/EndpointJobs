@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useReducer } from "react";
+import { useMemo, useRef } from "react";
 
 import { isStale } from "@/lib/jobs";
 import type { JobsFeed } from "@/types/job";
@@ -8,16 +8,19 @@ import type { JobsFeed } from "@/types/job";
 import { CommandPanel } from "./job-board/controls";
 import {
   filterJobs,
-  filterReducer,
-  getActiveFilterCount,
-  initialFilterState
+  getActiveFilterItems
 } from "./job-board/filter-model";
 import { ParallaxBackground } from "./job-board/parallax-background";
 import { ResultsPanel } from "./job-board/results-panel";
 import { SiteFooter, Topbar } from "./job-board/topbar";
+import { useSearchFocusShortcut } from "./job-board/use-search-focus-shortcut";
+import { useUrlSyncedFilters } from "./job-board/use-url-synced-filters";
 
 export function JobBoard({ feed }: { feed: JobsFeed }) {
-  const [filters, dispatch] = useReducer(filterReducer, initialFilterState);
+  const [filters, dispatch] = useUrlSyncedFilters();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useSearchFocusShortcut(searchInputRef);
 
   const activeJobs = useMemo(
     () => feed.jobs.filter((job) => !isStale(job)),
@@ -29,7 +32,8 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
     [activeJobs, filters]
   );
 
-  const activeFilterCount = getActiveFilterCount(filters);
+  const activeFilterItems = getActiveFilterItems(filters);
+  const activeFilterCount = activeFilterItems.length;
   const activeFilterLabel =
     activeFilterCount +
     " active " +
@@ -49,16 +53,22 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
         <section className="workbench" aria-label="Endpoint job search">
           <CommandPanel
             activeFilterCount={activeFilterCount}
+            activeFilterItems={activeFilterItems}
             activeFilterLabel={activeFilterLabel}
             activeJobsCount={activeJobs.length}
             clearFilters={clearFilters}
             dispatch={dispatch}
             filters={filters}
+            searchInputRef={searchInputRef}
           />
         </section>
 
         <section className="board-grid">
-          <ResultsPanel clearFilters={clearFilters} visibleJobs={visibleJobs} />
+          <ResultsPanel
+            clearFilters={clearFilters}
+            query={filters.query}
+            visibleJobs={visibleJobs}
+          />
         </section>
 
         <SiteFooter updatedAt={feed.updatedAt} />

@@ -7,9 +7,11 @@ import { JobCard } from "./job-card";
 
 export function ResultsPanel({
   clearFilters,
+  query,
   visibleJobs
 }: {
   clearFilters: () => void;
+  query: string;
   visibleJobs: Job[];
 }) {
   return (
@@ -35,7 +37,7 @@ export function ResultsPanel({
       {visibleJobs.length > 0 ? (
         <div className="job-list">
           {visibleJobs.map((job) => (
-            <JobCard key={job.id} job={job} />
+            <JobCard key={job.id} job={job} query={query} />
           ))}
         </div>
       ) : (

@@ -1,6 +1,7 @@
 import type { Job, Workplace } from "../../../src/types/job";
 
 import type { ProviderAdapter } from "../provider";
+import { defaultCompanyJobQueries, defaultEndpointSearchQueries } from "../search-config";
 import {
   buildStableJobId,
   cleanText,
@@ -43,20 +44,10 @@ type SerpApiGoogleJobsPage = {
   nextPageToken?: string;
 };
 
-const defaultSerpApiQueries = [
-  "endpoint engineer",
-  "desktop engineer",
-  "macos engineer",
-  "windows endpoint engineer",
-  "client platform engineer",
-  "end user computing engineer",
-  "digital workplace engineer",
-  "intune engineer",
-  "jamf engineer",
-  "sccm engineer",
-  "mdm engineer"
-];
-
+const defaultSerpApiQueries = Array.from(new Set([
+  ...defaultEndpointSearchQueries,
+  ...defaultCompanyJobQueries
+]));
 export const serpApiProvider: ProviderAdapter<"serpapi"> = {
   id: "serpapi",
   displayName: "SerpAPI Google Jobs",

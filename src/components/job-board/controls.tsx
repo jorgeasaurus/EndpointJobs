@@ -1,3 +1,5 @@
+import type { RefObject } from "react";
+
 import {
   BriefcaseBusiness,
   Clock3,
@@ -29,6 +31,7 @@ import {
   toSortKey
 } from "./filter-model";
 import type {
+  ActiveFilterItem,
   FilterDispatch,
   FilterState,
   FreshnessFilter,
@@ -39,18 +42,22 @@ import type {
 
 export function CommandPanel({
   activeFilterCount,
+  activeFilterItems,
   activeFilterLabel,
   activeJobsCount,
   clearFilters,
   dispatch,
-  filters
+  filters,
+  searchInputRef
 }: {
   activeFilterCount: number;
+  activeFilterItems: ActiveFilterItem[];
   activeFilterLabel: string;
   activeJobsCount: number;
   clearFilters: () => void;
   dispatch: FilterDispatch;
   filters: FilterState;
+  searchInputRef: RefObject<HTMLInputElement | null>;
 }) {
   return (
     <div className="command-panel">
@@ -85,11 +92,17 @@ export function CommandPanel({
         query={filters.query}
         remoteOnly={filters.remoteOnly}
         salaryOnly={filters.salaryOnly}
+        searchInputRef={searchInputRef}
       />
       <HighSignalFilters
         dispatch={dispatch}
         freshness={filters.freshness}
         roleFamily={filters.roleFamily}
+      />
+      <ActiveFilterChips
+        activeFilterItems={activeFilterItems}
+        clearFilters={clearFilters}
+        dispatch={dispatch}
       />
       <PlatformFilters
         dispatch={dispatch}
@@ -112,12 +125,14 @@ function SearchStrip({
   dispatch,
   query,
   remoteOnly,
-  salaryOnly
+  salaryOnly,
+  searchInputRef
 }: {
   dispatch: FilterDispatch;
   query: string;
   remoteOnly: boolean;
   salaryOnly: boolean;
+  searchInputRef: RefObject<HTMLInputElement | null>;
 }) {
   return (
     <div className="search-strip">
@@ -125,6 +140,8 @@ function SearchStrip({
         <Search size={20} aria-hidden="true" />
         <span className="sr-only">Search jobs</span>
         <input
+          ref={searchInputRef}
+          data-job-search="true"
           type="search"
           value={query}
           onChange={(event) =>
@@ -212,6 +229,51 @@ function HighSignalFilters({
   );
 }
 
+function ActiveFilterChips({
+  activeFilterItems,
+  clearFilters,
+  dispatch
+}: {
+  activeFilterItems: ActiveFilterItem[];
+  clearFilters: () => void;
+  dispatch: FilterDispatch;
+}) {
+  if (activeFilterItems.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="active-filter-chips" aria-label="Active filters">
+      {activeFilterItems.map((item) => (
+        <button
+          aria-label={`Remove filter: ${item.label}`}
+          className={getActiveFilterChipClassName(item)}
+          key={item.id}
+          type="button"
+          onClick={() => dispatch(item.clearAction)}
+        >
+          {item.label}
+          <X size={14} aria-hidden="true" />
+        </button>
+      ))}
+
+      <button
+        className="active-filter-chip active-filter-chip--clear"
+        type="button"
+        onClick={clearFilters}
+      >
+        Clear all
+        <X size={14} aria-hidden="true" />
+      </button>
+    </div>
+  );
+}
+
+function getActiveFilterChipClassName(item: ActiveFilterItem) {
+  return item.variant === "salary"
+    ? "active-filter-chip active-filter-chip--salary"
+    : "active-filter-chip";
+}
 function PlatformFilters({
   dispatch,
   selectedPlatforms

@@ -1,6 +1,7 @@
 import type { Job, Seniority, Workplace } from "../../../src/types/job";
 
 import type { ProviderAdapter } from "../provider";
+import { defaultEndpointSearchQueries, monitoredCompanyNames } from "../search-config";
 import {
   cleanText,
   cleanUrl,
@@ -66,26 +67,6 @@ type TheirStackJob = {
   matching_words?: string[];
 };
 
-const defaultTheirStackTitleQueries = [
-  "endpoint engineer",
-  "endpoint administrator",
-  "desktop engineer",
-  "desktop administrator",
-  "desktop systems engineer",
-  "systems engineer macos",
-  "macos engineer",
-  "windows engineer",
-  "client platform engineer",
-  "client engineering",
-  "end user computing",
-  "digital workplace engineer",
-  "workplace engineer",
-  "intune engineer",
-  "jamf engineer",
-  "sccm engineer",
-  "mdm engineer"
-];
-
 export const theirStackProvider: ProviderAdapter<"theirstack"> = {
   id: "theirstack",
   displayName: "TheirStack",
@@ -97,20 +78,72 @@ async function fetchTheirStackJobs(url: string, fetchedAt: Date) {
   const maxPages = Math.max(1, Number(process.env.JOB_THEIRSTACK_MAX_PAGES ?? 1));
   const jobs: Array<Job | null> = [];
 
-  for (let page = 0; page < maxPages; page += 1) {
-    const payload = await fetchTheirStackSearch(url, page);
-    jobs.push(...payload.map((job) => normalizeTheirStackJob(job, fetchedAt)));
-    console.log(`Fetched ${payload.length} raw jobs from TheirStack page ${page}`);
+  await fetchTheirStackPages({
+    url,
+    fetchedAt,
+    jobs,
+    maxPages,
+    label: "role query"
+  });
+
+  await fetchTheirStackCompanyPages({
+    url,
+    fetchedAt,
+    jobs,
+    maxPages
+  });
+
+  return jobs;
+}
+
+type TheirStackPageFetchOptions = {
+  url: string;
+  fetchedAt: Date;
+  jobs: Array<Job | null>;
+  maxPages: number;
+  label: string;
+  companyNames?: string[];
+};
+
+async function fetchTheirStackPages(options: TheirStackPageFetchOptions) {
+  for (let page = 0; page < options.maxPages; page += 1) {
+    const payload = await fetchTheirStackSearch(options.url, page, {
+      companyNames: options.companyNames
+    });
+    options.jobs.push(...payload.map((job) => normalizeTheirStackJob(job, options.fetchedAt)));
+    console.log(`Fetched ${payload.length} raw jobs from TheirStack ${options.label} page ${page}`);
 
     if (payload.length === 0) {
       break;
     }
   }
-
-  return jobs;
 }
 
-async function fetchTheirStackSearch(url: string, page: number) {
+async function fetchTheirStackCompanyPages(options: Omit<TheirStackPageFetchOptions, "label" | "companyNames">) {
+  const companyNames = getCsvConfig("JOB_THEIRSTACK_COMPANY_NAMES", monitoredCompanyNames);
+
+  if (companyNames.length === 0) {
+    return;
+  }
+
+  try {
+    await fetchTheirStackPages({
+      ...options,
+      label: "company monitor",
+      companyNames
+    });
+  } catch (error) {
+    console.warn(
+      `Skipping TheirStack company monitor: ${error instanceof Error ? error.message : String(error)}`
+    );
+  }
+}
+
+async function fetchTheirStackSearch(
+  url: string,
+  page: number,
+  options: { companyNames?: string[] } = {}
+) {
   const apiKey = process.env.THEIRSTACK_API_KEY ?? process.env.JOB_THEIRSTACK_API_KEY;
 
   if (!apiKey) {
@@ -125,7 +158,7 @@ async function fetchTheirStackSearch(url: string, page: number) {
       "content-type": "application/json",
       "user-agent": "EndpointJobs/1.0 (+https://github.com/)"
     },
-    body: JSON.stringify(buildTheirStackSearchBody(page))
+    body: JSON.stringify(buildTheirStackSearchBody(page, options))
   });
 
   if (!response.ok) {
@@ -216,11 +249,14 @@ function normalizeTheirStackJob(raw: TheirStackJob, fetchedAt: Date) {
   });
 }
 
-function buildTheirStackSearchBody(page: number) {
+function buildTheirStackSearchBody(
+  page: number,
+  options: { companyNames?: string[] } = {}
+) {
   const limit = Math.max(1, Number(process.env.JOB_THEIRSTACK_LIMIT ?? 25));
   const maxAgeDays = Number(process.env.JOB_THEIRSTACK_MAX_AGE_DAYS ?? 30);
   const countryCodes = getCsvConfig("JOB_THEIRSTACK_COUNTRY_CODES", ["US"]);
-  const titleQueries = getCsvConfig("JOB_THEIRSTACK_TITLE_QUERIES", defaultTheirStackTitleQueries);
+  const titleQueries = getCsvConfig("JOB_THEIRSTACK_TITLE_QUERIES", defaultEndpointSearchQueries);
   const descriptionPatterns = getCsvConfig("JOB_THEIRSTACK_DESCRIPTION_PATTERNS", []);
   const remote = parseOptionalBoolean(process.env.JOB_THEIRSTACK_REMOTE);
   const body: Record<string, unknown> = {
@@ -232,6 +268,10 @@ function buildTheirStackSearchBody(page: number) {
     posted_at_max_age_days: Number.isFinite(maxAgeDays) ? maxAgeDays : 30,
     property_exists_or: ["final_url", "company_object.domain"]
   };
+
+  if (options.companyNames && options.companyNames.length > 0) {
+    body.company_name_or = options.companyNames;
+  }
 
   if (descriptionPatterns.length > 0) {
     body.job_description_pattern_or = descriptionPatterns;

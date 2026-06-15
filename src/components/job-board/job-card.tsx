@@ -1,3 +1,5 @@
+import { Fragment } from "react";
+
 import {
   BriefcaseBusiness,
   CheckCircle2,
@@ -14,7 +16,7 @@ import {
 } from "@/lib/jobs";
 import type { Job } from "@/types/job";
 
-export function JobCard({ job }: { job: Job }) {
+export function JobCard({ job, query }: { job: Job; query: string }) {
   const descriptionParagraphs = getExpandedDescriptionParagraphs(job);
 
   return (
@@ -29,16 +31,20 @@ export function JobCard({ job }: { job: Job }) {
 
       <div className="job-main">
         <div>
-          <h3>{job.title}</h3>
+          <h3>
+            <HighlightedText query={query} text={job.title} />
+          </h3>
           <p className="company-line">
             <BriefcaseBusiness size={16} aria-hidden="true" />
-            {job.company}
+            <HighlightedText query={query} text={job.company} />
           </p>
         </div>
         <span className="workplace">{job.workplace}</span>
       </div>
 
-      <p className="summary">{job.summary}</p>
+      <p className="summary">
+        <HighlightedText query={query} text={job.summary} />
+      </p>
 
       {descriptionParagraphs.length > 0 ? (
         <details className="description-details">
@@ -86,7 +92,12 @@ export function JobCard({ job }: { job: Job }) {
           {job.attributionLabel}
         </span>
         {job.applyUrl ? (
-          <a className="apply-link" href={job.applyUrl} rel="noopener noreferrer" target="_blank">
+          <a
+            className="apply-link"
+            href={job.applyUrl}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
             Apply
             <ExternalLink size={16} aria-hidden="true" />
           </a>
@@ -99,4 +110,49 @@ export function JobCard({ job }: { job: Job }) {
       </div>
     </article>
   );
+}
+
+type HighlightPart = {
+  isMatch: boolean;
+  text: string;
+};
+
+function HighlightedText({ query, text }: { query: string; text: string }) {
+  return getHighlightParts(text, query).map((part, index) =>
+    part.isMatch ? (
+      <mark className="search-hit" key={part.text + index}>
+        {part.text}
+      </mark>
+    ) : (
+      <Fragment key={part.text + index}>{part.text}</Fragment>
+    )
+  );
+}
+
+function getHighlightParts(text: string, query: string): HighlightPart[] {
+  const normalizedQuery = query.trim();
+
+  if (normalizedQuery.length < 2) {
+    return [{ isMatch: false, text }];
+  }
+
+  const pattern = new RegExp(`(${escapeRegExp(normalizedQuery)})`, "ig");
+  const parts = text.split(pattern);
+
+  const highlightedParts: HighlightPart[] = [];
+
+  for (const part of parts) {
+    if (!part) continue;
+
+    highlightedParts.push({
+      isMatch: part.toLowerCase() === normalizedQuery.toLowerCase(),
+      text: part
+    });
+  }
+
+  return highlightedParts;
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
