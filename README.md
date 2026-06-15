@@ -46,6 +46,8 @@ Current default public providers: Remotive, Arbeitnow, Jobicy, Remote OK, Greenh
 
 Optional configured providers: Workable, Techmap RSS, Adzuna, TheirStack, SerpAPI Google Jobs, and RapidAPI Daily International Jobs.
 
+LinkedIn was evaluated but is intentionally not wired as a provider yet. `linkedin-api-client` is a beta Node.js Rest.li/OAuth helper for approved LinkedIn APIs; it is not a public LinkedIn job-search feed. LinkedIn's Job Posting API is restricted to approved Talent Solutions partners and is for publishing jobs to LinkedIn, so only add it after approved partner access and a documented endpoint that returns authorized job data for this use case.
+
 The normalizer:
 
 - Filters for endpoint/macOS/Windows/MDM/UEM/client platform relevance.

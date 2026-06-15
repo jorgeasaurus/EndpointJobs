@@ -86,6 +86,17 @@ Result: Pushed `451f765` to `dev` and deployed preview `https://endpoint-jobs-mj
 
 Result: Fast-forwarded `main` to `7df5b2b`, pushed to GitHub, and deployed production `dpl_GGowY2vwkvyA9ow4T6akzztcLyYg`, aliased at `https://endpointjobs.dev`.
 
+## LinkedIn API Client Spike
+
+- [x] Create an isolated branch for the investigation.
+- [x] Review current provider ingestion boundaries.
+- [x] Verify what `linkedin-api-js-client` supports and what LinkedIn access is required.
+- [x] Decide whether adding the package helps job ingestion.
+- [x] Add only justified branch-scoped notes or scaffolding.
+- [x] Run verification.
+
+Result: Do not install `linkedin-api-client` yet. It is useful only after approved LinkedIn API access exists, and LinkedIn's documented Job Posting API is for authorized partners posting jobs to LinkedIn, not discovering public LinkedIn listings for this feed.
+
 ## Repo Move And Publish
 
 - [x] Move repo to `~/Code/EndpointJobs`.
