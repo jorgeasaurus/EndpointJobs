@@ -1,7 +1,14 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 
-import { ogImage, siteDescription, siteKeywords, siteName, siteTitle, siteUrl } from "./site-metadata";
+import {
+  ogImage,
+  siteDescription,
+  siteKeywords,
+  siteName,
+  siteTitle,
+  siteUrl
+} from "./site-metadata";
 
 import "./globals.css";
 import "slot-text/style.css";
@@ -39,17 +46,6 @@ export const metadata: Metadata = {
     title: siteTitle,
     description: siteDescription,
     images: [ogImage.url]
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1
-    }
   }
 };
 

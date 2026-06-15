@@ -7,14 +7,15 @@ import {
   MapPin
 } from "lucide-react";
 
-import { formatPostedDate, getFreshnessLabel } from "@/lib/jobs";
+import {
+  formatPostedDate,
+  getExpandedDescriptionParagraphs,
+  getFreshnessLabel
+} from "@/lib/jobs";
 import type { Job } from "@/types/job";
 
 export function JobCard({ job }: { job: Job }) {
-  const additionalDescription = getAdditionalDescription(job);
-  const descriptionParagraphs = additionalDescription
-    ? getDescriptionParagraphs(additionalDescription)
-    : [];
+  const descriptionParagraphs = getExpandedDescriptionParagraphs(job);
 
   return (
     <article className="job-card">
@@ -98,82 +99,4 @@ export function JobCard({ job }: { job: Job }) {
       </div>
     </article>
   );
-}
-
-function getAdditionalDescription(job: Job) {
-  const description = job.description?.trim();
-
-  if (!description) {
-    return undefined;
-  }
-
-  const summaryPrefix = job.summary.trim().replace(/\.\.\.$/, "").trimEnd();
-  const compactDescription = compactWhitespace(description);
-
-  if (summaryPrefix && compactDescription.startsWith(summaryPrefix)) {
-    const remainder = trimFormattedPrefix(description, summaryPrefix);
-
-    return remainder && compactWhitespace(remainder).length >= 160 ? remainder : undefined;
-  }
-
-  return compactDescription.length >= job.summary.length + 160 ? description : undefined;
-}
-
-function getDescriptionParagraphs(description: string) {
-  return description
-    .split(/\n+/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean);
-}
-
-function compactWhitespace(value: string) {
-  return value.replace(/\s+/g, " ").trim();
-}
-
-function trimFormattedPrefix(value: string, prefix: string) {
-  let valueIndex = 0;
-  let prefixIndex = 0;
-
-  while (valueIndex < value.length && prefixIndex < prefix.length) {
-    const valueChar = value[valueIndex];
-    const prefixChar = prefix[prefixIndex];
-
-    if (valueChar && /\s/.test(valueChar)) {
-      while (valueIndex < value.length && /\s/.test(value[valueIndex] ?? "")) valueIndex += 1;
-      while (prefixIndex < prefix.length && /\s/.test(prefix[prefixIndex] ?? "")) prefixIndex += 1;
-      continue;
-    }
-
-    if (prefixChar && /\s/.test(prefixChar)) {
-      while (prefixIndex < prefix.length && /\s/.test(prefix[prefixIndex] ?? "")) prefixIndex += 1;
-      continue;
-    }
-
-    if (valueChar !== prefixChar) {
-      return undefined;
-    }
-
-    valueIndex += 1;
-    prefixIndex += 1;
-  }
-
-  while (prefixIndex < prefix.length && /\s/.test(prefix[prefixIndex] ?? "")) prefixIndex += 1;
-
-  if (prefixIndex < prefix.length) {
-    return undefined;
-  }
-
-  let startIndex = valueIndex;
-  const previousBreak = value.lastIndexOf("\n", Math.max(0, startIndex - 1));
-  const lineBeforeTrim = value.slice(previousBreak + 1, startIndex).trim();
-
-  if (lineBeforeTrim) {
-    const nextBreak = value.indexOf("\n", startIndex);
-    startIndex = nextBreak === -1 ? startIndex : nextBreak + 1;
-  }
-
-  return value
-    .slice(startIndex)
-    .replace(/^[\s.,;:\u2013\u2014-]+/, "")
-    .trim();
 }

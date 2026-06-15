@@ -461,3 +461,19 @@ Result: Refreshed `docs/screenshots/readme-desktop.png` and `docs/screenshots/re
 - [x] Commit and push SEO optimization.
 
 Result: Added enriched root metadata, canonical URL, Open Graph and Twitter cards, `public/og-image.png`, `robots.txt`, `sitemap.xml`, and safe WebSite/Organization/CollectionPage JSON-LD. Verified `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`, and local HTTP responses for `/`, `/robots.txt`, `/sitemap.xml`, and `/og-image.png`.
+
+## Thermo-Nuclear Current Site Review
+
+- [x] Audit current source for structural regressions, oversized modules, scattered special cases, and unclear data boundaries.
+- [x] Fix the highest-confidence findings without changing user-facing behavior.
+- [x] Re-run typecheck, lint, build, React Doctor, diff hygiene, and targeted route checks.
+- [x] Document results.
+
+Result: Fixed route-level SEO metadata leakage by moving robots directives from the root layout to the home page, converted JSON-LD to a single graph object rendered without raw HTML injection, and moved expanded-description filtering out of the job card into the job utility layer. Verified React Doctor 100/100, typecheck, lint, production build, diff hygiene, line counts, homepage/not-found robots output, and JSON-LD parsing.
+
+## Publish Thermo-Nuclear Review Fixes
+
+- [ ] Commit and push current review fixes to GitHub.
+- [ ] Deploy production to Vercel and verify endpointjobs.dev.
+- [ ] Trigger the Refresh job listings workflow and inspect the result.
+- [ ] Document the publish result.
