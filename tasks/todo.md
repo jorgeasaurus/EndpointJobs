@@ -473,7 +473,9 @@ Result: Fixed route-level SEO metadata leakage by moving robots directives from 
 
 ## Publish Thermo-Nuclear Review Fixes
 
-- [ ] Commit and push current review fixes to GitHub.
-- [ ] Deploy production to Vercel and verify endpointjobs.dev.
-- [ ] Trigger the Refresh job listings workflow and inspect the result.
-- [ ] Document the publish result.
+- [x] Commit and push current review fixes to GitHub.
+- [x] Deploy production to Vercel and verify endpointjobs.dev.
+- [x] Trigger the Refresh job listings workflow and inspect the result.
+- [x] Document the publish result.
+
+Result: Pushed review commit `bd9cd4e`, deployed production deployment `dpl_Bm6GRf9XGE7C61FPcRdVWqRy48ac`, and verified https://endpointjobs.dev returned HTTP 200 with parsable JSON-LD. Triggered Refresh job listings run `27516857041`, which succeeded and pushed action commit `c3a74fa` with 80 endpoint jobs from 15 providers. Workable and Techmap RSS were skipped because their account/feed configuration is still empty.
