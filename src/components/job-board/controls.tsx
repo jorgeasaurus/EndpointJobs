@@ -31,7 +31,6 @@ import type {
   FilterDispatch,
   FilterState,
   FreshnessFilter,
-  LocationOption,
   RoleFamilyFilter,
   SeniorityFilter,
   SortKey
@@ -51,7 +50,6 @@ export function CommandPanel({
   clearFilters,
   dispatch,
   filters,
-  locationOptions,
   searchInputRef
 }: {
   activeFilterCount: number;
@@ -61,7 +59,6 @@ export function CommandPanel({
   clearFilters: () => void;
   dispatch: FilterDispatch;
   filters: FilterState;
-  locationOptions: LocationOption[];
   searchInputRef: RefObject<HTMLInputElement | null>;
 }) {
   return (
@@ -100,9 +97,7 @@ export function CommandPanel({
       />
       <LocationFilters
         dispatch={dispatch}
-        locationOptions={locationOptions}
         locationQuery={filters.locationQuery}
-        selectedLocations={filters.selectedLocations}
         workplace={filters.workplace}
       />
       <HighSignalFilters

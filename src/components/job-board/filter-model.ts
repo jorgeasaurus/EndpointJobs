@@ -18,16 +18,9 @@ export type RoleFamilyFilter = "All" | RoleFamily;
 export type FreshnessFilter = "Any" | "7" | "14" | "30";
 export type WorkplaceFilter = "Any" | Exclude<Workplace, "Unknown">;
 
-export type LocationOption = {
-  count: number;
-  label: string;
-  value: string;
-};
-
 export type FilterState = {
   query: string;
   locationQuery: string;
-  selectedLocations: string[];
   selectedPlatforms: Platform[];
   selectedTools: EndpointTool[];
   workplace: WorkplaceFilter;
@@ -41,7 +34,6 @@ export type FilterState = {
 export type FilterAction =
   | { type: "setQuery"; value: string }
   | { type: "setLocationQuery"; value: string }
-  | { type: "toggleLocation"; value: string }
   | { type: "togglePlatform"; value: Platform }
   | { type: "toggleTool"; value: EndpointTool }
   | { type: "toggleSalaryOnly" }
@@ -58,7 +50,6 @@ export type FilterDispatch = (action: FilterAction) => void;
 export const initialFilterState: FilterState = {
   query: "",
   locationQuery: "",
-  selectedLocations: [],
   selectedPlatforms: [],
   selectedTools: [],
   workplace: "Any",
@@ -104,16 +95,6 @@ export function filterReducer(
       return { ...state, query: action.value };
     case "setLocationQuery":
       return { ...state, locationQuery: action.value };
-    case "toggleLocation": {
-      const location = normalizeLocationValue(action.value);
-
-      return location
-        ? {
-            ...state,
-            selectedLocations: toggleValue(state.selectedLocations, location)
-          }
-        : state;
-    }
     case "togglePlatform":
       return {
         ...state,
@@ -146,9 +127,6 @@ export function filterReducer(
 export function filterJobs(jobs: Job[], filters: FilterState) {
   const normalizedQuery = filters.query.trim().toLowerCase();
   const normalizedLocationQuery = normalizeFilterText(filters.locationQuery);
-  const selectedLocationKeys = new Set(
-    filters.selectedLocations.map(normalizeFilterText).filter(Boolean)
-  );
 
   return jobs
     .filter((job) => {
@@ -159,13 +137,6 @@ export function filterJobs(jobs: Job[], filters: FilterState) {
       if (
         normalizedLocationQuery &&
         !getLocationSearchText(job).includes(normalizedLocationQuery)
-      ) {
-        return false;
-      }
-
-      if (
-        selectedLocationKeys.size > 0 &&
-        !selectedLocationKeys.has(normalizeFilterText(job.location))
       ) {
         return false;
       }
@@ -217,32 +188,6 @@ export function filterJobs(jobs: Job[], filters: FilterState) {
     .sort((first, second) => sortJobs(first, second, filters.sort));
 }
 
-export function getLocationOptions(
-  jobs: Job[],
-  limit = 12
-): LocationOption[] {
-  const counts = new Map<string, number>();
-
-  for (const job of jobs) {
-    const location = normalizeLocationValue(job.location);
-
-    if (!location || location.toLowerCase() === "unknown") {
-      continue;
-    }
-
-    counts.set(location, (counts.get(location) ?? 0) + 1);
-  }
-
-  return [...counts.entries()]
-    .sort(([firstLocation, firstCount], [secondLocation, secondCount]) => {
-      return (
-        secondCount - firstCount || firstLocation.localeCompare(secondLocation)
-      );
-    })
-    .slice(0, limit)
-    .map(([location, count]) => ({ count, label: location, value: location }));
-}
-
 function hasSalaryShown(job: Job) {
   return (
     typeof job.salary?.min === "number" ||
@@ -272,10 +217,6 @@ function getLocationSearchText(job: Job) {
   return normalizeFilterText(`${job.location} ${job.workplace}`);
 }
 
-function normalizeLocationValue(value: string) {
-  return value.replace(/\s+/g, " ").trim();
-}
-
 function normalizeFilterText(value: string) {
-  return normalizeLocationValue(value).toLowerCase();
+  return value.replace(/\s+/g, " ").trim().toLowerCase();
 }

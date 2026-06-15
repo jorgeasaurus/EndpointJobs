@@ -7,7 +7,7 @@ import type { JobsFeed } from "@/types/job";
 
 import { getActiveFilterItems } from "./job-board/active-filters";
 import { CommandPanel } from "./job-board/controls";
-import { filterJobs, getLocationOptions } from "./job-board/filter-model";
+import { filterJobs } from "./job-board/filter-model";
 import { ParallaxBackground } from "./job-board/parallax-background";
 import { ResultsPanel } from "./job-board/results-panel";
 import { SiteFooter, Topbar } from "./job-board/topbar";
@@ -28,11 +28,6 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
   const visibleJobs = useMemo(
     () => filterJobs(activeJobs, filters),
     [activeJobs, filters]
-  );
-
-  const locationOptions = useMemo(
-    () => getLocationOptions(activeJobs),
-    [activeJobs]
   );
 
   const activeFilterItems = getActiveFilterItems(filters);
@@ -62,7 +57,6 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
             clearFilters={clearFilters}
             dispatch={dispatch}
             filters={filters}
-            locationOptions={locationOptions}
             searchInputRef={searchInputRef}
           />
         </section>

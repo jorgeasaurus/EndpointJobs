@@ -50,6 +50,23 @@ Result: Added feed-derived location chips, free-text location search, and separa
 
 Result: Split location controls into `location-filters.tsx`, moved search and location styles into focused CSS files, brought `job-board.css` below 1k lines, and removed the legacy double-encoded location parser branch.
 
+## Remove Location Quick Chips
+
+- [x] Remove the feed-derived location chip row from the hero.
+- [x] Delete unused multi-select location state, URL params, and CSS.
+- [x] Verify typecheck, lint, build, and mobile layout.
+
+## React Doctor And Thermo-Nuclear Cleanup
+
+- [x] Capture React Doctor baseline and rule details.
+- [x] Fix React Doctor findings until the checker reports no issues.
+- [x] Run a thermo-nuclear structural review of the current diff and touched modules.
+- [x] Address every structural finding without suppressing rules.
+- [x] Verify typecheck, lint, build, React Doctor, diff hygiene, and relevant UI behavior.
+- [x] Document final results.
+
+Result: React Doctor was already clean and stayed `100 / 100`. The strict review removed stale location-chip abstractions, separated current URL filter keys from legacy cleanup keys, and verified the production build at 390px: no location chip row, no horizontal overflow, direct URL filters hydrate, and legacy `locations` params collapse after interaction.
+
 ## Publish Location Filters
 
 - [ ] Commit location-filter and review cleanup changes.

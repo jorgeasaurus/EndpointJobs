@@ -39,13 +39,6 @@ export function getActiveFilterItems(filters: FilterState): ActiveFilterItem[] {
     });
   }
 
-  for (const location of filters.selectedLocations) {
-    items.push({
-      clearAction: { type: "toggleLocation", value: location },
-      id: `location:${location}`,
-      label: location
-    });
-  }
 
   if (filters.workplace !== "Any") {
     items.push({

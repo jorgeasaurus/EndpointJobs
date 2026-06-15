@@ -48,38 +48,6 @@
   color: var(--white-30);
 }
 
-.location-chip-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.location-chip {
-  max-width: 100%;
-  min-width: 0;
-  gap: 8px;
-  justify-content: space-between;
-}
-
-.location-chip span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.location-chip small {
-  flex: 0 0 auto;
-  color: var(--lime);
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  font-weight: 800;
-}
-
-.location-chip.is-active small {
-  color: rgb(0 0 0 / 68%);
-}
-
 @media (max-width: 760px) {
   .location-filter-panel {
     gap: 7px;
@@ -102,15 +70,5 @@
 
   .location-search-box input {
     font-size: 0.92rem;
-  }
-
-  .location-chip-list {
-    flex-wrap: wrap;
-    gap: 7px;
-  }
-
-  .location-chip {
-    flex: 1 1 142px;
-    min-width: 0;
   }
 }

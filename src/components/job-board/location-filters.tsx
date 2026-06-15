@@ -1,25 +1,19 @@
 import { MapPin } from "lucide-react";
 
-import { ToggleButton } from "./toggle-button";
 import { workplaceFilterOptions } from "./filter-model";
 import type {
   FilterDispatch,
-  LocationOption,
   WorkplaceFilter
 } from "./filter-model";
 import { toWorkplaceFilter } from "./filter-url";
 
 export function LocationFilters({
   dispatch,
-  locationOptions,
   locationQuery,
-  selectedLocations,
   workplace
 }: {
   dispatch: FilterDispatch;
-  locationOptions: LocationOption[];
   locationQuery: string;
-  selectedLocations: string[];
   workplace: WorkplaceFilter;
 }) {
   return (
@@ -37,7 +31,7 @@ export function LocationFilters({
                 value: event.currentTarget.value
               })
             }
-            placeholder="City, state, country, or remote"
+            placeholder="City, state, or country"
           />
         </label>
 
@@ -61,33 +55,6 @@ export function LocationFilters({
           </select>
         </label>
       </div>
-
-      {locationOptions.length > 0 ? (
-        <div className="location-chip-list" aria-label="Location quick filters">
-          {locationOptions.map((option) => (
-            <ToggleButton
-              key={option.value}
-              activeClassName="facet-button location-chip is-active"
-              inactiveClassName="facet-button location-chip"
-              isActive={isLocationSelected(selectedLocations, option.value)}
-              onClick={() =>
-                dispatch({ type: "toggleLocation", value: option.value })
-              }
-            >
-              <span>{option.label}</span>
-              <small>{option.count}</small>
-            </ToggleButton>
-          ))}
-        </div>
-      ) : null}
     </section>
-  );
-}
-
-function isLocationSelected(selectedLocations: string[], location: string) {
-  const normalizedLocation = location.toLowerCase();
-
-  return selectedLocations.some(
-    (selectedLocation) => selectedLocation.toLowerCase() === normalizedLocation
   );
 }

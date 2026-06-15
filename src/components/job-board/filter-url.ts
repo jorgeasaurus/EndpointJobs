@@ -14,19 +14,23 @@ import type {
   WorkplaceFilter
 } from "./filter-model";
 
-const filterSearchParamKeys = [
+const currentFilterSearchParamKeys = [
   "q",
   "platforms",
   "tools",
   "location",
-  "locations",
   "workplace",
-  "remote",
   "salary",
   "seniority",
   "family",
   "freshness",
   "sort"
+];
+
+const legacyFilterSearchParamKeys = ["locations", "remote"];
+const filterSearchParamKeys = [
+  ...currentFilterSearchParamKeys,
+  ...legacyFilterSearchParamKeys
 ];
 
 export function filterStateFromSearchParams(
@@ -37,7 +41,6 @@ export function filterStateFromSearchParams(
   return {
     query: searchParams.get("q") ?? "",
     locationQuery: searchParams.get("location") ?? "",
-    selectedLocations: parseLocationFilters(searchParams.getAll("locations")),
     selectedPlatforms: parseMultiFilter(
       searchParams.get("platforms"),
       platformOptions
@@ -117,9 +120,6 @@ function filterStateToSearchParams(filters: FilterState) {
 
   if (query) searchParams.set("q", query);
   if (locationQuery) searchParams.set("location", locationQuery);
-  for (const location of filters.selectedLocations) {
-    searchParams.append("locations", location);
-  }
   if (filters.selectedPlatforms.length > 0) {
     searchParams.set("platforms", filters.selectedPlatforms.join(","));
   }
@@ -150,30 +150,4 @@ function parseMultiFilter<T extends string>(
     .split(",")
     .map((item) => item.trim())
     .filter((item): item is T => allowedValues.has(item));
-}
-
-function parseLocationFilters(values: string[]) {
-  const locations: string[] = [];
-  const seen = new Set<string>();
-
-  for (const value of values) {
-    const location = normalizeLocationParam(value);
-
-    if (!location || seen.has(location)) {
-      continue;
-    }
-
-    seen.add(location);
-    locations.push(location);
-
-    if (locations.length === 20) {
-      break;
-    }
-  }
-
-  return locations;
-}
-
-function normalizeLocationParam(value: string) {
-  return value.replace(/\s+/g, " ").trim();
 }
