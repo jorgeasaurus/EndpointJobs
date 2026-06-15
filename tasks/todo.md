@@ -76,6 +76,14 @@ Result: React Doctor was already clean and stayed `100 / 100`. The strict review
 
 Result: Pushed `451f765` to `dev` and deployed preview `https://endpoint-jobs-mj2tqi9jc-jorgeasaurus-projects.vercel.app`.
 
+## Merge Dev To Production
+
+- [ ] Merge `dev` into `main`.
+- [ ] Verify React Doctor, typecheck, lint, build, and diff hygiene on `main`.
+- [ ] Push `main` to GitHub.
+- [ ] Deploy Vercel production.
+- [ ] Document production URL.
+
 ## Repo Move And Publish
 
 - [x] Move repo to `~/Code/EndpointJobs`.
