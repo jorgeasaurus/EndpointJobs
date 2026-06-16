@@ -162,8 +162,8 @@ function getAdditionalDescription(job: Job) {
     return undefined;
   }
 
-  const summaryPrefix = job.summary.trim().replace(/\.\.\.$/, "").trimEnd();
   const compactDescription = compactWhitespace(description);
+  const summaryPrefix = getCompleteSummaryPrefix(job.summary, compactDescription);
 
   if (summaryPrefix && compactDescription.startsWith(summaryPrefix)) {
     const remainder = trimFormattedPrefix(description, summaryPrefix);
@@ -180,6 +180,28 @@ function getAdditionalDescription(job: Job) {
 
 function compactWhitespace(value: string) {
   return value.replace(/\s+/g, " ").trim();
+}
+
+function getCompleteSummaryPrefix(summary: string, compactDescription: string) {
+  const prefix = summary.trim().replace(/\.\.\.$/, "").trimEnd();
+
+  if (!prefix || !compactDescription.startsWith(prefix)) {
+    return prefix;
+  }
+
+  const lastPrefixChar = prefix.at(-1) ?? "";
+  const nextDescriptionChar = compactDescription[prefix.length] ?? "";
+
+  if (!isWordCharacter(lastPrefixChar) || !isWordCharacter(nextDescriptionChar)) {
+    return prefix;
+  }
+
+  const lastSpace = prefix.lastIndexOf(" ");
+  return lastSpace > 0 ? prefix.slice(0, lastSpace).trimEnd() : prefix;
+}
+
+function isWordCharacter(value: string) {
+  return /[A-Za-z0-9]/.test(value);
 }
 
 function trimFormattedPrefix(value: string, prefix: string) {

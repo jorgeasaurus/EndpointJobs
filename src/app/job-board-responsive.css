@@ -253,6 +253,43 @@
     display: none;
   }
 
+  .pagination-bar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 0 12px;
+  }
+
+  .job-list + .pagination-bar {
+    padding-top: 12px;
+  }
+
+  .pagination-summary {
+    font-size: 0.64rem;
+  }
+
+  .pagination-controls {
+    width: 100%;
+  }
+
+  .pagination-pages {
+    flex: 1 1 auto;
+    padding-bottom: 2px;
+    overflow-x: auto;
+  }
+
+  .pagination-pages::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pagination-button {
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    min-height: 38px;
+    font-size: 0.72rem;
+  }
+
   .job-card-top {
     margin-bottom: 12px;
   }

@@ -7,6 +7,7 @@ import { companyAtsProviders } from "./job-refresh/providers/company-ats";
 import { curatedJobProvider } from "./job-refresh/providers/curated-jobs";
 import { publicJobBoardProviders } from "./job-refresh/providers/public-job-boards";
 import { rapidApiDailyJobsProvider } from "./job-refresh/providers/rapidapi-daily-jobs";
+import { rapidApiLinkedInProvider } from "./job-refresh/providers/rapidapi-linkedin";
 import { serpApiProvider } from "./job-refresh/providers/serpapi";
 import { techmapRssProvider } from "./job-refresh/providers/techmap-rss";
 import { theirStackProvider } from "./job-refresh/providers/theirstack";
@@ -64,7 +65,8 @@ const providerAdapters = [
   techmapRssProvider,
   theirStackProvider,
   serpApiProvider,
-  rapidApiDailyJobsProvider
+  rapidApiDailyJobsProvider,
+  rapidApiLinkedInProvider
 ] as const satisfies readonly ProviderAdapter[];
 type SupportedProvider = (typeof providerAdapters)[number]["id"];
 

@@ -44,7 +44,9 @@ Broader aggregator scanning includes Endpoint/UEM/security vendors and enterpris
 
 Current default public providers: Remotive, Arbeitnow, Jobicy, Remote OK, Greenhouse, Lever, The Muse, Ashby, Amazon Jobs, Workday, Jibe, Activate, and Curated Jobs.
 
-Optional configured providers: Workable, Techmap RSS, Adzuna, TheirStack, SerpAPI Google Jobs, and RapidAPI Daily International Jobs.
+Optional configured providers: Workable, Techmap RSS, Adzuna, TheirStack, SerpAPI Google Jobs, RapidAPI Daily International Jobs, and RapidAPI LinkedIn Job Search.
+
+The official `linkedin-api-client` package was evaluated but is intentionally not used. It is a beta Node.js Rest.li/OAuth helper for approved LinkedIn APIs, not a public LinkedIn job-search feed. LinkedIn's documented Job Posting API is restricted to approved Talent Solutions partners and is for publishing jobs to LinkedIn. For discovery, this repo uses the separate optional RapidAPI LinkedIn Job Search provider when configured.
 
 The normalizer:
 
@@ -67,13 +69,13 @@ npm run dev
 npm run jobs:refresh
 ```
 
-Use `JOB_PROVIDERS=remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,curated,techmaprss,adzuna,theirstack,serpapi,rapidapi` to choose sources.
+Use `JOB_PROVIDERS=remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,curated,techmaprss,adzuna,theirstack,serpapi,rapidapi,rapidapilinkedin` to choose sources.
 
 Single-provider legacy mode still works with `JOB_PROVIDER=remoteok` and `JOB_API_URL=https://remoteok.com/api`.
 
-Override individual URLs with `JOB_REMOTIVE_API_URL`, `JOB_ARBEITNOW_API_URL`, `JOB_JOBICY_API_URL`, `JOB_REMOTEOK_API_URL`, `JOB_GREENHOUSE_API_URL`, `JOB_LEVER_API_URL`, `JOB_MUSE_API_URL`, `JOB_ASHBY_API_URL`, `JOB_WORKABLE_API_URL`, `JOB_AMAZON_API_URL`, `JOB_WORKDAY_API_URL`, `JOB_JIBE_API_URL`, `JOB_ACTIVATE_API_URL`, `JOB_TECHMAP_RSS_API_URL`, `JOB_ADZUNA_API_URL`, `JOB_THEIRSTACK_API_URL`, `JOB_SERPAPI_API_URL`, or `JOB_RAPIDAPI_API_URL`.
+Override individual URLs with `JOB_REMOTIVE_API_URL`, `JOB_ARBEITNOW_API_URL`, `JOB_JOBICY_API_URL`, `JOB_REMOTEOK_API_URL`, `JOB_GREENHOUSE_API_URL`, `JOB_LEVER_API_URL`, `JOB_MUSE_API_URL`, `JOB_ASHBY_API_URL`, `JOB_WORKABLE_API_URL`, `JOB_AMAZON_API_URL`, `JOB_WORKDAY_API_URL`, `JOB_JIBE_API_URL`, `JOB_ACTIVATE_API_URL`, `JOB_TECHMAP_RSS_API_URL`, `JOB_ADZUNA_API_URL`, `JOB_THEIRSTACK_API_URL`, `JOB_SERPAPI_API_URL`, `JOB_RAPIDAPI_API_URL`, or `JOB_RAPIDAPILINKEDIN_API_URL`.
 
-Career-board defaults include Greenhouse boards for Jamf, Automox, Tanium, Okta, PlayStation, Verkada, Anthropic, DoorDash, Commvault, Kaseya, Kymera, Databricks, Zscaler, Samsara, Scale AI, Wiz, Stripe, Robinhood, Box, Datadog, Elastic, Lyft, and Instacart; Lever companies JumpCloud, Brighton Jones, Hermeus, and Omnidian; Ashby boards Docker, Cursor, Perplexity, OpenAI, Cohere, ElevenLabs, and Watershed; targeted Amazon, Workday, Jibe, and Activate searches; and `JOB_MUSE_PAGES=5`.
+Career-board defaults include Greenhouse boards for Jamf, Automox, Tanium, Okta, PlayStation, Verkada, Anthropic, DoorDash, Commvault, Kaseya, Kymera, Databricks, Zscaler, Samsara, Scale AI, Wiz, Stripe, Robinhood, Box, Datadog, Elastic, Lyft, Instacart, Anduril, Asana, MongoDB, Brex, Figma, Airbnb, Discord, Reddit, Rubrik, Dropbox, Affirm, and Duolingo; Lever companies JumpCloud, Brighton Jones, Hermeus, and Omnidian; Ashby boards Docker, Cursor, Perplexity, OpenAI, Cohere, ElevenLabs, and Watershed; targeted Amazon, Workday, Jibe, and Activate searches; and `JOB_MUSE_PAGES=5`.
 
 Workable uses `JOB_WORKABLE_ACCOUNTS=slug` or `Display Name|slug` entries, with optional `JOB_WORKABLE_DETAIL_API_URL` for v1 detail overrides.
 
@@ -81,7 +83,7 @@ Curated jobs are explicit reviewed listings in `scripts/job-refresh/providers/cu
 
 Techmap RSS uses `JOB_TECHMAP_RSS_FEEDS=url` or `Feed Name|url` entries, with optional `JOB_TECHMAP_RSS_AUTH_HEADER` or `TECHMAP_RSS_TOKEN`.
 
-Adzuna defaults to US searches from `JOB_ADZUNA_QUERIES`. TheirStack requires `THEIRSTACK_API_KEY` and supports `JOB_THEIRSTACK_TITLE_QUERIES`, `JOB_THEIRSTACK_COMPANY_NAMES`, `JOB_THEIRSTACK_COUNTRY_CODES`, `JOB_THEIRSTACK_MAX_AGE_DAYS`, and `JOB_THEIRSTACK_LIMIT`. SerpAPI Google Jobs requires `SERPAPI_API_KEY` and supports `JOB_SERPAPI_QUERIES`, `JOB_SERPAPI_LOCATION`, `JOB_SERPAPI_GL`, `JOB_SERPAPI_HL`, and `JOB_SERPAPI_MAX_PAGES`. RapidAPI Daily International Jobs requires `RAPIDAPI_DAILY_JOBS_KEY` and supports `JOB_RAPIDAPI_COUNTRY_CODE`, `JOB_RAPIDAPI_HAS_SALARY`, `JOB_RAPIDAPI_MAX_PAGES`, and optional `JOB_RAPIDAPI_QUERIES`.
+Adzuna defaults to US searches from `JOB_ADZUNA_QUERIES`. TheirStack requires `THEIRSTACK_API_KEY` and supports `JOB_THEIRSTACK_TITLE_QUERIES`, `JOB_THEIRSTACK_COMPANY_NAMES`, `JOB_THEIRSTACK_COUNTRY_CODES`, `JOB_THEIRSTACK_MAX_AGE_DAYS`, and `JOB_THEIRSTACK_LIMIT`. SerpAPI Google Jobs requires `SERPAPI_API_KEY` and supports `JOB_SERPAPI_QUERIES`, `JOB_SERPAPI_LOCATION`, `JOB_SERPAPI_GL`, `JOB_SERPAPI_HL`, and `JOB_SERPAPI_MAX_PAGES`. RapidAPI Daily International Jobs requires `RAPIDAPI_DAILY_JOBS_KEY` and supports `JOB_RAPIDAPI_COUNTRY_CODE`, `JOB_RAPIDAPI_HAS_SALARY`, `JOB_RAPIDAPI_MAX_PAGES`, and optional `JOB_RAPIDAPI_QUERIES`. RapidAPI LinkedIn Job Search requires `RAPIDAPI_LINKEDIN_JOBS_KEY` and supports `JOB_RAPIDAPI_LINKEDIN_TITLE_FILTERS`, `JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER`, `JOB_RAPIDAPI_LINKEDIN_LIMIT`, `JOB_RAPIDAPI_LINKEDIN_MAX_PAGES`, and `JOB_RAPIDAPI_LINKEDIN_DESCRIPTION_TYPE`.
 
 ## GitHub Action
 

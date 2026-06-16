@@ -86,6 +86,17 @@ Result: Pushed `451f765` to `dev` and deployed preview `https://endpoint-jobs-mj
 
 Result: Fast-forwarded `main` to `7df5b2b`, pushed to GitHub, and deployed production `dpl_GGowY2vwkvyA9ow4T6akzztcLyYg`, aliased at `https://endpointjobs.dev`.
 
+## LinkedIn API Provider Spike
+
+- [x] Create an isolated branch for the investigation.
+- [x] Review current provider ingestion boundaries.
+- [x] Verify what `linkedin-api-js-client` supports and what LinkedIn access is required.
+- [x] Evaluate the RapidAPI LinkedIn Job Search alternative.
+- [x] Add an optional provider if the API shape fits the ingestion model.
+- [x] Run verification.
+
+Result: Do not install `linkedin-api-client`. It is useful only after approved LinkedIn API access exists, and LinkedIn's documented Job Posting API is for authorized partners posting jobs to LinkedIn, not discovering public LinkedIn listings for this feed. Added an optional `rapidapilinkedin` provider for the RapidAPI LinkedIn Job Search API, gated by `RAPIDAPI_LINKEDIN_JOBS_KEY`.
+
 ## Repo Move And Publish
 
 - [x] Move repo to `~/Code/EndpointJobs`.
@@ -206,6 +217,17 @@ Result: Split styles into `globals.css` (104 lines), `job-board.css` (784 lines)
 - [x] Run refresh, typecheck, lint, build, and source-specific checks.
 
 Result: Greenhouse, Ashby, and Lever were already wired. Added Workable account ingestion and configurable Techmap RSS ingestion, including workflow env/secrets and README setup notes. Verified Workable and Techmap RSS with local mock feeds, `npm run typecheck`, `npm run lint`, `npm run build`, and a temp full refresh that wrote 49 endpoint jobs from 12 providers. `npm audit --audit-level=moderate` still reports the existing Next/PostCSS advisory; npm only offers `npm audit fix --force`, so no forced breaking remediation was applied.
+
+## LinkedIn Provider Review Loop
+
+- [x] Run React Doctor baseline.
+- [x] Review current branch changes with thermo-nuclear standards.
+- [x] Address every React Doctor and strict review finding.
+- [x] Repeat React Doctor until no findings remain.
+- [x] Verify typecheck, lint, build, and diff hygiene.
+- [x] Document final results.
+
+Result: React Doctor stayed clean at `100 / 100`. Strict review found the RapidAPI LinkedIn provider was too shape-agnostic, so the parser now uses a typed field-alias contract, explicit known response envelopes, visible failure for malformed successful responses, and canonical salary extraction from descriptions. Verified typecheck, lint, mocked provider ingestion, React Doctor, build, and diff hygiene.
 
 ## Publish Current Changes
 
@@ -643,3 +665,82 @@ Result: Removed provider-specific feed reservation from refresh orchestration by
 - [x] Create and inspect a Vercel preview deployment.
 
 Result: Pushed the curated job availability work to `dev` and created a Ready Vercel preview deployment. Direct unauthenticated HTTP requests return Vercel Deployment Protection `401`, so preview access may require Vercel auth or a bypass configuration.
+
+## Job Pagination
+
+- [x] Inspect current job filtering and results rendering.
+- [x] Add client-side pagination for filtered jobs.
+- [x] Reset pagination when filters change.
+- [x] Verify typecheck, lint, build, and rendered behavior.
+
+Result: Added 20-job client-side pagination above and below the filtered result list, with previous/next controls, page numbers, filtered-count summaries, and page reset on filter changes. Verified typecheck, lint, build, React Doctor, diff hygiene, line counts, desktop page navigation, filter reset, and 390px mobile no-overflow behavior.
+
+## Push Pagination Preview
+
+- [x] Confirm Vercel project link and local diff scope.
+- [x] Run final deploy hygiene checks.
+- [x] Create a Vercel preview deployment.
+- [x] Inspect preview deployment status.
+
+Result: Created Ready preview deployment `dpl_GP6SCB6PrPy6rWyqdcLpZiTrt5q1` at `https://endpoint-jobs-kurict8w6-jorgeasaurus-projects.vercel.app`. Verified with `vercel inspect` and `vercel curl / --deployment`.
+
+## Refreshed Feed Preview Deployment
+
+- [x] Confirm refreshed branch and feed state.
+- [x] Run local production build.
+- [x] Create a Vercel preview deployment.
+- [x] Inspect and curl the preview deployment.
+
+Result: Deployed refreshed branch commit `f33b63c` to Vercel preview `dpl_DXmSr5VAjaRsREf3HX8tHoFu1ep6` at `https://endpoint-jobs-qklpfz684-jorgeasaurus-projects.vercel.app`. Verified Ready status with `vercel inspect` and captured the protected preview HTML with `vercel curl`.
+
+## Adzuna Description Parsing Fix
+
+- [x] Trace Adzuna descriptions from provider normalization to expanded card rendering.
+- [x] Fix the description/summary boundary without Adzuna-specific UI hacks.
+- [x] Refresh or repair affected job data.
+- [x] Verify build, lint, typecheck, and rendered Adzuna cards.
+
+Result: Summary and description normalization now trim to word boundaries, and expanded card prefix removal guards against stale mid-word summaries. Repaired generated summaries for the current 200-job feed; verified typecheck, lint, build, diff hygiene, feed-wide expanded-description boundaries, and the rendered Accenture Adzuna card.
+
+## Push Adzuna Fix Preview
+
+- [x] Review final diff scope.
+- [x] Run final build hygiene checks.
+- [x] Commit and push the current branch.
+- [x] Create and inspect a Vercel preview deployment.
+
+Result: Pushed `00196b1` to `codex/linkedin-api-client-spike` and created Ready Vercel preview `dpl_7zm3h6KtnjmopgX655h7DMqfvXGW` at `https://endpoint-jobs-2zb77oy2n-jorgeasaurus-projects.vercel.app`. Verified with `vercel inspect`, `vercel curl / --deployment`, and a protected preview query containing `Top 50 Companies` without the broken `op 50 Companies` fragment.
+
+## Refresh Action Push Rejection
+
+- [x] Inspect failed GitHub Actions job logs.
+- [x] Fix stale-branch handling in the listing commit step.
+- [x] Verify workflow syntax and local build hygiene.
+- [x] Commit, push, dispatch the workflow, and inspect the result.
+
+Result: Failed run `27623925107` refreshed and built successfully, then failed because `git push` was rejected after the branch advanced. Added fetch/rebase before pushing generated listings, pushed `852aaf1`, and dispatched run `27624311110`, which succeeded and pushed refresh commit `b93d605` with 300 jobs. Verified refreshed feed locally: `staleSummaries=0`, `midWordExpandedStarts=0`.
+
+## Merge Branch To Production
+
+- [ ] Sync local `main` with origin.
+- [ ] Merge `codex/linkedin-api-client-spike` into `main`.
+- [ ] Verify typecheck, lint, build, and feed description boundaries.
+- [ ] Push `main` to GitHub.
+- [ ] Deploy Vercel production and verify `endpointjobs.dev`.
+
+## Greenhouse Board Expansion
+
+- [x] Identify high-signal Greenhouse boards for endpoint-adjacent companies.
+- [x] Verify each board slug against the Greenhouse jobs API.
+- [x] Keep GitHub Action and local defaults aligned.
+- [x] Run refresh and build quality gates.
+
+Result: Added verified Greenhouse boards for Anduril, Asana, MongoDB, Brex, Figma, Airbnb, Discord, Reddit, Rubrik, Dropbox, Affirm, and Duolingo. Focused Greenhouse refresh fetched 9,350 raw jobs and wrote 37 endpoint-filtered jobs, including six new matches from Anduril and Asana; duplicate job IDs were zero. Verified typecheck, lint, workflow YAML parsing, build, and diff hygiene.
+
+## Push Branch And Run Refresh Action
+
+- [x] Review final diff scope.
+- [ ] Commit current intended changes.
+- [ ] Push the current branch to GitHub.
+- [ ] Dispatch `Refresh job listings` against the branch.
+- [ ] Inspect the workflow result.

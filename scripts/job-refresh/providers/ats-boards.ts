@@ -126,7 +126,19 @@ const defaultGreenhouseBoards = [
   "datadog",
   "elastic",
   "lyft",
-  "instacart"
+  "instacart",
+  "andurilindustries",
+  "asana",
+  "mongodb",
+  "brex",
+  "figma",
+  "airbnb",
+  "discord",
+  "reddit",
+  "rubrik",
+  "dropbox",
+  "affirm",
+  "duolingo"
 ];
 
 const defaultLeverCompanies = ["jumpcloud", "brightonjones", "hermeus", "omnidian"];
@@ -791,6 +803,7 @@ function getWorkableResults(payload: unknown) {
 
 function formatSourceAccountName(slug: string) {
   const knownNames: Record<string, string> = {
+    andurilindustries: "Anduril",
     anthropic: "Anthropic",
     automox: "Automox",
     boxinc: "Box",
@@ -809,6 +822,7 @@ function formatSourceAccountName(slug: string) {
     jumpcloud: "JumpCloud",
     kymeratherapeutics: "Kymera Therapeutics",
     lyft: "Lyft",
+    mongodb: "MongoDB",
     okta: "Okta",
     openai: "OpenAI",
     perplexity: "Perplexity",
