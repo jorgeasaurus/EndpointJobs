@@ -722,11 +722,13 @@ Result: Failed run `27623925107` refreshed and built successfully, then failed b
 
 ## Merge Branch To Production
 
-- [ ] Sync local `main` with origin.
-- [ ] Merge `codex/linkedin-api-client-spike` into `main`.
-- [ ] Verify typecheck, lint, build, and feed description boundaries.
-- [ ] Push `main` to GitHub.
-- [ ] Deploy Vercel production and verify `endpointjobs.dev`.
+- [x] Sync local `main` with origin.
+- [x] Merge `codex/linkedin-api-client-spike` into `main`.
+- [x] Verify typecheck, lint, build, and feed description boundaries.
+- [x] Push `main` to GitHub.
+- [x] Deploy Vercel production and verify `endpointjobs.dev`.
+
+Result: Merged the branch into `main`, resolved the generated feed conflict by keeping the refreshed 300-job branch feed, pushed `main`, deployed production, and verified `endpointjobs.dev` renders the updated job board with clean Adzuna description boundaries.
 
 ## Greenhouse Board Expansion
 
