@@ -716,7 +716,9 @@ Result: Pushed `00196b1` to `codex/linkedin-api-client-spike` and created Ready 
 - [x] Inspect failed GitHub Actions job logs.
 - [x] Fix stale-branch handling in the listing commit step.
 - [x] Verify workflow syntax and local build hygiene.
-- [ ] Commit, push, dispatch the workflow, and inspect the result.
+- [x] Commit, push, dispatch the workflow, and inspect the result.
+
+Result: Failed run `27623925107` refreshed and built successfully, then failed because `git push` was rejected after the branch advanced. Added fetch/rebase before pushing generated listings, pushed `852aaf1`, and dispatched run `27624311110`, which succeeded and pushed refresh commit `b93d605` with 300 jobs. Verified refreshed feed locally: `staleSummaries=0`, `midWordExpandedStarts=0`.
 
 ## Greenhouse Board Expansion
 
