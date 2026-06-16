@@ -62,7 +62,7 @@ jobs:
           ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
           JOB_FEED_SOURCE_URL: https://github.com/jorgeasaurus/EndpointJobs
           JOB_STALE_DAYS: "45"
-          JOB_MAX_RESULTS: "200"
+          JOB_MAX_RESULTS: "300"
 
       - name: Verify build
         run: npm run build

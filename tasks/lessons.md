@@ -12,3 +12,4 @@
 - Expandable content must add new information beyond the visible summary; provider snippets should not get expanders just because they are stored in a description-shaped field.
 - Glassmorphism CSS needs `-webkit-backdrop-filter` beside `backdrop-filter`, and JSX toggle buttons may need literal `aria-pressed` branches to satisfy Edge Tools static diagnostics.
 - Avoid adding persistent quick-chip rows inside the mobile hero unless explicitly requested; they consume scarce vertical space and can make the first viewport feel cluttered.
+- Truncated job summaries must stop on word boundaries before UI prefix removal; otherwise expanded descriptions can start from the middle of a word.

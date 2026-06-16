@@ -684,6 +684,31 @@ Result: Added 20-job client-side pagination above and below the filtered result 
 
 Result: Created Ready preview deployment `dpl_GP6SCB6PrPy6rWyqdcLpZiTrt5q1` at `https://endpoint-jobs-kurict8w6-jorgeasaurus-projects.vercel.app`. Verified with `vercel inspect` and `vercel curl / --deployment`.
 
+## Refreshed Feed Preview Deployment
+
+- [x] Confirm refreshed branch and feed state.
+- [x] Run local production build.
+- [x] Create a Vercel preview deployment.
+- [x] Inspect and curl the preview deployment.
+
+Result: Deployed refreshed branch commit `f33b63c` to Vercel preview `dpl_DXmSr5VAjaRsREf3HX8tHoFu1ep6` at `https://endpoint-jobs-qklpfz684-jorgeasaurus-projects.vercel.app`. Verified Ready status with `vercel inspect` and captured the protected preview HTML with `vercel curl`.
+
+## Adzuna Description Parsing Fix
+
+- [x] Trace Adzuna descriptions from provider normalization to expanded card rendering.
+- [x] Fix the description/summary boundary without Adzuna-specific UI hacks.
+- [x] Refresh or repair affected job data.
+- [x] Verify build, lint, typecheck, and rendered Adzuna cards.
+
+Result: Summary and description normalization now trim to word boundaries, and expanded card prefix removal guards against stale mid-word summaries. Repaired generated summaries for the current 200-job feed; verified typecheck, lint, build, diff hygiene, feed-wide expanded-description boundaries, and the rendered Accenture Adzuna card.
+
+## Push Adzuna Fix Preview
+
+- [x] Review final diff scope.
+- [x] Run final build hygiene checks.
+- [ ] Commit and push the current branch.
+- [ ] Create and inspect a Vercel preview deployment.
+
 ## Greenhouse Board Expansion
 
 - [x] Identify high-signal Greenhouse boards for endpoint-adjacent companies.

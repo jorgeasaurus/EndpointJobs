@@ -582,7 +582,7 @@ export function summarize(value: string) {
     return compact;
   }
 
-  return `${compact.slice(0, 257).trim()}...`;
+  return `${trimToWordBoundary(compact, 257)}...`;
 }
 
 export function normalizeDescription(value: string | undefined) {
@@ -597,7 +597,7 @@ export function normalizeDescription(value: string | undefined) {
     return formatted;
   }
 
-  return `${formatted.slice(0, descriptionMaxLength - 3).trimEnd()}...`;
+  return `${trimToWordBoundary(formatted, descriptionMaxLength - 3)}...`;
 }
 
 export function stripHtml(value: string) {
@@ -610,6 +610,17 @@ export function stripHtml(value: string) {
     .replace(/<\/(?:li|p|div|section|article|header|footer|h[1-6]|ul|ol|tr|table|blockquote)>/gi, "\n")
     .replace(/<(?:p|div|section|article|header|footer|h[1-6]|ul|ol|tr|table|blockquote)[^>]*>/gi, "\n")
     .replace(/<[^>]+>/g, " ");
+}
+
+function trimToWordBoundary(value: string, maxLength: number) {
+  const trimmed = value.slice(0, maxLength).trimEnd();
+  const lastWhitespace = trimmed.match(/\s+\S*$/)?.index ?? -1;
+
+  if (lastWhitespace >= Math.floor(maxLength * 0.72)) {
+    return trimmed.slice(0, lastWhitespace).trimEnd();
+  }
+
+  return trimmed;
 }
 
 export function getString(value: unknown) {
