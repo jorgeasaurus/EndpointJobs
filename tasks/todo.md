@@ -706,8 +706,10 @@ Result: Summary and description normalization now trim to word boundaries, and e
 
 - [x] Review final diff scope.
 - [x] Run final build hygiene checks.
-- [ ] Commit and push the current branch.
-- [ ] Create and inspect a Vercel preview deployment.
+- [x] Commit and push the current branch.
+- [x] Create and inspect a Vercel preview deployment.
+
+Result: Pushed `00196b1` to `codex/linkedin-api-client-spike` and created Ready Vercel preview `dpl_7zm3h6KtnjmopgX655h7DMqfvXGW` at `https://endpoint-jobs-2zb77oy2n-jorgeasaurus-projects.vercel.app`. Verified with `vercel inspect`, `vercel curl / --deployment`, and a protected preview query containing `Top 50 Companies` without the broken `op 50 Companies` fragment.
 
 ## Greenhouse Board Expansion
 
