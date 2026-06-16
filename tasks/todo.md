@@ -665,3 +665,38 @@ Result: Removed provider-specific feed reservation from refresh orchestration by
 - [x] Create and inspect a Vercel preview deployment.
 
 Result: Pushed the curated job availability work to `dev` and created a Ready Vercel preview deployment. Direct unauthenticated HTTP requests return Vercel Deployment Protection `401`, so preview access may require Vercel auth or a bypass configuration.
+
+## Job Pagination
+
+- [x] Inspect current job filtering and results rendering.
+- [x] Add client-side pagination for filtered jobs.
+- [x] Reset pagination when filters change.
+- [x] Verify typecheck, lint, build, and rendered behavior.
+
+Result: Added 20-job client-side pagination above and below the filtered result list, with previous/next controls, page numbers, filtered-count summaries, and page reset on filter changes. Verified typecheck, lint, build, React Doctor, diff hygiene, line counts, desktop page navigation, filter reset, and 390px mobile no-overflow behavior.
+
+## Push Pagination Preview
+
+- [x] Confirm Vercel project link and local diff scope.
+- [x] Run final deploy hygiene checks.
+- [x] Create a Vercel preview deployment.
+- [x] Inspect preview deployment status.
+
+Result: Created Ready preview deployment `dpl_GP6SCB6PrPy6rWyqdcLpZiTrt5q1` at `https://endpoint-jobs-kurict8w6-jorgeasaurus-projects.vercel.app`. Verified with `vercel inspect` and `vercel curl / --deployment`.
+
+## Greenhouse Board Expansion
+
+- [x] Identify high-signal Greenhouse boards for endpoint-adjacent companies.
+- [x] Verify each board slug against the Greenhouse jobs API.
+- [x] Keep GitHub Action and local defaults aligned.
+- [x] Run refresh and build quality gates.
+
+Result: Added verified Greenhouse boards for Anduril, Asana, MongoDB, Brex, Figma, Airbnb, Discord, Reddit, Rubrik, Dropbox, Affirm, and Duolingo. Focused Greenhouse refresh fetched 9,350 raw jobs and wrote 37 endpoint-filtered jobs, including six new matches from Anduril and Asana; duplicate job IDs were zero. Verified typecheck, lint, workflow YAML parsing, build, and diff hygiene.
+
+## Push Branch And Run Refresh Action
+
+- [x] Review final diff scope.
+- [ ] Commit current intended changes.
+- [ ] Push the current branch to GitHub.
+- [ ] Dispatch `Refresh job listings` against the branch.
+- [ ] Inspect the workflow result.

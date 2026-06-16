@@ -4,13 +4,21 @@ import type { Job } from "@/types/job";
 
 import { AnimatedNumber } from "./animated-number";
 import { JobCard } from "./job-card";
+import { PaginationControls, type PaginationState } from "./pagination-controls";
 
 export function ResultsPanel({
   clearFilters,
+  currentPage,
+  onPageChange,
+  pageEnd,
+  pageStart,
+  totalJobs,
+  totalPages,
   query,
   visibleJobs
-}: {
+}: PaginationState & {
   clearFilters: () => void;
+  onPageChange: (page: number) => void;
   query: string;
   visibleJobs: Job[];
 }) {
@@ -20,10 +28,10 @@ export function ResultsPanel({
         <div>
           <span className="section-kicker">Open roles</span>
           <h2>
-            <span className="sr-only">{visibleJobs.length} </span>
+            <span className="sr-only">{totalJobs} </span>
             <AnimatedNumber
               className="slot-number slot-number--heading"
-              value={visibleJobs.length}
+              value={totalJobs}
             />{" "}
             endpoint opportunities
           </h2>
@@ -34,12 +42,30 @@ export function ResultsPanel({
         </span>
       </div>
 
-      {visibleJobs.length > 0 ? (
-        <div className="job-list">
-          {visibleJobs.map((job) => (
-            <JobCard key={job.id} job={job} query={query} />
-          ))}
-        </div>
+      {totalJobs > 0 ? (
+        <>
+          <PaginationControls
+            currentPage={currentPage}
+            onPageChange={onPageChange}
+            pageEnd={pageEnd}
+            pageStart={pageStart}
+            totalJobs={totalJobs}
+            totalPages={totalPages}
+          />
+          <div className="job-list">
+            {visibleJobs.map((job) => (
+              <JobCard key={job.id} job={job} query={query} />
+            ))}
+          </div>
+          <PaginationControls
+            currentPage={currentPage}
+            onPageChange={onPageChange}
+            pageEnd={pageEnd}
+            pageStart={pageStart}
+            totalJobs={totalJobs}
+            totalPages={totalPages}
+          />
+        </>
       ) : (
         <div className="empty-state">
           <Layers3 size={34} aria-hidden="true" />

@@ -28,7 +28,7 @@ jobs:
         run: npm run jobs:refresh
         env:
           JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,curated,techmaprss,adzuna,theirstack,serpapi,rapidapi,rapidapilinkedin
-          JOB_GREENHOUSE_BOARDS: jamf,automox,tanium,okta,sonyinteractiveentertainmentglobal,verkada,anthropic,doordashusa,commvault,kaseya,kymeratherapeutics,databricks,zscaler,samsara,scaleai,wizinc,stripe,robinhood,boxinc,datadog,elastic,lyft,instacart
+          JOB_GREENHOUSE_BOARDS: jamf,automox,tanium,okta,sonyinteractiveentertainmentglobal,verkada,anthropic,doordashusa,commvault,kaseya,kymeratherapeutics,databricks,zscaler,samsara,scaleai,wizinc,stripe,robinhood,boxinc,datadog,elastic,lyft,instacart,andurilindustries,asana,mongodb,brex,figma,airbnb,discord,reddit,rubrik,dropbox,affirm,duolingo
           JOB_LEVER_COMPANIES: jumpcloud,brightonjones,hermeus,omnidian
           JOB_ASHBY_BOARDS: docker,cursor,perplexity,openai,cohere,elevenlabs,watershed
           JOB_WORKABLE_ACCOUNTS: ${{ vars.JOB_WORKABLE_ACCOUNTS }}
@@ -62,7 +62,7 @@ jobs:
           ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
           JOB_FEED_SOURCE_URL: https://github.com/jorgeasaurus/EndpointJobs
           JOB_STALE_DAYS: "45"
-          JOB_MAX_RESULTS: "80"
+          JOB_MAX_RESULTS: "200"
 
       - name: Verify build
         run: npm run build
