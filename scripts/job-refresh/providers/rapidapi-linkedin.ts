@@ -5,6 +5,7 @@ import {
   buildStableJobId,
   cleanText,
   cleanUrl,
+  extractSalaryFromText,
   formatSlugLabel,
   getCsvConfig,
   normalizeFirstEmploymentType,
@@ -12,11 +13,77 @@ import {
   normalizeSearchText,
   parseDateLike,
   summarize,
-  toArray,
   toEndpointJob
 } from "../shared";
 
-type RapidApiLinkedInJob = Record<string, unknown>;
+type ApiText = string | number | Array<string | number>;
+
+const rapidApiLinkedInFields = {
+  title: ["title", "job_title", "jobTitle", "name"],
+  company: ["company", "company_name", "companyName", "organization"],
+  url: [
+    "url",
+    "job_url",
+    "jobUrl",
+    "linkedin_url",
+    "linkedinUrl",
+    "apply_url",
+    "applyUrl"
+  ],
+  description: [
+    "description",
+    "job_description",
+    "jobDescription",
+    "summary",
+    "snippet"
+  ],
+  location: [
+    "location",
+    "job_location",
+    "jobLocation",
+    "formatted_location",
+    "formattedLocation"
+  ],
+  employmentType: ["employment_type", "employmentType", "job_type", "jobType"],
+  seniority: ["seniority", "seniority_level", "seniorityLevel"],
+  workplaceType: ["workplace_type", "workplaceType"],
+  source: ["source"],
+  postedAt: [
+    "posted_at",
+    "postedAt",
+    "date_posted",
+    "datePosted",
+    "listed_at",
+    "listedAt",
+    "published_at",
+    "publishedAt",
+    "created_at",
+    "createdAt",
+    "indexed_at",
+    "indexedAt"
+  ],
+  salaryMin: ["salary_min", "salaryMin", "min_salary", "minSalary"],
+  salaryMax: ["salary_max", "salaryMax", "max_salary", "maxSalary"],
+  currency: ["salary_currency", "salaryCurrency", "currency"]
+} as const;
+
+type RapidApiLinkedInField =
+  (typeof rapidApiLinkedInFields)[keyof typeof rapidApiLinkedInFields][number];
+
+type RapidApiLinkedInJob = Partial<Record<RapidApiLinkedInField, ApiText>> & {
+  remote?: boolean | string;
+  is_remote?: boolean | string;
+  isRemote?: boolean | string;
+};
+
+type RapidApiLinkedInEnvelope = {
+  jobs?: unknown;
+  data?: unknown;
+  result?: unknown;
+  results?: unknown;
+  items?: unknown;
+  elements?: unknown;
+};
 
 const defaultTitleFilters = [
   "Endpoint Engineer",
@@ -26,6 +93,17 @@ const defaultTitleFilters = [
   "Desktop Engineer",
   "Digital Workplace Engineer"
 ];
+
+const jobArrayKeys = [
+  "jobs",
+  "data",
+  "result",
+  "results",
+  "items",
+  "elements"
+] as const;
+
+const nestedEnvelopeKeys = ["data", "result", "results"] as const;
 
 export const rapidApiLinkedInProvider: ProviderAdapter<"rapidapilinkedin"> = {
   id: "rapidapilinkedin",
@@ -61,7 +139,11 @@ async function fetchRapidApiLinkedInJobs(url: string, fetchedAt: Date) {
     for (let page = 0; page < maxPages; page += 1) {
       const queryUrl = buildRapidApiLinkedInUrl(url, titleFilter, limit, page);
       const rawJobs = await fetchRapidApiLinkedInPage(queryUrl, apiKey);
-      jobs.push(...rawJobs.map((job) => normalizeRapidApiLinkedInJob(job, titleFilter, fetchedAt)));
+      const normalized = rawJobs.map((job) =>
+        normalizeRapidApiLinkedInJob(job, titleFilter, fetchedAt)
+      );
+
+      jobs.push(...normalized);
       console.log(
         `Fetched ${rawJobs.length} raw jobs from RapidAPI LinkedIn ${titleFilter} page ${page + 1}`
       );
@@ -123,50 +205,71 @@ async function fetchRapidApiLinkedInPage(url: string, apiKey: string) {
 }
 
 function extractRapidApiLinkedInJobs(payload: unknown): RapidApiLinkedInJob[] {
-  const candidate = findFirstArray(payload);
+  const topLevelJobs = getJobArray(payload);
 
-  return candidate.filter(isRapidApiLinkedInJob);
-}
-
-function findFirstArray(payload: unknown): unknown[] {
-  if (Array.isArray(payload)) {
-    return payload;
+  if (topLevelJobs) {
+    return topLevelJobs;
   }
 
-  if (!payload || typeof payload !== "object") {
-    return [];
+  const envelope = asEnvelope(payload);
+
+  if (!envelope) {
+    throw new Error("RapidAPI LinkedIn response was not an object or array");
   }
 
-  const record = payload as Record<string, unknown>;
-  const direct = ["jobs", "data", "result", "results", "items", "elements"]
-    .map((key) => record[key])
-    .find(Array.isArray);
+  for (const key of jobArrayKeys) {
+    const jobs = getJobArray(envelope[key]);
 
-  if (direct) {
-    return direct;
-  }
-
-  for (const key of ["data", "result", "results"]) {
-    const nested = findFirstArray(record[key]);
-
-    if (nested.length > 0) {
-      return nested;
+    if (jobs) {
+      return jobs;
     }
   }
 
-  return [];
+  for (const key of nestedEnvelopeKeys) {
+    const nested = asEnvelope(envelope[key]);
+
+    if (!nested) {
+      continue;
+    }
+
+    for (const nestedKey of jobArrayKeys) {
+      const jobs = getJobArray(nested[nestedKey]);
+
+      if (jobs) {
+        return jobs;
+      }
+    }
+  }
+
+  throw new Error("RapidAPI LinkedIn response did not include a jobs array");
+}
+
+function asEnvelope(value: unknown): RapidApiLinkedInEnvelope | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return undefined;
+  }
+
+  return value as RapidApiLinkedInEnvelope;
+}
+
+function getJobArray(value: unknown) {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+
+  return value.filter(isRapidApiLinkedInJob);
 }
 
 function isRapidApiLinkedInJob(value: unknown): value is RapidApiLinkedInJob {
-  if (!value || typeof value !== "object") {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
     return false;
   }
 
   const job = value as RapidApiLinkedInJob;
 
   return Boolean(
-    getString(job, "title", "job_title", "jobTitle", "name") &&
-      getString(job, "company", "company_name", "companyName", "organization") &&
+    getRapidApiLinkedInTitle(job) &&
+      getRapidApiLinkedInCompany(job) &&
       getRapidApiLinkedInUrl(job)
   );
 }
@@ -176,8 +279,8 @@ function normalizeRapidApiLinkedInJob(
   titleFilter: string,
   fetchedAt: Date
 ) {
-  const title = cleanText(getString(raw, "title", "job_title", "jobTitle", "name"));
-  const company = cleanText(getString(raw, "company", "company_name", "companyName", "organization"));
+  const title = cleanText(getRapidApiLinkedInTitle(raw));
+  const company = cleanText(getRapidApiLinkedInCompany(raw));
   const sourceJobUrl = getRapidApiLinkedInUrl(raw);
 
   if (!title || !company || !sourceJobUrl) {
@@ -185,17 +288,19 @@ function normalizeRapidApiLinkedInJob(
   }
 
   const description = cleanText(
-    getString(raw, "description", "job_description", "jobDescription", "summary", "snippet")
+    firstFieldText(raw, rapidApiLinkedInFields.description)
   );
   const location = cleanText(
-    getString(raw, "location", "job_location", "jobLocation", "formatted_location", "formattedLocation")
+    firstFieldText(raw, rapidApiLinkedInFields.location)
   );
+  const employmentType = firstFieldText(raw, rapidApiLinkedInFields.employmentType);
+  const workplaceType = firstFieldText(raw, rapidApiLinkedInFields.workplaceType);
   const sourceTags = [
     titleFilter,
-    getString(raw, "employment_type", "employmentType", "job_type", "jobType"),
-    getString(raw, "seniority", "seniority_level", "seniorityLevel"),
-    getString(raw, "workplace_type", "workplaceType"),
-    getString(raw, "source")
+    employmentType,
+    firstFieldText(raw, rapidApiLinkedInFields.seniority),
+    workplaceType,
+    firstFieldText(raw, rapidApiLinkedInFields.source)
   ].map(formatSlugLabel).filter(Boolean);
 
   return toEndpointJob({
@@ -213,46 +318,27 @@ function normalizeRapidApiLinkedInJob(
     termsProfile: "partner-terms",
     description,
     sourceTags,
-    haystackParts: [titleFilter, raw],
-    salary: getRapidApiLinkedInSalary(raw),
-    employmentType: normalizeFirstEmploymentType([
-      getString(raw, "employment_type", "employmentType"),
-      getString(raw, "job_type", "jobType")
-    ].filter(Boolean))
+    haystackParts: [titleFilter, workplaceType],
+    salary: getRapidApiLinkedInSalary(raw, description),
+    employmentType: normalizeFirstEmploymentType([employmentType])
   });
 }
 
+function getRapidApiLinkedInTitle(raw: RapidApiLinkedInJob) {
+  return firstFieldText(raw, rapidApiLinkedInFields.title);
+}
+
+function getRapidApiLinkedInCompany(raw: RapidApiLinkedInJob) {
+  return firstFieldText(raw, rapidApiLinkedInFields.company);
+}
+
 function getRapidApiLinkedInUrl(raw: RapidApiLinkedInJob) {
-  return cleanUrl(
-    getString(
-      raw,
-      "url",
-      "job_url",
-      "jobUrl",
-      "linkedin_url",
-      "linkedinUrl",
-      "apply_url",
-      "applyUrl"
-    )
-  );
+  return cleanUrl(firstFieldText(raw, rapidApiLinkedInFields.url));
 }
 
 function getRapidApiLinkedInPostedAt(raw: RapidApiLinkedInJob) {
-  for (const key of [
-    "posted_at",
-    "postedAt",
-    "date_posted",
-    "datePosted",
-    "listed_at",
-    "listedAt",
-    "published_at",
-    "publishedAt",
-    "created_at",
-    "createdAt",
-    "indexed_at",
-    "indexedAt"
-  ]) {
-    const date = parseDateLike(getString(raw, key));
+  for (const field of rapidApiLinkedInFields.postedAt) {
+    const date = parseDateLike(firstText(raw[field]));
 
     if (date) {
       return date;
@@ -275,7 +361,7 @@ function inferRapidApiLinkedInWorkplace(
   const text = normalizeSearchText([
     location,
     description,
-    getString(raw, "workplace_type", "workplaceType")
+    firstFieldText(raw, rapidApiLinkedInFields.workplaceType)
   ].join(" "));
 
   if (text.includes("remote")) return "Remote";
@@ -284,11 +370,16 @@ function inferRapidApiLinkedInWorkplace(
   return undefined;
 }
 
-function getRapidApiLinkedInSalary(raw: RapidApiLinkedInJob) {
-  const min = getNumber(raw, "salary_min", "salaryMin", "min_salary", "minSalary");
-  const max = getNumber(raw, "salary_max", "salaryMax", "max_salary", "maxSalary");
-  const salary = normalizeSalary(min, max);
-  const currency = cleanText(getString(raw, "salary_currency", "salaryCurrency", "currency"));
+function getRapidApiLinkedInSalary(
+  raw: RapidApiLinkedInJob,
+  description: string
+) {
+  const min = firstFieldNumber(raw, rapidApiLinkedInFields.salaryMin);
+  const max = firstFieldNumber(raw, rapidApiLinkedInFields.salaryMax);
+  const salary = normalizeSalary(min, max) ?? extractSalaryFromText(description);
+  const currency = cleanText(
+    firstFieldText(raw, rapidApiLinkedInFields.currency)
+  );
 
   if (!salary || !currency || salary.currency === currency) {
     return salary;
@@ -297,42 +388,56 @@ function getRapidApiLinkedInSalary(raw: RapidApiLinkedInJob) {
   return { ...salary, currency };
 }
 
-function getString(raw: RapidApiLinkedInJob, ...keys: string[]) {
-  for (const key of keys) {
-    const value = raw[key];
+function firstFieldText(
+  raw: RapidApiLinkedInJob,
+  fields: readonly RapidApiLinkedInField[]
+) {
+  return firstText(...fields.map((field) => raw[field]));
+}
 
-    if (typeof value === "string" && value.trim()) {
-      return value;
-    }
+function firstFieldNumber(
+  raw: RapidApiLinkedInJob,
+  fields: readonly RapidApiLinkedInField[]
+) {
+  return firstNumber(...fields.map((field) => raw[field]));
+}
 
-    if (typeof value === "number" && Number.isFinite(value)) {
-      return String(value);
-    }
+function firstText(...values: Array<ApiText | undefined>) {
+  for (const value of values) {
+    const candidates = Array.isArray(value) ? value : [value];
+    const match = candidates.find((candidate) =>
+      typeof candidate === "string"
+        ? candidate.trim()
+        : typeof candidate === "number" && Number.isFinite(candidate)
+    );
 
-    const first = toArray(value).find((item) => typeof item === "string" && item.trim());
-
-    if (typeof first === "string") {
-      return first;
+    if (match !== undefined) {
+      return String(match);
     }
   }
 
   return undefined;
 }
 
-function getNumber(raw: RapidApiLinkedInJob, ...keys: string[]) {
-  for (const key of keys) {
-    const value = raw[key];
+function firstNumber(...values: Array<ApiText | undefined>) {
+  for (const value of values) {
+    const text = firstText(value);
 
-    if (typeof value === "number" && Number.isFinite(value)) {
-      return value;
+    if (!text) {
+      continue;
     }
 
-    if (typeof value === "string") {
-      const parsed = Number(value.replace(/[$,]/g, ""));
+    const normalized = text.replace(/[$,]/g, "").trim();
+    const match = normalized.match(/^([0-9]+(?:\.[0-9]+)?)(k)?$/i);
 
-      if (Number.isFinite(parsed)) {
-        return parsed;
-      }
+    if (!match) {
+      continue;
+    }
+
+    const amount = Number(match[1]);
+
+    if (Number.isFinite(amount)) {
+      return match[2] ? amount * 1000 : amount;
     }
   }
 

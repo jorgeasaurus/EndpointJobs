@@ -218,6 +218,17 @@ Result: Split styles into `globals.css` (104 lines), `job-board.css` (784 lines)
 
 Result: Greenhouse, Ashby, and Lever were already wired. Added Workable account ingestion and configurable Techmap RSS ingestion, including workflow env/secrets and README setup notes. Verified Workable and Techmap RSS with local mock feeds, `npm run typecheck`, `npm run lint`, `npm run build`, and a temp full refresh that wrote 49 endpoint jobs from 12 providers. `npm audit --audit-level=moderate` still reports the existing Next/PostCSS advisory; npm only offers `npm audit fix --force`, so no forced breaking remediation was applied.
 
+## LinkedIn Provider Review Loop
+
+- [x] Run React Doctor baseline.
+- [x] Review current branch changes with thermo-nuclear standards.
+- [x] Address every React Doctor and strict review finding.
+- [x] Repeat React Doctor until no findings remain.
+- [x] Verify typecheck, lint, build, and diff hygiene.
+- [x] Document final results.
+
+Result: React Doctor stayed clean at `100 / 100`. Strict review found the RapidAPI LinkedIn provider was too shape-agnostic, so the parser now uses a typed field-alias contract, explicit known response envelopes, visible failure for malformed successful responses, and canonical salary extraction from descriptions. Verified typecheck, lint, mocked provider ingestion, React Doctor, build, and diff hygiene.
+
 ## Publish Current Changes
 
 - [x] Confirm working tree scope.
