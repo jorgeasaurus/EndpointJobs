@@ -711,6 +711,13 @@ Result: Summary and description normalization now trim to word boundaries, and e
 
 Result: Pushed `00196b1` to `codex/linkedin-api-client-spike` and created Ready Vercel preview `dpl_7zm3h6KtnjmopgX655h7DMqfvXGW` at `https://endpoint-jobs-2zb77oy2n-jorgeasaurus-projects.vercel.app`. Verified with `vercel inspect`, `vercel curl / --deployment`, and a protected preview query containing `Top 50 Companies` without the broken `op 50 Companies` fragment.
 
+## Refresh Action Push Rejection
+
+- [x] Inspect failed GitHub Actions job logs.
+- [x] Fix stale-branch handling in the listing commit step.
+- [x] Verify workflow syntax and local build hygiene.
+- [ ] Commit, push, dispatch the workflow, and inspect the result.
+
 ## Greenhouse Board Expansion
 
 - [x] Identify high-signal Greenhouse boards for endpoint-adjacent companies.
