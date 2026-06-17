@@ -730,6 +730,24 @@ Result: Failed run `27623925107` refreshed and built successfully, then failed b
 
 Result: Merged the branch into `main`, resolved the generated feed conflict by keeping the refreshed 300-job branch feed, pushed `main`, deployed production, and verified `endpointjobs.dev` renders the updated job board with clean Adzuna description boundaries.
 
+## Adzuna Description Cutoff Investigation
+
+- [x] Measure current Adzuna description lengths and truncation markers.
+- [x] Trace provider normalization and UI expansion boundaries.
+- [x] Identify whether cutoff is API-provided or locally imposed.
+- [x] Patch the narrow root cause if local.
+- [x] Verify feed data, build, and rendered descriptions.
+
+Result: Adzuna's API only returns description snippets, so the refresh no longer stores Adzuna `description` values as expandable full text. Repaired the current feed by keeping Adzuna summaries while removing 229 persisted snippet descriptions; verified typecheck, lint, React Doctor, diff hygiene, feed assertions for the card render condition, and a webpack production build. Local Turbopack build hung twice at compile, so webpack was used for build verification.
+
+## Push Adzuna Snippet Fix To Dev
+
+- [x] Fast-forward `dev` to current `main`.
+- [x] Commit the Adzuna snippet fix on `dev`.
+- [ ] Push `dev` to GitHub.
+- [ ] Dispatch the refresh workflow against `dev`.
+- [ ] Check the workflow run status.
+
 ## Greenhouse Board Expansion
 
 - [x] Identify high-signal Greenhouse boards for endpoint-adjacent companies.

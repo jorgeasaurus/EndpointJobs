@@ -679,7 +679,7 @@ function normalizeAdzunaJob(raw: AdzunaJob, fetchedAt: Date): Job | null {
     attributionLabel: "Adzuna",
     termsProfile: "attribution-required",
     summary: summarize(description),
-    description: normalizeDescription(description),
+    // Adzuna documents this field as a snippet, not a full description.
     tags: normalizeTags(sourceTags, tools, platforms),
     matchReasons,
     tools,

@@ -14,3 +14,4 @@
 - Avoid adding persistent quick-chip rows inside the mobile hero unless explicitly requested; they consume scarce vertical space and can make the first viewport feel cluttered.
 - Truncated job summaries must stop on word boundaries before UI prefix removal; otherwise expanded descriptions can start from the middle of a word.
 - GitHub Actions that commit generated data should rebase before pushing; a branch can move while a long refresh job is still running.
+- Provider APIs that document description snippets should not populate expandable descriptions from clipped snippet fields; keep those values as summaries unless full text is available.
