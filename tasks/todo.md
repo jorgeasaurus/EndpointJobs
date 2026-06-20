@@ -229,6 +229,16 @@ Result: Greenhouse, Ashby, and Lever were already wired. Added Workable account 
 
 Result: React Doctor stayed clean at `100 / 100`. Strict review found the RapidAPI LinkedIn provider was too shape-agnostic, so the parser now uses a typed field-alias contract, explicit known response envelopes, visible failure for malformed successful responses, and canonical salary extraction from descriptions. Verified typecheck, lint, mocked provider ingestion, React Doctor, build, and diff hygiene.
 
+## AI Dev Board API Integration
+
+- [x] Inspect `https://aidevboard.com/openapi.yaml`.
+- [x] Probe live endpoint-search coverage.
+- [x] Add an `aidevboard` provider.
+- [x] Wire workflow and README configuration.
+- [x] Verify source-specific refresh, typecheck, lint, build, and diff hygiene.
+
+Result: Added the AI Dev Board provider using `GET /api/v1/jobs`, optional `AIDEVBOARD_API_KEY`, endpoint-focused default queries, structured salary/workplace/seniority mapping, and active-listing expiry handling. Live source-only refresh fetched 96 raw jobs and normalized 3 endpoint-relevant jobs into a temp feed.
+
 ## Publish Current Changes
 
 - [x] Confirm working tree scope.

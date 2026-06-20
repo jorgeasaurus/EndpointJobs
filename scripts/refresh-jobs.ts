@@ -2,6 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
 import type { ProviderAdapter } from "./job-refresh/provider";
+import { aiDevBoardProvider } from "./job-refresh/providers/aidevboard";
 import { atsBoardProviders } from "./job-refresh/providers/ats-boards";
 import { companyAtsProviders } from "./job-refresh/providers/company-ats";
 import { curatedJobProvider } from "./job-refresh/providers/curated-jobs";
@@ -66,7 +67,8 @@ const providerAdapters = [
   theirStackProvider,
   serpApiProvider,
   rapidApiDailyJobsProvider,
-  rapidApiLinkedInProvider
+  rapidApiLinkedInProvider,
+  aiDevBoardProvider
 ] as const satisfies readonly ProviderAdapter[];
 type SupportedProvider = (typeof providerAdapters)[number]["id"];
 
