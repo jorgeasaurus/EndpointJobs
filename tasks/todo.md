@@ -2,9 +2,11 @@
 
 ## Main And Production Publish
 
-- [ ] Commit the current map and source-refresh work.
-- [ ] Push the resulting commit to `main`.
-- [ ] Deploy Vercel production and confirm it is ready.
+- [x] Commit the current map and source-refresh work.
+- [x] Push the resulting commit to `main`.
+- [x] Deploy Vercel production and confirm it is ready.
+
+Result: Merged the expandable map and source-refresh work into `main`, pushed to GitHub, and deployed Vercel production at `https://endpointjobs.dev`.
 
 ## Optional Job Map
 
