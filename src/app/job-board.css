@@ -4,6 +4,7 @@
   min-height: 100vh;
   margin: 0 auto;
   padding: 22px;
+  overflow-x: clip;
   isolation: isolate;
 }
 
@@ -14,28 +15,28 @@
 
 .site-frame::before,
 .site-frame::after {
-  position: fixed;
+  position: absolute;
   z-index: -1;
   width: 32rem;
   height: 32rem;
   pointer-events: none;
   content: "";
-  filter: blur(120px);
-  opacity: 0.34;
+  filter: blur(64px);
+  opacity: 0.2;
 }
 
 .site-frame::before {
   top: -16rem;
-  left: -8rem;
+  left: 0;
   background: radial-gradient(circle, rgb(204 255 0 / 42%), transparent 62%);
-  animation: float-glow 10s ease-in-out infinite;
+  transform: translateX(-45%);
 }
 
 .site-frame::after {
-  right: -14rem;
+  right: 0;
   bottom: 6rem;
   background: radial-gradient(circle, rgb(16 185 129 / 35%), transparent 64%);
-  animation: float-glow 13s ease-in-out infinite reverse;
+  transform: translateX(45%);
 }
 
 .topbar {
@@ -77,18 +78,7 @@
 .topbar,
 .refresh-pill,
 .feedback-link,
-.feed-note,
-.command-panel,
-.results-panel,
-.job-card,
-.empty-state,
-.search-box,
-.mode-button,
-.facet-button,
-.clear-button,
-.apply-link,
-.mini-field,
-.description-details {
+.feed-note {
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
 }
@@ -163,6 +153,7 @@
 
 .workbench,
 .board-grid,
+.job-map-section,
 .command-panel,
 .results-panel,
 .job-list,

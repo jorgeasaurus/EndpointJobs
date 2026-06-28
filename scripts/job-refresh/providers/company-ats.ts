@@ -158,6 +158,36 @@ const defaultWorkdaySites: WorkdaySite[] = [
     name: "Leidos",
     url: "https://leidos.wd5.myworkdayjobs.com/wday/cxs/leidos/External/jobs",
     queries: ["End-Point Protection Engineer", "Endpoint Protection Engineer", "Endpoint Engineer", "Unified Endpoint Management"]
+  },
+  {
+    name: "F5",
+    url: "https://ffive.wd5.myworkdayjobs.com/wday/cxs/ffive/f5jobs/jobs",
+    queries: ["Senior MDM Engineer", "Systems and Platform Administrator"]
+  },
+  {
+    name: "Allstate",
+    url: "https://allstate.wd5.myworkdayjobs.com/wday/cxs/allstate/Allstate_Careers/jobs",
+    queries: ["Exposure Intelligence Analyst Endpoint Identity"]
+  },
+  {
+    name: "Gartner",
+    url: "https://gartner.wd5.myworkdayjobs.com/wday/cxs/gartner/EXT/jobs",
+    queries: ["Windows Endpoint"]
+  },
+  {
+    name: "Nordic Consulting",
+    url: "https://nordic.wd1.myworkdayjobs.com/wday/cxs/nordic/Nordic/jobs",
+    queries: ["MDM Engineer III"]
+  },
+  {
+    name: "SHI",
+    url: "https://shi.wd12.myworkdayjobs.com/wday/cxs/shi/shicareers/jobs",
+    queries: ["endpoint Security"]
+  },
+  {
+    name: "Circle",
+    url: "https://circle.wd1.myworkdayjobs.com/wday/cxs/circle/Circle/jobs",
+    queries: ["Senior Manager Endpoint Trusted Environments"]
   }
 ];
 

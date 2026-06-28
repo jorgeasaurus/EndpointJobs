@@ -8,6 +8,7 @@ import type { JobsFeed } from "@/types/job";
 import { getActiveFilterItems } from "./job-board/active-filters";
 import { CommandPanel } from "./job-board/controls";
 import { filterJobs } from "./job-board/filter-model";
+import { JobMap } from "./job-board/job-map";
 import { ParallaxBackground } from "./job-board/parallax-background";
 import { ResultsPanel } from "./job-board/results-panel";
 import { SiteFooter, Topbar } from "./job-board/topbar";
@@ -92,6 +93,8 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
             searchInputRef={searchInputRef}
           />
         </section>
+
+        <JobMap jobs={visibleJobs} />
 
         <section className="board-grid" ref={resultsSectionRef}>
           <ResultsPanel

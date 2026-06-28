@@ -39,11 +39,18 @@ export type TermsProfile =
   | "partner-terms"
   | "public-api";
 
+export type JobMapLocation = {
+  label: string;
+  latitude: number;
+  longitude: number;
+};
+
 export type Job = {
   id: string;
   title: string;
   company: string;
   location: string;
+  mapLocation?: JobMapLocation;
   workplace: Workplace;
   postedAt: string;
   fetchedAt: string;

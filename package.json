@@ -10,23 +10,29 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "jobs:refresh": "tsx scripts/refresh-jobs.ts",
-    "doctor": "react-doctor"
+    "doctor": "react-doctor",
+    "audit:browser": "node scripts/audit-user-stories-browser.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
     "fast-xml-parser": "^5.8.0",
     "lucide-react": "^0.468.0",
+    "maplibre-gl": "^5.24.0",
     "next": "^16.0.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "slot-text": "^0.2.2"
+    "react-map-gl": "^8.1.1",
+    "slot-text": "^0.2.2",
+    "three": "^0.185.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
+    "@playwright/test": "^1.61.0",
     "@tailwindcss/postcss": "^4.1.0",
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
+    "@types/three": "^0.185.0",
     "eslint": "^9.17.0",
     "eslint-config-next": "^16.0.0",
     "postcss": "^8.4.49",

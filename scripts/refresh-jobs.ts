@@ -264,12 +264,46 @@ function validateFeed(feed: JobsFeed) {
     assertPresent(job.staleAfter, job.id, "staleAfter");
     assertPresent(job.attributionLabel, job.id, "attributionLabel");
     assertPresent(job.termsProfile, job.id, "termsProfile");
+    assertNonEmptyList(job.matchReasons, job.id, "matchReasons");
+    assertValidMapLocation(job);
+
+    if (job.source === "Adzuna") {
+      assertNoAdzunaSnippetFields(job);
+    }
+  }
+}
+
+function assertNoAdzunaSnippetFields(job: Job) {
+  if (job.description) {
+    throw new Error(`Adzuna job ${job.id} stores a snippet as description`);
+  }
+
+  if (job.summary.trim().endsWith("...")) {
+    throw new Error(`Adzuna job ${job.id} summary appears to be a clipped API snippet`);
   }
 }
 
 function assertPresent(value: unknown, id: string, field: string) {
   if (!value) {
     throw new Error(`Job ${id} is missing ${field}`);
+  }
+}
+
+function assertNonEmptyList(value: unknown, id: string, field: string) {
+  if (!Array.isArray(value) || value.length === 0) {
+    throw new Error(`Job ${id} is missing ${field}`);
+  }
+}
+
+function assertValidMapLocation(job: Job) {
+  if (!job.mapLocation) {
+    return;
+  }
+
+  const { latitude, longitude } = job.mapLocation;
+
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    throw new Error(`Job ${job.id} has invalid mapLocation coordinates`);
   }
 }
 
