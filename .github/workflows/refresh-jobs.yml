@@ -27,7 +27,7 @@ jobs:
       - name: Refresh endpoint jobs
         run: npm run jobs:refresh
         env:
-          JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,curated,techmaprss,adzuna,theirstack,serpapi,rapidapi,rapidapilinkedin
+          JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,curated,techmaprss,adzuna,theirstack,serpapi,rapidapi,rapidapilinkedin,aidevboard
           JOB_GREENHOUSE_BOARDS: jamf,automox,tanium,okta,sonyinteractiveentertainmentglobal,verkada,anthropic,doordashusa,commvault,kaseya,kymeratherapeutics,databricks,zscaler,samsara,scaleai,wizinc,stripe,robinhood,boxinc,datadog,elastic,lyft,instacart,andurilindustries,asana,mongodb,brex,figma,airbnb,discord,reddit,rubrik,dropbox,affirm,duolingo
           JOB_LEVER_COMPANIES: jumpcloud,brightonjones,hermeus,omnidian
           JOB_ASHBY_BOARDS: docker,cursor,perplexity,openai,cohere,elevenlabs,watershed
@@ -58,6 +58,9 @@ jobs:
           JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER: '"United States" OR "Remote"'
           JOB_RAPIDAPI_LINKEDIN_MAX_PAGES: "1"
           JOB_RAPIDAPI_LINKEDIN_LIMIT: "25"
+          AIDEVBOARD_API_KEY: ${{ secrets.AIDEVBOARD_API_KEY }}
+          JOB_AIDEVBOARD_MAX_PAGES: "1"
+          JOB_AIDEVBOARD_LIMIT: "20"
           ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
           ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
           JOB_FEED_SOURCE_URL: https://github.com/jorgeasaurus/EndpointJobs

@@ -14,3 +14,12 @@
 - Avoid adding persistent quick-chip rows inside the mobile hero unless explicitly requested; they consume scarce vertical space and can make the first viewport feel cluttered.
 - Truncated job summaries must stop on word boundaries before UI prefix removal; otherwise expanded descriptions can start from the middle of a word.
 - GitHub Actions that commit generated data should rebase before pushing; a branch can move while a long refresh job is still running.
+- Provider APIs that document description snippets should not populate expandable descriptions from clipped snippet fields; keep those values as summaries unless full text is available.
+- Map UI must use recognizable geographic source geometry when the user expects a world map; rough decorative polygons are only acceptable when explicitly framed as abstract.
+- Interactive map points need enough zoom, 44px hit targets, and tap/click detail states; hover-only markers and tiny controls fail mobile review even when desktop screenshots look acceptable.
+- Per-job map scatter offsets must not scale with map zoom; keep true geographic anchors separate from visual de-overlap offsets so coastal jobs do not drift offshore.
+- New page sections should inherit the app's rounded framed panel treatment; map canvases need matching child radii so tile surfaces do not square off the section.
+- Browser audits should assert user-visible behavior and current contracts, not removed visual implementation details.
+- Normalization labels should grow through rule data, not longer ad-hoc conditional chains.
+- Mobile map fit must account for marker radius and global longitude spread; bounds-only fitting can still clip edge clusters.
+- Framed section headers need their own horizontal inset; relying on the outer border alone makes labels and pills feel cramped.

@@ -1,57 +1,4 @@
 .parallax-field {
-  --star-field-far:
-    4vw 10vh 0 0 currentColor,
-    12vw 72vh 0 0 currentColor,
-    18vw 34vh 0 0 currentColor,
-    24vw 88vh 0 0 currentColor,
-    31vw 18vh 0 0 currentColor,
-    37vw 62vh 0 0 currentColor,
-    44vw 44vh 0 0 currentColor,
-    49vw 78vh 0 0 currentColor,
-    56vw 12vh 0 0 currentColor,
-    62vw 56vh 0 0 currentColor,
-    69vw 28vh 0 0 currentColor,
-    76vw 91vh 0 0 currentColor,
-    84vw 40vh 0 0 currentColor,
-    92vw 66vh 0 0 currentColor,
-    97vw 16vh 0 0 currentColor,
-    8vw 104vh 0 0 currentColor,
-    28vw 116vh 0 0 currentColor,
-    53vw 102vh 0 0 currentColor,
-    71vw 118vh 0 0 currentColor,
-    89vw 108vh 0 0 currentColor;
-  --star-field-mid:
-    7vw 18vh 0 0 currentColor,
-    15vw 49vh 0 0 currentColor,
-    22vw 96vh 0 0 currentColor,
-    29vw 26vh 0 0 currentColor,
-    36vw 82vh 0 0 currentColor,
-    43vw 11vh 0 0 currentColor,
-    51vw 68vh 0 0 currentColor,
-    59vw 38vh 0 0 currentColor,
-    66vw 104vh 0 0 currentColor,
-    73vw 23vh 0 0 currentColor,
-    81vw 74vh 0 0 currentColor,
-    88vw 50vh 0 0 currentColor,
-    94vw 8vh 0 0 currentColor,
-    3vw 63vh 0 0 currentColor,
-    17vw 112vh 0 0 currentColor,
-    39vw 121vh 0 0 currentColor,
-    58vw 114vh 0 0 currentColor,
-    78vw 126vh 0 0 currentColor;
-  --star-field-near:
-    10vw 32vh 0 0 currentColor,
-    19vw 78vh 0 0 currentColor,
-    27vw 14vh 0 0 currentColor,
-    34vw 108vh 0 0 currentColor,
-    46vw 54vh 0 0 currentColor,
-    55vw 25vh 0 0 currentColor,
-    64vw 87vh 0 0 currentColor,
-    72vw 42vh 0 0 currentColor,
-    83vw 118vh 0 0 currentColor,
-    91vw 69vh 0 0 currentColor,
-    96vw 30vh 0 0 currentColor,
-    6vw 121vh 0 0 currentColor;
   position: fixed;
   inset: -12vh 0 0;
   z-index: 0;
@@ -66,8 +13,8 @@
 }
 
 .parallax-atmosphere,
-.parallax-stars,
-.parallax-stars::after {
+.parallax-three-host,
+.parallax-three-host canvas {
   position: absolute;
   pointer-events: none;
   content: "";
@@ -86,73 +33,24 @@
   opacity: 0.76;
 }
 
-.parallax-stars {
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 1px;
-  background: transparent;
-  border-radius: 999px;
-  transform: translate3d(0, 0, 0);
-  will-change: transform;
+.parallax-three-host {
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  mix-blend-mode: screen;
+  transition: opacity 520ms var(--curve);
 }
 
-.parallax-stars::after {
-  top: 128vh;
-  left: 0;
-  width: inherit;
-  height: inherit;
-  border-radius: inherit;
-  box-shadow: inherit;
+.parallax-field--three .parallax-three-host {
+  opacity: 0.92;
 }
 
-.parallax-stars--far {
-  color: rgb(235 235 235 / 38%);
-  box-shadow: var(--star-field-far);
-  animation: endpoint-star-drift-far 132s linear infinite;
-}
-
-.parallax-stars--mid {
-  width: 2px;
-  height: 2px;
-  color: rgb(16 185 129 / 48%);
-  box-shadow: var(--star-field-mid);
-  filter: drop-shadow(0 0 5px rgb(16 185 129 / 32%));
-  animation: endpoint-star-drift-mid 92s linear infinite;
-}
-
-.parallax-stars--near {
-  width: 2px;
-  height: 2px;
-  color: rgb(204 255 0 / 62%);
-  box-shadow: var(--star-field-near);
-  filter: drop-shadow(0 0 7px rgb(204 255 0 / 38%));
-  opacity: 0.82;
-  animation: endpoint-star-drift-near 58s linear infinite;
-}
-
-@keyframes endpoint-star-drift-far {
-  to {
-    transform: translate3d(-1.2vw, -128vh, 0);
-  }
-}
-
-@keyframes endpoint-star-drift-mid {
-  to {
-    transform: translate3d(-2.4vw, -128vh, 0);
-  }
-}
-
-@keyframes endpoint-star-drift-near {
-  to {
-    transform: translate3d(-4vw, -128vh, 0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .parallax-stars {
-    animation: none !important;
-  }
+.parallax-three-host canvas {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 0 12px rgb(204 255 0 / 12%));
 }
 
 @media (max-width: 760px) {
@@ -160,7 +58,14 @@
     opacity: 0.72;
   }
 
-  .parallax-stars--near {
-    opacity: 0.42;
+  .parallax-field--three .parallax-three-host {
+    opacity: 0.58;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .parallax-three-host {
+    display: none;
   }
 }

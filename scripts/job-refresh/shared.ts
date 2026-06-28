@@ -9,6 +9,7 @@ import type {
   TermsProfile,
   Workplace
 } from "../../src/types/job";
+import { resolveJobMapLocation } from "./map-location";
 
 type ToolAlias = {
   tool: EndpointTool;
@@ -189,6 +190,7 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
 
   const rawLocation = cleanText(candidate.location);
   const location = rawLocation || "Unknown";
+  const mapLocation = resolveJobMapLocation(location);
   const sourceTags = (candidate.sourceTags ?? []).map(cleanText).filter(Boolean);
   const description = stripHtml(candidate.description ?? "");
   const haystack = normalizeSearchText(
@@ -217,6 +219,7 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
     title,
     company,
     location,
+    ...(mapLocation ? { mapLocation } : {}),
     workplace: candidate.workplace ?? inferWorkplace(rawLocation, haystack),
     postedAt,
     fetchedAt: candidate.fetchedAt.toISOString(),
@@ -347,38 +350,94 @@ export function derivePlatforms(haystack: string) {
   return platforms.length > 0 ? platforms : (["Windows", "macOS"] satisfies Platform[]);
 }
 
+type MatchReasonContext = {
+  haystack: string;
+  tools: EndpointTool[];
+  platforms: Platform[];
+};
+
+const matchReasonRules: Array<{
+  label: string;
+  matches: (context: MatchReasonContext) => boolean;
+}> = [
+  {
+    label: "Jamf + macOS",
+    matches: ({ platforms, tools }) => tools.includes("Jamf") && platforms.includes("macOS")
+  },
+  { label: "Kandji MDM", matches: ({ tools }) => tools.includes("Kandji") },
+  {
+    label: "Intune + Autopilot",
+    matches: ({ tools }) => tools.includes("Intune") && tools.includes("Autopilot")
+  },
+  { label: "SCCM/MECM", matches: ({ tools }) => tools.includes("SCCM") },
+  { label: "Fleet MDM", matches: ({ tools }) => tools.includes("Fleet MDM") },
+  { label: "NinjaOne remediation", matches: ({ tools }) => tools.includes("NinjaOne") },
+  { label: "Tanium endpoint security", matches: ({ tools }) => tools.includes("Tanium") },
+  { label: "Endpoint engineering", matches: ({ haystack }) => containsAlias(haystack, "endpoint") },
+  { label: "MDM", matches: ({ haystack }) => containsAlias(haystack, "mdm") },
+  { label: "UEM", matches: ({ haystack }) => containsAlias(haystack, "uem") },
+  {
+    label: "Device management",
+    matches: ({ haystack }) => containsAlias(haystack, "device management")
+  },
+  { label: "Client platform", matches: ({ haystack }) => containsAlias(haystack, "client platform") },
+  { label: "PowerShell automation", matches: ({ haystack }) => containsAlias(haystack, "powershell") },
+  { label: "App packaging", matches: ({ haystack }) => containsAlias(haystack, "packaging") },
+  {
+    label: "Endpoint security",
+    matches: ({ haystack }) => hasAnyAlias(haystack, ["endpoint security", "edr"])
+  },
+  {
+    label: "Compliance evidence",
+    matches: ({ haystack }) => hasAnyAlias(haystack, ["compliance", "audit"])
+  },
+  { label: "Desktop engineering", matches: ({ haystack }) => containsAlias(haystack, "desktop") },
+  {
+    label: "IT client services",
+    matches: ({ haystack }) => containsAlias(haystack, "it client services")
+  },
+  {
+    label: "End-user computing",
+    matches: ({ haystack }) =>
+      hasAnyAlias(haystack, [
+        "end user computing",
+        "end-user computing",
+        "end user computer",
+        "end-user computer"
+      ])
+  },
+  { label: "Digital workplace", matches: ({ haystack }) => containsAlias(haystack, "digital workplace") },
+  {
+    label: "Employee experience",
+    matches: ({ haystack }) => containsAlias(haystack, "employee experience")
+  },
+  { label: "Windows platform", matches: ({ platforms }) => platforms.includes("Windows") },
+  { label: "macOS platform", matches: ({ platforms }) => platforms.includes("macOS") }
+];
+
 export function deriveMatchReasons(
   haystack: string,
   tools: EndpointTool[],
   platforms: Platform[]
 ) {
-  const reasons = new Set<string>();
+  const context = { haystack, platforms, tools };
+  const reasons = matchReasonRules
+    .filter((rule) => rule.matches(context))
+    .map((rule) => rule.label);
 
-  if (tools.includes("Jamf") && platforms.includes("macOS")) reasons.add("Jamf + macOS");
-  if (tools.includes("Kandji")) reasons.add("Kandji MDM");
-  if (tools.includes("Intune") && tools.includes("Autopilot")) reasons.add("Intune + Autopilot");
-  if (tools.includes("SCCM")) reasons.add("SCCM/MECM");
-  if (tools.includes("Fleet MDM")) reasons.add("Fleet MDM");
-  if (tools.includes("NinjaOne")) reasons.add("NinjaOne remediation");
-  if (tools.includes("Tanium")) reasons.add("Tanium endpoint security");
-  if (containsAlias(haystack, "endpoint")) reasons.add("Endpoint engineering");
-  if (containsAlias(haystack, "mdm")) reasons.add("MDM");
-  if (containsAlias(haystack, "uem")) reasons.add("UEM");
-  if (containsAlias(haystack, "device management")) reasons.add("Device management");
-  if (containsAlias(haystack, "client platform")) reasons.add("Client platform");
-  if (containsAlias(haystack, "powershell")) reasons.add("PowerShell automation");
-  if (containsAlias(haystack, "packaging")) reasons.add("App packaging");
-  if (containsAlias(haystack, "endpoint security") || containsAlias(haystack, "edr")) {
-    reasons.add("Endpoint security");
-  }
-  if (containsAlias(haystack, "compliance") || containsAlias(haystack, "audit")) {
-    reasons.add("Compliance evidence");
-  }
-  if (reasons.size === 0 && tools.length > 0) {
-    reasons.add(tools.slice(0, 2).join(" + "));
+  if (reasons.length > 0) {
+    return reasons.slice(0, 5);
   }
 
-  return Array.from(reasons).slice(0, 5);
+  if (tools.length > 0) {
+    return [tools.slice(0, 2).join(" + ")];
+  }
+
+  if (platforms.length > 0) {
+    return [platforms.slice(0, 2).join(" + ") + " platform"];
+  }
+
+  return ["Endpoint role"];
 }
 
 export function inferRoleFamily(
@@ -682,6 +741,10 @@ export function normalizeFirstEmploymentType(values: unknown[]) {
 export function containsAlias(haystack: string, alias: string) {
   const escaped = alias.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return new RegExp(`(^|[^a-z0-9])${escaped}([^a-z0-9]|$)`, "i").test(haystack);
+}
+
+function hasAnyAlias(haystack: string, aliases: string[]) {
+  return aliases.some((alias) => containsAlias(haystack, alias));
 }
 
 export function cleanUrl(value: string | undefined) {

@@ -678,8 +678,8 @@ function normalizeAdzunaJob(raw: AdzunaJob, fetchedAt: Date): Job | null {
     applyUrl: sourceJobUrl,
     attributionLabel: "Adzuna",
     termsProfile: "attribution-required",
-    summary: summarize(description),
-    description: normalizeDescription(description),
+    summary: summarizeAdzunaListing(company, location, sourceTags, tools, platforms),
+    // Adzuna documents this field as a snippet, not a full description.
     tags: normalizeTags(sourceTags, tools, platforms),
     matchReasons,
     tools,
@@ -689,6 +689,57 @@ function normalizeAdzunaJob(raw: AdzunaJob, fetchedAt: Date): Job | null {
     employmentType: cleanText(raw.contract_type ?? raw.contract_time) || inferEmploymentType(haystack),
     ...(salary ? { salary } : {})
   };
+}
+
+function summarizeAdzunaListing(
+  company: string,
+  location: string,
+  sourceTags: string[],
+  tools: string[],
+  platforms: string[]
+) {
+  const displayCompany = cleanText(company).replace(/\.+$/, "");
+  const context = [
+    location,
+    ...getAdzunaContextTags(sourceTags).slice(0, 2),
+    ...platforms.map((platform) => `${platform} platform`).slice(0, 2),
+    ...tools.slice(0, 2)
+  ]
+    .map(cleanText)
+    .filter(Boolean);
+  const detail =
+    context.length > 0 ? `: ${Array.from(new Set(context)).join(" · ")}.` : ".";
+
+  return `Adzuna listing preview for ${displayCompany}${detail} Full description is available on the source posting.`;
+}
+
+function getAdzunaContextTags(sourceTags: string[]) {
+  const seen = new Set<string>();
+  const tags: string[] = [];
+
+  for (const tag of sourceTags) {
+    const formatted = formatAdzunaContextTag(tag);
+    const key = normalizeSearchText(formatted);
+
+    if (!formatted || seen.has(key)) {
+      continue;
+    }
+
+    seen.add(key);
+    tags.push(formatted);
+  }
+
+  return tags;
+}
+
+function formatAdzunaContextTag(value: string) {
+  const formatted = cleanText(value.replace(/[_-]+/g, " "));
+
+  if (formatted === formatted.toLowerCase()) {
+    return formatted.replace(/\b[a-z]/g, (char) => char.toUpperCase());
+  }
+
+  return formatted;
 }
 
 function normalizeRemotiveJobType(value: string | undefined) {
