@@ -6,8 +6,9 @@
 - [x] Expand map location resolution for high-volume valid feed locations.
 - [x] Verify mapped count improves without mapping ambiguous rows offshore.
 - [x] Run validation checks and document results.
+- [x] Address PR feedback on Workday query failure wording.
 
-Result: Fixed map coverage by moving location resolution into app code, using it as a runtime fallback in map point generation, and adding refresh-time map enrichment for future feeds. Expanded resolver coverage for the highest-volume real feed locations while leaving ambiguous multi-location rows unmapped. Current feed coverage improved from 4 of 173 active jobs to 167 of 173; Playwright verified the page shows `167 mapped jobs`, `167 of 173`, and an expandable visible map canvas. Verified typecheck, lint, data audit, build, and diff check.
+Result: Fixed map coverage by moving location resolution into app code, using it as a runtime fallback in map point generation, and adding refresh-time map enrichment for future feeds. Expanded resolver coverage for the highest-volume real feed locations while leaving ambiguous multi-location rows unmapped. Current feed coverage improved from 4 of 173 active jobs to 167 of 173; Playwright verified the page shows `167 mapped jobs`, `167 of 173`, and an expandable visible map canvas. Addressed PR feedback by renaming the Workday guard to completed queries and making the all-failed error message accurate. Verified typecheck, lint, data audit, build, and diff check.
 
 ## Adzuna Window And ATS Source Expansion
 

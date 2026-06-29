@@ -717,7 +717,7 @@ await run("FEAT-060", "Adzuna aggregator listings expire on source-specific fres
   assertEqual(isActiveJob(freshJob, fixedAuditNow), true);
   assertIncludes(sources.jobExclusions, "maxPostedAgeDays: 30", "Adzuna posted-age cap");
   assertIncludes(sources.jobBoard, "isActiveJob(job)", "job board active feed filter");
-  assertIncludes(sources.companyAts, "successfulQueries", "Workday skips isolated query failures");
+  assertIncludes(sources.companyAts, "completedQueries", "Workday skips isolated query failures");
   assertIncludes(sources.page, "activeFeed", "home page active feed projection");
   assertIncludes(sources.page, "getHomeJsonLd(activeFeed)", "JSON-LD uses filtered active feed");
   assertIncludes(sources.packageJson, '"audit:data"', "package script for data audit");

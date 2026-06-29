@@ -271,13 +271,13 @@ async function fetchAmazonJobs(url: string, fetchedAt: Date) {
 async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
   const sites = getWorkdaySites(url);
   const jobs: Array<Job | null> = [];
-  let successfulQueries = 0;
+  let completedQueries = 0;
 
   for (const site of sites) {
     for (const query of site.queries) {
       try {
         const payload = await fetchWorkdaySearch(site.url, query);
-        successfulQueries += 1;
+        completedQueries += 1;
         jobs.push(...payload.map((job) => normalizeWorkdayJob(job, site, query, fetchedAt)));
         console.log(`Fetched ${payload.length} raw jobs from Workday/${site.name} query ${query}`);
       } catch (error) {
@@ -288,8 +288,8 @@ async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
     }
   }
 
-  if (successfulQueries === 0) {
-    throw new Error("No Workday queries returned jobs");
+  if (completedQueries === 0) {
+    throw new Error("No Workday queries completed successfully");
   }
 
   return jobs;
