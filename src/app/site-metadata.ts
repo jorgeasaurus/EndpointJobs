@@ -34,4 +34,4 @@ export const specialtySearchLinks = [
   { label: "Endpoint security jobs", href: "/?family=Endpoint%20Security" },
   { label: "Client platform jobs", href: "/?q=client%20platform" },
   { label: "Remote endpoint jobs", href: "/?workplace=Remote" }
-];
+] as const;
