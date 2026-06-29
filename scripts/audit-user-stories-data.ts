@@ -108,6 +108,7 @@ const sourcePaths = {
   shared: "scripts/job-refresh/shared.ts",
   searchConfig: "scripts/job-refresh/search-config.ts",
   sheet: "docs/feature-user-stories.csv",
+  siteMetadata: "src/app/site-metadata.ts",
   sitemap: "src/app/sitemap.ts",
   structuredData: "src/app/structured-data.ts",
   techmapRss: "scripts/job-refresh/providers/techmap-rss.ts",
@@ -611,9 +612,13 @@ await run("FEAT-050", "Stale filtering and result cap are enforced", () => {
 });
 
 await run("FEAT-051", "Metadata, Open Graph, and Twitter cards are configured", () => {
-  ["metadataBase", "openGraph", "twitter", "siteKeywords", "creator", "publisher"].forEach((text) =>
+  ["metadataBase", "openGraph", "twitter", "siteKeywords", "creator", "publisher", "canonical"].forEach((text) =>
     assertIncludes(sources.layout, text)
   );
+  assertIncludes(sources.siteMetadata, "Endpoint Engineering Jobs", "search-focused title");
+  assertIncludes(sources.siteMetadata, "specialtySearchLinks", "crawlable specialty links");
+  assertIncludes(sources.topbar, "Popular endpoint job searches", "footer search navigation");
+  assertIncludes(sources.jobCard, "id={`job-${job.id}`}", "stable job anchors");
   assertTruthy(existsSync("public/og-image.png"), "missing public/og-image.png");
 });
 
@@ -625,13 +630,18 @@ await run("FEAT-052", "Home JSON-LD emits escaped collection data", () => {
   const serialized = serializeJsonLd(jsonLd);
   assertIncludes(serialized, "CollectionPage");
   assertIncludes(serialized, "ItemList");
+  assertIncludes(serialized, "SearchAction");
+  assertIncludes(serialized, "WebApplication");
+  assertIncludes(serialized, "#job-");
   assertIncludes(serialized, "\\u003cEngineer>");
 });
 
 await run("FEAT-053", "Sitemap and robots point at the canonical site", () => {
   assertIncludes(sources.sitemap, "feed.updatedAt");
   assertIncludes(sources.sitemap, "siteUrl");
+  assertIncludes(sources.sitemap, "images");
   assertIncludes(sources.robots, "sitemap");
+  assertIncludes(sources.robots, "Googlebot");
   assertIncludes(sources.robots, "host: siteUrl");
 });
 

@@ -21,7 +21,7 @@ export function JobCard({ job, query }: { job: Job; query: string }) {
   const descriptionParagraphs = getExpandedDescriptionParagraphs(job);
 
   return (
-    <article className="job-card">
+    <article className="job-card" id={`job-${job.id}`}>
       <div className="job-card-top">
         <span className="source-pill">{job.source}</span>
         <span className="posted-pill">

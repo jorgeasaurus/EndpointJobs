@@ -33,13 +33,14 @@ export const metadata: Metadata = {
   authors: [{ name: "Jorgeasaurus", url: "https://github.com/jorgeasaurus" }],
   creator: "Jorgeasaurus",
   publisher: "Jorgeasaurus",
+  referrer: "origin-when-cross-origin",
   category: "jobs",
   alternates: {
-    canonical: "/"
+    canonical: siteUrl
   },
   openGraph: {
     type: "website",
-    url: "/",
+    url: siteUrl,
     siteName,
     title: siteTitle,
     description: siteDescription,

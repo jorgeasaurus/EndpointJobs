@@ -223,15 +223,32 @@
   .results-heading,
   .job-main,
   .job-actions,
+  .footer-bottom,
+  .footer-searches,
   .site-footer {
     align-items: stretch;
     flex-direction: column;
   }
 
   .footer-meta,
-  .footer-links {
+  .footer-links,
+  .footer-search-links {
     justify-content: space-between;
     width: 100%;
+  }
+
+  .footer-searches {
+    display: flex;
+    gap: 10px;
+  }
+
+  .footer-search-links {
+    justify-content: flex-start;
+  }
+
+  .footer-search-link {
+    flex: 1 1 138px;
+    text-align: center;
   }
 
   .footer-link {

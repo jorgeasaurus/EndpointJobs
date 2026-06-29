@@ -2,6 +2,7 @@ import { Github, MessageSquarePlus, MonitorSmartphone, RefreshCw } from "lucide-
 import Link from "next/link";
 
 import { formatUpdatedAt } from "@/lib/jobs";
+import { specialtySearchLinks } from "@/app/site-metadata";
 
 export function Topbar({ updatedAt }: { updatedAt: string }) {
   return (
@@ -26,35 +27,48 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
 export function SiteFooter({ updatedAt }: { updatedAt: string }) {
   return (
     <footer className="site-footer">
-      <div className="footer-meta">
-        <span>Made by Jorgeasaurus</span>
-        <span>{formatUpdatedAt(updatedAt)}</span>
-      </div>
-
-      <nav className="footer-links" aria-label="Project links">
-        <a
-          aria-label="Report an issue or request a feature on GitHub"
-          className="feedback-link footer-link"
-          href="https://github.com/jorgeasaurus/EndpointJobs/issues/new?template=report-or-request.yml"
-          rel="noopener noreferrer"
-          target="_blank"
-          title="Report an issue or request a feature"
-        >
-          <MessageSquarePlus size={15} aria-hidden="true" />
-          <span>Report / request</span>
-        </a>
-        <a
-          aria-label="Open the Endpoint Jobs GitHub repository"
-          className="feedback-link footer-link"
-          href="https://github.com/jorgeasaurus/EndpointJobs"
-          rel="noopener noreferrer"
-          target="_blank"
-          title="Open GitHub repository"
-        >
-          <Github size={15} aria-hidden="true" />
-          <span>GitHub repo</span>
-        </a>
+      <nav className="footer-searches" aria-label="Popular endpoint job searches">
+        <span className="footer-search-title">Popular searches</span>
+        <div className="footer-search-links">
+          {specialtySearchLinks.map((link) => (
+            <a className="footer-search-link" href={link.href} key={link.href}>
+              {link.label}
+            </a>
+          ))}
+        </div>
       </nav>
+
+      <div className="footer-bottom">
+        <div className="footer-meta">
+          <span>Made by Jorgeasaurus</span>
+          <span>{formatUpdatedAt(updatedAt)}</span>
+        </div>
+
+        <nav className="footer-links" aria-label="Project links">
+          <a
+            aria-label="Report an issue or request a feature on GitHub"
+            className="feedback-link footer-link"
+            href="https://github.com/jorgeasaurus/EndpointJobs/issues/new?template=report-or-request.yml"
+            rel="noopener noreferrer"
+            target="_blank"
+            title="Report an issue or request a feature"
+          >
+            <MessageSquarePlus size={15} aria-hidden="true" />
+            <span>Report / request</span>
+          </a>
+          <a
+            aria-label="Open the Endpoint Jobs GitHub repository"
+            className="feedback-link footer-link"
+            href="https://github.com/jorgeasaurus/EndpointJobs"
+            rel="noopener noreferrer"
+            target="_blank"
+            title="Open GitHub repository"
+          >
+            <Github size={15} aria-hidden="true" />
+            <span>GitHub repo</span>
+          </a>
+        </nav>
+      </div>
     </footer>
   );
 }
