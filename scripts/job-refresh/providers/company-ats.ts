@@ -160,6 +160,26 @@ const defaultWorkdaySites: WorkdaySite[] = [
     queries: ["End-Point Protection Engineer", "Endpoint Protection Engineer", "Endpoint Engineer", "Unified Endpoint Management"]
   },
   {
+    name: "Booz Allen",
+    url: "https://bah.wd1.myworkdayjobs.com/wday/cxs/bah/BAH_Jobs/jobs",
+    queries: ["Endpoint", "Desktop", "Client Engineering", "End User Computing", "Intune", "Jamf", "Mac", "SCCM"]
+  },
+  {
+    name: "HP",
+    url: "https://hp.wd5.myworkdayjobs.com/wday/cxs/hp/ExternalCareerSite/jobs",
+    queries: ["Endpoint Agent", "Endpoint Privilege Management", "Endpoint", "Desktop", "Intune", "SCCM"]
+  },
+  {
+    name: "NVIDIA",
+    url: "https://nvidia.wd5.myworkdayjobs.com/wday/cxs/nvidia/NVIDIAExternalCareerSite/jobs",
+    queries: ["Client Platform", "Client Platform Architect", "Endpoint", "Desktop", "End User Computing", "Jamf", "Mac"]
+  },
+  {
+    name: "Adobe",
+    url: "https://adobe.wd5.myworkdayjobs.com/wday/cxs/adobe/external_experienced/jobs",
+    queries: ["Digital Employee Experience", "Endpoint", "Desktop", "End User Computing", "Intune", "Client Engineering"]
+  },
+  {
     name: "F5",
     url: "https://ffive.wd5.myworkdayjobs.com/wday/cxs/ffive/f5jobs/jobs",
     queries: ["Senior MDM Engineer", "Systems and Platform Administrator"]
@@ -251,13 +271,25 @@ async function fetchAmazonJobs(url: string, fetchedAt: Date) {
 async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
   const sites = getWorkdaySites(url);
   const jobs: Array<Job | null> = [];
+  let completedQueries = 0;
 
   for (const site of sites) {
     for (const query of site.queries) {
-      const payload = await fetchWorkdaySearch(site.url, query);
-      jobs.push(...payload.map((job) => normalizeWorkdayJob(job, site, query, fetchedAt)));
-      console.log(`Fetched ${payload.length} raw jobs from Workday/${site.name} query ${query}`);
+      try {
+        const payload = await fetchWorkdaySearch(site.url, query);
+        completedQueries += 1;
+        jobs.push(...payload.map((job) => normalizeWorkdayJob(job, site, query, fetchedAt)));
+        console.log(`Fetched ${payload.length} raw jobs from Workday/${site.name} query ${query}`);
+      } catch (error) {
+        console.warn(
+          `Skipping Workday/${site.name} query ${query}: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
     }
+  }
+
+  if (completedQueries === 0) {
+    throw new Error("No Workday queries completed successfully");
   }
 
   return jobs;

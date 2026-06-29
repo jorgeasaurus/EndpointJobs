@@ -12,6 +12,7 @@ import { rapidApiLinkedInProvider } from "./job-refresh/providers/rapidapi-linke
 import { serpApiProvider } from "./job-refresh/providers/serpapi";
 import { techmapRssProvider } from "./job-refresh/providers/techmap-rss";
 import { theirStackProvider } from "./job-refresh/providers/theirstack";
+import { resolveJobMapLocation } from "./job-refresh/map-location";
 import { extractSalaryFromText, normalizeSearchText } from "./job-refresh/shared";
 
 import {
@@ -35,6 +36,7 @@ async function main() {
       result.jobs
         .filter((job): job is Job => Boolean(job))
         .map(addExtractedSalary)
+        .map(addResolvedMapLocation)
         .filter((job) => !isExcludedJobSourceUrl(job.sourceUrl, excludedSourceUrls))
         .filter((job) => !isSourceFreshnessExpired(job, fetchedAt))
         .filter((job) => new Date(job.staleAfter).getTime() >= fetchedAt.getTime())
@@ -223,6 +225,15 @@ function addExtractedSalary(job: Job): Job {
 
   const salary = extractSalaryFromText([job.summary, job.description].filter(Boolean).join(" "));
   return salary ? { ...job, salary } : job;
+}
+
+function addResolvedMapLocation(job: Job): Job {
+  if (job.mapLocation) {
+    return job;
+  }
+
+  const mapLocation = resolveJobMapLocation(job.location);
+  return mapLocation ? { ...job, mapLocation } : job;
 }
 
 function limitFeedJobs(jobs: Job[], limit: number, reservedJobIds: Set<string>) {

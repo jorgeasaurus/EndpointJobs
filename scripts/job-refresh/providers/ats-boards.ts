@@ -139,7 +139,13 @@ const defaultGreenhouseBoards = [
   "rubrik",
   "dropbox",
   "affirm",
-  "duolingo"
+  "duolingo",
+  "gitlab",
+  "coinbase",
+  "canonical",
+  "pinterest",
+  "block",
+  "roblox"
 ];
 
 const defaultLeverCompanies = ["jumpcloud", "brightonjones", "hermeus", "omnidian"];
