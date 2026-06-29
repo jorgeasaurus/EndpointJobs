@@ -1,8 +1,9 @@
 export const siteUrl = "https://endpointjobs.dev";
 export const siteName = "Endpoint Jobs";
-export const siteTitle = "Endpoint Jobs | Endpoint Engineering Job Board";
+export const siteTitle =
+  "Endpoint Engineering Jobs | Jamf, Intune, macOS & Windows Roles";
 export const siteDescription =
-  "Find focused Endpoint Engineering, macOS, Windows, MDM, UEM, Jamf, Intune, SCCM, client platform, and endpoint security roles refreshed daily.";
+  "Find daily refreshed endpoint engineering jobs across macOS, Windows, MDM, UEM, Jamf, Intune, SCCM, client platform, digital workplace, and endpoint security roles.";
 export const siteKeywords = [
   "Endpoint Engineering jobs",
   "macOS engineer jobs",
@@ -23,3 +24,14 @@ export const ogImage = {
   alt: "Endpoint Jobs social card with endpoint engineering job board details"
 };
 export const repositoryUrl = "https://github.com/jorgeasaurus/EndpointJobs";
+
+export const specialtySearchLinks = [
+  { label: "Jamf jobs", href: "/?tools=Jamf" },
+  { label: "Intune jobs", href: "/?tools=Intune" },
+  { label: "SCCM jobs", href: "/?tools=SCCM" },
+  { label: "macOS endpoint jobs", href: "/?platforms=macOS" },
+  { label: "Windows endpoint jobs", href: "/?platforms=Windows" },
+  { label: "Endpoint security jobs", href: "/?family=Endpoint%20Security" },
+  { label: "Client platform jobs", href: "/?q=client%20platform" },
+  { label: "Remote endpoint jobs", href: "/?workplace=Remote" }
+] as const;

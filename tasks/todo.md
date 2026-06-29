@@ -1,5 +1,22 @@
 # Endpoint Jobs Plan
 
+## SEO Discovery Improvements
+
+- [x] Audit current metadata, robots, sitemap, and structured data.
+- [x] Add search-focused metadata and JSON-LD that accurately represents the page.
+- [x] Add crawlable specialty links for high-intent endpoint job searches.
+- [x] Verify build output and SEO-relevant routes.
+
+Result: Added sharper endpoint engineering metadata, site search/WebApplication/Breadcrumb JSON-LD, crawlable footer links for high-intent searches, stable job anchors, sitemap image metadata, and explicit Googlebot robots coverage. Verified typecheck, lint, data audit, build, browser audit, diff check, and rebuilt static HTML SEO markers.
+
+## SEO PR Comment Cleanup
+
+- [x] Replace internal footer search anchors with typed Next links.
+- [x] Verify typed routes, lint, build, and audits still pass.
+- [x] Push the follow-up commit to PR #3.
+
+Result: Addressed Copilot feedback by rendering footer specialty searches with `next/link` while keeping the link registry as literal route data for typed routes. Verified typecheck, lint, data audit, build, browser audit, and diff check.
+
 ## Job Map Coverage Fix
 
 - [x] Measure active versus mapped jobs and top unmapped locations.

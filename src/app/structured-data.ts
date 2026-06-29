@@ -1,19 +1,33 @@
 import type { JobsFeed } from "@/types/job";
 
-import { repositoryUrl, siteDescription, siteName, siteUrl } from "./site-metadata";
+import {
+  repositoryUrl,
+  siteDescription,
+  siteKeywords,
+  siteName,
+  siteUrl,
+  specialtySearchLinks
+} from "./site-metadata";
 
 export function getHomeJsonLd(feed: JobsFeed) {
-  const topListings = feed.jobs.slice(0, 10).map((job, index) => ({
+  const topListings = feed.jobs.slice(0, 20).map((job, index) => ({
     "@type": "ListItem",
     position: index + 1,
-    url: job.applyUrl ?? job.sourceUrl,
+    url: `${siteUrl}/#job-${job.id}`,
     name: `${job.title} at ${job.company}`,
     item: {
       "@type": "Thing",
       name: `${job.title} at ${job.company}`,
       description: job.summary,
-      url: job.applyUrl ?? job.sourceUrl
+      url: `${siteUrl}/#job-${job.id}`,
+      sameAs: job.applyUrl ?? job.sourceUrl
     }
+  }));
+  const specialtyLinks = specialtySearchLinks.map((link, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: link.label,
+    url: `${siteUrl}${link.href}`
   }));
 
   return {
@@ -26,8 +40,14 @@ export function getHomeJsonLd(feed: JobsFeed) {
         url: siteUrl,
         description: siteDescription,
         inLanguage: "en-US",
+        keywords: siteKeywords.join(", "),
         publisher: {
           "@id": `${siteUrl}/#publisher`
+        },
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${siteUrl}/?q={search_term_string}`,
+          "query-input": "required name=search_term_string"
         }
       },
       {
@@ -45,6 +65,7 @@ export function getHomeJsonLd(feed: JobsFeed) {
         description: siteDescription,
         inLanguage: "en-US",
         dateModified: feed.updatedAt,
+        keywords: siteKeywords.join(", "),
         isPartOf: {
           "@id": `${siteUrl}/#website`
         },
@@ -62,6 +83,37 @@ export function getHomeJsonLd(feed: JobsFeed) {
           numberOfItems: feed.jobs.length,
           itemListElement: topListings
         }
+      },
+      {
+        "@type": "ItemList",
+        "@id": `${siteUrl}/#popular-searches`,
+        name: "Popular endpoint job searches",
+        itemListElement: specialtyLinks
+      },
+      {
+        "@type": "WebApplication",
+        "@id": `${siteUrl}/#app`,
+        name: siteName,
+        url: siteUrl,
+        description: siteDescription,
+        applicationCategory: "BusinessApplication",
+        operatingSystem: "Any",
+        browserRequirements: "Requires JavaScript for filtering and map interactions",
+        isPartOf: {
+          "@id": `${siteUrl}/#website`
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${siteUrl}/#breadcrumbs`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: siteName,
+            item: siteUrl
+          }
+        ]
       }
     ]
   };
