@@ -24,3 +24,6 @@
 - Mobile map fit must account for marker radius and global longitude spread; bounds-only fitting can still clip edge clusters.
 - Framed section headers need their own horizontal inset; relying on the outer border alone makes labels and pills feel cramped.
 - Confirmed-dead source URLs need an explicit exclusion path; stale-date windows alone are too weak for aggregator listings.
+- Aggregator freshness caps should be checked against visible result loss before landing; prefer a moderate posted-age window and explicit dead-URL exclusions over broad aggressive cuts.
+- Keep scheduled workflow source lists in sync with provider defaults, or CI can silently bypass newly verified direct sources.
+- Map coverage reviews need active/mapped ratios and top unmapped location strings after every source expansion; adding sources without resolver coverage makes the geography view look empty.

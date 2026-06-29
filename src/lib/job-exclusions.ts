@@ -9,7 +9,7 @@ const sourceFreshnessRules: Partial<
 > = {
   Adzuna: {
     maxFetchedAgeDays: 7,
-    maxPostedAgeDays: 14
+    maxPostedAgeDays: 30
   }
 };
 

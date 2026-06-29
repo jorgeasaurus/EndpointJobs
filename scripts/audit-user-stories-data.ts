@@ -83,14 +83,16 @@ const sourcePaths = {
   issueTemplate: ".github/ISSUE_TEMPLATE/report-or-request.yml",
   jobBoard: "src/components/job-board.tsx",
   jobCard: "src/components/job-board/job-card.tsx",
+  jobExclusions: "src/lib/job-exclusions.ts",
   jobMap: "src/components/job-board/job-map.tsx",
   jobMapCanvas: "src/components/job-board/job-map-canvas.tsx",
   jobMapConfig: "src/components/job-board/job-map-config.ts",
   jobMapCss: "src/app/job-board-map.css",
   jobMapFeatures: "src/components/job-board/job-map-features.ts",
+  jobMapLib: "src/lib/job-map.ts",
   jobMapPopup: "src/components/job-board/job-map-popup.tsx",
   layout: "src/app/layout.tsx",
-  mapLocation: "scripts/job-refresh/map-location.ts",
+  mapLocation: "src/lib/map-location.ts",
   packageJson: "package.json",
   page: "src/app/page.tsx",
   providerContract: "scripts/job-refresh/provider.ts",
@@ -654,10 +656,21 @@ await run("FEAT-056", "GitHub issue template captures support and feature report
   assertIncludes(sources.issueConfig, "blank_issues_enabled");
 });
 
-await run("FEAT-058", "SpaceX is configured as a direct Greenhouse source", () => {
-  assertIncludes(sources.atsBoards, '"spacex"', "default Greenhouse boards");
-  assertIncludes(sources.workflow, "spacex", "scheduled refresh board list");
+await run("FEAT-058", "Expanded direct ATS sources are configured", () => {
+  ["spacex", "gitlab", "coinbase", "canonical", "pinterest", "block", "roblox"].forEach(
+    (board) => {
+      assertIncludes(sources.atsBoards, `"${board}"`, `default Greenhouse board ${board}`);
+      assertIncludes(sources.workflow, board, `scheduled Greenhouse board ${board}`);
+    }
+  );
+  ["Booz Allen", "HP", "NVIDIA", "Adobe", "F5", "Allstate", "Gartner", "Nordic Consulting", "SHI", "Circle"].forEach(
+    (company) => {
+      assertIncludes(sources.companyAts, company, `default Workday site ${company}`);
+      assertIncludes(sources.workflow, company, `scheduled Workday site ${company}`);
+    }
+  );
   assertIncludes(sources.readme, "SpaceX", "README source documentation");
+  assertIncludes(sources.readme, "GitLab", "README expanded source documentation");
 });
 
 await run("FEAT-059", "Confirmed-dead Adzuna listing is excluded from data and runtime active jobs", () => {
@@ -686,7 +699,7 @@ await run("FEAT-060", "Adzuna aggregator listings expire on source-specific fres
   const oldPostedJob = makeAdzunaJob({
     id: "audit-old-posted-adzuna",
     fetchedAt: "2026-06-28T02:04:09.167Z",
-    postedAt: "2026-06-01T02:04:09.167Z",
+    postedAt: "2026-05-20T02:04:09.167Z",
     sourceUrl: "https://www.adzuna.com/details/audit-old-posted"
   });
   const freshJob = makeAdzunaJob({
@@ -702,6 +715,9 @@ await run("FEAT-060", "Adzuna aggregator listings expire on source-specific fres
   assertEqual(isActiveJob(oldFetchedJob, fixedAuditNow), false);
   assertEqual(isActiveJob(oldPostedJob, fixedAuditNow), false);
   assertEqual(isActiveJob(freshJob, fixedAuditNow), true);
+  assertIncludes(sources.jobExclusions, "maxPostedAgeDays: 30", "Adzuna posted-age cap");
+  assertIncludes(sources.jobBoard, "isActiveJob(job)", "job board active feed filter");
+  assertIncludes(sources.companyAts, "successfulQueries", "Workday skips isolated query failures");
   assertIncludes(sources.page, "activeFeed", "home page active feed projection");
   assertIncludes(sources.page, "getHomeJsonLd(activeFeed)", "JSON-LD uses filtered active feed");
   assertIncludes(sources.packageJson, '"audit:data"', "package script for data audit");
@@ -719,9 +735,16 @@ await run("FEAT-061", "Mapped count and ratio come from active job map points", 
   const activeJobs = feed.jobs.filter((job) => isActiveJob(job, fixedAuditNow));
   const points = buildJobMapPoints(activeJobs);
   assertTruthy(points.length > 0, "active feed has no mapped jobs");
+  assertTruthy(
+    points.length >= Math.floor(activeJobs.length * 0.5),
+    `mapped coverage too low: ${points.length} of ${activeJobs.length}`
+  );
   assertTruthy(points.length <= activeJobs.length, "mapped points exceed active jobs");
   assertIncludes(sources.jobMap, "const mappedJobCount = points.length");
   assertIncludes(sources.jobMap, "{mappedJobCount} of {jobs.length}");
+  assertIncludes(sources.jobMapFeatures, "buildFeatureCollection");
+  assertIncludes(sources.refresh, "addResolvedMapLocation");
+  assertIncludes(sources.jobMapLib, "resolveJobMapLocation(job.location)");
 });
 
 await run("FEAT-062", "Per-job map points preserve duplicate-coordinate jobs", () => {
@@ -831,6 +854,9 @@ await run("FEAT-068", "Endpoint search defaults include role and company expansi
 await run("FEAT-069", "Map location resolver maps known places and skips ambiguous rows", () => {
   assertEqual(resolveJobMapLocation("San Francisco, CA")?.label, "San Francisco, CA");
   assertEqual(resolveJobMapLocation("United States")?.label, "United States");
+  assertEqual(resolveJobMapLocation("Hawthorne, CA")?.label, "Los Angeles, CA");
+  assertEqual(resolveJobMapLocation("Jacks Cabin, Gunnison County")?.label, "Denver, CO");
+  assertEqual(resolveJobMapLocation("Newark, New Castle County")?.label, "Wilmington, DE");
   assertEqual(resolveJobMapLocation("12 locations"), undefined);
   assertIncludes(sources.mapLocation, "locationCoordinates");
   assertIncludes(sources.shared, "resolveJobMapLocation(location)");

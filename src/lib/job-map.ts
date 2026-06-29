@@ -1,5 +1,7 @@
 import type { Job } from "@/types/job";
 
+import { resolveJobMapLocation } from "./map-location";
+
 export type JobMapPoint = {
   id: string;
   job: Job;
@@ -12,7 +14,7 @@ export function buildJobMapPoints(jobs: Job[]) {
   const grouped = new Map<string, { location: NonNullable<Job["mapLocation"]>; jobs: Job[] }>();
 
   for (const job of jobs) {
-    const location = job.mapLocation;
+    const location = job.mapLocation ?? resolveJobMapLocation(job.location);
 
     if (!location) {
       continue;

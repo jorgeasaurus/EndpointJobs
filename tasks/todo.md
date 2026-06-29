@@ -1,5 +1,23 @@
 # Endpoint Jobs Plan
 
+## Job Map Coverage Fix
+
+- [x] Measure active versus mapped jobs and top unmapped locations.
+- [x] Expand map location resolution for high-volume valid feed locations.
+- [x] Verify mapped count improves without mapping ambiguous rows offshore.
+- [x] Run validation checks and document results.
+
+Result: Fixed map coverage by moving location resolution into app code, using it as a runtime fallback in map point generation, and adding refresh-time map enrichment for future feeds. Expanded resolver coverage for the highest-volume real feed locations while leaving ambiguous multi-location rows unmapped. Current feed coverage improved from 4 of 173 active jobs to 167 of 173; Playwright verified the page shows `167 mapped jobs`, `167 of 173`, and an expandable visible map canvas. Verified typecheck, lint, data audit, build, and diff check.
+
+## Adzuna Window And ATS Source Expansion
+
+- [x] Relax Adzuna posted-age freshness from 14 to 30 days.
+- [x] Verify large-company Greenhouse/Workday candidates through public ATS APIs.
+- [x] Add only responding source boards/sites to defaults and the refresh workflow.
+- [x] Run targeted refresh and validation checks.
+
+Result: Increased Adzuna posted-age freshness to 30 days, added verified Greenhouse sources GitLab, Coinbase, Canonical, Pinterest, Block, and Roblox, and expanded Workday defaults/workflow with Booz Allen, HP, NVIDIA, Adobe, plus previously code-only F5/Allstate/Gartner/Nordic/SHI/Circle targets. Workday now skips isolated query failures instead of failing the whole provider. Verified Greenhouse expanded boards, Workday defaults, workflow YAML, 30-day freshness boundary, typecheck, lint, data audit, build, and diff check.
+
 ## Expired Adzuna Listing Cleanup
 
 - [x] Verify the reported Adzuna listing and locate the feed row.
