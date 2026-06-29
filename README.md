@@ -55,6 +55,8 @@ The normalizer:
 - Extracts useful long descriptions when available.
 - Extracts annual salary ranges from provider descriptions when structured salary fields are missing.
 - De-dupes equivalent jobs and drops stale listings.
+- Excludes confirmed-dead source URLs via built-in exclusions or `JOB_EXCLUDED_SOURCE_URLS`.
+- Caps Adzuna freshness more aggressively than direct ATS feeds to avoid stale aggregator postings.
 
 ## Run Locally
 
@@ -75,7 +77,7 @@ Single-provider legacy mode still works with `JOB_PROVIDER=remoteok` and `JOB_AP
 
 Override individual URLs with `JOB_REMOTIVE_API_URL`, `JOB_ARBEITNOW_API_URL`, `JOB_JOBICY_API_URL`, `JOB_REMOTEOK_API_URL`, `JOB_GREENHOUSE_API_URL`, `JOB_LEVER_API_URL`, `JOB_MUSE_API_URL`, `JOB_ASHBY_API_URL`, `JOB_WORKABLE_API_URL`, `JOB_AMAZON_API_URL`, `JOB_WORKDAY_API_URL`, `JOB_JIBE_API_URL`, `JOB_ACTIVATE_API_URL`, `JOB_TECHMAP_RSS_API_URL`, `JOB_ADZUNA_API_URL`, `JOB_THEIRSTACK_API_URL`, `JOB_SERPAPI_API_URL`, `JOB_RAPIDAPI_API_URL`, `JOB_RAPIDAPILINKEDIN_API_URL`, or `JOB_AIDEVBOARD_API_URL`.
 
-Career-board defaults include Greenhouse boards for Jamf, Automox, Tanium, Okta, PlayStation, Verkada, Anthropic, DoorDash, Commvault, Kaseya, Kymera, Databricks, Zscaler, Samsara, Scale AI, Wiz, Stripe, Robinhood, Box, Datadog, Elastic, Lyft, Instacart, Anduril, Asana, MongoDB, Brex, Figma, Airbnb, Discord, Reddit, Rubrik, Dropbox, Affirm, and Duolingo; Lever companies JumpCloud, Brighton Jones, Hermeus, and Omnidian; Ashby boards Docker, Cursor, Perplexity, OpenAI, Cohere, ElevenLabs, and Watershed; targeted Amazon, Workday, Jibe, and Activate searches; and `JOB_MUSE_PAGES=5`.
+Career-board defaults include Greenhouse boards for Jamf, Automox, Tanium, Okta, PlayStation, Verkada, Anthropic, DoorDash, Commvault, Kaseya, Kymera, Databricks, Zscaler, Samsara, Scale AI, Wiz, Stripe, SpaceX, Robinhood, Box, Datadog, Elastic, Lyft, Instacart, Anduril, Asana, MongoDB, Brex, Figma, Airbnb, Discord, Reddit, Rubrik, Dropbox, Affirm, and Duolingo; Lever companies JumpCloud, Brighton Jones, Hermeus, and Omnidian; Ashby boards Docker, Cursor, Perplexity, OpenAI, Cohere, ElevenLabs, and Watershed; targeted Amazon, Workday, Jibe, and Activate searches; and `JOB_MUSE_PAGES=5`.
 
 Workable uses `JOB_WORKABLE_ACCOUNTS=slug` or `Display Name|slug` entries, with optional `JOB_WORKABLE_DETAIL_API_URL` for v1 detail overrides.
 
@@ -84,6 +86,8 @@ Curated jobs are explicit reviewed listings in `scripts/job-refresh/providers/cu
 Techmap RSS uses `JOB_TECHMAP_RSS_FEEDS=url` or `Feed Name|url` entries, with optional `JOB_TECHMAP_RSS_AUTH_HEADER` or `TECHMAP_RSS_TOKEN`.
 
 Adzuna defaults to US searches from `JOB_ADZUNA_QUERIES`. TheirStack requires `THEIRSTACK_API_KEY` and supports `JOB_THEIRSTACK_TITLE_QUERIES`, `JOB_THEIRSTACK_COMPANY_NAMES`, `JOB_THEIRSTACK_COUNTRY_CODES`, `JOB_THEIRSTACK_MAX_AGE_DAYS`, and `JOB_THEIRSTACK_LIMIT`. SerpAPI Google Jobs requires `SERPAPI_API_KEY` and supports `JOB_SERPAPI_QUERIES`, `JOB_SERPAPI_LOCATION`, `JOB_SERPAPI_GL`, `JOB_SERPAPI_HL`, and `JOB_SERPAPI_MAX_PAGES`. RapidAPI Daily International Jobs requires `RAPIDAPI_DAILY_JOBS_KEY` and supports `JOB_RAPIDAPI_COUNTRY_CODE`, `JOB_RAPIDAPI_HAS_SALARY`, `JOB_RAPIDAPI_MAX_PAGES`, and optional `JOB_RAPIDAPI_QUERIES`. RapidAPI LinkedIn Job Search requires `RAPIDAPI_LINKEDIN_JOBS_KEY` and supports `JOB_RAPIDAPI_LINKEDIN_TITLE_FILTERS`, `JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER`, `JOB_RAPIDAPI_LINKEDIN_LIMIT`, `JOB_RAPIDAPI_LINKEDIN_MAX_PAGES`, and `JOB_RAPIDAPI_LINKEDIN_DESCRIPTION_TYPE`. AI Dev Board supports anonymous trial reads, but recurring workflow use should set `AIDEVBOARD_API_KEY`; it supports `JOB_AIDEVBOARD_QUERIES`, `JOB_AIDEVBOARD_TAGS`, `JOB_AIDEVBOARD_LOCATION`, `JOB_AIDEVBOARD_WORKPLACE`, `JOB_AIDEVBOARD_TYPE`, `JOB_AIDEVBOARD_LEVEL`, `JOB_AIDEVBOARD_LIMIT`, `JOB_AIDEVBOARD_MAX_PAGES`, `JOB_AIDEVBOARD_POSTED_WITHIN_DAYS`, and `JOB_AIDEVBOARD_REQUIRE_API_KEY`.
+
+Use `JOB_EXCLUDED_SOURCE_URLS` as a comma-separated list for confirmed-dead source postings that an aggregator still returns.
 
 ## GitHub Action
 

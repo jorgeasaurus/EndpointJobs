@@ -23,3 +23,4 @@
 - Normalization labels should grow through rule data, not longer ad-hoc conditional chains.
 - Mobile map fit must account for marker radius and global longitude spread; bounds-only fitting can still clip edge clusters.
 - Framed section headers need their own horizontal inset; relying on the outer border alone makes labels and pills feel cramped.
+- Confirmed-dead source URLs need an explicit exclusion path; stale-date windows alone are too weak for aggregator listings.

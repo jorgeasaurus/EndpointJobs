@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 
-import { isStale } from "@/lib/jobs";
+import { isActiveJob } from "@/lib/jobs";
 import type { JobsFeed } from "@/types/job";
 
 import { getActiveFilterItems } from "./job-board/active-filters";
@@ -30,7 +30,7 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
   useSearchFocusShortcut(searchInputRef);
 
   const activeJobs = useMemo(
-    () => feed.jobs.filter((job) => !isStale(job)),
+    () => feed.jobs.filter((job) => isActiveJob(job)),
     [feed.jobs]
   );
 

@@ -14,6 +14,11 @@ import { techmapRssProvider } from "./job-refresh/providers/techmap-rss";
 import { theirStackProvider } from "./job-refresh/providers/theirstack";
 import { extractSalaryFromText, normalizeSearchText } from "./job-refresh/shared";
 
+import {
+  isExcludedJobSourceUrl,
+  isSourceFreshnessExpired,
+  normalizeJobSourceUrl
+} from "../src/lib/job-exclusions";
 import type { Job, JobsFeed } from "../src/types/job";
 
 const outputPath = resolve(process.env.JOB_OUTPUT_PATH ?? "src/data/jobs.json");
@@ -23,12 +28,15 @@ const maxJobs = Number(process.env.JOB_MAX_RESULTS ?? 80);
 async function main() {
   const configuredProviders = getConfiguredProviders();
   const fetchedAt = new Date();
+  const excludedSourceUrls = getConfiguredExcludedSourceUrls();
   const result = await fetchConfiguredProviderJobs(configuredProviders, fetchedAt);
   const normalizedJobs = limitFeedJobs(
     dedupeJobs(
       result.jobs
         .filter((job): job is Job => Boolean(job))
         .map(addExtractedSalary)
+        .filter((job) => !isExcludedJobSourceUrl(job.sourceUrl, excludedSourceUrls))
+        .filter((job) => !isSourceFreshnessExpired(job, fetchedAt))
         .filter((job) => new Date(job.staleAfter).getTime() >= fetchedAt.getTime())
     ).sort(compareJobsByPostedAtDesc),
     maxJobs,
@@ -201,6 +209,13 @@ function getFeedSourceMetadata(providers: SupportedProvider[]) {
   };
 }
 
+function getConfiguredExcludedSourceUrls() {
+  return (process.env.JOB_EXCLUDED_SOURCE_URLS ?? "")
+    .split(",")
+    .map(normalizeJobSourceUrl)
+    .filter((value): value is string => Boolean(value));
+}
+
 function addExtractedSalary(job: Job): Job {
   if (job.salary?.min || job.salary?.max) {
     return job;
@@ -268,8 +283,15 @@ function validateFeed(feed: JobsFeed) {
     assertValidMapLocation(job);
 
     if (job.source === "Adzuna") {
+      assertNotExcludedJob(job);
       assertNoAdzunaSnippetFields(job);
     }
+  }
+}
+
+function assertNotExcludedJob(job: Job) {
+  if (isExcludedJobSourceUrl(job.sourceUrl, getConfiguredExcludedSourceUrls())) {
+    throw new Error(`Excluded job ${job.id} is still present in feed`);
   }
 }
 

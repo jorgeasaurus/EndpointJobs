@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "jobs:refresh": "tsx scripts/refresh-jobs.ts",
     "doctor": "react-doctor",
-    "audit:browser": "node scripts/audit-user-stories-browser.mjs"
+    "audit:browser": "node scripts/audit-user-stories-browser.mjs",
+    "audit:data": "tsx scripts/audit-user-stories-data.ts"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

@@ -6,6 +6,11 @@ import type {
   Seniority
 } from "@/types/job";
 
+import {
+  isExcludedJobSourceUrl,
+  isSourceFreshnessExpired
+} from "./job-exclusions";
+
 export const platformOptions: Platform[] = [
   "macOS",
   "Windows",
@@ -109,6 +114,14 @@ export function isStale(job: Job, now = new Date()) {
   }
 
   return staleAfter.getTime() < now.getTime();
+}
+
+export function isActiveJob(job: Job, now = new Date()) {
+  return (
+    !isStale(job, now) &&
+    !isSourceFreshnessExpired(job, now) &&
+    !isExcludedJobSourceUrl(job.sourceUrl)
+  );
 }
 
 export function formatUpdatedAt(value: string) {

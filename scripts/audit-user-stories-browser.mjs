@@ -192,6 +192,34 @@ await run("FEAT-057", "Job map expands only after user request", async () => {
   await page.close();
 });
 
+await run("FEAT-063", "Map zoom controls render and zooming updates the readout", async () => {
+  const page = await newPage(browser, { width: 1280, height: 900 });
+  await page.locator(".job-map-section").scrollIntoViewIfNeeded();
+  await page.getByRole("button", { name: /show map/i }).click();
+  await expect(page.locator(".maplibregl-canvas")).toBeVisible({ timeout: 10000 });
+  await expect(page.getByLabel("Map zoom controls")).toBeVisible();
+  await expect(page.getByLabel("Zoom in map")).toBeVisible();
+  await expect(page.getByLabel("Zoom out map")).toBeVisible();
+  await expect(page.getByLabel("Fit map to jobs")).toBeVisible();
+
+  const readZoom = async () =>
+    Number((await page.locator(".job-map-zoom-readout").textContent())?.replace("%", "") ?? 0);
+
+  await expect.poll(readZoom, { timeout: 8000 }).toBeGreaterThan(0);
+  const before = await readZoom();
+  await page.getByLabel("Zoom in map").click();
+  await expect.poll(readZoom, { timeout: 8000 }).toBeGreaterThan(before);
+
+  const controlSizes = await page.locator(".job-map-control-button").evaluateAll((buttons) =>
+    buttons.map((button) => {
+      const rect = button.getBoundingClientRect();
+      return { height: rect.height, width: rect.width };
+    })
+  );
+  expect(controlSizes.every((rect) => rect.height >= 44 && rect.width >= 44)).toBeTruthy();
+  await page.close();
+});
+
 await run("FEAT-034", "Mobile viewport has no document overflow", async () => {
   const page = await newPage(browser, { width: 390, height: 844 });
   await page.getByText("More filters").click();

@@ -121,6 +121,7 @@ const defaultGreenhouseBoards = [
   "scaleai",
   "wizinc",
   "stripe",
+  "spacex",
   "robinhood",
   "boxinc",
   "datadog",

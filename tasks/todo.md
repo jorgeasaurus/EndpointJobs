@@ -1,5 +1,22 @@
 # Endpoint Jobs Plan
 
+## Expired Adzuna Listing Cleanup
+
+- [x] Verify the reported Adzuna listing and locate the feed row.
+- [x] Add a source URL exclusion path for confirmed unavailable listings.
+- [x] Remove the reported unavailable listing from the current feed.
+- [x] Verify typecheck, lint, build, and feed checks.
+
+Result: Removed `adzuna-5763079616` from the static feed, added a shared source-URL exclusion path for confirmed-dead postings, and added stricter Adzuna freshness so stale aggregator rows are hidden if the provider feed is not refreshed. The app now sanitizes the feed before rendering and JSON-LD, refresh output filters excluded/freshness-expired rows before dedupe, and the scheduled workflow supports `JOB_EXCLUDED_SOURCE_URLS` for future aggregator misses. Verified the exclusion helper, feed removal, active feed count, typecheck, lint, build, browser audit 13/13, and React Doctor 100/100.
+
+## SpaceX Greenhouse Source
+
+- [x] Verify the SpaceX Greenhouse board slug.
+- [x] Add SpaceX to default and scheduled Greenhouse source lists.
+- [x] Verify the targeted board fetch and app build checks.
+
+Result: Added Greenhouse board `spacex` to the default and scheduled source lists. Verified the board returns 1,798 raw jobs and the adapter currently normalizes 6 endpoint-relevant matches, including SpaceX endpoint and Windows engineering roles. Verified typecheck, lint, and build.
+
 ## Main And Production Publish
 
 - [x] Commit the current map and source-refresh work.
@@ -981,3 +998,33 @@ Result: The offshore points were caused by per-job scatter offsets being added i
 - [x] Document preview URL and result.
 
 Result: Created Vercel preview `dpl_FHk6UqBbQog8L9LxNrrcfYAYyXag` at https://endpoint-jobs-fofvvpgrx-jorgeasaurus-projects.vercel.app. `vercel inspect --wait` reported preview status Ready, authenticated `vercel curl -I` returned HTTP/2 200, and direct public access redirects to Vercel SSO because preview protection is enabled.
+
+## Feature Story Coverage Update
+
+- [x] Inspect current spreadsheet and audit coverage.
+- [x] Add user stories for SpaceX source and Adzuna availability controls.
+- [x] Add deterministic data audit for those stories.
+- [x] Run story audits and app verification.
+- [x] Document final result.
+
+Result: Added FEAT-058 through FEAT-060 to `docs/feature-user-stories.csv` and added `npm run audit:data`. Verification passes: data audit 3/3, browser audit 13/13, typecheck, lint, build, diff whitespace, React Doctor 100/100, and spreadsheet count 60 rows.
+
+## Feature Audit Coverage Expansion
+
+- [x] Measure current direct audit coverage.
+- [x] Add deterministic checks for pure filter, URL, card, feed, source, SEO, workflow, and map stories.
+- [x] Split coarse map coverage into granular map user stories.
+- [x] Run the expanded audit suite and build checks.
+- [x] Update the canonical spreadsheet notes with current audit coverage.
+- [x] Document remaining manual/browser-only gaps.
+
+Result: Expanded the canonical tracker from 60 to 69 stories by adding granular map rows plus provider contract, endpoint search config, and map-location resolver rows. Automated coverage now references 69/69 stories: `npm run audit:data` passes 56 checks covering 55 feature rows plus tracker integrity, and `npm run audit:browser` passes 14 interaction stories including map zoom. Reverse source inventory reports 0 untracked app/refresh/workflow files. Verification passes typecheck, lint, build, diff whitespace, and React Doctor 100/100.
+
+## Vercel Preview Deployment - Feature Audit Coverage
+
+- [x] Create preview deployment from the current working tree.
+- [x] Inspect the deployment until Vercel reports a final state.
+- [x] Verify the protected preview responds through Vercel.
+- [x] Document preview URL and result.
+
+Result: Created Vercel preview `dpl_DbNMb11ce2QVhavzPE6B4nw3gtEi` at https://endpoint-jobs-dqpyyyp17-jorgeasaurus-projects.vercel.app. `vercel inspect --wait` reported preview status Ready, and authenticated `vercel curl -I` returned HTTP/2 200.
