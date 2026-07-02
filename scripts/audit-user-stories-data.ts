@@ -744,17 +744,26 @@ await run("FEAT-060", "Adzuna aggregator listings expire on source-specific fres
 await run("FEAT-061", "Mapped count and ratio come from active job map points", () => {
   const activeJobs = feed.jobs.filter((job) => isActiveJob(job, fixedAuditNow));
   const points = buildJobMapPoints(activeJobs);
+  const sanDiegoJobs = filterJobs(activeJobs, {
+    ...initialFilterState,
+    locationQuery: "San Diego"
+  });
+  const sanDiegoPoints = buildJobMapPoints(sanDiegoJobs);
+
   assertTruthy(points.length > 0, "active feed has no mapped jobs");
   assertTruthy(
     points.length >= Math.floor(activeJobs.length * 0.5),
     `mapped coverage too low: ${points.length} of ${activeJobs.length}`
   );
   assertTruthy(points.length <= activeJobs.length, "mapped points exceed active jobs");
+  assertTruthy(sanDiegoJobs.length > 0, "San Diego location filter returned no jobs");
+  assertTruthy(sanDiegoPoints.length > 0, "San Diego location filter returned no mapped jobs");
   assertIncludes(sources.jobMap, "const mappedJobCount = points.length");
   assertIncludes(sources.jobMap, "{mappedJobCount} of {jobs.length}");
   assertIncludes(sources.jobMapFeatures, "buildFeatureCollection");
   assertIncludes(sources.refresh, "addResolvedMapLocation");
   assertIncludes(sources.jobMapLib, "resolveJobMapLocation(job.location)");
+  assertIncludes(sources.companyAts, "parseWorkdayLocationFromExternalPath");
 });
 
 await run("FEAT-062", "Per-job map points preserve duplicate-coordinate jobs", () => {

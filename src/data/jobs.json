@@ -3027,7 +3027,7 @@
       "id": "workday-nvidia-client-platform-architect-e34de4b0d0",
       "title": "Client Platform Architect",
       "company": "NVIDIA",
-      "location": "2 Locations",
+      "location": "Taiwan Taipei",
       "workplace": "On-site",
       "postedAt": "2026-06-29T12:18:26.212Z",
       "fetchedAt": "2026-07-01T12:18:26.212Z",
@@ -6378,7 +6378,7 @@
       "id": "workday-booz-allen-endpoint-security-engineer-84a95ef151",
       "title": "Endpoint Security Engineer",
       "company": "Booz Allen",
-      "location": "2 Locations",
+      "location": "Indianapolis, IN",
       "workplace": "On-site",
       "postedAt": "2026-06-23T12:18:26.212Z",
       "fetchedAt": "2026-07-01T12:18:26.212Z",
@@ -6409,7 +6409,12 @@
       ],
       "roleFamily": "Endpoint Security",
       "seniority": "Mid",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "Indianapolis, IN",
+        "latitude": 39.7684,
+        "longitude": -86.1581
+      }
     },
     {
       "id": "greenhouse-tanium-8008599",
@@ -8331,7 +8336,7 @@
       "id": "workday-gdit-endpoint-management-systems-administrator-ts-sci-with-polygraph-013549e485",
       "title": "Endpoint Management Systems Administrator - TS/SCI with Polygraph",
       "company": "GDIT",
-      "location": "5 Locations",
+      "location": "Annapolis Junction, MD",
       "workplace": "On-site",
       "postedAt": "2026-06-15T12:18:26.212Z",
       "fetchedAt": "2026-07-01T12:18:26.212Z",
@@ -8361,7 +8366,12 @@
       ],
       "roleFamily": "Windows Platform",
       "seniority": "Mid",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "Maryland",
+        "latitude": 39.0458,
+        "longitude": -76.6413
+      }
     },
     {
       "id": "workday-gdit-sccm-mcm-systems-engineer-ts-sci-w-poly-b3f362f678",
@@ -8411,7 +8421,7 @@
       "id": "workday-gdit-systems-administrator-desktop-application-packaging-ts-sci-w-poly-438e653200",
       "title": "Systems Administrator, Desktop Application Packaging-TS/SCI w/Poly",
       "company": "GDIT",
-      "location": "5 Locations",
+      "location": "Annapolis Junction, MD",
       "workplace": "On-site",
       "postedAt": "2026-06-15T12:18:26.212Z",
       "fetchedAt": "2026-07-01T12:18:26.212Z",
@@ -8442,13 +8452,18 @@
       ],
       "roleFamily": "Automation",
       "seniority": "Mid",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "Maryland",
+        "latitude": 39.0458,
+        "longitude": -76.6413
+      }
     },
     {
       "id": "workday-gdit-desktop-systems-engineer-ts-sci-with-polygraph-6c27bef18b",
       "title": "Desktop Systems Engineer - TS/SCI with Polygraph",
       "company": "GDIT",
-      "location": "2 Locations",
+      "location": "Annapolis Junction, MD",
       "workplace": "On-site",
       "postedAt": "2026-06-15T12:18:26.212Z",
       "fetchedAt": "2026-07-01T12:18:26.212Z",
@@ -8478,13 +8493,18 @@
       ],
       "roleFamily": "Windows Platform",
       "seniority": "Mid",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "Maryland",
+        "latitude": 39.0458,
+        "longitude": -76.6413
+      }
     },
     {
       "id": "workday-gdit-microsoft-configuration-manager-mcm-sccm-engineer-ts-sci-w-polygraph-06494c134d",
       "title": "Microsoft Configuration Manager (MCM/SCCM) Engineer - TS/SCI w/Polygraph",
       "company": "GDIT",
-      "location": "2 Locations",
+      "location": "Sterling, VA",
       "workplace": "On-site",
       "postedAt": "2026-06-15T12:18:26.212Z",
       "fetchedAt": "2026-07-01T12:18:26.212Z",
@@ -8517,7 +8537,12 @@
       ],
       "roleFamily": "Windows Platform",
       "seniority": "Manager",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "Northern Virginia",
+        "latitude": 38.8462,
+        "longitude": -77.3064
+      }
     },
     {
       "id": "adzuna-5763456243",
@@ -9256,7 +9281,7 @@
       "id": "workday-goodwin-manager-desktop-engineering-c5e7031610",
       "title": "Manager, Desktop Engineering",
       "company": "Goodwin",
-      "location": "4 Locations",
+      "location": "Silicon Valley",
       "workplace": "On-site",
       "postedAt": "2026-06-11T12:18:26.212Z",
       "fetchedAt": "2026-07-01T12:18:26.212Z",
@@ -12631,7 +12656,7 @@
       "id": "workday-dexcom-sr-staff-desktop-systems-engineer-c990f3dc2a",
       "title": "Sr Staff Desktop Systems Engineer",
       "company": "Dexcom",
-      "location": "2 Locations",
+      "location": "San Diego, CA",
       "workplace": "On-site",
       "postedAt": "2026-06-01T12:18:26.212Z",
       "fetchedAt": "2026-07-01T12:18:26.212Z",
@@ -12661,7 +12686,12 @@
       ],
       "roleFamily": "Windows Platform",
       "seniority": "Staff",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "San Diego, CA",
+        "latitude": 32.7157,
+        "longitude": -117.1611
+      }
     },
     {
       "id": "workday-leidos-principal-endpoint-security-systems-engineer-0d5f87d205",
@@ -12947,7 +12977,7 @@
       "id": "workday-gartner-senior-systems-engineer-windows-endpoint-mangement-2c14d5122f",
       "title": "Senior Systems Engineer (Windows Endpoint Mangement)",
       "company": "Gartner",
-      "location": "2 Locations",
+      "location": "Irving, TX",
       "workplace": "On-site",
       "postedAt": "2026-06-01T12:18:26.212Z",
       "fetchedAt": "2026-07-01T12:18:26.212Z",
@@ -13016,7 +13046,7 @@
       "id": "workday-circle-senior-manager-endpoint-trusted-environments-cedc2f26c5",
       "title": "Senior Manager, Endpoint & Trusted Environments",
       "company": "Circle",
-      "location": "4 Locations",
+      "location": "New York City Remote First In, US",
       "workplace": "On-site",
       "postedAt": "2026-06-01T12:18:26.212Z",
       "fetchedAt": "2026-07-01T12:18:26.212Z",
@@ -13045,7 +13075,12 @@
       ],
       "roleFamily": "Windows Platform",
       "seniority": "Manager",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "New York, NY",
+        "latitude": 40.7128,
+        "longitude": -74.006
+      }
     },
     {
       "id": "greenhouse-doordashusa-7842148",

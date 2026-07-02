@@ -220,6 +220,73 @@ await run("FEAT-063", "Map zoom controls render and zooming updates the readout"
   await page.close();
 });
 
+await run("QA-001", "Mobile San Diego location input keeps mapped map results visible", async () => {
+  const page = await newPage(browser, { width: 390, height: 844 });
+  await page.getByRole("button", { name: /show map/i }).click();
+
+  const locationInput = page.getByPlaceholder("City, state, or country");
+  await locationInput.click();
+  await page.keyboard.type("San");
+  await page.keyboard.press("Space");
+  await expect(locationInput).toHaveValue("San ");
+  await page.keyboard.type("Diego");
+
+  await expect(locationInput).toHaveValue("San Diego");
+  await expect(page.locator(".active-filter-chip", { hasText: "Location: San Diego" })).toBeVisible();
+  await expect(page.locator(".job-map-heading h2")).toHaveText("1 mapped jobs");
+  await expect(page.locator(".map-count-pill")).toContainText("1 of 1");
+  await expect(page.locator(".job-card")).toHaveCount(1);
+  await expect(page.locator("#job-map-canvas canvas")).toBeVisible({ timeout: 10000 });
+  await page.close();
+});
+
+await run("QA-002", "Location URL with encoded spaces hydrates map results", async () => {
+  const page = await newPage(browser, { width: 390, height: 844 });
+  await page.goto(baseUrl + "/?location=San+Diego", { waitUntil: "networkidle" });
+
+  await expect(page.getByPlaceholder("City, state, or country")).toHaveValue("San Diego");
+  await expect(page.locator(".active-filter-chip", { hasText: "Location: San Diego" })).toBeVisible();
+  await page.getByRole("button", { name: /show map/i }).click();
+  await expect(page.locator(".job-map-heading h2")).toHaveText("1 mapped jobs");
+  await expect(page.locator(".map-count-pill")).toContainText("1 of 1");
+  await expect(page.locator("#job-map-canvas canvas")).toBeVisible({ timeout: 10000 });
+  await page.close();
+});
+
+await run("QA-003", "Mobile empty state reset restores results after a location miss", async () => {
+  const page = await newPage(browser, { width: 390, height: 844 });
+  await page.getByPlaceholder("City, state, or country").fill("No Matching City");
+
+  await expect(page.getByText("No matching roles")).toBeVisible();
+  await page.getByRole("button", { name: /reset filters/i }).click();
+  await expect(page.getByPlaceholder("City, state, or country")).toHaveValue("");
+  await expect(page.locator(".job-card").first()).toBeVisible();
+  await page.close();
+});
+
+await run("QA-004", "Same-origin links resolve without dead routes", async () => {
+  const page = await newPage(browser, { width: 1280, height: 900 });
+  const internalHrefs = await page.locator("a[href]").evaluateAll((links) =>
+    Array.from(
+      new Set(
+        links
+          .map((link) => link.getAttribute("href"))
+          .filter((href) => href && !href.startsWith("#") && !href.startsWith("mailto:") && !href.startsWith("tel:"))
+          .filter((href) => new URL(href, window.location.href).origin === window.location.origin)
+      )
+    )
+  );
+
+  for (const href of internalHrefs) {
+    const response = await page.request.get(new URL(href, baseUrl).toString(), {
+      failOnStatusCode: false
+    });
+    expect(response.status(), `${href} returned ${response.status()}`).toBeLessThan(400);
+  }
+
+  await page.close();
+});
+
 await run("FEAT-034", "Mobile viewport has no document overflow", async () => {
   const page = await newPage(browser, { width: 390, height: 844 });
   await page.getByText("More filters").click();

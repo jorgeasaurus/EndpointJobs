@@ -492,7 +492,7 @@ function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, 
   }
 
   const bulletFields = Array.isArray(raw.bulletFields) ? raw.bulletFields.map(cleanText).filter(Boolean) : [];
-  const location = cleanText(raw.locationsText) || bulletFields.find((field) => !/^[A-Z0-9-]+$/.test(field));
+  const location = getWorkdayLocation(raw, bulletFields);
   const description = cleanText([title, query, bulletFields.join(" ")].join(" "));
   const haystack = normalizeSearchText([title, company, location, bulletFields.join(" ")].join(" "));
   const tools = deriveTools(haystack);
@@ -747,6 +747,174 @@ function buildWorkdayJobUrl(siteUrl: string, externalPath: string | undefined) {
     return undefined;
   }
 }
+
+function getWorkdayLocation(raw: WorkdayJob, bulletFields: string[]) {
+  const reportedLocation =
+    cleanText(raw.locationsText) ||
+    bulletFields.find((field) => !/^[A-Z0-9-]+$/.test(field)) ||
+    "";
+
+  if (reportedLocation && !isWorkdayLocationCount(reportedLocation)) {
+    return reportedLocation;
+  }
+
+  return parseWorkdayLocationFromExternalPath(raw.externalPath) || reportedLocation;
+}
+
+function isWorkdayLocationCount(value: string) {
+  return /^\d+ locations$/i.test(value);
+}
+
+function parseWorkdayLocationFromExternalPath(externalPath: string | undefined) {
+  if (!externalPath) {
+    return "";
+  }
+
+  const segments = decodeURIComponent(externalPath)
+    .split("/")
+    .map(cleanText)
+    .filter(Boolean);
+  const jobSegmentIndex = segments.findIndex(
+    (segment) => segment.toLowerCase() === "job"
+  );
+  const locationSlug = jobSegmentIndex >= 0 ? segments[jobSegmentIndex + 1] : "";
+
+  if (!locationSlug) {
+    return "";
+  }
+
+  return formatWorkdayLocationSlug(locationSlug);
+}
+
+function formatWorkdayLocationSlug(slug: string) {
+  const parts = slug
+    .replace(/_/g, "-")
+    .split("-")
+    .map(cleanText)
+    .filter(Boolean);
+
+  if (parts.length === 0) {
+    return "";
+  }
+
+  const locationParts = dropLeadingCountryCode(parts);
+  const firstState = getStateCode(locationParts[0]);
+
+  if (firstState && locationParts.length > 1) {
+    return `${toTitleCase(locationParts.slice(1).join(" "))}, ${firstState}`;
+  }
+
+  const trailingState = getTrailingStateCode(locationParts);
+
+  if (trailingState && locationParts.length > trailingState.partCount) {
+    return `${toTitleCase(locationParts.slice(0, -trailingState.partCount).join(" "))}, ${
+      trailingState.code
+    }`;
+  }
+
+  return toTitleCase(locationParts.join(" "));
+}
+
+function dropLeadingCountryCode(parts: string[]) {
+  const [first, ...rest] = parts;
+  return first && /^(us|usa)$/i.test(first) && rest.length > 0 ? rest : parts;
+}
+
+function getStateCode(value: string | undefined) {
+  if (!value) {
+    return undefined;
+  }
+
+  const normalized = value.toLowerCase();
+  const stateCode = stateNameToCode[normalized];
+
+  if (stateCode) {
+    return stateCode;
+  }
+
+  return /^[a-z]{2}$/i.test(value) ? value.toUpperCase() : undefined;
+}
+
+function getTrailingStateCode(parts: string[]) {
+  for (const partCount of [3, 2, 1]) {
+    const stateName = parts.slice(-partCount).join(" ").toLowerCase();
+    const code = stateNameToCode[stateName];
+
+    if (code) {
+      return { code, partCount };
+    }
+
+    if (partCount === 1) {
+      const stateCode = getStateCode(parts[parts.length - 1]);
+
+      if (stateCode) {
+        return { code: stateCode, partCount };
+      }
+    }
+  }
+
+  return undefined;
+}
+
+function toTitleCase(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/\b[a-z]/g, (letter) => letter.toUpperCase());
+}
+
+const stateNameToCode: Record<string, string> = {
+  alabama: "AL",
+  alaska: "AK",
+  arizona: "AZ",
+  arkansas: "AR",
+  california: "CA",
+  colorado: "CO",
+  connecticut: "CT",
+  delaware: "DE",
+  "district of columbia": "DC",
+  florida: "FL",
+  georgia: "GA",
+  hawaii: "HI",
+  idaho: "ID",
+  illinois: "IL",
+  indiana: "IN",
+  iowa: "IA",
+  kansas: "KS",
+  kentucky: "KY",
+  louisiana: "LA",
+  maine: "ME",
+  maryland: "MD",
+  massachusetts: "MA",
+  michigan: "MI",
+  minnesota: "MN",
+  mississippi: "MS",
+  missouri: "MO",
+  montana: "MT",
+  nebraska: "NE",
+  nevada: "NV",
+  "new hampshire": "NH",
+  "new jersey": "NJ",
+  "new mexico": "NM",
+  "new york": "NY",
+  "north carolina": "NC",
+  "north dakota": "ND",
+  ohio: "OH",
+  oklahoma: "OK",
+  oregon: "OR",
+  pennsylvania: "PA",
+  "rhode island": "RI",
+  "south carolina": "SC",
+  "south dakota": "SD",
+  tennessee: "TN",
+  texas: "TX",
+  utah: "UT",
+  vermont: "VT",
+  virginia: "VA",
+  washington: "WA",
+  "west virginia": "WV",
+  wisconsin: "WI",
+  wyoming: "WY"
+};
 
 function getActivateSites(defaultUrl: string) {
   const configured = process.env.JOB_ACTIVATE_SITES;

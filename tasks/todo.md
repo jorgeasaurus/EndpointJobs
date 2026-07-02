@@ -1,5 +1,56 @@
 # Endpoint Jobs Plan
 
+## QA Functional Sweep
+
+- [x] Inventory existing audits and identify missing high-risk flows.
+- [x] Verify mobile filter/map interactions, including spaced city input.
+- [x] Verify desktop filter, pagination, empty-state, and URL-sync flows.
+- [x] Fix any regressions found with focused coverage.
+- [x] Document results.
+
+Result: Added browser QA coverage for mobile `San Diego` map persistence, encoded-space location URL hydration, mobile empty-state reset, and same-origin link checks. Full browser audit passed 18/18. Verified lint, data audit, webpack production build, and typecheck after Next generated `.next/types`.
+
+## QA Preview Deploy
+
+- [x] Deploy current local QA/map-fix snapshot to a Vercel preview.
+- [x] Verify preview deployment is ready.
+- [x] Document preview URL.
+
+Result: Deployed preview `dpl_8XSu8htKGcneKyh6pRwVQbCbxERw` at `https://endpoint-jobs-b8kdseun5-jorgeasaurus-projects.vercel.app`. `vercel inspect` reports target `preview` and status `Ready`. The preview redirects unauthenticated users to Vercel SSO; temporary share URL expires July 3, 2026 at 3:54 AM: `https://endpoint-jobs-b8kdseun5-jorgeasaurus-projects.vercel.app/?_vercel_share=GTbrVBUSnsyljSty4TYJWkiKm06L5fHt`.
+
+## QA Main And Production Publish
+
+- [ ] Commit the QA/map fixes.
+- [ ] Rebase on current `origin/main` and push `main`.
+- [ ] Deploy Vercel production.
+- [ ] Inspect production readiness and document the URL.
+
+## Location Whitespace Preview Deploy
+
+- [x] Deploy the current local whitespace fix to a Vercel preview.
+- [x] Verify the preview deployment is ready.
+- [x] Document the preview URL.
+
+Result: Deployed preview `dpl_DWkuQsTLopzGneQADvcw4HFanNxL` at `https://endpoint-jobs-by6oqmc9x-jorgeasaurus-projects.vercel.app`. `vercel inspect` reports target `preview` and status `Ready`. The preview is behind Vercel SSO protection; unauthenticated browser checks redirect to Vercel login.
+
+## Mobile San Diego Map Regression
+
+- [x] Reproduce mobile map behavior after entering `San Diego`.
+- [x] Fix the filter or map normalization that hides San Diego map results.
+- [x] Verify mobile map behavior and project checks.
+- [x] Document results.
+
+Result: Workday rows that report only `N Locations` now derive a usable location from the `/job/.../` URL segment during refresh. Corrected the current feed for San Diego plus parseable GDIT rows so location search has mapped points immediately. Verified data audit, typecheck, lint, webpack production build, and mobile Playwright flow: `San Diego` shows `1 mapped jobs`, `1 of 1`, one result card, and a visible map canvas.
+
+## Location Whitespace Input Fix
+
+- [x] Reproduce the URL-sync whitespace issue in the location input.
+- [x] Preserve typed spaces while keeping empty filters out of the URL.
+- [x] Verify typecheck, lint, build, and mobile input behavior.
+- [x] Document results.
+
+Result: Fixed URL serialization so query and location filters keep meaningful typed whitespace instead of trimming the value used as controlled input state. Verified `npm run typecheck`, `npm run lint`, `./node_modules/.bin/next build --webpack`, and Playwright mobile typing: `San` -> `San ` -> `San Diego` with active filter `Location: San Diego`. The default Turbopack `npm run build` hung twice during optimized compilation before producing diagnostics.
+
 ## SEO Discovery Improvements
 
 - [x] Audit current metadata, robots, sitemap, and structured data.

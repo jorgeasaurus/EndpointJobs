@@ -115,11 +115,11 @@ export function toSortKey(value: string): SortKey {
 
 function filterStateToSearchParams(filters: FilterState) {
   const searchParams = new URLSearchParams();
-  const query = filters.query.trim();
-  const locationQuery = filters.locationQuery.trim();
 
-  if (query) searchParams.set("q", query);
-  if (locationQuery) searchParams.set("location", locationQuery);
+  if (hasFilterText(filters.query)) searchParams.set("q", filters.query);
+  if (hasFilterText(filters.locationQuery)) {
+    searchParams.set("location", filters.locationQuery);
+  }
   if (filters.selectedPlatforms.length > 0) {
     searchParams.set("platforms", filters.selectedPlatforms.join(","));
   }
@@ -134,6 +134,10 @@ function filterStateToSearchParams(filters: FilterState) {
   if (filters.sort !== "newest") searchParams.set("sort", filters.sort);
 
   return searchParams;
+}
+
+function hasFilterText(value: string) {
+  return value.trim().length > 0;
 }
 
 function parseMultiFilter<T extends string>(
