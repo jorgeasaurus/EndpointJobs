@@ -20,10 +20,12 @@ Result: Deployed preview `dpl_8XSu8htKGcneKyh6pRwVQbCbxERw` at `https://endpoint
 
 ## QA Main And Production Publish
 
-- [ ] Commit the QA/map fixes.
-- [ ] Rebase on current `origin/main` and push `main`.
-- [ ] Deploy Vercel production.
-- [ ] Inspect production readiness and document the URL.
+- [x] Commit the QA/map fixes.
+- [x] Rebase on current `origin/main` and push `main`.
+- [x] Deploy Vercel production.
+- [x] Inspect production readiness and document the URL.
+
+Result: Pushed the QA/map fixes to `main`, deployed production at `https://endpointjobs.dev`, and inspected the deployment as `Ready`. Production mobile QA verified `San Diego` shows `1 mapped jobs`, `1 of 1`, one result card, and a visible map canvas.
 
 ## Location Whitespace Preview Deploy
 
