@@ -1,5 +1,7 @@
 # Lessons
 
+- Browser audits that depend on feed data should derive scenarios from `jobs.json` or fixtures; avoid hard-coding result counts, company names, or titles that can change during normal refreshes.
+- Audit fixtures should import canonical app helpers for active/filter logic; copied source freshness or exclusion rules drift silently.
 - For job API refresh checks, report raw provider counts and accepted endpoint-match counts from the GitHub Action before saying the feed is healthy.
 - Coverage checks need real user-visible example titles, not only tool-keyword counts; include client engineering, end-user compute, and systems engineering title patterns.
 - Endpoint searches need employer-targeted ATS probes for each screenshot batch; broad aggregators miss many LinkedIn-visible roles.

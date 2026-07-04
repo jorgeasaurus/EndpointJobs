@@ -11,8 +11,6 @@ import {
 } from "./site-metadata";
 
 import "./globals.css";
-import "maplibre-gl/dist/maplibre-gl.css";
-import "slot-text/style.css";
 import "./parallax-background.css";
 import "./job-board.css";
 import "./job-board-filters.css";

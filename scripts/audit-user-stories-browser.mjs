@@ -1,15 +1,23 @@
 import { chromium, expect } from "@playwright/test";
 
+import { loadBrowserAuditScenarios } from "./audit-user-stories-browser-fixtures.ts";
+
 const baseUrl = process.env.AUDIT_BASE_URL ?? "http://127.0.0.1:3002";
+const desktopViewport = { width: 1280, height: 900 };
+const mobileViewport = { width: 390, height: 844 };
+const { advancedFilterScenario, locationMapScenario } = await loadBrowserAuditScenarios();
 const results = [];
 const consoleMessages = [];
 const resourceErrors = [];
+let currentTestPages = [];
 
 function record(id, status, detail) {
   results.push({ id, status, detail });
 }
 
 async function run(id, detail, fn) {
+  currentTestPages = [];
+
   try {
     await fn();
     record(id, "Passed", detail);
@@ -19,11 +27,20 @@ async function run(id, detail, fn) {
       "Failed",
       detail + ": " + (error instanceof Error ? error.message : String(error))
     );
+  } finally {
+    await Promise.allSettled(
+      currentTestPages
+        .filter((page) => !page.isClosed())
+        .map((page) => page.close())
+    );
+    currentTestPages = [];
   }
 }
 
-async function newPage(browser, viewport) {
-  const page = await browser.newPage({ viewport });
+async function newPage(browser, viewport, options = {}) {
+  const page = await browser.newPage({ viewport, ...options.contextOptions });
+  currentTestPages.push(page);
+  options.beforeGoto?.(page);
   page.on("console", (message) => {
     if (["error", "warning"].includes(message.type())) {
       consoleMessages.push({ type: message.type(), text: message.text() });
@@ -36,6 +53,11 @@ async function newPage(browser, viewport) {
   });
   await page.goto(baseUrl, { waitUntil: "networkidle" });
   return page;
+}
+
+async function withPage(browser, viewport, fn, options = {}) {
+  const page = await newPage(browser, viewport, options);
+  return fn(page);
 }
 
 const browser = await chromium.launch({ headless: true });
@@ -102,6 +124,36 @@ await run("FEAT-023", "Pagination next button changes active page", async () => 
   await page.close();
 });
 
+await run("QA-009", "Pagination boundaries keep top and bottom controls in sync", async () => {
+  const page = await newPage(browser, { width: 1280, height: 900 });
+  const initialSummary = (await page.locator(".pagination-summary").first().textContent()) ?? "";
+  const totalJobs = Number(initialSummary.match(/of\s+(\d+)/)?.[1] ?? 0);
+  const totalPages = Math.ceil(totalJobs / 20);
+  const lastPageStart = (totalPages - 1) * 20 + 1;
+
+  expect(totalPages).toBeGreaterThan(1);
+  await expect(page.getByTitle("Previous page")).toHaveCount(2);
+  expect(await disabledButtonCount(page, "Previous page")).toBe(2);
+
+  await page.getByRole("button", { name: `Go to job page ${totalPages}` }).first().click();
+  await expect(page.locator(".pagination-summary")).toHaveText([
+    `Showing ${lastPageStart}-${totalJobs} of ${totalJobs}`,
+    `Showing ${lastPageStart}-${totalJobs} of ${totalJobs}`
+  ]);
+  await expect(page.locator(".pagination-button.is-active")).toHaveText([
+    String(totalPages),
+    String(totalPages)
+  ]);
+  expect(await disabledButtonCount(page, "Next page")).toBe(2);
+
+  await page.getByTitle("Previous page").first().click();
+  await expect(page.locator(".pagination-button.is-active")).toHaveText([
+    String(totalPages - 1),
+    String(totalPages - 1)
+  ]);
+  await page.close();
+});
+
 await run("FEAT-027", "Expandable descriptions open", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
   const details = page.locator("details.description-details").first();
@@ -154,6 +206,29 @@ await run("FEAT-032", "Parallax background layers render behind content", async 
   await page.close();
 });
 
+await run("QA-012", "Reduced motion skips the Three signal canvas", async () => {
+  const page = await newPage(browser, { width: 1280, height: 900 }, {
+    contextOptions: {
+      reducedMotion: "reduce"
+    }
+  });
+
+  await expect(page.locator('[data-endpoint-signal-canvas="true"]')).toHaveCount(0);
+  const state = await page.evaluate(() => {
+    const field = document.querySelector(".parallax-field");
+    const host = document.querySelector(".parallax-three-host");
+
+    return {
+      hasThreeClass: field?.classList.contains("parallax-field--three") ?? false,
+      hostChildCount: host?.childElementCount ?? 0
+    };
+  });
+
+  expect(state.hasThreeClass).toBeFalsy();
+  expect(state.hostChildCount).toBe(0);
+  await page.close();
+});
+
 await run("FEAT-033", "Animated count numbers render numeric text", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
   const numbers = await page.locator(".slot-number").evaluateAll((nodes) =>
@@ -192,6 +267,34 @@ await run("FEAT-057", "Job map expands only after user request", async () => {
   await page.close();
 });
 
+await run("QA-007", "Collapsed map avoids map tile and glyph requests before expansion", async () => {
+  const initialMapRequests = [];
+  let isExpandedStage = false;
+
+  const page = await newPage(browser, { width: 1280, height: 900 }, {
+    beforeGoto: (page) => {
+      page.on("response", (response) => {
+        if (isExpandedStage || !isMapTileOrGlyphUrl(response.url())) {
+          return;
+        }
+
+        initialMapRequests.push(response.url());
+      });
+    }
+  });
+
+  await page.locator(".job-map-section").scrollIntoViewIfNeeded();
+  await page.waitForLoadState("networkidle");
+
+  expect(initialMapRequests, initialMapRequests.join("\n")).toHaveLength(0);
+
+  isExpandedStage = true;
+  await page.getByRole("button", { name: /show map/i }).click();
+  await expect(page.locator(".maplibregl-canvas")).toBeVisible({ timeout: 10000 });
+  await page.waitForLoadState("networkidle");
+  await page.close();
+});
+
 await run("FEAT-063", "Map zoom controls render and zooming updates the readout", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
   await page.locator(".job-map-section").scrollIntoViewIfNeeded();
@@ -220,38 +323,66 @@ await run("FEAT-063", "Map zoom controls render and zooming updates the readout"
   await page.close();
 });
 
-await run("QA-001", "Mobile San Diego location input keeps mapped map results visible", async () => {
-  const page = await newPage(browser, { width: 390, height: 844 });
+await run("QA-010", "Desktop map point opens popup with safe apply link", () => withPage(browser, desktopViewport, async (page) => {
+  await openLocationMap(page, locationMapScenario);
+  await activateCenteredMapPoint(page, "click");
+
+  const popup = page.locator(".job-map-popup .job-map-tooltip");
+  await expect(popup).toBeVisible({ timeout: 10000 });
+  await expect(popup).toContainText(locationMapScenario.mapLabel);
+  await expect(popup).toContainText(locationMapScenario.job.title);
+  await expect(popup).toContainText(locationMapScenario.job.company);
+
+  const apply = popup.getByRole("link", { name: /apply/i });
+  await expect(apply).toHaveAttribute("href", getExpectedApplyHref(locationMapScenario.job));
+  await expect(apply).toHaveAttribute("target", "_blank");
+  await expect(apply).toHaveAttribute("rel", /noopener noreferrer/);
+  await expect(page.locator(".job-map-mobile-sheet")).toBeHidden();
+}));
+
+await run("QA-011", "Mobile map point opens dismissible detail sheet", () => withPage(browser, mobileViewport, async (page) => {
+  await openLocationMap(page, locationMapScenario);
+  await activateCenteredMapPoint(page, "tap");
+
+  const sheet = page.locator(".job-map-mobile-sheet");
+  await expect(sheet).toBeVisible({ timeout: 10000 });
+  await expect(sheet).toContainText(locationMapScenario.job.title);
+  await expect(sheet).toContainText(locationMapScenario.job.company);
+  await expect(page.locator(".job-map-popup")).toBeHidden();
+
+  const apply = sheet.getByRole("link", { name: /apply/i });
+  await expect(apply).toHaveAttribute("target", "_blank");
+  await expect(apply).toHaveAttribute("rel", /noopener noreferrer/);
+
+  await page.getByRole("button", { name: "Close selected job" }).click();
+  await expect(sheet).toHaveCount(0);
+}, {
+    contextOptions: {
+      hasTouch: true,
+      isMobile: true
+    }
+  }));
+
+await run("QA-001", "Mobile spaced location input keeps mapped map results visible", () => withPage(browser, mobileViewport, async (page) => {
   await page.getByRole("button", { name: /show map/i }).click();
+  await typeSpacedLocationQuery(page, locationMapScenario.query);
 
-  const locationInput = page.getByPlaceholder("City, state, or country");
-  await locationInput.click();
-  await page.keyboard.type("San");
-  await page.keyboard.press("Space");
-  await expect(locationInput).toHaveValue("San ");
-  await page.keyboard.type("Diego");
-
-  await expect(locationInput).toHaveValue("San Diego");
-  await expect(page.locator(".active-filter-chip", { hasText: "Location: San Diego" })).toBeVisible();
-  await expect(page.locator(".job-map-heading h2")).toHaveText("1 mapped jobs");
-  await expect(page.locator(".map-count-pill")).toContainText("1 of 1");
-  await expect(page.locator(".job-card")).toHaveCount(1);
+  await expect(page.getByPlaceholder("City, state, or country")).toHaveValue(locationMapScenario.query);
+  await expectActiveFilterChips(page, [`Location: ${locationMapScenario.query}`]);
+  await expectMapCounts(page, locationMapScenario);
+  await expect(page.locator(".job-card").first()).toBeVisible();
   await expect(page.locator("#job-map-canvas canvas")).toBeVisible({ timeout: 10000 });
-  await page.close();
-});
+}));
 
-await run("QA-002", "Location URL with encoded spaces hydrates map results", async () => {
-  const page = await newPage(browser, { width: 390, height: 844 });
-  await page.goto(baseUrl + "/?location=San+Diego", { waitUntil: "networkidle" });
+await run("QA-002", "Location URL with encoded spaces hydrates map results", () => withPage(browser, mobileViewport, async (page) => {
+  await page.goto(withQuery({ location: locationMapScenario.query }), { waitUntil: "networkidle" });
 
-  await expect(page.getByPlaceholder("City, state, or country")).toHaveValue("San Diego");
-  await expect(page.locator(".active-filter-chip", { hasText: "Location: San Diego" })).toBeVisible();
+  await expect(page.getByPlaceholder("City, state, or country")).toHaveValue(locationMapScenario.query);
+  await expectActiveFilterChips(page, [`Location: ${locationMapScenario.query}`]);
   await page.getByRole("button", { name: /show map/i }).click();
-  await expect(page.locator(".job-map-heading h2")).toHaveText("1 mapped jobs");
-  await expect(page.locator(".map-count-pill")).toContainText("1 of 1");
+  await expectMapCounts(page, locationMapScenario);
   await expect(page.locator("#job-map-canvas canvas")).toBeVisible({ timeout: 10000 });
-  await page.close();
-});
+}));
 
 await run("QA-003", "Mobile empty state reset restores results after a location miss", async () => {
   const page = await newPage(browser, { width: 390, height: 844 });
@@ -261,6 +392,120 @@ await run("QA-003", "Mobile empty state reset restores results after a location 
   await page.getByRole("button", { name: /reset filters/i }).click();
   await expect(page.getByPlaceholder("City, state, or country")).toHaveValue("");
   await expect(page.locator(".job-card").first()).toBeVisible();
+  await page.close();
+});
+
+await run("QA-008", "UI filters hydrate from URL and chip removal recovers", () => withPage(browser, desktopViewport, async (page) => {
+  const salaryToggle = page.getByRole("button", { name: "Salary shown", exact: true });
+  const desktopFilterStack = page.locator(".hero-filter-stack--desktop");
+  const workplaceSelect = page.locator(".mini-field--workplace select");
+
+  await salaryToggle.click();
+  await page.getByRole("button", { name: "Windows" }).click();
+  await workplaceSelect.selectOption("Remote");
+  await desktopFilterStack.getByRole("button", { name: "Intune", exact: true }).click();
+
+  await expectActiveFilterChips(page, ["Salary shown", "Windows", "Remote", "Intune"]);
+  await expect(page.locator(".job-card").first()).toBeVisible();
+
+  expectUrlParams(page, {
+    salary: "1",
+    platforms: "Windows",
+    workplace: "Remote",
+    tools: "Intune"
+  });
+
+  await page.reload({ waitUntil: "networkidle" });
+  await expect(salaryToggle).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".facet-button.is-active", { hasText: "Windows" })).toBeVisible();
+  await expect(workplaceSelect).toHaveValue("Remote");
+  await expect(desktopFilterStack.locator(".facet-button.is-active", { hasText: "Intune" })).toBeVisible();
+  await expect(page.locator(".job-card").first()).toBeVisible();
+
+  await page.getByRole("button", { name: "Remove filter: Windows" }).click();
+  expectUrlParams(page, { platforms: null });
+  await expect(page.getByRole("button", { name: "Remove filter: Windows" })).toHaveCount(0);
+  await expect(page.locator(".job-card").first()).toBeVisible();
+
+  await clearActiveFilters(page);
+  await expect(page.locator(".job-card").first()).toBeVisible();
+}));
+
+await run("QA-014", "Advanced select filters serialize, hydrate, and sort visible results", () => withPage(browser, desktopViewport, async (page) => {
+  const roleSelect = page.locator(".high-signal-filters .mini-field", { hasText: "Role" }).locator("select");
+  const freshnessSelect = page.locator(".high-signal-filters .mini-field", { hasText: "Freshness" }).locator("select");
+  const desktopFilterStack = page.locator(".hero-filter-stack--desktop");
+  const senioritySelect = desktopFilterStack.locator(".field", { hasText: "Seniority" }).locator("select");
+  const sortSelect = desktopFilterStack.locator(".field", { hasText: "Sort" }).locator("select");
+
+  await roleSelect.selectOption(advancedFilterScenario.roleFamily);
+  await freshnessSelect.selectOption(advancedFilterScenario.freshness);
+  await senioritySelect.selectOption(advancedFilterScenario.seniority);
+  await sortSelect.selectOption("company");
+
+  await expectActiveFilterChips(page, [
+    advancedFilterScenario.roleFamily,
+    `Last ${advancedFilterScenario.freshness} days`,
+    advancedFilterScenario.seniority,
+    "Sort: Company"
+  ]);
+  await expect(page.locator(".pagination-summary").first()).toContainText(`of ${advancedFilterScenario.resultCount}`);
+
+  expectUrlParams(page, {
+    family: advancedFilterScenario.roleFamily,
+    freshness: advancedFilterScenario.freshness,
+    seniority: advancedFilterScenario.seniority,
+    sort: "company"
+  });
+
+  await expect(page.locator(".job-card").first()).toContainText(advancedFilterScenario.roleFamily);
+  await expect(page.locator(".job-card").first()).toContainText(advancedFilterScenario.seniority);
+  const firstCompanies = await getVisibleCompanyNames(page, advancedFilterScenario.expectedCompanies.length);
+  expect(firstCompanies).toEqual(advancedFilterScenario.expectedCompanies);
+
+  await page.reload({ waitUntil: "networkidle" });
+  await expect(roleSelect).toHaveValue(advancedFilterScenario.roleFamily);
+  await expect(freshnessSelect).toHaveValue(advancedFilterScenario.freshness);
+  await expect(senioritySelect).toHaveValue(advancedFilterScenario.seniority);
+  await expect(sortSelect).toHaveValue("company");
+  await expect(page.locator(".pagination-summary").first()).toContainText(`of ${advancedFilterScenario.resultCount}`);
+  expect(await getVisibleCompanyNames(page, advancedFilterScenario.expectedCompanies.length)).toEqual(firstCompanies);
+
+  await page.getByRole("button", { name: "Remove filter: Sort: Company" }).click();
+  expectUrlParams(page, { sort: null });
+  await expect(sortSelect).toHaveValue("newest");
+  await clearActiveFilters(page);
+}));
+
+await run("QA-013", "Mobile horizontal filters and chips stay reachable", async () => {
+  const page = await newPage(browser, { width: 390, height: 844 });
+  await page.getByRole("button", { name: "Salary shown", exact: true }).click();
+  await page.getByPlaceholder("City, state, or country").fill("Remote");
+  await page.locator(".mini-field--workplace select").selectOption("Remote");
+
+  for (const platform of ["macOS", "Windows", "iOS", "Android", "Linux"]) {
+    const button = page.getByRole("button", { name: platform, exact: true });
+    await button.scrollIntoViewIfNeeded();
+    await expectElementHorizontallyReachable(page, button);
+    await button.click();
+  }
+
+  await page.locator(".active-filter-chips").evaluate((chips) => {
+    chips.scrollLeft = chips.scrollWidth;
+  });
+
+  const linuxChip = page.getByRole("button", { name: "Remove filter: Linux" });
+  await linuxChip.scrollIntoViewIfNeeded();
+  await expectElementHorizontallyReachable(page, linuxChip);
+  await linuxChip.click();
+
+  const platforms = new URL(page.url()).searchParams.get("platforms") ?? "";
+  expect(platforms.includes("Linux")).toBeFalsy();
+  await expect(page.getByRole("button", { name: "Remove filter: Linux" })).toHaveCount(0);
+
+  await page.locator(".active-filter-chip--clear").click();
+  await expect(page.locator(".active-filter-chips")).toHaveCount(0);
+  expect(new URL(page.url()).search).toBe("");
   await page.close();
 });
 
@@ -284,6 +529,53 @@ await run("QA-004", "Same-origin links resolve without dead routes", async () =>
     expect(response.status(), `${href} returned ${response.status()}`).toBeLessThan(400);
   }
 
+  await page.close();
+});
+
+await run("QA-005", "Footer popular search links hydrate filtered result states", async () => {
+  const page = await newPage(browser, { width: 1280, height: 900 });
+  await page.locator("footer").scrollIntoViewIfNeeded();
+
+  const popularLinks = await page.locator("footer .footer-search-link").evaluateAll((links) =>
+    links.map((link) => ({
+      href: link.getAttribute("href") ?? "",
+      label: link.textContent?.trim() ?? ""
+    }))
+  );
+
+  expect(popularLinks).toHaveLength(8);
+
+  for (const link of popularLinks) {
+    await page.goto(new URL(link.href, baseUrl).toString(), { waitUntil: "networkidle" });
+
+    const activeLabels = await page.locator(".active-filter-chip").evaluateAll((chips) =>
+      chips
+        .map((chip) => chip.textContent?.replace(/\s+/g, " ").trim() ?? "")
+        .filter((label) => label && label !== "Clear all")
+    );
+
+    expect(activeLabels.length, `${link.label} should activate at least one filter`).toBeGreaterThan(0);
+    await expect(page.locator(".job-card").first(), `${link.label} should show matching jobs`).toBeVisible();
+    await expect(page.locator(".empty-state"), `${link.label} should not show empty state`).toHaveCount(0);
+  }
+
+  await page.close();
+});
+
+await run("QA-006", "Footer popular search links do not route-prefetch on scroll", async () => {
+  const page = await newPage(browser, { width: 1280, height: 900 });
+  const routePrefetches = [];
+  page.on("response", (response) => {
+    const url = response.url();
+    if (url.includes("_rsc=") && isPopularSearchUrl(url)) {
+      routePrefetches.push(url);
+    }
+  });
+
+  await page.locator("footer").scrollIntoViewIfNeeded();
+  await page.waitForLoadState("networkidle");
+
+  expect(routePrefetches, routePrefetches.join("\n")).toHaveLength(0);
   await page.close();
 });
 
@@ -354,4 +646,182 @@ function isIgnoredConsoleMessage(message) {
 function isIgnoredResourceError(error) {
   const isLocalAudit = /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?/.test(baseUrl);
   return isLocalAudit && error.url.includes("/_vercel/insights/script.js");
+}
+
+async function disabledButtonCount(page, title) {
+  return page.getByTitle(title).evaluateAll((buttons) =>
+    buttons.filter((button) => button instanceof HTMLButtonElement && button.disabled).length
+  );
+}
+
+async function openLocationMap(page, scenario) {
+  await page.goto(withQuery({ location: scenario.query }), { waitUntil: "networkidle" });
+  await page.getByRole("button", { name: /show map/i }).click();
+  await expectMapCounts(page, scenario);
+  await expect(page.locator("#job-map-canvas canvas")).toBeVisible({ timeout: 10000 });
+  await expect.poll(() => readMapZoomPercent(page), { timeout: 10000 }).toBeGreaterThanOrEqual(800);
+}
+
+async function expectMapCounts(page, scenario) {
+  await expect(page.locator(".job-map-heading h2")).toHaveText(`${scenario.mappedCount} mapped jobs`);
+  await expect(page.locator(".map-count-pill")).toContainText(`${scenario.mappedCount} of ${scenario.totalCount}`);
+}
+
+async function expectActiveFilterChips(page, labels) {
+  for (const label of labels) {
+    await expect(page.locator(".active-filter-chip", { hasText: label })).toBeVisible();
+  }
+}
+
+function expectUrlParams(page, expectedParams) {
+  const params = new URL(page.url()).searchParams;
+
+  for (const [key, value] of Object.entries(expectedParams)) {
+    if (value === null) {
+      expect(params.has(key), `${key} should be absent`).toBeFalsy();
+    } else {
+      expect(params.get(key), `${key} URL param`).toBe(value);
+    }
+  }
+}
+
+async function clearActiveFilters(page) {
+  await page.locator(".active-filter-chip--clear").click();
+  await expect(page.locator(".active-filter-chips")).toHaveCount(0);
+  expect(new URL(page.url()).search).toBe("");
+}
+
+async function typeSpacedLocationQuery(page, query) {
+  const firstSpace = query.indexOf(" ");
+
+  if (firstSpace < 1) {
+    throw new Error(`location query must contain a typed space: ${query}`);
+  }
+
+  const locationInput = page.getByPlaceholder("City, state, or country");
+  await locationInput.click();
+  await page.keyboard.type(query.slice(0, firstSpace));
+  await page.keyboard.press("Space");
+  await expect(locationInput).toHaveValue(query.slice(0, firstSpace + 1));
+  await page.keyboard.type(query.slice(firstSpace + 1));
+}
+
+function withQuery(params) {
+  const url = new URL(baseUrl);
+
+  for (const [key, value] of Object.entries(params)) {
+    url.searchParams.set(key, value);
+  }
+
+  return url.toString();
+}
+
+function getExpectedApplyHref(job) {
+  if (!job.applyUrl) {
+    throw new Error(`map scenario job has no apply URL: ${job.id}`);
+  }
+
+  return job.applyUrl;
+}
+
+async function activateCenteredMapPoint(page, method) {
+  const canvas = page.locator("#job-map-canvas canvas");
+  const box = await canvas.boundingBox();
+
+  if (!box) {
+    throw new Error("missing map canvas bounding box");
+  }
+
+  const center = {
+    x: Math.round(box.width / 2),
+    y: Math.round(box.height / 2)
+  };
+  const offsets = [
+    [0, 0],
+    [-10, 0],
+    [10, 0],
+    [0, -10],
+    [0, 10],
+    [-18, -18],
+    [18, -18],
+    [-18, 18],
+    [18, 18]
+  ];
+
+  for (const [offsetX, offsetY] of offsets) {
+    const position = {
+      x: Math.min(Math.max(center.x + offsetX, 4), Math.round(box.width - 4)),
+      y: Math.min(Math.max(center.y + offsetY, 4), Math.round(box.height - 4))
+    };
+
+    if (method === "tap") {
+      await canvas.tap({ position });
+    } else {
+      await canvas.hover({ position });
+      await canvas.click({ position });
+    }
+
+    if (await hasVisibleMapDetail(page, method)) {
+      return;
+    }
+  }
+
+  throw new Error("map point activation did not open job details");
+}
+
+async function readMapZoomPercent(page) {
+  return Number((await page.locator(".job-map-zoom-readout").textContent())?.replace("%", "") ?? 0);
+}
+
+async function getVisibleCompanyNames(page, limit) {
+  return page.locator(".job-card .company-line").evaluateAll((nodes, limit) =>
+    nodes
+      .slice(0, limit)
+      .map((node) => node.textContent?.replace(/\s+/g, " ").trim() ?? "")
+      .filter(Boolean),
+    limit
+  );
+}
+
+async function hasVisibleMapDetail(page, method) {
+  const detail = page.locator(
+    method === "tap" ? ".job-map-mobile-sheet" : ".job-map-popup .job-map-tooltip"
+  );
+
+  try {
+    await expect(detail).toBeVisible({ timeout: 600 });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function expectElementHorizontallyReachable(page, locator) {
+  const box = await locator.boundingBox();
+  const viewport = page.viewportSize();
+
+  if (!box || !viewport) {
+    throw new Error("missing element or viewport box");
+  }
+
+  expect(box.x).toBeGreaterThanOrEqual(-1);
+  expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
+}
+
+function isPopularSearchUrl(url) {
+  return (
+    url.includes("tools=") ||
+    url.includes("platforms=") ||
+    url.includes("family=") ||
+    url.includes("workplace=") ||
+    url.includes("q=client%20platform") ||
+    url.includes("q=client+platform")
+  );
+}
+
+function isMapTileOrGlyphUrl(url) {
+  return (
+    url.includes("cartocdn.com/") ||
+    url.includes("demotiles.maplibre.org/font/")
+  );
 }

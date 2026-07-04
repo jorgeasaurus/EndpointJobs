@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit",
     "jobs:refresh": "tsx scripts/refresh-jobs.ts",
     "doctor": "react-doctor",
-    "audit:browser": "node scripts/audit-user-stories-browser.mjs",
+    "audit:browser": "tsx scripts/audit-user-stories-browser.mjs",
     "audit:data": "tsx scripts/audit-user-stories-data.ts"
   },
   "dependencies": {
@@ -23,7 +23,6 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-map-gl": "^8.1.1",
-    "slot-text": "^0.2.2",
     "three": "^0.185.0"
   },
   "devDependencies": {

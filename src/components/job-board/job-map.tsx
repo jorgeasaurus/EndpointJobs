@@ -1,13 +1,20 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 
 import { ChevronDown, MapPin } from "lucide-react";
 
-import { buildJobMapPoints } from "@/lib/job-map";
+import { buildJobMapPoints, type JobMapPoint } from "@/lib/job-map";
 import type { Job } from "@/types/job";
 
-import { JobMapCanvas } from "./job-map-canvas";
+const LazyJobMapCanvas = dynamic<{ points: JobMapPoint[] }>(
+  () => import("./job-map-canvas").then((module) => module.JobMapCanvas),
+  {
+    loading: () => <JobMapCanvasLoading />,
+    ssr: false
+  }
+);
 
 export function JobMap({ jobs }: { jobs: Job[] }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -50,7 +57,20 @@ export function JobMap({ jobs }: { jobs: Job[] }) {
         </div>
       </div>
 
-      {isExpanded ? <JobMapCanvas points={points} /> : null}
+      {isExpanded ? <LazyJobMapCanvas points={points} /> : null}
     </section>
+  );
+}
+
+function JobMapCanvasLoading() {
+  return (
+    <div
+      aria-label="Loading map"
+      className="job-map-canvas-wrap job-map-canvas-wrap--loading"
+      id="job-map-canvas"
+      role="status"
+    >
+      <span className="job-map-loading">Loading map</span>
+    </div>
   );
 }

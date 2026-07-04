@@ -31,7 +31,12 @@ export function SiteFooter({ updatedAt }: { updatedAt: string }) {
         <span className="footer-search-title">Popular searches</span>
         <div className="footer-search-links">
           {specialtySearchLinks.map((link) => (
-            <Link className="footer-search-link" href={link.href} key={link.href}>
+            <Link
+              className="footer-search-link"
+              href={link.href}
+              key={link.href}
+              prefetch={false}
+            >
               {link.label}
             </Link>
           ))}

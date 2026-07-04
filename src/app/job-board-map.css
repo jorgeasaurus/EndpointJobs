@@ -122,16 +122,78 @@
   z-index: 25;
 }
 
+.job-map-canvas-wrap--loading {
+  display: grid;
+  place-items: center;
+}
+
+.job-map-loading {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  color: var(--lime);
+  background: rgb(0 0 0 / 54%);
+  border: 1px solid rgb(204 255 0 / 18%);
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+/* Scoped MapLibre 5.x compatibility rules replacing maplibre-gl/dist/maplibre-gl.css. */
 .job-map-canvas-wrap .maplibregl-map {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  overflow: hidden;
   font-family: var(--sans);
+  line-height: 20px;
   background: #050505;
+  -webkit-tap-highlight-color: rgb(0 0 0 / 0%);
+}
+
+.job-map-canvas-wrap .maplibregl-canvas-container.maplibregl-interactive {
+  cursor: grab;
+  user-select: none;
+}
+
+.job-map-canvas-wrap .maplibregl-canvas-container.maplibregl-interactive.maplibregl-track-pointer {
+  cursor: pointer;
+}
+
+.job-map-canvas-wrap .maplibregl-canvas-container.maplibregl-interactive:active {
+  cursor: grabbing;
+}
+
+.job-map-canvas-wrap .maplibregl-canvas-container.maplibregl-touch-zoom-rotate,
+.job-map-canvas-wrap .maplibregl-canvas-container.maplibregl-touch-zoom-rotate .maplibregl-canvas {
+  touch-action: pan-x pan-y;
+}
+
+.job-map-canvas-wrap .maplibregl-canvas-container.maplibregl-touch-drag-pan,
+.job-map-canvas-wrap .maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas {
+  touch-action: pinch-zoom;
+}
+
+.job-map-canvas-wrap .maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan,
+.job-map-canvas-wrap .maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan .maplibregl-canvas {
+  touch-action: none;
+}
+
+.job-map-canvas-wrap .maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures,
+.job-map-canvas-wrap .maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures .maplibregl-canvas {
+  touch-action: pan-x pan-y;
 }
 
 .job-map-canvas-wrap .maplibregl-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: block;
   outline: none;
 }
@@ -244,19 +306,95 @@
 }
 
 .job-map-popup {
+  position: absolute;
+  top: 0;
+  left: 0;
   z-index: 30;
+  display: flex;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.job-map-popup.maplibregl-popup-anchor-top,
+.job-map-popup.maplibregl-popup-anchor-top-left,
+.job-map-popup.maplibregl-popup-anchor-top-right {
+  flex-direction: column;
+}
+
+.job-map-popup.maplibregl-popup-anchor-bottom,
+.job-map-popup.maplibregl-popup-anchor-bottom-left,
+.job-map-popup.maplibregl-popup-anchor-bottom-right {
+  flex-direction: column-reverse;
+}
+
+.job-map-popup.maplibregl-popup-anchor-left {
+  flex-direction: row;
+}
+
+.job-map-popup.maplibregl-popup-anchor-right {
+  flex-direction: row-reverse;
 }
 
 .job-map-popup .maplibregl-popup-content {
+  position: relative;
   padding: 0;
   overflow: hidden;
+  pointer-events: auto;
   background: transparent;
   border-radius: 8px;
   box-shadow: none;
 }
 
 .job-map-popup .maplibregl-popup-tip {
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
   border-top-color: rgb(204 255 0 / 36%);
+  z-index: 1;
+}
+
+.job-map-popup.maplibregl-popup-anchor-top .maplibregl-popup-tip {
+  align-self: center;
+  border-top: none;
+}
+
+.job-map-popup.maplibregl-popup-anchor-top-left .maplibregl-popup-tip {
+  align-self: flex-start;
+  border-top: none;
+  border-left: none;
+}
+
+.job-map-popup.maplibregl-popup-anchor-top-right .maplibregl-popup-tip {
+  align-self: flex-end;
+  border-top: none;
+  border-right: none;
+}
+
+.job-map-popup.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+  align-self: center;
+  border-bottom: none;
+}
+
+.job-map-popup.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip {
+  align-self: flex-start;
+  border-bottom: none;
+  border-left: none;
+}
+
+.job-map-popup.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip {
+  align-self: flex-end;
+  border-right: none;
+  border-bottom: none;
+}
+
+.job-map-popup.maplibregl-popup-anchor-left .maplibregl-popup-tip {
+  align-self: center;
+  border-left: none;
+}
+
+.job-map-popup.maplibregl-popup-anchor-right .maplibregl-popup-tip {
+  align-self: center;
+  border-right: none;
 }
 
 .job-map-popup.maplibregl-popup-anchor-top .maplibregl-popup-tip,
@@ -277,6 +415,40 @@
 
 .job-map-popup.maplibregl-popup-anchor-right .maplibregl-popup-tip {
   border-left-color: rgb(204 255 0 / 36%);
+}
+
+.job-map-canvas-wrap .maplibregl-cooperative-gesture-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  color: var(--white);
+  pointer-events: none;
+  background: rgb(0 0 0 / 40%);
+  opacity: 0;
+  transition: opacity 1s ease 1s;
+}
+
+.job-map-canvas-wrap .maplibregl-cooperative-gesture-screen.maplibregl-show {
+  opacity: 1;
+  transition: opacity 0.05s;
+}
+
+.job-map-canvas-wrap .maplibregl-cooperative-gesture-screen .maplibregl-mobile-message {
+  display: none;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .job-map-canvas-wrap .maplibregl-cooperative-gesture-screen .maplibregl-desktop-message {
+    display: none;
+  }
+
+  .job-map-canvas-wrap .maplibregl-cooperative-gesture-screen .maplibregl-mobile-message {
+    display: block;
+  }
 }
 
 .job-map-tooltip {

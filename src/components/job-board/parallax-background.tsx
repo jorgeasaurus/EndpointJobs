@@ -2,8 +2,6 @@
 
 import { useEffect, useRef } from "react";
 
-import { mountEndpointSignalField } from "./signal-field";
-
 export function ParallaxBackground() {
   const hostRef = useRef<HTMLDivElement>(null);
   const fieldRef = useRef<HTMLDivElement>(null);
@@ -11,12 +9,25 @@ export function ParallaxBackground() {
   useEffect(() => {
     const host = hostRef.current;
     const field = fieldRef.current;
+    let cleanup: (() => void) | undefined;
+    let isDisposed = false;
 
     if (!host || !field || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
 
-    return mountEndpointSignalField(host, field);
+    void import("./signal-field").then(({ mountEndpointSignalField }) => {
+      if (isDisposed) {
+        return;
+      }
+
+      cleanup = mountEndpointSignalField(host, field);
+    });
+
+    return () => {
+      isDisposed = true;
+      cleanup?.();
+    };
   }, []);
 
   return (

@@ -74,6 +74,7 @@ const AuditToggleButton = ToggleButton as unknown as (props: {
 
 const sourcePaths = {
   activeFilters: "src/components/job-board/active-filters.ts",
+  animatedNumber: "src/components/job-board/animated-number.tsx",
   atsBoards: "scripts/job-refresh/providers/ats-boards.ts",
   browserAudit: "scripts/audit-user-stories-browser.mjs",
   companyAts: "scripts/job-refresh/providers/company-ats.ts",
@@ -93,7 +94,9 @@ const sourcePaths = {
   jobMapPopup: "src/components/job-board/job-map-popup.tsx",
   layout: "src/app/layout.tsx",
   mapLocation: "src/lib/map-location.ts",
+  packageLock: "package-lock.json",
   packageJson: "package.json",
+  parallaxBackground: "src/components/job-board/parallax-background.tsx",
   page: "src/app/page.tsx",
   providerContract: "scripts/job-refresh/provider.ts",
   providersPublic: "scripts/job-refresh/providers/public-job-boards.ts",
@@ -220,6 +223,11 @@ await run("FEAT-004", "Hero copy and tracked count describe endpoint scope", () 
   );
   assertIncludes(sources.controls, "activeJobsCount");
   assertIncludes(sources.jobBoard, "activeJobs.length");
+  assertIncludes(sources.animatedNumber, "<span", "counter renders plain text");
+  assertNotIncludes(sources.animatedNumber, "slot-text", "counter should not import slot-text");
+  assertNotIncludes(sources.layout, "slot-text/style.css", "layout should not import slot-text CSS");
+  assertNotIncludes(sources.packageJson, "\"slot-text\"", "package should not depend on slot-text");
+  assertNotIncludes(sources.packageLock, "node_modules/slot-text", "lockfile should not include slot-text");
 });
 
 await run("FEAT-005", "Keyword search checks broad job text", () => {
@@ -743,6 +751,10 @@ await run("FEAT-060", "Adzuna aggregator listings expire on source-specific fres
 
 await run("FEAT-061", "Mapped count and ratio come from active job map points", () => {
   const activeJobs = feed.jobs.filter((job) => isActiveJob(job, fixedAuditNow));
+  const activeJobsWithMapLocation = activeJobs.filter((job) => job.mapLocation);
+  const fallbackResolvedJobs = activeJobs.filter(
+    (job) => !job.mapLocation && resolveJobMapLocation(job.location)
+  );
   const points = buildJobMapPoints(activeJobs);
   const sanDiegoJobs = filterJobs(activeJobs, {
     ...initialFilterState,
@@ -756,13 +768,16 @@ await run("FEAT-061", "Mapped count and ratio come from active job map points", 
     `mapped coverage too low: ${points.length} of ${activeJobs.length}`
   );
   assertTruthy(points.length <= activeJobs.length, "mapped points exceed active jobs");
+  assertEqual(points.length, activeJobsWithMapLocation.length, "map points should come from persisted mapLocation");
+  assertEqual(fallbackResolvedJobs.length, 0, "active feed relies on client map-location fallback");
   assertTruthy(sanDiegoJobs.length > 0, "San Diego location filter returned no jobs");
   assertTruthy(sanDiegoPoints.length > 0, "San Diego location filter returned no mapped jobs");
+  assertNoStaticImport(sources.jobMap, "./job-map-canvas", "map canvas should not be a static import");
   assertIncludes(sources.jobMap, "const mappedJobCount = points.length");
   assertIncludes(sources.jobMap, "{mappedJobCount} of {jobs.length}");
   assertIncludes(sources.jobMapFeatures, "buildFeatureCollection");
   assertIncludes(sources.refresh, "addResolvedMapLocation");
-  assertIncludes(sources.jobMapLib, "resolveJobMapLocation(job.location)");
+  assertNoStaticImport(sources.jobMapLib, "./map-location", "client map should not import resolver table");
   assertIncludes(sources.companyAts, "parseWorkdayLocationFromExternalPath");
 });
 
@@ -841,6 +856,10 @@ await run("FEAT-066", "Map visual treatment and attribution match the page", () 
   assertIncludes(sources.jobMapCss, "--map-highlight: var(--lime)");
   assertIncludes(sources.jobMapCss, "--map-highlight-dark: var(--emerald)");
   assertIncludes(sources.jobMapCss, "border-radius: 8px");
+  assertIncludes(sources.jobMapCss, ".maplibregl-canvas-container", "scoped map canvas CSS");
+  assertIncludes(sources.jobMapCss, ".maplibregl-popup-anchor-bottom", "scoped map popup CSS");
+  assertIncludes(sources.jobMapCss, ".maplibregl-cooperative-gesture-screen", "scoped cooperative gesture CSS");
+  assertNotIncludes(sources.layout, "maplibre-gl/dist/maplibre-gl.css", "layout should not import global MapLibre CSS");
   assertIncludes(sources.jobMapConfig, "carto-dark");
   assertIncludes(sources.jobMapCanvas, "OpenStreetMap");
   assertIncludes(sources.jobMapCanvas, "CARTO");
@@ -993,6 +1012,17 @@ function assertIncludes(value: string, expected: string, label?: string) {
 function assertNotIncludes(value: string, unexpected: string, label?: string) {
   if (value.includes(unexpected)) {
     throw new Error(`${label ?? "value"} unexpectedly includes ${unexpected}`);
+  }
+}
+
+function assertNoStaticImport(value: string, modulePath: string, label: string) {
+  const escapedModulePath = modulePath.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const staticImportPattern = new RegExp(
+    `import\\s+(?:[^"'();]+?\\s+from\\s+)?["']${escapedModulePath}["']`
+  );
+
+  if (staticImportPattern.test(value)) {
+    throw new Error(label);
   }
 }
 
