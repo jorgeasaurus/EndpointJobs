@@ -3,10 +3,12 @@
 ## Open Imagegen Redesign PR
 
 - [x] Confirm GitHub auth and remote.
-- [ ] Commit the verified working tree.
-- [ ] Push `imagegen-redesign`.
-- [ ] Open a PR against `main`.
-- [ ] Document the PR URL.
+- [x] Commit the verified working tree.
+- [x] Push `imagegen-redesign`.
+- [x] Open a PR against `main`.
+- [x] Document the PR URL.
+
+Result: Opened PR #4 against `main`: https://github.com/jorgeasaurus/EndpointJobs/pull/4. Branch `imagegen-redesign` is pushed to `origin`.
 
 ## Filter Vertical Spacing Cleanup
 
