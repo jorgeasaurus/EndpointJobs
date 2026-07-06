@@ -106,7 +106,7 @@ export function getFreshnessLabel(value: string) {
   return `${age} days old`;
 }
 
-export function isStale(job: Job, now = new Date()) {
+function isStale(job: Job, now = new Date()) {
   const staleAfter = new Date(job.staleAfter);
 
   if (Number.isNaN(staleAfter.getTime())) {

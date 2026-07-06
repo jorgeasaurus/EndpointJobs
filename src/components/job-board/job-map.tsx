@@ -16,7 +16,7 @@ const LazyJobMapCanvas = dynamic<{ points: JobMapPoint[] }>(
   }
 );
 
-export function JobMap({ jobs }: { jobs: Job[] }) {
+export function JobMap({ id, jobs }: { id?: string; jobs: Job[] }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const points = useMemo(() => buildJobMapPoints(jobs), [jobs]);
   const mappedJobCount = points.length;
@@ -27,6 +27,7 @@ export function JobMap({ jobs }: { jobs: Job[] }) {
 
   return (
     <section
+      id={id}
       className={
         isExpanded
           ? "job-map-section job-map-section--expanded"
@@ -64,13 +65,12 @@ export function JobMap({ jobs }: { jobs: Job[] }) {
 
 function JobMapCanvasLoading() {
   return (
-    <div
+    <output
       aria-label="Loading map"
       className="job-map-canvas-wrap job-map-canvas-wrap--loading"
       id="job-map-canvas"
-      role="status"
     >
       <span className="job-map-loading">Loading map</span>
-    </div>
+    </output>
   );
 }

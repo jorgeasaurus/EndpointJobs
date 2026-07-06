@@ -64,7 +64,7 @@ export const freshnessFilterOptions: {
   value: FreshnessFilter;
   label: string;
 }[] = [
-  { value: "Any", label: "Any active listing" },
+  { value: "Any", label: "Any" },
   { value: "7", label: "Last 7 days" },
   { value: "14", label: "Last 14 days" },
   { value: "30", label: "Last 30 days" }
@@ -74,7 +74,7 @@ export const workplaceFilterOptions: {
   value: WorkplaceFilter;
   label: string;
 }[] = [
-  { value: "Any", label: "Any workplace" },
+  { value: "Any", label: "Any" },
   { value: "Remote", label: "Remote" },
   { value: "Hybrid", label: "Hybrid" },
   { value: "On-site", label: "On-site" }

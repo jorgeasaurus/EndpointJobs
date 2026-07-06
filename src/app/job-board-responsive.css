@@ -26,12 +26,32 @@
     grid-template-columns: 1fr;
   }
 
+  .command-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .command-status {
+    grid-template-columns: minmax(180px, 0.5fr) minmax(0, 1fr);
+    border-top: 1px solid var(--glass-border);
+    border-left: 0;
+  }
+
   .results-panel {
     width: 100%;
   }
 
   .facet-list {
     max-width: 100%;
+  }
+}
+
+@media (max-width: 980px) {
+  .command-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .high-signal-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -68,6 +88,10 @@
     width: auto;
   }
 
+  .topbar .feedback-link {
+    display: none;
+  }
+
   .refresh-pill,
   .feedback-link {
     min-width: 0;
@@ -87,11 +111,34 @@
   .command-panel,
   .results-panel,
   .job-card {
-    padding: 12px;
+    padding: 0;
   }
 
   .command-panel {
     min-height: 0;
+  }
+
+  .command-primary,
+  .command-status {
+    padding: 12px;
+  }
+
+  .command-status {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .status-total {
+    padding-bottom: 10px;
+  }
+
+  .status-grid span {
+    min-height: 72px;
+  }
+
+  .command-filter-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
 
   .eyebrow {
@@ -105,7 +152,6 @@
   }
 
   .title-row {
-    grid-template-columns: 1fr;
     gap: 6px;
     margin-bottom: 10px;
   }
@@ -148,13 +194,9 @@
   }
 
   .hero-filter-stack .facet-list {
-    flex-wrap: nowrap;
-    padding-bottom: 2px;
-    overflow-x: auto;
-  }
-
-  .hero-filter-stack .facet-list::-webkit-scrollbar {
-    display: none;
+    flex-wrap: wrap;
+    padding-bottom: 0;
+    overflow: visible;
   }
 
   .mini-field {
@@ -199,25 +241,31 @@
   }
 
   .quick-filters {
-    flex-wrap: nowrap;
-    padding-bottom: 2px;
-    overflow-x: auto;
-  }
-
-  .quick-filters::-webkit-scrollbar {
-    display: none;
+    flex-wrap: wrap;
+    padding-bottom: 0;
+    overflow: visible;
   }
 
   .facet-button {
-    flex: 0 0 auto;
+    flex: 1 1 104px;
     min-height: 34px;
     padding: 0 10px;
     font-size: 0.82rem;
   }
 
+  .hero-filter-stack .facet-button {
+    flex-basis: 132px;
+  }
+
   .results-panel {
     min-height: 0;
     margin-top: 0;
+  }
+
+  .results-heading,
+  .pagination-bar {
+    padding-right: 12px;
+    padding-left: 12px;
   }
 
   .results-heading,
@@ -311,6 +359,16 @@
     margin-bottom: 12px;
   }
 
+  .job-list {
+    padding: 0 12px 12px;
+  }
+
+  .job-card {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 14px 0;
+  }
+
   .job-main {
     gap: 10px;
   }
@@ -385,6 +443,8 @@
   }
 
   .job-actions {
+    grid-column: 1;
+    grid-row: auto;
     gap: 8px;
     margin-top: 14px;
   }

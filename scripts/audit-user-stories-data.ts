@@ -681,7 +681,7 @@ await run("FEAT-058", "Expanded direct ATS sources are configured", () => {
       assertIncludes(sources.workflow, board, `scheduled Greenhouse board ${board}`);
     }
   );
-  ["Booz Allen", "HP", "NVIDIA", "Adobe", "F5", "Allstate", "Gartner", "Nordic Consulting", "SHI", "Circle"].forEach(
+  ["Booz Allen", "HP", "NVIDIA", "Adobe", "F5", "Allstate", "Gartner", "Nordic Consulting", "SHI", "Circle", "Jabil"].forEach(
     (company) => {
       assertIncludes(sources.companyAts, company, `default Workday site ${company}`);
       assertIncludes(sources.workflow, company, `scheduled Workday site ${company}`);

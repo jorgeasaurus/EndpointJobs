@@ -5,6 +5,7 @@ import {
   Clock3,
   Cpu,
   DollarSign,
+  MapPin,
   Search,
   ShieldCheck,
   SlidersHorizontal,
@@ -50,7 +51,11 @@ export function CommandPanel({
   clearFilters,
   dispatch,
   filters,
-  searchInputRef
+  mappedJobsCount,
+  remoteJobsCount,
+  salaryJobsCount,
+  searchInputRef,
+  visibleJobsCount
 }: {
   activeFilterCount: number;
   activeFilterItems: ActiveFilterItem[];
@@ -59,72 +64,163 @@ export function CommandPanel({
   clearFilters: () => void;
   dispatch: FilterDispatch;
   filters: FilterState;
+  mappedJobsCount: number;
+  remoteJobsCount: number;
+  salaryJobsCount: number;
   searchInputRef: RefObject<HTMLInputElement | null>;
+  visibleJobsCount: number;
 }) {
   return (
     <div className="command-panel">
-      <div className="eyebrow">
-        <ShieldCheck size={16} aria-hidden="true" />
-        Endpoint, workplace, and client platform roles
-      </div>
+      <div className="command-layout">
+        <div className="command-primary">
+          <div className="eyebrow">
+            <ShieldCheck size={16} aria-hidden="true" />
+            Endpoint, workplace, and client platform roles
+          </div>
 
-      <div className="title-row">
-        <div>
-          <h1>Endpoint Jobs</h1>
-          <p>
-            Focused listings for macOS, Windows, MDM, UEM, endpoint security,
-            packaging, and automation work.
-          </p>
-        </div>
+          <div className="title-row">
+            <div>
+              <h1>Endpoint Jobs</h1>
+              <p>
+                Focused listings for macOS, Windows, MDM, UEM, endpoint security,
+                packaging, and automation work.
+              </p>
+            </div>
+          </div>
 
-        <div
-          className="counter-stack"
-          aria-label={activeJobsCount + " tracked roles"}
-        >
-          <AnimatedNumber
-            className="slot-number slot-number--hero"
-            value={activeJobsCount}
+          <SearchStrip
+            dispatch={dispatch}
+            query={filters.query}
+            salaryOnly={filters.salaryOnly}
+            searchInputRef={searchInputRef}
           />
-          <small aria-hidden="true">tracked roles</small>
+          <div className="command-filter-grid">
+            <HighSignalFilters
+              dispatch={dispatch}
+              freshness={filters.freshness}
+              roleFamily={filters.roleFamily}
+            />
+            <LocationFilters
+              dispatch={dispatch}
+              locationQuery={filters.locationQuery}
+              workplace={filters.workplace}
+            />
+          </div>
+          <ActiveFilterChips
+            activeFilterItems={activeFilterItems}
+            clearFilters={clearFilters}
+            dispatch={dispatch}
+          />
+          <PlatformFilters
+            dispatch={dispatch}
+            selectedPlatforms={filters.selectedPlatforms}
+          />
+          <FilterStack
+            activeFilterCount={activeFilterCount}
+            activeFilterLabel={activeFilterLabel}
+            clearFilters={clearFilters}
+            dispatch={dispatch}
+            selectedTools={filters.selectedTools}
+            seniority={filters.seniority}
+            sort={filters.sort}
+          />
         </div>
-      </div>
 
-      <SearchStrip
-        dispatch={dispatch}
-        query={filters.query}
-        salaryOnly={filters.salaryOnly}
-        searchInputRef={searchInputRef}
-      />
-      <LocationFilters
-        dispatch={dispatch}
-        locationQuery={filters.locationQuery}
-        workplace={filters.workplace}
-      />
-      <HighSignalFilters
-        dispatch={dispatch}
-        freshness={filters.freshness}
-        roleFamily={filters.roleFamily}
-      />
-      <ActiveFilterChips
-        activeFilterItems={activeFilterItems}
-        clearFilters={clearFilters}
-        dispatch={dispatch}
-      />
-      <PlatformFilters
-        dispatch={dispatch}
-        selectedPlatforms={filters.selectedPlatforms}
-      />
-      <FilterStack
-        activeFilterCount={activeFilterCount}
-        activeFilterLabel={activeFilterLabel}
-        clearFilters={clearFilters}
-        dispatch={dispatch}
-        selectedTools={filters.selectedTools}
-        seniority={filters.seniority}
-        sort={filters.sort}
-      />
+        <CommandStatusRail
+          activeJobsCount={activeJobsCount}
+          mappedJobsCount={mappedJobsCount}
+          remoteJobsCount={remoteJobsCount}
+          salaryJobsCount={salaryJobsCount}
+          visibleJobsCount={visibleJobsCount}
+        />
+      </div>
     </div>
   );
+}
+
+function CommandStatusRail({
+  activeJobsCount,
+  mappedJobsCount,
+  remoteJobsCount,
+  salaryJobsCount,
+  visibleJobsCount
+}: {
+  activeJobsCount: number;
+  mappedJobsCount: number;
+  remoteJobsCount: number;
+  salaryJobsCount: number;
+  visibleJobsCount: number;
+}) {
+  const mappedPercent = getPercentage(mappedJobsCount, visibleJobsCount);
+  const remotePercent = getPercentage(remoteJobsCount, visibleJobsCount);
+  const salaryPercent = getPercentage(salaryJobsCount, visibleJobsCount);
+
+  return (
+    <aside className="command-status" aria-label="Search coverage status">
+      <div className="status-total" aria-label={activeJobsCount + " tracked roles"}>
+        <span className="section-kicker">Open roles</span>
+        <AnimatedNumber
+          className="slot-number slot-number--hero"
+          value={activeJobsCount}
+        />
+        <small>tracked roles</small>
+      </div>
+
+      <div className="status-card">
+        <div className="status-card-heading">
+          <span>Current view</span>
+          <strong>{visibleJobsCount}</strong>
+        </div>
+        <StatusMeter label="Mapped" value={mappedJobsCount} percent={mappedPercent} />
+        <StatusMeter label="Remote / hybrid" value={remoteJobsCount} percent={remotePercent} />
+        <StatusMeter label="Salary shown" value={salaryJobsCount} percent={salaryPercent} />
+      </div>
+
+      <div className="status-grid" aria-label="Visible job summary">
+        <span>
+          <MapPin size={17} aria-hidden="true" />
+          <strong>{mappedJobsCount}</strong>
+          mapped
+        </span>
+        <span>
+          <DollarSign size={17} aria-hidden="true" />
+          <strong>{salaryJobsCount}</strong>
+          salary
+        </span>
+      </div>
+    </aside>
+  );
+}
+
+function StatusMeter({
+  label,
+  percent,
+  value
+}: {
+  label: string;
+  percent: number;
+  value: number;
+}) {
+  return (
+    <div className="status-meter">
+      <div>
+        <span>{label}</span>
+        <strong>{value}</strong>
+      </div>
+      <span className="status-meter-track" aria-hidden="true">
+        <span style={{ width: `${percent}%` }} />
+      </span>
+    </div>
+  );
+}
+
+function getPercentage(value: number, total: number) {
+  if (total <= 0) {
+    return 0;
+  }
+
+  return Math.round((value / total) * 100);
 }
 
 function SearchStrip({
@@ -192,7 +288,7 @@ function HighSignalFilters({
             })
           }
         >
-          <option value="All">All endpoint roles</option>
+          <option value="All">All</option>
           {roleFamilyOptions.map((family) => (
             <option key={family} value={family}>
               {family}
@@ -386,7 +482,7 @@ function FilterStackContent({
               })
             }
           >
-            <option value="All">All levels</option>
+            <option value="All">All</option>
             {seniorityOptions.map((level) => (
               <option key={level} value={level}>
                 {level}
@@ -450,4 +546,3 @@ function FilterStackContent({
     </>
   );
 }
-

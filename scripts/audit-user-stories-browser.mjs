@@ -5,7 +5,11 @@ import { loadBrowserAuditScenarios } from "./audit-user-stories-browser-fixtures
 const baseUrl = process.env.AUDIT_BASE_URL ?? "http://127.0.0.1:3002";
 const desktopViewport = { width: 1280, height: 900 };
 const mobileViewport = { width: 390, height: 844 };
-const { advancedFilterScenario, locationMapScenario } = await loadBrowserAuditScenarios();
+const {
+  advancedFilterScenario,
+  descriptionScenario,
+  locationMapScenario
+} = await loadBrowserAuditScenarios();
 const results = [];
 const consoleMessages = [];
 const resourceErrors = [];
@@ -156,6 +160,13 @@ await run("QA-009", "Pagination boundaries keep top and bottom controls in sync"
 
 await run("FEAT-027", "Expandable descriptions open", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
+  await page.goto(
+    baseUrl + "/?q=" + encodeURIComponent(descriptionScenario.query),
+    { waitUntil: "networkidle" }
+  );
+  await expect(
+    page.getByRole("heading", { name: descriptionScenario.title }).first()
+  ).toBeVisible();
   const details = page.locator("details.description-details").first();
   await expect(details).toBeVisible();
   await details.locator("summary").click();

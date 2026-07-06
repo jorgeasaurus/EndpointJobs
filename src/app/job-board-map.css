@@ -1,17 +1,15 @@
 .job-map-section {
   --map-background: var(--obsidian);
   --map-highlight: var(--lime);
-  --map-highlight-light: #e7ff7a;
+  --map-highlight-light: #d9f99d;
   --map-highlight-dark: var(--emerald);
   position: relative;
   margin-bottom: 18px;
   overflow: visible;
   background:
-    linear-gradient(90deg, rgb(204 255 0 / 12%), transparent 26%, transparent 74%, rgb(16 185 129 / 12%)),
-    linear-gradient(180deg, rgb(255 255 255 / 4%), var(--map-background));
+    linear-gradient(180deg, rgb(255 255 255 / 5%), transparent 38%),
+    rgb(7 9 11 / 86%);
   border: 1px solid var(--glass-border);
-  border-top-color: rgb(204 255 0 / 14%);
-  border-bottom-color: rgb(16 185 129 / 16%);
   border-radius: 8px;
   box-shadow: var(--shadow);
 }
@@ -27,7 +25,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 18px 24px 10px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .job-map-heading-copy {
@@ -54,8 +53,8 @@
   min-height: 34px;
   padding: 0 10px;
   color: var(--lime);
-  background: rgb(204 255 0 / 8%);
-  border: 1px solid rgb(204 255 0 / 22%);
+  background: rgb(190 242 100 / 8%);
+  border: 1px solid rgb(190 242 100 / 22%);
   border-radius: 8px;
   font-family: var(--mono);
   font-size: 0.68rem;
@@ -107,15 +106,16 @@
 .job-map-canvas-wrap {
   position: relative;
   z-index: 1;
-  height: 520px;
+  height: 500px;
   min-height: 400px;
   overflow: hidden;
   isolation: isolate;
   border-radius: 0 0 8px 8px;
   background:
-    radial-gradient(circle at 50% 44%, rgb(204 255 0 / 8%), transparent 42%),
-    radial-gradient(circle at 78% 48%, rgb(16 185 129 / 7%), transparent 36%),
+    linear-gradient(rgb(190 242 100 / 4%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(45 212 191 / 4%) 1px, transparent 1px),
     linear-gradient(180deg, rgb(5 5 5 / 30%), rgb(0 0 0 / 82%));
+  background-size: 72px 72px, 72px 72px, auto;
 }
 
 .job-map-canvas-wrap--active-popup {
@@ -136,7 +136,7 @@
   padding: 0 12px;
   color: var(--lime);
   background: rgb(0 0 0 / 54%);
-  border: 1px solid rgb(204 255 0 / 18%);
+  border: 1px solid rgb(190 242 100 / 18%);
   border-radius: 8px;
   font-family: var(--mono);
   font-size: 0.64rem;
@@ -209,10 +209,7 @@
   z-index: 1;
   pointer-events: none;
   content: "";
-  background:
-    linear-gradient(rgb(204 255 0 / 4%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(16 185 129 / 4%) 1px, transparent 1px);
-  background-size: 72px 72px;
+  background: linear-gradient(120deg, transparent 0%, rgb(45 212 191 / 8%) 50%, transparent 100%);
   mask-image: linear-gradient(180deg, transparent 0%, black 18%, black 82%, transparent 100%);
 }
 
@@ -269,8 +266,8 @@
   height: 44px;
   place-items: center;
   color: var(--lime);
-  background: rgb(204 255 0 / 8%);
-  border: 1px solid rgb(204 255 0 / 18%);
+  background: rgb(190 242 100 / 8%);
+  border: 1px solid rgb(190 242 100 / 18%);
   border-radius: 8px;
   transition:
     color var(--transition),
@@ -349,7 +346,7 @@
   width: 0;
   height: 0;
   border: 10px solid transparent;
-  border-top-color: rgb(204 255 0 / 36%);
+  border-top-color: rgb(190 242 100 / 36%);
   z-index: 1;
 }
 
@@ -400,21 +397,21 @@
 .job-map-popup.maplibregl-popup-anchor-top .maplibregl-popup-tip,
 .job-map-popup.maplibregl-popup-anchor-top-left .maplibregl-popup-tip,
 .job-map-popup.maplibregl-popup-anchor-top-right .maplibregl-popup-tip {
-  border-bottom-color: rgb(204 255 0 / 36%);
+  border-bottom-color: rgb(190 242 100 / 36%);
 }
 
 .job-map-popup.maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
 .job-map-popup.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip,
 .job-map-popup.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip {
-  border-top-color: rgb(204 255 0 / 36%);
+  border-top-color: rgb(190 242 100 / 36%);
 }
 
 .job-map-popup.maplibregl-popup-anchor-left .maplibregl-popup-tip {
-  border-right-color: rgb(204 255 0 / 36%);
+  border-right-color: rgb(190 242 100 / 36%);
 }
 
 .job-map-popup.maplibregl-popup-anchor-right .maplibregl-popup-tip {
-  border-left-color: rgb(204 255 0 / 36%);
+  border-left-color: rgb(190 242 100 / 36%);
 }
 
 .job-map-canvas-wrap .maplibregl-cooperative-gesture-screen {
@@ -459,12 +456,12 @@
   color: var(--white);
   pointer-events: auto;
   background: rgb(26 26 26 / 95%);
-  border: 1px solid rgb(204 255 0 / 36%);
+  border: 1px solid rgb(190 242 100 / 36%);
   border-radius: 8px;
   box-shadow:
     var(--shadow),
-    0 0 0 1px rgb(204 255 0 / 10%),
-    0 0 38px rgb(204 255 0 / 14%);
+    0 0 0 1px rgb(190 242 100 / 10%),
+    0 0 38px rgb(190 242 100 / 14%);
   animation: map-point-expand 0.25s ease-out both;
 }
 
@@ -479,7 +476,7 @@
 .job-map-tooltip-header {
   padding-bottom: 7px;
   color: rgb(255 255 255 / 70%);
-  border-bottom: 1px solid rgb(204 255 0 / 16%);
+  border-bottom: 1px solid rgb(190 242 100 / 16%);
   font-family: var(--mono);
   font-size: 0.64rem;
   font-weight: 700;
@@ -514,7 +511,7 @@
 
 .job-map-tooltip-job + .job-map-tooltip-job {
   padding-top: 8px;
-  border-top: 1px solid rgb(204 255 0 / 12%);
+  border-top: 1px solid rgb(190 242 100 / 12%);
 }
 
 .job-map-tooltip-job h3 {
@@ -578,8 +575,8 @@
   height: 34px;
   place-items: center;
   color: var(--lime);
-  background: rgb(204 255 0 / 8%);
-  border: 1px solid rgb(204 255 0 / 18%);
+  background: rgb(190 242 100 / 8%);
+  border: 1px solid rgb(190 242 100 / 18%);
   border-radius: 8px;
 }
 
@@ -693,7 +690,7 @@
   .job-map-tooltip-actions a {
     min-height: 44px;
     padding: 0 10px;
-    border: 1px solid rgb(204 255 0 / 24%);
+    border: 1px solid rgb(190 242 100 / 24%);
     border-radius: 8px;
   }
 }

@@ -13,10 +13,6 @@ const sourceFreshnessRules: Partial<
   }
 };
 
-export function getDefaultExcludedJobSourceUrls() {
-  return defaultExcludedJobSourceUrls;
-}
-
 export function isSourceFreshnessExpired(job: Job, now = new Date()) {
   const rule = sourceFreshnessRules[job.source];
 

@@ -208,6 +208,11 @@ const defaultWorkdaySites: WorkdaySite[] = [
     name: "Circle",
     url: "https://circle.wd1.myworkdayjobs.com/wday/cxs/circle/Circle/jobs",
     queries: ["Senior Manager Endpoint Trusted Environments"]
+  },
+  {
+    name: "Jabil",
+    url: "https://jabil.wd5.myworkdayjobs.com/wday/cxs/jabil/Jabil_Careers/jobs",
+    queries: ["Endpoint", "Endpoints", "Endpoint Security", "Intune", "SCCM", "Desktop"]
   }
 ];
 
