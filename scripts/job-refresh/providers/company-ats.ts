@@ -213,6 +213,46 @@ const defaultWorkdaySites: WorkdaySite[] = [
     name: "Jabil",
     url: "https://jabil.wd5.myworkdayjobs.com/wday/cxs/jabil/Jabil_Careers/jobs",
     queries: ["Endpoint", "Endpoints", "Endpoint Security", "Intune", "SCCM", "Desktop"]
+  },
+  {
+    name: "Vanguard",
+    url: "https://vanguard.wd5.myworkdayjobs.com/wday/cxs/vanguard/vanguard_external/jobs",
+    queries: ["Windows Endpoint", "Intune", "Jamf", "SCCM", "Desktop Engineer", "End User Computing"]
+  },
+  {
+    name: "CACI",
+    url: "https://caci.wd1.myworkdayjobs.com/wday/cxs/caci/External/jobs",
+    queries: ["Endpoint Systems", "Endpoint Engineer", "Intune", "MECM", "SCCM", "Windows Endpoint", "macOS"]
+  },
+  {
+    name: "KBR",
+    url: "https://kbr.wd5.myworkdayjobs.com/wday/cxs/kbr/KBR_Careers/jobs",
+    queries: ["End User Compute Engineer", "End User Compute", "Windows Endpoint", "SCCM", "Desktop Engineer", "End User Computing"]
+  },
+  {
+    name: "The Hartford",
+    url: "https://thehartford.wd5.myworkdayjobs.com/wday/cxs/thehartford/Careers_External/jobs",
+    queries: ["End User Engineering", "Intune", "Windows Endpoint", "EUC", "SCCM"]
+  },
+  {
+    name: "RBC",
+    url: "https://rbc.wd3.myworkdayjobs.com/wday/cxs/rbc/RBCGLOBAL1/jobs",
+    queries: ["Endpoint Security", "Mobile Device Management", "Intune", "Jamf", "SCCM", "Windows Endpoint"]
+  },
+  {
+    name: "Autodesk",
+    url: "https://autodesk.wd1.myworkdayjobs.com/wday/cxs/autodesk/Ext/jobs",
+    queries: ["Digital Workplace Services Specialist", "Digital Workplace", "Jamf", "End User Computing"]
+  },
+  {
+    name: "Capital One",
+    url: "https://capitalone.wd12.myworkdayjobs.com/wday/cxs/capitalone/Capital_One/jobs",
+    queries: ["Endpoint Security", "Endpoint", "Intune", "Jamf", "Desktop", "Digital Workplace"]
+  },
+  {
+    name: "Thermo Fisher",
+    url: "https://thermofisher.wd5.myworkdayjobs.com/wday/cxs/thermofisher/ThermoFisherCareers/jobs",
+    queries: ["Endpoint Services", "Endpoint", "Desktop", "Intune", "SCCM", "End User Computing"]
   }
 ];
 
