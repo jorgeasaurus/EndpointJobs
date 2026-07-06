@@ -1,5 +1,122 @@
 # Endpoint Jobs Plan
 
+## CSS Browser Compatibility Prefixes
+
+- [x] Find every `mask-image` and `user-select` declaration.
+- [x] Add `-webkit-mask-image` and `-webkit-user-select` companions.
+- [x] Verify prefix pairs and project checks.
+- [x] Push the PR update.
+
+Result: Added WebKit-prefixed fallbacks for `mask-image` in `globals.css` and `job-board-map.css`, plus `-webkit-user-select` for the interactive map canvas. Verified prefix pairs, `git diff --check`, `npm run lint`, `npm run typecheck`, and `npx react-doctor@latest --verbose --scope changed`.
+
+## Open Imagegen Redesign PR
+
+- [x] Confirm GitHub auth and remote.
+- [x] Commit the verified working tree.
+- [x] Push `imagegen-redesign`.
+- [x] Open a PR against `main`.
+- [x] Document the PR URL.
+
+Result: Opened PR #4 against `main`: https://github.com/jorgeasaurus/EndpointJobs/pull/4. Branch `imagegen-redesign` is pushed to `origin`.
+
+## Filter Vertical Spacing Cleanup
+
+- [x] Inspect filter row markup and CSS spacing.
+- [x] Add explicit separation between the primary filter grid and platform buttons.
+- [x] Verify browser geometry and screenshots.
+- [x] Run lint, typecheck, React Doctor, and diff checks.
+
+Result: Added a 14px sibling gap after the primary filter grid so platform buttons no longer touch the Role/Freshness row when no active filter chips are shown. Verified a 14px grid-to-platform gap at 2032x976, 1100x620, and 940x520. Screenshot: `/tmp/endpointjobs-vertical-spacing-medium.png`. Verified `git diff --check`, `npm run lint`, `npm run typecheck`, and `npx react-doctor@latest --verbose --scope changed`.
+
+## Filter Horizontal Spacing Cleanup
+
+- [x] Constrain compact filter widths.
+- [x] Keep location search flexible.
+- [x] Remove mobile horizontal scroll from filter chip rows.
+- [x] Verify wide, medium, and mobile layouts.
+- [x] Run lint, typecheck, React Doctor, and diff checks.
+
+Result: Capped compact filter tracks, kept city search as the flexible field, and changed mobile platform/tool chips to wrap instead of scrolling sideways. Verified no filter overflow at 2032x976, 1100x900, and 390x844 with the mobile drawer open. Fresh screenshots: `/tmp/endpointjobs-spacing-medium-final.png` and `/tmp/endpointjobs-spacing-mobile-final.png`. Verified `git diff --check`, `npm run lint`, `npm run typecheck`, and `npx react-doctor@latest --verbose --scope changed`.
+
+## Filter Label And Padding Recheck
+
+- [x] Confirm current source uses short neutral labels.
+- [x] Verify current desktop and mobile render.
+- [x] Check filter controls for overflow.
+
+Result: Current source and local render already use `All` and `Any` labels, with no filter-control overflow at 2032x976 or 390x844. Fresh screenshots: `/tmp/endpointjobs-filter-recheck-desktop.png` and `/tmp/endpointjobs-filter-recheck-mobile.png`.
+
+## Add Jabil Workday Source
+
+- [x] Verify `https://jabil.wd5.myworkdayjobs.com/` exposes usable Workday jobs.
+- [x] Add Jabil to default Workday source configuration if viable.
+- [x] Keep scheduled refresh configuration in sync.
+- [x] Run targeted refresh/audit checks.
+- [x] Document result.
+
+Result: Added Jabil via `https://jabil.wd5.myworkdayjobs.com/wday/cxs/jabil/Jabil_Careers/jobs`. Jabil-only refresh fetched 11 raw Workday postings and accepted 1 endpoint job, `Information Security Architect (Endpoints and Servers)`. Full default Workday refresh to `/tmp` fetched 412 raw Workday postings and accepted 45 endpoint jobs, including the Jabil listing. Verified `npm run audit:data`, `npm run lint`, `npm run typecheck`, and `git diff --check`.
+
+## Filter Label And Padding Cleanup
+
+- [x] Shorten neutral filter labels so they fit compact controls.
+- [x] Tighten filter control padding and grid behavior.
+- [x] Verify desktop and mobile filter layouts.
+- [x] Run lint, typecheck, React Doctor, and diff checks.
+- [x] Document result.
+
+Result: Shortened neutral select labels to `All` and `Any`, tightened filter control padding/gaps, and added shrink-safe overflow handling. Verified desktop and mobile screenshots plus browser overflow checks, `git diff --check`, `npm run lint`, `npm run typecheck`, and `npx react-doctor@latest --verbose --scope changed`.
+
+## Remove Topbar Tabs
+
+- [x] Remove the unnecessary `Search`, `Coverage`, and `Open roles` tab strip.
+- [x] Remove dead tab styling if it is no longer used.
+- [x] Verify the app still passes targeted checks.
+- [x] Document result.
+
+Result: Removed the topbar section-link tab strip and its unused tab styles. Verified no tab class/link references remain, plus `git diff --check`, `npm run lint`, `npm run typecheck`, and `npx react-doctor@latest --verbose --scope changed`.
+
+## React Doctor CI and Top Findings
+
+- [x] Install React Doctor CI scanning.
+- [x] Read the supplied React Doctor result files.
+- [x] Fetch canonical rule guidance before editing.
+- [x] Fix `prefer-tag-over-role` in `job-map.tsx`.
+- [x] Fix reported `deslop/unused-export` exports.
+- [x] Re-run React Doctor and project gates.
+- [x] Document result.
+
+Result: React Doctor CI already existed; installer confirmed local setup, and the workflow now uses `fetch-depth: 0` per the CI guide. Fixed all five supplied findings. Verified `npx react-doctor@latest --verbose` with React Doctor v0.7.1 reporting no issues and 100/100, plus `git diff --check`, `npm run lint`, and `npm run typecheck`.
+
+## Rebase Imagegen Redesign Against Main
+
+- [x] Preserve current uncommitted work.
+- [x] Fetch latest `origin/main`.
+- [x] Rebase `imagegen-redesign` onto latest main.
+- [x] Restore local work and resolve conflicts if needed.
+- [x] Verify final branch status.
+- [x] Document rebase result.
+
+Result: Rebasing `imagegen-redesign` onto fetched `origin/main` completed cleanly at `b4f4d47`. Local edits were stashed before the rebase and restored without conflicts. Verified `git diff --check`, `npm run lint`, and `npm run typecheck`.
+
+## Imagegen Redesign Preview Deploy
+
+- [x] Confirm branch and Vercel project link.
+- [x] Deploy current local snapshot to Vercel preview.
+- [x] Inspect preview readiness and access.
+- [x] Document preview result.
+
+Result: Deployed preview `dpl_12vxbbkb8b1t46kfkr4YBSABVCUT` at `https://endpoint-jobs-3edg1pqjv-jorgeasaurus-projects.vercel.app`. `vercel inspect` reports target `preview` and status `Ready`; `vercel curl / --deployment` returned the preview HTML successfully.
+
+## Imagegen Redesign Branch
+
+- [x] Create branch `imagegen-redesign`.
+- [x] Capture current UI context and generate one imagegen redesign direction.
+- [x] Implement the redesign in the existing job-board structure.
+- [x] Verify with lint, typecheck, build, and browser checks.
+- [x] Document verification result.
+
+Result: Reworked the job board into a compact operations-dashboard layout: sticky nav, split command panel with live coverage metrics, quieter map/results panels, and denser job rows. Imagegen reference: `/Users/jorgeasaurus/.codex/generated_images/019f3141-a1ae-73f0-b027-7f0167df8169/ig_00ff2c2325f7baf0016a4a0d32da908191a81595ee4d6d2cf1.png`. Verified `npm run lint`, `npm run typecheck`, `npm run build`, and `AUDIT_BASE_URL=http://127.0.0.1:3000 npm run audit:browser` with 28/28 browser checks passing.
+
 ## Main Production Release
 
 - [x] Upgrade Vercel CLI and confirm repo state.

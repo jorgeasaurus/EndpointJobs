@@ -1,4 +1,9 @@
-import { Github, MessageSquarePlus, MonitorSmartphone, RefreshCw } from "lucide-react";
+import {
+  Github,
+  MessageSquarePlus,
+  MonitorSmartphone,
+  RefreshCw
+} from "lucide-react";
 import Link from "next/link";
 
 import { formatUpdatedAt } from "@/lib/jobs";
@@ -19,6 +24,17 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
           <RefreshCw size={15} aria-hidden="true" />
           {formatUpdatedAt(updatedAt)}
         </span>
+        <a
+          aria-label="Open feedback form on GitHub"
+          className="feedback-link topbar-feedback-link"
+          href="https://github.com/jorgeasaurus/EndpointJobs/issues/new?template=report-or-request.yml"
+          rel="noopener noreferrer"
+          target="_blank"
+          title="Report an issue or request a feature"
+        >
+          <MessageSquarePlus size={15} aria-hidden="true" />
+          <span>Feedback</span>
+        </a>
       </div>
     </header>
   );

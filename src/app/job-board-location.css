@@ -10,38 +10,51 @@
   -webkit-backdrop-filter: blur(16px);
 }
 
+.command-filter-grid .location-filter-panel {
+  padding: 0;
+  margin-bottom: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 .location-filter-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.42fr);
-  gap: 10px;
+  grid-template-columns: minmax(220px, 1fr) minmax(180px, 220px);
+  gap: 9px;
 }
 
 .location-search-box {
   display: grid;
-  grid-template-columns: 22px minmax(0, 1fr);
+  grid-template-columns: 20px minmax(0, 1fr);
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  min-width: 0;
   min-height: 48px;
-  padding: 0 14px;
+  padding: 0 12px;
   color: var(--white);
-  background: rgb(0 0 0 / 34%);
+  background: rgb(0 0 0 / 42%);
   border: 1px solid var(--glass-border);
   border-radius: 8px;
 }
 
 .location-search-box:focus-within {
   border-color: var(--lime);
-  box-shadow: 0 0 0 4px rgb(204 255 0 / 12%);
+  box-shadow: 0 0 0 4px rgb(190 242 100 / 12%);
 }
 
 .location-search-box input {
   width: 100%;
   min-width: 0;
+  overflow: hidden;
   color: var(--white);
   background: transparent;
   border: 0;
   outline: 0;
   font-size: 0.98rem;
+  text-overflow: ellipsis;
 }
 
 .location-search-box input::placeholder {
@@ -54,7 +67,7 @@
     padding: 7px;
     margin-bottom: 8px;
     background: rgb(0 0 0 / 34%);
-    border-radius: 14px;
+    border-radius: 8px;
   }
 
   .location-filter-row {

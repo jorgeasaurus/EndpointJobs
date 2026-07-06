@@ -1,5 +1,10 @@
 # Lessons
 
+- CSS compatibility warnings should be fixed in pairs near the standard declaration, with the prefixed fallback first and the standard property last.
+- Adjacent filter sections need explicit sibling spacing; internal grid gaps do not separate a following chip row when optional active filters are absent.
+- Medium-width dashboard filters need capped compact-control tracks; otherwise short controls stretch across the row even when their text fits.
+- When a visual issue is re-raised after a fix, capture fresh local screenshots and DOM overflow checks before editing; the report may be from a stale preview.
+- Compact dashboard filters need short neutral labels and explicit `min-width: 0`/overflow checks; verify real viewport screenshots before calling spacing fixed.
 - Browser audits that depend on feed data should derive scenarios from `jobs.json` or fixtures; avoid hard-coding result counts, company names, or titles that can change during normal refreshes.
 - Audit fixtures should import canonical app helpers for active/filter logic; copied source freshness or exclusion rules drift silently.
 - For job API refresh checks, report raw provider counts and accepted endpoint-match counts from the GitHub Action before saying the feed is healthy.

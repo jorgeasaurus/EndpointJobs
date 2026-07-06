@@ -38,6 +38,27 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
     () => filterJobs(activeJobs, filters),
     [activeJobs, filters]
   );
+  const visibleJobMetrics = useMemo(() => {
+    let mappedJobsCount = 0;
+    let remoteJobsCount = 0;
+    let salaryJobsCount = 0;
+
+    for (const job of visibleJobs) {
+      if (job.mapLocation) {
+        mappedJobsCount += 1;
+      }
+
+      if (job.workplace === "Remote" || job.workplace === "Hybrid") {
+        remoteJobsCount += 1;
+      }
+
+      if (job.salary) {
+        salaryJobsCount += 1;
+      }
+    }
+
+    return { mappedJobsCount, remoteJobsCount, salaryJobsCount };
+  }, [visibleJobs]);
 
   const totalPages = Math.max(1, Math.ceil(visibleJobs.length / jobsPerPage));
   const currentPage = pagination.filterKey === filterKey ? pagination.page : 1;
@@ -81,7 +102,11 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
       <div className="site-content">
         <Topbar updatedAt={feed.updatedAt} />
 
-        <section className="workbench" aria-label="Endpoint job search">
+        <section
+          className="workbench"
+          id="search"
+          aria-label="Endpoint job search"
+        >
           <CommandPanel
             activeFilterCount={activeFilterCount}
             activeFilterItems={activeFilterItems}
@@ -91,12 +116,14 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
             dispatch={dispatch}
             filters={filters}
             searchInputRef={searchInputRef}
+            visibleJobsCount={visibleJobs.length}
+            {...visibleJobMetrics}
           />
         </section>
 
-        <JobMap jobs={visibleJobs} />
+        <JobMap id="map" jobs={visibleJobs} />
 
-        <section className="board-grid" ref={resultsSectionRef}>
+        <section className="board-grid" id="open-roles" ref={resultsSectionRef}>
           <ResultsPanel
             clearFilters={clearFilters}
             currentPage={safeCurrentPage}

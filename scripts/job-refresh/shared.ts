@@ -58,6 +58,7 @@ const platformAliases: Array<{ platform: Platform; aliases: string[] }> = [
 
 const endpointRoleTerms = [
   "endpoint",
+  "endpoints",
   "end-point",
   "end-point protection",
   "desktop engineer",
@@ -373,7 +374,10 @@ const matchReasonRules: Array<{
   { label: "Fleet MDM", matches: ({ tools }) => tools.includes("Fleet MDM") },
   { label: "NinjaOne remediation", matches: ({ tools }) => tools.includes("NinjaOne") },
   { label: "Tanium endpoint security", matches: ({ tools }) => tools.includes("Tanium") },
-  { label: "Endpoint engineering", matches: ({ haystack }) => containsAlias(haystack, "endpoint") },
+  {
+    label: "Endpoint engineering",
+    matches: ({ haystack }) => hasAnyAlias(haystack, ["endpoint", "endpoints"])
+  },
   { label: "MDM", matches: ({ haystack }) => containsAlias(haystack, "mdm") },
   { label: "UEM", matches: ({ haystack }) => containsAlias(haystack, "uem") },
   {

@@ -3,9 +3,9 @@ import type { LayerProps } from "react-map-gl/maplibre";
 
 export const sourceId = "job-locations";
 export const clusterLayerId = "job-clusters";
-export const clusterCountLayerId = "job-cluster-counts";
+const clusterCountLayerId = "job-cluster-counts";
 export const unclusteredLayerId = "job-points";
-export const selectedPointLayerId = "job-selected-points";
+const selectedPointLayerId = "job-selected-points";
 export const minZoom = 0;
 export const maxZoom = 18;
 export const clusterMaxZoom = 15;

@@ -7,7 +7,7 @@ import {
   type RoleFamilyFilter,
   type SeniorityFilter
 } from "../src/components/job-board/filter-model";
-import { isActiveJob } from "../src/lib/jobs";
+import { getExpandedDescriptionParagraphs, isActiveJob } from "../src/lib/jobs";
 import type { Job, JobsFeed } from "../src/types/job";
 
 type LocationMapScenario = {
@@ -26,6 +26,11 @@ type AdvancedFilterScenario = {
   seniority: Exclude<SeniorityFilter, "All">;
 };
 
+type DescriptionScenario = {
+  query: string;
+  title: string;
+};
+
 export async function loadBrowserAuditScenarios() {
   const jobsFeed = JSON.parse(
     await readFile(new URL("../src/data/jobs.json", import.meta.url), "utf8")
@@ -34,6 +39,7 @@ export async function loadBrowserAuditScenarios() {
 
   return {
     advancedFilterScenario: findAdvancedFilterScenario(activeJobs),
+    descriptionScenario: findDescriptionScenario(activeJobs),
     locationMapScenario: findLocationMapScenario(activeJobs)
   };
 }
@@ -141,6 +147,51 @@ function findAdvancedFilterScenario(jobs: Job[]): AdvancedFilterScenario {
   return best;
 }
 
+function findDescriptionScenario(jobs: Job[]): DescriptionScenario {
+  let best:
+    | (DescriptionScenario & {
+        rank: number;
+        resultCount: number;
+      })
+    | undefined;
+
+  for (const job of jobs) {
+    if (getExpandedDescriptionParagraphs(job).length === 0) {
+      continue;
+    }
+
+    const matchingJobs = filterJobs(jobs, {
+      ...initialFilterState,
+      query: job.title
+    });
+    const rank = matchingJobs.findIndex((candidate) => candidate.id === job.id);
+
+    if (rank < 0 || rank >= 20) {
+      continue;
+    }
+
+    const scenario = {
+      query: job.title,
+      rank,
+      resultCount: matchingJobs.length,
+      title: job.title
+    };
+
+    if (!best || getDescriptionScenarioScore(scenario) > getDescriptionScenarioScore(best)) {
+      best = scenario;
+    }
+  }
+
+  if (!best) {
+    throw new Error("missing active expandable-description scenario for browser audit");
+  }
+
+  return {
+    query: best.query,
+    title: best.title
+  };
+}
+
 function addLocationCandidate(
   candidates: Array<{ query: string; priority: number }>,
   value: string,
@@ -163,6 +214,12 @@ function getLocationScenarioScore(scenario: LocationMapScenario & { priority: nu
 
 function getAdvancedScenarioScore(scenario: AdvancedFilterScenario) {
   return Math.min(scenario.resultCount, 6) * 10 + Number(scenario.freshness);
+}
+
+function getDescriptionScenarioScore(
+  scenario: DescriptionScenario & { rank: number; resultCount: number }
+) {
+  return (20 - scenario.rank) * 10 - scenario.resultCount;
 }
 
 function uniqueValues<T extends string>(values: T[]) {

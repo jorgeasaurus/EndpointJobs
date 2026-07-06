@@ -4,25 +4,26 @@
 :root {
   color-scheme: dark;
   --black: #000000;
-  --obsidian: #0a0a0a;
-  --surface: #0c0c0c;
-  --surface-2: #111111;
-  --glass: rgb(255 255 255 / 3%);
-  --glass-strong: rgb(255 255 255 / 6%);
-  --glass-border: rgb(255 255 255 / 10%);
-  --glass-border-strong: rgb(204 255 0 / 42%);
-  --lime: #ccff00;
-  --emerald: #10b981;
-  --white: #ebebeb;
-  --white-60: rgb(235 235 235 / 60%);
-  --white-45: rgb(235 235 235 / 45%);
-  --white-30: rgb(235 235 235 / 30%);
+  --obsidian: #07090b;
+  --surface: #0d1114;
+  --surface-2: #12181c;
+  --glass: rgb(255 255 255 / 4%);
+  --glass-strong: rgb(255 255 255 / 7%);
+  --glass-border: rgb(255 255 255 / 11%);
+  --glass-border-strong: rgb(190 242 100 / 42%);
+  --lime: #bef264;
+  --emerald: #2dd4bf;
+  --cyan: #38bdf8;
+  --white: #f3f4f6;
+  --white-60: rgb(243 244 246 / 64%);
+  --white-45: rgb(243 244 246 / 48%);
+  --white-30: rgb(243 244 246 / 32%);
   --danger: #fb7185;
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --sans: "Space Grotesk", "Avenir Next", "Segoe UI Variable", ui-sans-serif, system-ui, sans-serif;
   --curve: cubic-bezier(0.4, 0, 0.2, 1);
-  --shadow: 0 28px 90px rgb(0 0 0 / 58%);
-  --glow-lime: 0 0 0 1px rgb(204 255 0 / 16%), 0 0 34px rgb(204 255 0 / 18%);
+  --shadow: 0 22px 70px rgb(0 0 0 / 44%);
+  --glow-lime: 0 0 0 1px rgb(190 242 100 / 14%), 0 0 28px rgb(190 242 100 / 12%);
 }
 
 * {
@@ -38,10 +39,7 @@ body {
   min-height: 100vh;
   margin: 0;
   overflow-x: hidden;
-  background:
-    radial-gradient(circle at 16% 8%, rgb(204 255 0 / 16%), transparent 19rem),
-    radial-gradient(circle at 88% 22%, rgb(16 185 129 / 12%), transparent 24rem),
-    linear-gradient(var(--black), var(--black));
+  background: linear-gradient(180deg, #080a0c 0%, #050607 52%, #081013 100%);
   color: var(--white);
   font-family: var(--sans);
   font-weight: 400;
@@ -59,9 +57,11 @@ body::after {
 
 body::before {
   background:
-    linear-gradient(rgb(255 255 255 / 4%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 4%) 1px, transparent 1px);
-  background-size: 60px 60px;
+    linear-gradient(rgb(255 255 255 / 3.5%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 3.5%) 1px, transparent 1px),
+    linear-gradient(120deg, rgb(45 212 191 / 7%), transparent 42%, rgb(190 242 100 / 5%) 78%, transparent);
+  background-size: 64px 64px, 64px 64px, auto;
+  -webkit-mask-image: linear-gradient(180deg, black 0%, black 62%, transparent 96%);
   mask-image: linear-gradient(180deg, black 0%, black 62%, transparent 96%);
 }
 
