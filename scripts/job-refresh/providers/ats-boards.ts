@@ -145,7 +145,13 @@ const defaultGreenhouseBoards = [
   "canonical",
   "pinterest",
   "block",
-  "roblox"
+  "roblox",
+  "huntress",
+  "keepersecurity",
+  "truveta",
+  "intercom",
+  "amplitude",
+  "ubiquiti"
 ];
 
 const defaultLeverCompanies = ["jumpcloud", "brightonjones", "hermeus", "omnidian"];
@@ -826,6 +832,7 @@ function formatSourceAccountName(slug: string) {
     instacart: "Instacart",
     jamf: "Jamf",
     kaseya: "Kaseya",
+    keepersecurity: "Keeper Security",
     jumpcloud: "JumpCloud",
     kymeratherapeutics: "Kymera Therapeutics",
     lyft: "Lyft",

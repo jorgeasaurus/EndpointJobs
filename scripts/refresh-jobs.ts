@@ -24,7 +24,8 @@ import type { Job, JobsFeed } from "../src/types/job";
 
 const outputPath = resolve(process.env.JOB_OUTPUT_PATH ?? "src/data/jobs.json");
 
-const maxJobs = Number(process.env.JOB_MAX_RESULTS ?? 80);
+const defaultMaxJobs = 500;
+const maxJobs = getPositiveIntegerConfig(process.env.JOB_MAX_RESULTS, defaultMaxJobs);
 
 async function main() {
   const configuredProviders = getConfiguredProviders();
@@ -209,6 +210,21 @@ function getFeedSourceMetadata(providers: SupportedProvider[]) {
     name: providers.map((provider) => getProviderAdapter(provider).displayName).join(" + "),
     url: process.env.JOB_FEED_SOURCE_URL ?? "https://github.com/jorgeasaurus/EndpointJobs"
   };
+}
+
+function getPositiveIntegerConfig(value: string | undefined, fallback: number) {
+  if (!value) {
+    return fallback;
+  }
+
+  const normalized = value.trim();
+
+  if (!/^\d+$/.test(normalized)) {
+    return fallback;
+  }
+
+  const parsed = Number.parseInt(normalized, 10);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
 }
 
 function getConfiguredExcludedSourceUrls() {

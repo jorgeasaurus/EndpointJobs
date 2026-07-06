@@ -1,5 +1,32 @@
 # Endpoint Jobs Plan
 
+## Refresh Action Rebase Failure
+
+- [x] Inspect failed scheduled GitHub Action logs.
+- [x] Identify the dirty worktree before `git rebase`.
+- [x] Clear tracked generated leftovers after committing `jobs.json`.
+- [x] Run focused verification.
+
+Result: Scheduled refresh run `28791668837` failed after a successful refresh/build because `git rebase FETCH_HEAD` found unstaged tracked changes after committing only `src/data/jobs.json`. The workflow now restores tracked non-listing changes before fetching/rebasing. Verified `git diff --check`.
+
+## Increase Job Feed Cap
+
+- [x] Set the refresh job cap to 500 in code and scheduled config.
+- [x] Run focused verification.
+- [x] Document result.
+
+Result: Raised the default refresh cap and scheduled `JOB_MAX_RESULTS` from the previous 80/300 split to 500, then hardened invalid env parsing after PR review. Verified `npm run typecheck`, `npm run audit:data`, and `git diff --check`.
+
+## Add Workday And Greenhouse Companies
+
+- [x] Validate candidate Workday and Greenhouse sources through their public ATS APIs.
+- [x] Add only working sources with endpoint-relevant search coverage.
+- [x] Keep scheduled refresh configuration in sync with provider defaults.
+- [x] Run targeted refresh and project checks.
+- [x] Document result.
+
+Result: Added Workday sources for Vanguard, CACI, KBR, The Hartford, RBC, Autodesk, Capital One, and Thermo Fisher, plus Greenhouse boards for Huntress, Keeper Security, Truveta, Intercom, Amplitude, and Ubiquiti. Targeted Workday refresh fetched 276 raw postings and accepted 16 endpoint jobs; targeted Greenhouse refresh fetched 485 raw postings and accepted 10 endpoint jobs. Verified `npm run lint`, `npm run typecheck`, `npm run audit:data`, and `git diff --check`.
+
 ## CSS Browser Compatibility Prefixes
 
 - [x] Find every `mask-image` and `user-select` declaration.
