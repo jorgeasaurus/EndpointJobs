@@ -1,5 +1,6 @@
 # Lessons
 
+- CSS compatibility warnings should be fixed in pairs near the standard declaration, with the prefixed fallback first and the standard property last.
 - Adjacent filter sections need explicit sibling spacing; internal grid gaps do not separate a following chip row when optional active filters are absent.
 - Medium-width dashboard filters need capped compact-control tracks; otherwise short controls stretch across the row even when their text fits.
 - When a visual issue is re-raised after a fix, capture fresh local screenshots and DOM overflow checks before editing; the report may be from a stale preview.

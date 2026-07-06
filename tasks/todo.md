@@ -1,5 +1,14 @@
 # Endpoint Jobs Plan
 
+## CSS Browser Compatibility Prefixes
+
+- [x] Find every `mask-image` and `user-select` declaration.
+- [x] Add `-webkit-mask-image` and `-webkit-user-select` companions.
+- [x] Verify prefix pairs and project checks.
+- [x] Push the PR update.
+
+Result: Added WebKit-prefixed fallbacks for `mask-image` in `globals.css` and `job-board-map.css`, plus `-webkit-user-select` for the interactive map canvas. Verified prefix pairs, `git diff --check`, `npm run lint`, `npm run typecheck`, and `npx react-doctor@latest --verbose --scope changed`.
+
 ## Open Imagegen Redesign PR
 
 - [x] Confirm GitHub auth and remote.

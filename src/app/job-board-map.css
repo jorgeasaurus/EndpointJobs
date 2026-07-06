@@ -159,6 +159,7 @@
 
 .job-map-canvas-wrap .maplibregl-canvas-container.maplibregl-interactive {
   cursor: grab;
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -210,6 +211,7 @@
   pointer-events: none;
   content: "";
   background: linear-gradient(120deg, transparent 0%, rgb(45 212 191 / 8%) 50%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 18%, black 82%, transparent 100%);
   mask-image: linear-gradient(180deg, transparent 0%, black 18%, black 82%, transparent 100%);
 }
 
