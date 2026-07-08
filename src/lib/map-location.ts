@@ -293,21 +293,81 @@ const locationCoordinates: Coordinate[] = [
   { label: "Medellin, Colombia", latitude: 6.2476, longitude: -75.5658, keys: ["medellin"] },
   { label: "London, UK", latitude: 51.5072, longitude: -0.1276, keys: ["london", "england united kingdom"] },
   { label: "Hamburg, Germany", latitude: 53.5511, longitude: 9.9937, keys: ["hamburg"] },
-  { label: "Paris, France", latitude: 48.8566, longitude: 2.3522, keys: ["paris", "ile de france", "le de france"] },
-  { label: "Lyon, France", latitude: 45.764, longitude: 4.8357, keys: ["lyon"] },
+  {
+    label: "Paris, France",
+    latitude: 48.8566,
+    longitude: 2.3522,
+    keys: ["paris", "ile de france", "le de france", "hauts de seine"]
+  },
+  { label: "Lyon, France", latitude: 45.764, longitude: 4.8357, keys: ["lyon", "limonest"] },
+  {
+    label: "Lille, France",
+    latitude: 50.6292,
+    longitude: 3.0573,
+    keys: ["lille", "la madeleine", "roubaix", "hauts de france", "nord"]
+  },
+  {
+    label: "Toulouse, France",
+    latitude: 43.6047,
+    longitude: 1.4442,
+    keys: ["toulouse", "haute garonne"]
+  },
+  {
+    label: "Montpellier, France",
+    latitude: 43.6108,
+    longitude: 3.8767,
+    keys: ["montpellier", "herault", "h rault"]
+  },
+  {
+    label: "Aix-en-Provence, France",
+    latitude: 43.5297,
+    longitude: 5.4474,
+    keys: ["aix en provence"]
+  },
+  {
+    label: "Marseille, France",
+    latitude: 43.2965,
+    longitude: 5.3698,
+    keys: ["marseille", "allauch"]
+  },
+  { label: "Toulon, France", latitude: 43.1242, longitude: 5.928, keys: ["toulon", "var"] },
   { label: "France", latitude: 46.2276, longitude: 2.2137, keys: ["france"] },
   { label: "Madrid, Spain", latitude: 40.4168, longitude: -3.7038, keys: ["madrid"] },
   { label: "Barcelona, Spain", latitude: 41.3874, longitude: 2.1686, keys: ["barcelona"] },
+  { label: "Albacete, Spain", latitude: 38.9942, longitude: -1.8564, keys: ["albacete"] },
+  {
+    label: "Vitoria-Gasteiz, Spain",
+    latitude: 42.8467,
+    longitude: -2.6727,
+    keys: ["vitoria gasteiz", "alava"]
+  },
   { label: "Spain", latitude: 40.4637, longitude: -3.7492, keys: ["spain", "espana", "espa a"] },
   { label: "Milan, Italy", latitude: 45.4642, longitude: 9.19, keys: ["milan", "milano"] },
   { label: "Rome, Italy", latitude: 41.9028, longitude: 12.4964, keys: ["rome", "roma"] },
   { label: "Turin, Italy", latitude: 45.0703, longitude: 7.6869, keys: ["turin", "torino"] },
   { label: "Italy", latitude: 41.8719, longitude: 12.5674, keys: ["italy", "italia"] },
-  { label: "Zurich, Switzerland", latitude: 47.3769, longitude: 8.5417, keys: ["zurich", "z rich", "fehraltorf"] },
+  {
+    label: "Zurich, Switzerland",
+    latitude: 47.3769,
+    longitude: 8.5417,
+    keys: ["zurich", "z rich", "fehraltorf", "uitikon", "dietikon", "horgen"]
+  },
   { label: "Bern, Switzerland", latitude: 46.948, longitude: 7.4474, keys: ["bern mittelland", "zollikofen", "koniz", "k niz"] },
-  { label: "Basel, Switzerland", latitude: 47.5596, longitude: 7.5886, keys: ["basel", "basel city"] },
-  { label: "Geneva, Switzerland", latitude: 46.2044, longitude: 6.1432, keys: ["geneva"] },
+  {
+    label: "Basel, Switzerland",
+    latitude: 47.5596,
+    longitude: 7.5886,
+    keys: ["basel", "basel city", "liestal", "basel landschaft"]
+  },
+  { label: "Geneva, Switzerland", latitude: 46.2044, longitude: 6.1432, keys: ["geneva", "genf"] },
   { label: "Lausanne, Switzerland", latitude: 46.5197, longitude: 6.6323, keys: ["lausanne"] },
+  { label: "St. Gallen, Switzerland", latitude: 47.4245, longitude: 9.3767, keys: ["st gallen", "sankt gallen", "teufen"] },
+  { label: "Aarau, Switzerland", latitude: 47.3904, longitude: 8.0457, keys: ["aarau"] },
+  { label: "Schwyz, Switzerland", latitude: 47.0207, longitude: 8.6541, keys: ["schwyz"] },
+  { label: "Lucerne, Switzerland", latitude: 47.0502, longitude: 8.3093, keys: ["lucerne", "luzern", "kriens"] },
+  { label: "Chur, Switzerland", latitude: 46.8508, longitude: 9.532, keys: ["chur", "plessur"] },
+  { label: "Sarnen, Switzerland", latitude: 46.8961, longitude: 8.2453, keys: ["sarnen", "obwalden"] },
+  { label: "Fribourg, Switzerland", latitude: 46.8065, longitude: 7.1619, keys: ["fribourg", "villars sur glane", "saane"] },
   { label: "Switzerland", latitude: 46.8182, longitude: 8.2275, keys: ["switzerland", "schweiz", "suisse", "svizzera"] },
   { label: "Hyderabad, India", latitude: 17.385, longitude: 78.4867, keys: ["hyderabad"] },
   { label: "Bengaluru, India", latitude: 12.9716, longitude: 77.5946, keys: ["bengaluru", "bangalore"] },

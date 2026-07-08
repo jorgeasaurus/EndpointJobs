@@ -957,11 +957,17 @@ await run("FEAT-069", "Map location resolver maps known places and skips ambiguo
   assertEqual(resolveJobMapLocation("Jacks Cabin, Gunnison County")?.label, "Denver, CO");
   assertEqual(resolveJobMapLocation("Newark, New Castle County")?.label, "Wilmington, DE");
   assertEqual(resolveJobMapLocation("Paris, France")?.label, "Paris, France");
+  assertEqual(resolveJobMapLocation("La-Madeleine, Lille")?.label, "Lille, France");
+  assertEqual(resolveJobMapLocation("Toulouse, Haute-Garonne")?.label, "Toulouse, France");
   assertEqual(resolveJobMapLocation("Barcelona, Spain")?.label, "Barcelona, Spain");
+  assertEqual(resolveJobMapLocation("Albacete")?.label, "Albacete, Spain");
+  assertEqual(resolveJobMapLocation("Vitoria-Gasteiz, Alava")?.label, "Vitoria-Gasteiz, Spain");
   assertEqual(resolveJobMapLocation("Milano, Italia")?.label, "Milan, Italy");
   assertEqual(resolveJobMapLocation("Fehraltorf (Zurich), Switzerland")?.label, "Zurich, Switzerland");
   assertEqual(resolveJobMapLocation("Zollikofen, Bern-Mittelland")?.label, "Bern, Switzerland");
   assertEqual(resolveJobMapLocation("Basel (City)")?.label, "Basel, Switzerland");
+  assertEqual(resolveJobMapLocation("Genf")?.label, "Geneva, Switzerland");
+  assertEqual(resolveJobMapLocation("Kriens, Luzern-Land")?.label, "Lucerne, Switzerland");
   assertEqual(resolveJobMapLocation("Le Mont-sur-Lausanne, Lausanne")?.label, "Lausanne, Switzerland");
   assertEqual(resolveJobMapLocation("Switzerland")?.label, "Switzerland");
   assertEqual(resolveJobMapLocation("12 locations"), undefined);
