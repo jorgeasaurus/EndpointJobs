@@ -22,8 +22,14 @@ import { buildJobMapPoints } from "../src/lib/job-map";
 import {
   formatUpdatedAt,
   getExpandedDescriptionParagraphs,
-  isActiveJob
+  isActiveJob,
+  roleFamilyOptions,
+  toolOptions
 } from "../src/lib/jobs";
+import {
+  endpointToolDefinitions,
+  roleFamilyInferenceRules
+} from "../src/lib/job-taxonomy";
 import {
   isExcludedJobSourceUrl,
   isSourceFreshnessExpired
@@ -38,7 +44,9 @@ import { resolveJobMapLocation } from "./job-refresh/map-location";
 import {
   defaultCompanyJobQueries,
   defaultEndpointSearchQueries,
-  monitoredCompanyNames
+  monitoredCompanyNames,
+  powerShellSysadminSearchQueries,
+  powerShellSysadminTitleFilters
 } from "./job-refresh/search-config";
 import {
   buildStableJobId,
@@ -80,6 +88,7 @@ const sourcePaths = {
   companyAts: "scripts/job-refresh/providers/company-ats.ts",
   controls: "src/components/job-board/controls.tsx",
   curated: "scripts/job-refresh/providers/curated-jobs.ts",
+  jobTaxonomy: "src/lib/job-taxonomy.ts",
   issueConfig: ".github/ISSUE_TEMPLATE/config.yml",
   issueTemplate: ".github/ISSUE_TEMPLATE/report-or-request.yml",
   jobBoard: "src/components/job-board.tsx",
@@ -133,11 +142,11 @@ const filterFixtureJobs = [
     location: "San Francisco, CA",
     workplace: "Hybrid",
     postedAt: daysAgo(3),
-    summary: "Own Windows endpoint management with Intune and Autopilot.",
+    summary: "Own Windows endpoint management with Intune, Autopilot, and PowerShell.",
     salary: { min: 150000, max: 190000, currency: "USD", label: "$150k-$190k" },
-    tags: ["Windows", "Intune", "Autopilot"],
+    tags: ["Windows", "Intune", "Autopilot", "PowerShell"],
     matchReasons: ["Intune + Autopilot"],
-    tools: ["Intune", "Autopilot"],
+    tools: ["Intune", "Autopilot", "PowerShell"],
     platforms: ["Windows"],
     roleFamily: "Endpoint Engineering",
     seniority: "Senior"
@@ -333,6 +342,14 @@ await run("FEAT-018", "Tool multi-select matches any selected tool", () => {
   );
   const next = filterReducer(initialFilterState, { type: "toggleTool", value: "Jamf" });
   assertEqual(next.selectedTools[0], "Jamf");
+
+  assertIds(
+    filterJobs(filterFixtureJobs, {
+      ...initialFilterState,
+      selectedTools: ["PowerShell"]
+    }),
+    ["recent-intune"]
+  );
 });
 
 await run("FEAT-019", "Active filter chips expose removable labels and clear actions", () => {
@@ -367,7 +384,7 @@ await run("FEAT-019", "Active filter chips expose removable labels and clear act
 await run("FEAT-020", "Filter state serializes to shareable URL params", () => {
   const parsed = filterStateFromSearchParams(
     new URLSearchParams(
-      "q=Jamf&platforms=macOS,Nope&tools=Jamf,Bad&location=Austin&remote=1&salary=1&seniority=Senior&family=Endpoint%20Security&freshness=7&sort=company"
+      "q=Jamf&platforms=macOS,Nope&tools=Jamf,PowerShell,Bad&location=Austin&remote=1&salary=1&seniority=Senior&family=Endpoint%20Security&freshness=7&sort=company"
     )
   );
   assertEqual(parsed.query, "Jamf");
@@ -375,9 +392,15 @@ await run("FEAT-020", "Filter state serializes to shareable URL params", () => {
   assertEqual(parsed.workplace, "Remote");
   assertEqual(parsed.salaryOnly, true);
   assertEqual(parsed.selectedPlatforms.join(","), "macOS");
-  assertEqual(parsed.selectedTools.join(","), "Jamf");
+  assertEqual(parsed.selectedTools.join(","), "Jamf,PowerShell");
   assertEqual(parsed.roleFamily, "Endpoint Security");
   assertEqual(parsed.sort, "company");
+
+  const systemsAdministration = filterStateFromSearchParams(
+    new URLSearchParams("family=Systems%20Administration")
+  );
+  assertEqual(systemsAdministration.roleFamily, "Systems Administration");
+  assertArrayIncludes(roleFamilyOptions, ["Systems Administration"]);
 
   const merged = mergeFilterStateIntoSearchParams(
     new URLSearchParams("keep=1&locations=legacy&remote=1"),
@@ -553,25 +576,52 @@ await run("FEAT-043", "Curated jobs reserve slots and normalize reviewed listing
 
 await run("FEAT-044", "Normalizer accepts endpoint roles and rejects generic software roles", () => {
   const endpointHaystack = normalizeSearchText("Endpoint engineer Intune device management");
+  const powershellSysadminHaystack = normalizeSearchText(
+    "Systems Administrator PowerShell automation Active Directory Windows Server"
+  );
   const genericHaystack = normalizeSearchText("Backend software engineer developer platform");
   assertEqual(isEndpointRelevant(endpointHaystack, "Endpoint Engineer", deriveTools(endpointHaystack)), true);
+  assertEqual(
+    isEndpointRelevant(
+      powershellSysadminHaystack,
+      "Systems Administrator",
+      deriveTools(powershellSysadminHaystack)
+    ),
+    true
+  );
   assertEqual(isEndpointRelevant(genericHaystack, "Software Engineer", deriveTools(genericHaystack)), false);
 });
 
 await run("FEAT-045", "Normalizer derives tools, platforms, tags, and match reasons", () => {
-  const haystack = normalizeSearchText("Jamf macOS Intune Autopilot endpoint security");
+  const haystack = normalizeSearchText("Jamf macOS Intune Autopilot PowerShell endpoint security");
   const tools = deriveTools(haystack);
   const platforms = derivePlatforms(haystack);
   const reasons = deriveMatchReasons(haystack, tools, platforms);
-  assertArrayIncludes(tools, ["Jamf", "Intune", "Autopilot"]);
+  const canonicalTools = endpointToolDefinitions.map(({ tool }) => tool);
+  const systemsAdministrationRule = roleFamilyInferenceRules.find(
+    (rule) => rule.family === "Systems Administration"
+  );
+  assertEqual(toolOptions.join(","), canonicalTools.join(","));
+  assertArrayIncludes(tools, ["Jamf", "Intune", "Autopilot", "PowerShell"]);
+  assertArrayIncludes(toolOptions, ["PowerShell"]);
   assertArrayIncludes(platforms, ["macOS"]);
-  assertArrayIncludes(reasons, ["Jamf + macOS"]);
+  assertArrayIncludes(reasons, ["Jamf + macOS", "PowerShell automation"]);
+  assertIncludes(sources.jobTaxonomy, "endpointToolDefinitions");
+  assertIncludes(sources.jobTaxonomy, "roleFamilyInferenceRules");
+  assertIncludes(sources.shared, "endpointToolDefinitions");
+  assertIncludes(sources.shared, "roleFamilyInferenceRules");
+  assertEqual(systemsAdministrationRule?.match, "all");
 });
 
 await run("FEAT-046", "Normalizer infers workplace, role family, seniority, and employment type", () => {
   const securityText = normalizeSearchText("senior endpoint security engineer contract remote");
+  const sysadminText = normalizeSearchText(
+    "senior systems administrator powershell automation active directory windows server security hardening"
+  );
   assertEqual(inferWorkplace("Remote", securityText), "Remote");
   assertEqual(inferRoleFamily(securityText, ["Defender"], ["Windows"]), "Endpoint Security");
+  assertEqual(inferRoleFamily(securityText, [], ["Windows"]), "Endpoint Security");
+  assertEqual(inferRoleFamily(sysadminText, ["PowerShell"], ["Windows"]), "Systems Administration");
   assertEqual(inferSeniority(securityText), "Senior");
   assertEqual(inferEmploymentType(securityText), "Contract");
 });
@@ -878,8 +928,18 @@ await run("FEAT-068", "Endpoint search defaults include role and company expansi
   assertArrayIncludes(defaultEndpointSearchQueries, [
     "endpoint engineer",
     "client platform engineer",
+    "powershell systems administrator",
+    "powershell sysadmin",
     "intune engineer",
     "jamf engineer"
+  ]);
+  assertArrayIncludes(powerShellSysadminSearchQueries, [
+    "powershell systems administrator",
+    "powershell sysadmin"
+  ]);
+  assertArrayIncludes(powerShellSysadminTitleFilters, [
+    "PowerShell Systems Administrator",
+    "PowerShell Sysadmin"
   ]);
   assertArrayIncludes(monitoredCompanyNames, ["Kandji", "CrowdStrike", "Microsoft"]);
   assertArrayIncludes(defaultCompanyJobQueries, [
@@ -887,6 +947,7 @@ await run("FEAT-068", "Endpoint search defaults include role and company expansi
     "CrowdStrike endpoint engineer"
   ]);
   assertIncludes(sources.searchConfig, "defaultEndpointSearchQueries");
+  assertIncludes(sources.rapidApiLinkedIn, "powerShellSysadminTitleFilters");
 });
 
 await run("FEAT-069", "Map location resolver maps known places and skips ambiguous rows", () => {
@@ -1052,7 +1113,7 @@ function assertLabels(items: Array<{ label: string }>, expectedLabels: string[])
   assertEqual(items.map((item) => item.label).join("|"), expectedLabels.join("|"));
 }
 
-function assertArrayIncludes<T>(actual: T[], expectedValues: T[]) {
+function assertArrayIncludes<T>(actual: readonly T[], expectedValues: readonly T[]) {
   for (const value of expectedValues) {
     if (!actual.includes(value)) {
       throw new Error(`expected ${JSON.stringify(actual)} to include ${String(value)}`);

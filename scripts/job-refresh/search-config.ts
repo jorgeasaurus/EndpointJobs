@@ -1,3 +1,21 @@
+export const powerShellSysadminSearchQueries = [
+  "powershell administrator",
+  "powershell systems administrator",
+  "powershell system administrator",
+  "powershell systems engineer",
+  "powershell sysadmin",
+  "windows sysadmin powershell"
+];
+
+export const powerShellSysadminTitleFilters = [
+  "PowerShell Administrator",
+  "PowerShell Systems Administrator",
+  "PowerShell System Administrator",
+  "PowerShell Systems Engineer",
+  "PowerShell Sysadmin",
+  "Windows Sysadmin PowerShell"
+];
+
 export const defaultEndpointSearchQueries = [
   "endpoint engineer",
   "endpoint administrator",
@@ -30,6 +48,7 @@ export const defaultEndpointSearchQueries = [
   "tech operations",
   "technology operations engineer",
   "workplace engineer",
+  ...powerShellSysadminSearchQueries,
   "intune engineer",
   "jamf engineer",
   "sccm engineer",

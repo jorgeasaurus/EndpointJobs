@@ -9,145 +9,18 @@ import type {
   TermsProfile,
   Workplace
 } from "../../src/types/job";
+import {
+  endpointRoleTerms,
+  endpointToolDefinitions,
+  platformDefinitions,
+  roleFamilyInferenceRules,
+  technicalRoleTitleTerms,
+  type RoleFamilyInferenceRule
+} from "../../src/lib/job-taxonomy";
 import { resolveJobMapLocation } from "./map-location";
 
-type ToolAlias = {
-  tool: EndpointTool;
-  aliases: string[];
-  strong: boolean;
-};
-
-const toolAliases: ToolAlias[] = [
-  { tool: "Jamf", aliases: ["jamf", "jamf pro", "jamf school"], strong: true },
-  {
-    tool: "Intune",
-    aliases: ["intune", "endpoint manager", "microsoft endpoint manager"],
-    strong: true
-  },
-  {
-    tool: "SCCM",
-    aliases: ["sccm", "mecm", "configuration manager", "configmgr"],
-    strong: true
-  },
-  {
-    tool: "Fleet MDM",
-    aliases: ["fleet mdm", "fleetdm", "fleet device management"],
-    strong: true
-  },
-  { tool: "Kandji", aliases: ["kandji", "kanji"], strong: true },
-  { tool: "NinjaOne", aliases: ["ninjaone", "ninja one"], strong: true },
-  {
-    tool: "Workspace ONE",
-    aliases: ["workspace one", "workspaceone", "airwatch"],
-    strong: true
-  },
-  { tool: "Tanium", aliases: ["tanium"], strong: true },
-  { tool: "Okta", aliases: ["okta"], strong: false },
-  { tool: "Entra ID", aliases: ["entra id", "entra", "azure ad"], strong: false },
-  { tool: "Autopilot", aliases: ["autopilot", "windows autopilot"], strong: true },
-  { tool: "Defender", aliases: ["defender", "microsoft defender", "mde"], strong: false }
-];
-
-const platformAliases: Array<{ platform: Platform; aliases: string[] }> = [
-  { platform: "macOS", aliases: ["macos", "mac os", "mac admin", "apple device"] },
-  { platform: "Windows", aliases: ["windows", "windows 10", "windows 11"] },
-  { platform: "iOS", aliases: ["ios", "iphone", "ipad"] },
-  { platform: "Android", aliases: ["android"] },
-  { platform: "Linux", aliases: ["linux", "ubuntu"] }
-];
-
-const endpointRoleTerms = [
-  "endpoint",
-  "endpoints",
-  "end-point",
-  "end-point protection",
-  "desktop engineer",
-  "desktop engineering",
-  "desktop systems",
-  "desktop administrator",
-  "desktop infrastructure",
-  "client platform",
-  "client infrastructure",
-  "client engineering",
-  "client management",
-  "client fleet",
-  "macos client",
-  "device management",
-  "device engineer",
-  "device fleet",
-  "end user computer",
-  "end user computing",
-  "end user compute",
-  "end user engineering",
-  "end user technology",
-  "end user services",
-  "employee experience technology",
-  "digital employee experience",
-  "end-user computer",
-  "end-user computing",
-  "end-user compute",
-  "end-user engineering",
-  "enterprise engineering",
-  "corporate engineering",
-  "digital workplace",
-  "it client services",
-  "studio it",
-  "workplace engineer",
-  "workplace systems",
-  "modern management",
-  "endpoint security",
-  "device trust",
-  "zero-touch",
-  "zero touch",
-  "tech operations engineer",
-  "technology operations engineer",
-  "mac admin",
-  "mac administrator",
-  "macos engineer",
-  "windows engineer",
-  "windows administrator",
-  "mdm",
-  "m365",
-  "microsoft 365",
-  "uem",
-  "software packaging",
-  "application packaging",
-  "patch management",
-  "workstation"
-];
-
-const technicalRoleTitleTerms = [
-  "systems administrator",
-  "system administrator",
-  "it administrator",
-  "it systems administrator",
-  "endpoint administrator",
-  "systems engineer",
-  "system engineer",
-  "it systems engineer",
-  "system development engineer",
-  "systems development engineer",
-  "systems development manager",
-  "service engineer",
-  "it engineer",
-  "infrastructure engineer",
-  "platform engineer",
-  "client engineer",
-  "client infrastructure engineer",
-  "device engineer",
-  "device trust engineer",
-  "it security engineer",
-  "endpoint security engineer",
-  "enterprise support engineer",
-  "mdm support engineer",
-  "consulting engineer",
-  "solutions engineer",
-  "professional services engineer",
-  "corporate engineering",
-  "enterprise engineering",
-  "tech operations engineer",
-  "technology operations engineer"
-];
+const toolAliases = endpointToolDefinitions;
+const platformAliases = platformDefinitions;
 const staleDays = Number(process.env.JOB_STALE_DAYS ?? 45);
 const configuredDescriptionMaxLength = Number(process.env.JOB_DESCRIPTION_MAX_LENGTH ?? 12000);
 const configuredDescriptionMinLength = Number(process.env.JOB_DESCRIPTION_MIN_LENGTH ?? 420);
@@ -389,7 +262,7 @@ const matchReasonRules: Array<{
     matches: ({ haystack }) => containsAlias(haystack, "device management")
   },
   { label: "Client platform", matches: ({ haystack }) => containsAlias(haystack, "client platform") },
-  { label: "PowerShell automation", matches: ({ haystack }) => containsAlias(haystack, "powershell") },
+  { label: "PowerShell automation", matches: ({ tools }) => tools.includes("PowerShell") },
   { label: "App packaging", matches: ({ haystack }) => containsAlias(haystack, "packaging") },
   {
     label: "Endpoint security",
@@ -453,41 +326,32 @@ export function inferRoleFamily(
   tools: EndpointTool[],
   platforms: Platform[]
 ): RoleFamily {
-  if (
-    containsAlias(haystack, "security") ||
-    containsAlias(haystack, "edr") ||
-    tools.includes("Tanium") ||
-    tools.includes("Defender")
-  ) {
-    return "Endpoint Security";
+  const matchedRule = roleFamilyInferenceRules.find((rule) =>
+    matchesRoleFamilyRule(rule, haystack, tools, platforms)
+  );
+
+  return matchedRule?.family ?? "Endpoint Engineering";
+}
+
+function matchesRoleFamilyRule(
+  rule: RoleFamilyInferenceRule,
+  haystack: string,
+  tools: EndpointTool[],
+  platforms: Platform[]
+) {
+  const signals = [
+    rule.aliases ? hasAnyAlias(haystack, rule.aliases) : undefined,
+    rule.tools ? rule.tools.some((tool) => tools.includes(tool)) : undefined,
+    rule.platforms ? rule.platforms.some((platform) => platforms.includes(platform)) : undefined
+  ].filter((signal): signal is boolean => signal !== undefined);
+
+  if (signals.length === 0) {
+    return false;
   }
 
-  if (containsAlias(haystack, "compliance") || containsAlias(haystack, "audit")) {
-    return "Device Compliance";
-  }
-
-  if (
-    containsAlias(haystack, "automation") ||
-    containsAlias(haystack, "powershell") ||
-    containsAlias(haystack, "packaging") ||
-    containsAlias(haystack, "remediation")
-  ) {
-    return "Automation";
-  }
-
-  if (tools.includes("SCCM") || platforms.includes("Windows")) {
-    return "Windows Platform";
-  }
-
-  if (tools.includes("Jamf") || tools.includes("Kandji") || platforms.includes("macOS")) {
-    return "macOS Platform";
-  }
-
-  if (containsAlias(haystack, "workplace")) {
-    return "Workplace Systems";
-  }
-
-  return "Endpoint Engineering";
+  return rule.match === "all"
+    ? signals.every(Boolean)
+    : signals.some(Boolean);
 }
 
 export function inferSeniority(haystack: string): Seniority {
@@ -751,7 +615,7 @@ export function containsAlias(haystack: string, alias: string) {
   return new RegExp(`(^|[^a-z0-9])${escaped}([^a-z0-9]|$)`, "i").test(haystack);
 }
 
-function hasAnyAlias(haystack: string, aliases: string[]) {
+function hasAnyAlias(haystack: string, aliases: readonly string[]) {
   return aliases.some((alias) => containsAlias(haystack, alias));
 }
 

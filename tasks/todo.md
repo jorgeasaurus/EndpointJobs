@@ -1,5 +1,64 @@
 # Endpoint Jobs Plan
 
+## Address Taxonomy Review Findings
+
+- [x] Move job taxonomy into one canonical module.
+- [x] Derive refresh role signals from shared taxonomy data.
+- [x] Decouple provider search queries from LinkedIn title filters.
+- [x] Update audits for the new taxonomy boundary.
+- [x] Run verification, commit, and push.
+
+Result: Replaced the narrow endpoint-tool module with a canonical job taxonomy module covering tools, platforms, seniority, role families, aliases, and ordered inference rules. The refresh script now consumes taxonomy data and uses a rule matcher instead of a PowerShell-specific role-family branch. Search query defaults and RapidAPI LinkedIn title filters are explicit arrays again. Verified `npm run typecheck`, `npm run lint`, `npm run audit:data` (56/56), `npm run build`, `git diff --check`, and targeted role-family inference.
+
+## Address PowerShell Review Findings
+
+- [x] Centralize endpoint tool definitions.
+- [x] Centralize PowerShell/sysadmin search defaults.
+- [x] Classify generic PowerShell/sysadmin roles separately from endpoint security.
+- [x] Refresh listings and verify checks.
+- [x] Commit and push branch update.
+
+Result: Added a shared endpoint tool taxonomy, derived PowerShell/sysadmin search defaults, and `Systems Administration` role-family handling. Workflow run `28912224130` refreshed listings as `864dcd0`; feed now has 317 jobs, 40 PowerShell-tagged jobs, and 22 PowerShell-tagged `Systems Administration` jobs. Verified `npm run typecheck`, `npm run lint`, `npm run audit:data` (56/56), `npm run build`, `git diff --check`, and the workflow build step.
+
+## PowerShell Branch Refresh And Preview
+
+- [x] Confirm branch is pushed.
+- [x] Run `Refresh job listings` on `powershell-keyword-filter`.
+- [x] Sync any generated listing commit from the workflow.
+- [x] Deploy the branch snapshot to Vercel preview.
+- [x] Inspect preview readiness and document result.
+
+Result: Workflow run `28910948065` completed successfully and committed refreshed listings as `bb625b1`. Refreshed feed has 318 jobs, including 40 PowerShell-tagged jobs and 27 PowerShell sysadmin/system-administrator title matches. Vercel preview `dpl_HeQR4aDgDWtcpMmBfGzja5EgB23t` is Ready at `https://endpoint-jobs-1n74lvw0k-jorgeasaurus-projects.vercel.app`; `vercel curl` returned the preview HTML.
+
+## Broaden PowerShell Sysadmin Coverage
+
+- [x] Make PowerShell a strong relevance signal for technical sysadmin roles.
+- [x] Add PowerShell/sysadmin default refresh queries.
+- [x] Verify generic PowerShell sysadmin acceptance and false-positive guardrails.
+- [x] Commit and push branch update.
+- [x] Document result.
+
+Result: Broadened refresh matching so technical titles such as `Systems Administrator` with PowerShell now pass relevance, while generic software roles still fail. Added PowerShell sysadmin query defaults for shared search providers and RapidAPI LinkedIn. Verified `git diff --check`, `npm run typecheck`, `npm run lint`, `npm run audit:data` (56/56), and `npm run build`.
+
+## Publish PowerShell Keyword Filter Branch
+
+- [x] Confirm branch state.
+- [x] Commit PowerShell keyword filter changes.
+- [x] Push branch to `origin`.
+- [x] Document result.
+
+Result: Published branch `powershell-keyword-filter` to `origin`.
+
+## PowerShell Keyword Filter
+
+- [x] Create branch `powershell-keyword-filter` from `main`.
+- [x] Add `PowerShell` to the canonical tool filter taxonomy.
+- [x] Teach refresh normalization to tag PowerShell mentions.
+- [x] Verify URL parsing, active chips, and filtering behavior.
+- [x] Document result.
+
+Result: Added `PowerShell` as a tool filter, normalizer alias, SEO/popular-search link, and static feed tag for 29 current matching jobs. Verified `npm run typecheck`, `npm run lint`, `npm run audit:data` (56/56), `npm run build`, `AUDIT_BASE_URL=http://127.0.0.1:3001 npm run audit:browser` (28/28), and `git diff --check`.
+
 ## Refresh Action Rebase Failure
 
 - [x] Inspect failed scheduled GitHub Action logs.
