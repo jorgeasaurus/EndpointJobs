@@ -15,8 +15,9 @@ Result: The pushed PR branch already carried the PowerShell filter from `main`; 
 - [x] Add EU/Swiss map anchors with diacritic-safe matching.
 - [x] Preserve partial country-provider results when one subfetch fails.
 - [x] Rebase onto current `main` and open a draft PR.
+- [x] Refresh generated feed data and verify the Vercel preview includes CH/IT/ES/FR jobs.
 
-Result: Draft PR #7 opened. Branch was rebased onto current `main`; generated feed snapshots were skipped to avoid stale data conflicts.
+Result: Draft PR #7 opened. Refresh workflow run `28947230936` committed 402 generated jobs as `d799d26`, including 30 Switzerland, 13 Italy, 12 Spain, and 22 France matches. Verified the protected Vercel preview with `vercel curl`.
 
 ## Address Taxonomy Review Findings
 

@@ -35,3 +35,4 @@
 - Keep scheduled workflow source lists in sync with provider defaults, or CI can silently bypass newly verified direct sources.
 - Map coverage reviews need active/mapped ratios and top unmapped location strings after every source expansion; adding sources without resolver coverage makes the geography view look empty.
 - After rebasing a PR branch in a temp worktree, verify whether the user-facing local checkout is stale before saying branch UI is current.
+- If Vercel preview content is the acceptance surface, keep generated data commits on the PR branch and verify the protected preview with `vercel curl`.
