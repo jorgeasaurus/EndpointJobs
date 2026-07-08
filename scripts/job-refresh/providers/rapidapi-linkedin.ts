@@ -1,6 +1,7 @@
 import type { Job, Workplace } from "../../../src/types/job";
 
 import type { ProviderAdapter } from "../provider";
+import { powerShellSysadminTitleFilters } from "../search-config";
 import {
   buildStableJobId,
   cleanText,
@@ -91,8 +92,7 @@ const defaultTitleFilters = [
   "macOS Engineer",
   "Client Platform Engineer",
   "Desktop Engineer",
-  "PowerShell Systems Administrator",
-  "PowerShell Sysadmin",
+  ...powerShellSysadminTitleFilters,
   "Digital Workplace Engineer"
 ];
 

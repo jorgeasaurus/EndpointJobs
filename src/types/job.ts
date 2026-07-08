@@ -1,19 +1,8 @@
-export type Platform = "macOS" | "Windows" | "iOS" | "Android" | "Linux";
+import type { EndpointTool } from "../lib/endpoint-tools";
 
-export type EndpointTool =
-  | "Jamf"
-  | "Intune"
-  | "SCCM"
-  | "Fleet MDM"
-  | "Kandji"
-  | "NinjaOne"
-  | "Workspace ONE"
-  | "Tanium"
-  | "Okta"
-  | "Entra ID"
-  | "Autopilot"
-  | "PowerShell"
-  | "Defender";
+export type { EndpointTool };
+
+export type Platform = "macOS" | "Windows" | "iOS" | "Android" | "Linux";
 
 export type Workplace = "Remote" | "Hybrid" | "On-site" | "Unknown";
 
@@ -32,6 +21,7 @@ export type RoleFamily =
   | "Workplace Systems"
   | "Endpoint Security"
   | "Device Compliance"
+  | "Systems Administration"
   | "Automation";
 
 export type TermsProfile =

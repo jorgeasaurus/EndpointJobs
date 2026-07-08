@@ -1,11 +1,11 @@
 import type {
-  EndpointTool,
   Job,
   Platform,
   RoleFamily,
   Seniority
 } from "@/types/job";
 
+import { endpointToolOptions } from "./endpoint-tools";
 import {
   isExcludedJobSourceUrl,
   isSourceFreshnessExpired
@@ -19,21 +19,7 @@ export const platformOptions: Platform[] = [
   "Linux"
 ];
 
-export const toolOptions: EndpointTool[] = [
-  "Jamf",
-  "Intune",
-  "SCCM",
-  "Fleet MDM",
-  "Kandji",
-  "NinjaOne",
-  "Workspace ONE",
-  "Tanium",
-  "Okta",
-  "Entra ID",
-  "Autopilot",
-  "PowerShell",
-  "Defender"
-];
+export const toolOptions = endpointToolOptions;
 
 export const seniorityOptions: Seniority[] = [
   "Associate",
@@ -63,6 +49,7 @@ export const roleFamilyOptions: RoleFamily[] = [
   "Workplace Systems",
   "Endpoint Security",
   "Device Compliance",
+  "Systems Administration",
   "Automation"
 ];
 

@@ -1,3 +1,38 @@
+const powerShellSysadminSearchTerms = [
+  {
+    query: "powershell administrator",
+    title: "PowerShell Administrator"
+  },
+  {
+    query: "powershell systems administrator",
+    title: "PowerShell Systems Administrator"
+  },
+  {
+    query: "powershell system administrator",
+    title: "PowerShell System Administrator"
+  },
+  {
+    query: "powershell systems engineer",
+    title: "PowerShell Systems Engineer"
+  },
+  {
+    query: "powershell sysadmin",
+    title: "PowerShell Sysadmin"
+  },
+  {
+    query: "windows sysadmin powershell",
+    title: "Windows Sysadmin PowerShell"
+  }
+];
+
+export const powerShellSysadminSearchQueries = powerShellSysadminSearchTerms.map(
+  ({ query }) => query
+);
+
+export const powerShellSysadminTitleFilters = powerShellSysadminSearchTerms.map(
+  ({ title }) => title
+);
+
 export const defaultEndpointSearchQueries = [
   "endpoint engineer",
   "endpoint administrator",
@@ -30,12 +65,7 @@ export const defaultEndpointSearchQueries = [
   "tech operations",
   "technology operations engineer",
   "workplace engineer",
-  "powershell administrator",
-  "powershell systems administrator",
-  "powershell system administrator",
-  "powershell systems engineer",
-  "powershell sysadmin",
-  "windows sysadmin powershell",
+  ...powerShellSysadminSearchQueries,
   "intune engineer",
   "jamf engineer",
   "sccm engineer",

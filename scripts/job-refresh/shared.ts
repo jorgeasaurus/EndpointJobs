@@ -9,49 +9,10 @@ import type {
   TermsProfile,
   Workplace
 } from "../../src/types/job";
+import { endpointToolDefinitions } from "../../src/lib/endpoint-tools";
 import { resolveJobMapLocation } from "./map-location";
 
-type ToolAlias = {
-  tool: EndpointTool;
-  aliases: string[];
-  strong: boolean;
-};
-
-const toolAliases: ToolAlias[] = [
-  { tool: "Jamf", aliases: ["jamf", "jamf pro", "jamf school"], strong: true },
-  {
-    tool: "Intune",
-    aliases: ["intune", "endpoint manager", "microsoft endpoint manager"],
-    strong: true
-  },
-  {
-    tool: "SCCM",
-    aliases: ["sccm", "mecm", "configuration manager", "configmgr"],
-    strong: true
-  },
-  {
-    tool: "Fleet MDM",
-    aliases: ["fleet mdm", "fleetdm", "fleet device management"],
-    strong: true
-  },
-  { tool: "Kandji", aliases: ["kandji", "kanji"], strong: true },
-  { tool: "NinjaOne", aliases: ["ninjaone", "ninja one"], strong: true },
-  {
-    tool: "Workspace ONE",
-    aliases: ["workspace one", "workspaceone", "airwatch"],
-    strong: true
-  },
-  { tool: "Tanium", aliases: ["tanium"], strong: true },
-  { tool: "Okta", aliases: ["okta"], strong: false },
-  { tool: "Entra ID", aliases: ["entra id", "entra", "azure ad"], strong: false },
-  { tool: "Autopilot", aliases: ["autopilot", "windows autopilot"], strong: true },
-  {
-    tool: "PowerShell",
-    aliases: ["powershell", "power shell", "pwsh"],
-    strong: true
-  },
-  { tool: "Defender", aliases: ["defender", "microsoft defender", "mde"], strong: false }
-];
+const toolAliases = endpointToolDefinitions;
 
 const platformAliases: Array<{ platform: Platform; aliases: string[] }> = [
   { platform: "macOS", aliases: ["macos", "mac os", "mac admin", "apple device"] },
@@ -152,6 +113,31 @@ const technicalRoleTitleTerms = [
   "enterprise engineering",
   "tech operations engineer",
   "technology operations engineer"
+];
+
+const systemsAdministrationRoleTerms = [
+  "systems administrator",
+  "system administrator",
+  "systems administration",
+  "sysadmin",
+  "it administrator",
+  "it systems administrator",
+  "windows administrator",
+  "systems engineer",
+  "system engineer",
+  "it systems engineer",
+  "infrastructure engineer",
+  "infrastructure administrator"
+];
+
+const endpointSecurityRoleTerms = [
+  "endpoint security",
+  "endpoint protection",
+  "endpoint detection",
+  "endpoint response",
+  "endpoint threat",
+  "edr",
+  "xdr"
 ];
 const staleDays = Number(process.env.JOB_STALE_DAYS ?? 45);
 const configuredDescriptionMaxLength = Number(process.env.JOB_DESCRIPTION_MAX_LENGTH ?? 12000);
@@ -458,13 +444,12 @@ export function inferRoleFamily(
   tools: EndpointTool[],
   platforms: Platform[]
 ): RoleFamily {
-  if (
-    containsAlias(haystack, "security") ||
-    containsAlias(haystack, "edr") ||
-    tools.includes("Tanium") ||
-    tools.includes("Defender")
-  ) {
+  if (hasEndpointSecuritySignal(haystack, tools)) {
     return "Endpoint Security";
+  }
+
+  if (tools.includes("PowerShell") && hasSystemsAdministrationRole(haystack)) {
+    return "Systems Administration";
   }
 
   if (containsAlias(haystack, "compliance") || containsAlias(haystack, "audit")) {
@@ -493,6 +478,18 @@ export function inferRoleFamily(
   }
 
   return "Endpoint Engineering";
+}
+
+function hasEndpointSecuritySignal(haystack: string, tools: EndpointTool[]) {
+  return (
+    hasAnyAlias(haystack, endpointSecurityRoleTerms) ||
+    tools.includes("Tanium") ||
+    tools.includes("Defender")
+  );
+}
+
+function hasSystemsAdministrationRole(haystack: string) {
+  return hasAnyAlias(haystack, systemsAdministrationRoleTerms);
 }
 
 export function inferSeniority(haystack: string): Seniority {

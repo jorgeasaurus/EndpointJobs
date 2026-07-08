@@ -1,5 +1,13 @@
 # Endpoint Jobs Plan
 
+## Address PowerShell Review Findings
+
+- [x] Centralize endpoint tool definitions.
+- [x] Centralize PowerShell/sysadmin search defaults.
+- [x] Classify generic PowerShell/sysadmin roles separately from endpoint security.
+- [ ] Refresh listings and verify checks.
+- [ ] Commit and push branch update.
+
 ## PowerShell Branch Refresh And Preview
 
 - [x] Confirm branch is pushed.

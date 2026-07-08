@@ -22,8 +22,11 @@ import { buildJobMapPoints } from "../src/lib/job-map";
 import {
   formatUpdatedAt,
   getExpandedDescriptionParagraphs,
-  isActiveJob
+  isActiveJob,
+  roleFamilyOptions,
+  toolOptions
 } from "../src/lib/jobs";
+import { endpointToolDefinitions } from "../src/lib/endpoint-tools";
 import {
   isExcludedJobSourceUrl,
   isSourceFreshnessExpired
@@ -38,7 +41,9 @@ import { resolveJobMapLocation } from "./job-refresh/map-location";
 import {
   defaultCompanyJobQueries,
   defaultEndpointSearchQueries,
-  monitoredCompanyNames
+  monitoredCompanyNames,
+  powerShellSysadminSearchQueries,
+  powerShellSysadminTitleFilters
 } from "./job-refresh/search-config";
 import {
   buildStableJobId,
@@ -80,6 +85,7 @@ const sourcePaths = {
   companyAts: "scripts/job-refresh/providers/company-ats.ts",
   controls: "src/components/job-board/controls.tsx",
   curated: "scripts/job-refresh/providers/curated-jobs.ts",
+  endpointTools: "src/lib/endpoint-tools.ts",
   issueConfig: ".github/ISSUE_TEMPLATE/config.yml",
   issueTemplate: ".github/ISSUE_TEMPLATE/report-or-request.yml",
   jobBoard: "src/components/job-board.tsx",
@@ -387,6 +393,12 @@ await run("FEAT-020", "Filter state serializes to shareable URL params", () => {
   assertEqual(parsed.roleFamily, "Endpoint Security");
   assertEqual(parsed.sort, "company");
 
+  const systemsAdministration = filterStateFromSearchParams(
+    new URLSearchParams("family=Systems%20Administration")
+  );
+  assertEqual(systemsAdministration.roleFamily, "Systems Administration");
+  assertArrayIncludes(roleFamilyOptions, ["Systems Administration"]);
+
   const merged = mergeFilterStateIntoSearchParams(
     new URLSearchParams("keep=1&locations=legacy&remote=1"),
     { ...initialFilterState, query: "Intune", selectedPlatforms: ["Windows"], salaryOnly: true }
@@ -582,15 +594,25 @@ await run("FEAT-045", "Normalizer derives tools, platforms, tags, and match reas
   const tools = deriveTools(haystack);
   const platforms = derivePlatforms(haystack);
   const reasons = deriveMatchReasons(haystack, tools, platforms);
+  const canonicalTools = endpointToolDefinitions.map(({ tool }) => tool);
+  assertEqual(toolOptions.join(","), canonicalTools.join(","));
   assertArrayIncludes(tools, ["Jamf", "Intune", "Autopilot", "PowerShell"]);
+  assertArrayIncludes(toolOptions, ["PowerShell"]);
   assertArrayIncludes(platforms, ["macOS"]);
   assertArrayIncludes(reasons, ["Jamf + macOS", "PowerShell automation"]);
+  assertIncludes(sources.endpointTools, "endpointToolDefinitions");
+  assertIncludes(sources.shared, "endpointToolDefinitions");
 });
 
 await run("FEAT-046", "Normalizer infers workplace, role family, seniority, and employment type", () => {
   const securityText = normalizeSearchText("senior endpoint security engineer contract remote");
+  const sysadminText = normalizeSearchText(
+    "senior systems administrator powershell automation active directory windows server security hardening"
+  );
   assertEqual(inferWorkplace("Remote", securityText), "Remote");
   assertEqual(inferRoleFamily(securityText, ["Defender"], ["Windows"]), "Endpoint Security");
+  assertEqual(inferRoleFamily(securityText, [], ["Windows"]), "Endpoint Security");
+  assertEqual(inferRoleFamily(sysadminText, ["PowerShell"], ["Windows"]), "Systems Administration");
   assertEqual(inferSeniority(securityText), "Senior");
   assertEqual(inferEmploymentType(securityText), "Contract");
 });
@@ -902,14 +924,21 @@ await run("FEAT-068", "Endpoint search defaults include role and company expansi
     "intune engineer",
     "jamf engineer"
   ]);
+  assertArrayIncludes(powerShellSysadminSearchQueries, [
+    "powershell systems administrator",
+    "powershell sysadmin"
+  ]);
+  assertArrayIncludes(powerShellSysadminTitleFilters, [
+    "PowerShell Systems Administrator",
+    "PowerShell Sysadmin"
+  ]);
   assertArrayIncludes(monitoredCompanyNames, ["Kandji", "CrowdStrike", "Microsoft"]);
   assertArrayIncludes(defaultCompanyJobQueries, [
     "Kandji endpoint engineer",
     "CrowdStrike endpoint engineer"
   ]);
   assertIncludes(sources.searchConfig, "defaultEndpointSearchQueries");
-  assertIncludes(sources.rapidApiLinkedIn, "PowerShell Systems Administrator");
-  assertIncludes(sources.rapidApiLinkedIn, "PowerShell Sysadmin");
+  assertIncludes(sources.rapidApiLinkedIn, "powerShellSysadminTitleFilters");
 });
 
 await run("FEAT-069", "Map location resolver maps known places and skips ambiguous rows", () => {
