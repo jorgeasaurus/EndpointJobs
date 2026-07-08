@@ -54,6 +54,7 @@ import {
   derivePlatforms,
   deriveTools,
   extractSalaryFromText,
+  formatProviderError,
   inferEmploymentType,
   inferRoleFamily,
   inferSeniority,
@@ -566,6 +567,10 @@ await run("FEAT-042", "Optional API providers are key-gated and non-fatal", () =
     sources.aiDevBoard
   ].forEach((source) => assertIncludes(source, "fetchJobs"));
   assertIncludes(sources.refresh, "Skipping ${provider}");
+  assertEqual(formatProviderError(new Error("provider failed")), "provider failed");
+  assertEqual(formatProviderError(Object.assign(new Error("  "), { name: "ProviderQuotaError" })), "ProviderQuotaError");
+  assertEqual(formatProviderError({ message: "quota exceeded", code: 429 }), "quota exceeded");
+  assertEqual(formatProviderError({ code: 429, title: "Too Many Requests" }), "{\"code\":429,\"title\":\"Too Many Requests\"}");
 });
 
 await run("FEAT-043", "Curated jobs reserve slots and normalize reviewed listings", () => {
@@ -956,8 +961,28 @@ await run("FEAT-069", "Map location resolver maps known places and skips ambiguo
   assertEqual(resolveJobMapLocation("Hawthorne, CA")?.label, "Los Angeles, CA");
   assertEqual(resolveJobMapLocation("Jacks Cabin, Gunnison County")?.label, "Denver, CO");
   assertEqual(resolveJobMapLocation("Newark, New Castle County")?.label, "Wilmington, DE");
+  assertEqual(resolveJobMapLocation("Paris, France")?.label, "Paris, France");
+  assertEqual(resolveJobMapLocation("La-Madeleine, Lille")?.label, "Lille, France");
+  assertEqual(resolveJobMapLocation("Toulouse, Haute-Garonne")?.label, "Toulouse, France");
+  assertEqual(resolveJobMapLocation("Hérault, Occitanie")?.label, "Montpellier, France");
+  assertEqual(resolveJobMapLocation("Barcelona, Spain")?.label, "Barcelona, Spain");
+  assertEqual(resolveJobMapLocation("Albacete")?.label, "Albacete, Spain");
+  assertEqual(resolveJobMapLocation("Vitoria-Gasteiz, Alava")?.label, "Vitoria-Gasteiz, Spain");
+  assertEqual(resolveJobMapLocation("España")?.label, "Spain");
+  assertEqual(resolveJobMapLocation("Milano, Italia")?.label, "Milan, Italy");
+  assertEqual(resolveJobMapLocation("Zürich")?.label, "Zurich, Switzerland");
+  assertEqual(resolveJobMapLocation("Fehraltorf (Zurich), Switzerland")?.label, "Zurich, Switzerland");
+  assertEqual(resolveJobMapLocation("Köniz, Bern-Mittelland")?.label, "Bern, Switzerland");
+  assertEqual(resolveJobMapLocation("Zollikofen, Bern-Mittelland")?.label, "Bern, Switzerland");
+  assertEqual(resolveJobMapLocation("Basel (City)")?.label, "Basel, Switzerland");
+  assertEqual(resolveJobMapLocation("Genf")?.label, "Geneva, Switzerland");
+  assertEqual(resolveJobMapLocation("Kriens, Luzern-Land")?.label, "Lucerne, Switzerland");
+  assertEqual(resolveJobMapLocation("Le Mont-sur-Lausanne, Lausanne")?.label, "Lausanne, Switzerland");
+  assertEqual(resolveJobMapLocation("Switzerland")?.label, "Switzerland");
   assertEqual(resolveJobMapLocation("12 locations"), undefined);
   assertIncludes(sources.mapLocation, "locationCoordinates");
+  assertIncludes(sources.mapLocation, "searchableLocationCoordinates");
+  assertIncludes(sources.mapLocation, "normalizedKeys");
   assertIncludes(sources.shared, "resolveJobMapLocation(location)");
 });
 

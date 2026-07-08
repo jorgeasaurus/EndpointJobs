@@ -717,6 +717,39 @@ export function getCsvConfig(envKey: string, fallback: string[]) {
   return values.map((value) => value.trim()).filter(Boolean);
 }
 
+export function formatProviderError(error: unknown) {
+  if (error instanceof Error) {
+    const message = error.message.trim();
+    return message || error.name || "Error";
+  }
+
+  if (typeof error === "string") {
+    return error;
+  }
+
+  if (error && typeof error === "object") {
+    const message = (error as { message?: unknown }).message;
+
+    if (typeof message === "string" && message.trim()) {
+      return message;
+    }
+
+    try {
+      const json = JSON.stringify(error);
+
+      if (json && json !== "{}") {
+        return json;
+      }
+    } catch {
+      return Object.prototype.toString.call(error);
+    }
+
+    return Object.prototype.toString.call(error);
+  }
+
+  return String(error);
+}
+
 export function toArray<T>(value: T | T[] | undefined | null): T[] {
   if (value === undefined || value === null) {
     return [];

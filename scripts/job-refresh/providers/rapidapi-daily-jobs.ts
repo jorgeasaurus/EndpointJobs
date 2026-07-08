@@ -5,6 +5,7 @@ import {
   buildStableJobId,
   cleanText,
   cleanUrl,
+  formatProviderError,
   formatSlugLabel,
   getCsvConfig,
   normalizeFirstEmploymentType,
@@ -100,28 +101,52 @@ async function fetchRapidApiDailyJobs(url: string, fetchedAt: Date) {
 
   const configuredQueries = getCsvConfig("JOB_RAPIDAPI_QUERIES", []);
   const queries = configuredQueries.length > 0 ? configuredQueries : [""];
+  const countryCodes = getCsvConfig("JOB_RAPIDAPI_COUNTRY_CODES", [
+    process.env.JOB_RAPIDAPI_COUNTRY_CODE ?? "us"
+  ]);
   const maxPages = Math.max(1, Number(process.env.JOB_RAPIDAPI_MAX_PAGES ?? 1));
   const jobs: Array<Job | null> = [];
+  let successfulPages = 0;
+  const failures: string[] = [];
 
-  for (const query of queries) {
-    for (let page = 1; page <= maxPages; page += 1) {
-      const queryUrl = buildRapidApiDailyJobsUrl(url, query, page);
-      const payload = await fetchRapidApiDailyJobsPage(queryUrl, apiKey);
-      jobs.push(...payload.jobs.map((job) => normalizeRapidApiDailyJob(job, query, fetchedAt)));
-      console.log(`Fetched ${payload.jobs.length} raw jobs from RapidAPI Daily Jobs ${query || "salary feed"} page ${page}`);
+  for (const countryCode of countryCodes) {
+    for (const query of queries) {
+      for (let page = 1; page <= maxPages; page += 1) {
+        const queryUrl = buildRapidApiDailyJobsUrl(url, query, page, countryCode);
+        const label = `RapidAPI Daily Jobs/${countryCode} ${query || "salary feed"} page ${page}`;
+        try {
+          const payload = await fetchRapidApiDailyJobsPage(queryUrl, apiKey);
+          successfulPages += 1;
+          jobs.push(...payload.jobs.map((job) => normalizeRapidApiDailyJob(job, query, fetchedAt)));
+          console.log(`Fetched ${payload.jobs.length} raw jobs from ${label}`);
 
-      if (payload.jobs.length === 0) {
-        break;
+          if (payload.jobs.length === 0) {
+            break;
+          }
+        } catch (error) {
+          const detail = formatProviderError(error);
+          failures.push(`${label}: ${detail}`);
+          console.warn(`Skipping ${label}: ${detail}`);
+          break;
+        }
       }
     }
+  }
+
+  if (successfulPages === 0 && failures.length > 0) {
+    throw new Error(`All RapidAPI Daily Jobs requests failed: ${failures.join("; ")}`);
   }
 
   return jobs;
 }
 
-function buildRapidApiDailyJobsUrl(baseUrl: string, query: string, page: number) {
+function buildRapidApiDailyJobsUrl(
+  baseUrl: string,
+  query: string,
+  page: number,
+  countryCode: string
+) {
   const url = new URL(baseUrl);
-  const countryCode = process.env.JOB_RAPIDAPI_COUNTRY_CODE ?? "us";
   const hasSalary = process.env.JOB_RAPIDAPI_HAS_SALARY ?? "true";
   const queryParam = process.env.JOB_RAPIDAPI_QUERY_PARAM ?? "query";
 

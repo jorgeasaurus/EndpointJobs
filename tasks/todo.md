@@ -1,5 +1,42 @@
 # Endpoint Jobs Plan
 
+## PR Comment Fixes
+
+- [x] Fetch follow-up Copilot review thread for PR #7.
+- [x] Make blank `Error.message` formatting fall back to the error name.
+- [x] Add audit coverage for blank Error-message formatting.
+- [x] Run verification and push the branch update.
+
+Result: Addressed the follow-up Copilot thread. Verified focused formatter check, `git diff --check`, `npm run lint`, `npm run typecheck`, `npm run audit:data`, and `npm run build`.
+
+## Initial PR Comment Fixes
+
+- [x] Fetch unresolved review threads for PR #7.
+- [x] Cache normalized map-location keys.
+- [x] Improve provider error formatting for plain thrown objects.
+- [x] Run verification and push the branch update.
+
+Result: Addressed both unresolved Copilot review threads. Verified focused map/error checks, `git diff --check`, `npm run lint`, `npm run typecheck`, `npm run audit:data`, and `npm run build`.
+
+## PowerShell Filter Branch Check
+
+- [x] Compare stale local branch state with the pushed PR branch.
+- [x] Verify PowerShell appears in taxonomy, feed data, and rendered controls.
+- [x] Add browser regression coverage for the desktop and mobile PowerShell tool filter.
+- [x] Push the PR branch update.
+
+Result: The pushed PR branch already carried the PowerShell filter from `main`; the local checkout was stale and divergent. Added browser audit coverage so the PowerShell tool chip cannot disappear from desktop or mobile controls unnoticed.
+
+## EU Job Country Coverage PR
+
+- [x] Add Switzerland, Italy, Spain, and France to country-aware provider config.
+- [x] Add EU/Swiss map anchors with diacritic-safe matching.
+- [x] Preserve partial country-provider results when one subfetch fails.
+- [x] Rebase onto current `main` and open a draft PR.
+- [x] Refresh generated feed data and verify the Vercel preview includes CH/IT/ES/FR jobs.
+
+Result: Draft PR #7 opened. Refresh workflow run `28947230936` committed 402 generated jobs as `d799d26`, including 30 Switzerland, 13 Italy, 12 Spain, and 22 France matches. Verified the protected Vercel preview with `vercel curl`.
+
 ## Address Taxonomy Review Findings
 
 - [x] Move job taxonomy into one canonical module.

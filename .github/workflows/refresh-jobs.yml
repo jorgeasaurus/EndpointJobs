@@ -40,22 +40,22 @@ jobs:
           JOB_TECHMAP_RSS_AUTH_HEADER: ${{ secrets.JOB_TECHMAP_RSS_AUTH_HEADER }}
           TECHMAP_RSS_TOKEN: ${{ secrets.TECHMAP_RSS_TOKEN }}
           JOB_MUSE_PAGES: "5"
-          JOB_ADZUNA_COUNTRY: us
+          JOB_ADZUNA_COUNTRIES: us,ch,it,es,fr
           THEIRSTACK_API_KEY: ${{ secrets.THEIRSTACK_API_KEY }}
           JOB_THEIRSTACK_MAX_AGE_DAYS: "30"
           JOB_THEIRSTACK_LIMIT: "25"
-          JOB_THEIRSTACK_COUNTRY_CODES: US
+          JOB_THEIRSTACK_COUNTRY_CODES: US,CH,IT,ES,FR
           SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
           JOB_SERPAPI_LOCATION: United States
           JOB_SERPAPI_GL: us
           JOB_SERPAPI_HL: en
           JOB_SERPAPI_MAX_PAGES: "1"
           RAPIDAPI_DAILY_JOBS_KEY: ${{ secrets.RAPIDAPI_DAILY_JOBS_KEY }}
-          JOB_RAPIDAPI_COUNTRY_CODE: us
+          JOB_RAPIDAPI_COUNTRY_CODES: us,ch,it,es,fr
           JOB_RAPIDAPI_HAS_SALARY: "true"
           JOB_RAPIDAPI_MAX_PAGES: "1"
           RAPIDAPI_LINKEDIN_JOBS_KEY: ${{ secrets.RAPIDAPI_LINKEDIN_JOBS_KEY }}
-          JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER: '"United States" OR "Remote"'
+          JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER: '"United States" OR "Switzerland" OR "Italy" OR "Spain" OR "France" OR "Remote"'
           JOB_RAPIDAPI_LINKEDIN_MAX_PAGES: "1"
           JOB_RAPIDAPI_LINKEDIN_LIMIT: "25"
           AIDEVBOARD_API_KEY: ${{ secrets.AIDEVBOARD_API_KEY }}
