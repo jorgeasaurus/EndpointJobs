@@ -133,11 +133,11 @@ const filterFixtureJobs = [
     location: "San Francisco, CA",
     workplace: "Hybrid",
     postedAt: daysAgo(3),
-    summary: "Own Windows endpoint management with Intune and Autopilot.",
+    summary: "Own Windows endpoint management with Intune, Autopilot, and PowerShell.",
     salary: { min: 150000, max: 190000, currency: "USD", label: "$150k-$190k" },
-    tags: ["Windows", "Intune", "Autopilot"],
+    tags: ["Windows", "Intune", "Autopilot", "PowerShell"],
     matchReasons: ["Intune + Autopilot"],
-    tools: ["Intune", "Autopilot"],
+    tools: ["Intune", "Autopilot", "PowerShell"],
     platforms: ["Windows"],
     roleFamily: "Endpoint Engineering",
     seniority: "Senior"
@@ -333,6 +333,14 @@ await run("FEAT-018", "Tool multi-select matches any selected tool", () => {
   );
   const next = filterReducer(initialFilterState, { type: "toggleTool", value: "Jamf" });
   assertEqual(next.selectedTools[0], "Jamf");
+
+  assertIds(
+    filterJobs(filterFixtureJobs, {
+      ...initialFilterState,
+      selectedTools: ["PowerShell"]
+    }),
+    ["recent-intune"]
+  );
 });
 
 await run("FEAT-019", "Active filter chips expose removable labels and clear actions", () => {
@@ -367,7 +375,7 @@ await run("FEAT-019", "Active filter chips expose removable labels and clear act
 await run("FEAT-020", "Filter state serializes to shareable URL params", () => {
   const parsed = filterStateFromSearchParams(
     new URLSearchParams(
-      "q=Jamf&platforms=macOS,Nope&tools=Jamf,Bad&location=Austin&remote=1&salary=1&seniority=Senior&family=Endpoint%20Security&freshness=7&sort=company"
+      "q=Jamf&platforms=macOS,Nope&tools=Jamf,PowerShell,Bad&location=Austin&remote=1&salary=1&seniority=Senior&family=Endpoint%20Security&freshness=7&sort=company"
     )
   );
   assertEqual(parsed.query, "Jamf");
@@ -375,7 +383,7 @@ await run("FEAT-020", "Filter state serializes to shareable URL params", () => {
   assertEqual(parsed.workplace, "Remote");
   assertEqual(parsed.salaryOnly, true);
   assertEqual(parsed.selectedPlatforms.join(","), "macOS");
-  assertEqual(parsed.selectedTools.join(","), "Jamf");
+  assertEqual(parsed.selectedTools.join(","), "Jamf,PowerShell");
   assertEqual(parsed.roleFamily, "Endpoint Security");
   assertEqual(parsed.sort, "company");
 
@@ -559,13 +567,13 @@ await run("FEAT-044", "Normalizer accepts endpoint roles and rejects generic sof
 });
 
 await run("FEAT-045", "Normalizer derives tools, platforms, tags, and match reasons", () => {
-  const haystack = normalizeSearchText("Jamf macOS Intune Autopilot endpoint security");
+  const haystack = normalizeSearchText("Jamf macOS Intune Autopilot PowerShell endpoint security");
   const tools = deriveTools(haystack);
   const platforms = derivePlatforms(haystack);
   const reasons = deriveMatchReasons(haystack, tools, platforms);
-  assertArrayIncludes(tools, ["Jamf", "Intune", "Autopilot"]);
+  assertArrayIncludes(tools, ["Jamf", "Intune", "Autopilot", "PowerShell"]);
   assertArrayIncludes(platforms, ["macOS"]);
-  assertArrayIncludes(reasons, ["Jamf + macOS"]);
+  assertArrayIncludes(reasons, ["Jamf + macOS", "PowerShell automation"]);
 });
 
 await run("FEAT-046", "Normalizer infers workplace, role family, seniority, and employment type", () => {

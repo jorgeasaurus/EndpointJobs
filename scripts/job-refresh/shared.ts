@@ -45,6 +45,11 @@ const toolAliases: ToolAlias[] = [
   { tool: "Okta", aliases: ["okta"], strong: false },
   { tool: "Entra ID", aliases: ["entra id", "entra", "azure ad"], strong: false },
   { tool: "Autopilot", aliases: ["autopilot", "windows autopilot"], strong: true },
+  {
+    tool: "PowerShell",
+    aliases: ["powershell", "power shell", "pwsh"],
+    strong: false
+  },
   { tool: "Defender", aliases: ["defender", "microsoft defender", "mde"], strong: false }
 ];
 
@@ -389,7 +394,7 @@ const matchReasonRules: Array<{
     matches: ({ haystack }) => containsAlias(haystack, "device management")
   },
   { label: "Client platform", matches: ({ haystack }) => containsAlias(haystack, "client platform") },
-  { label: "PowerShell automation", matches: ({ haystack }) => containsAlias(haystack, "powershell") },
+  { label: "PowerShell automation", matches: ({ tools }) => tools.includes("PowerShell") },
   { label: "App packaging", matches: ({ haystack }) => containsAlias(haystack, "packaging") },
   {
     label: "Endpoint security",

@@ -12,6 +12,7 @@ export type EndpointTool =
   | "Okta"
   | "Entra ID"
   | "Autopilot"
+  | "PowerShell"
   | "Defender";
 
 export type Workplace = "Remote" | "Hybrid" | "On-site" | "Unknown";

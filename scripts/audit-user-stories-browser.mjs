@@ -554,7 +554,7 @@ await run("QA-005", "Footer popular search links hydrate filtered result states"
     }))
   );
 
-  expect(popularLinks).toHaveLength(8);
+  expect(popularLinks).toHaveLength(9);
 
   for (const link of popularLinks) {
     await page.goto(new URL(link.href, baseUrl).toString(), { waitUntil: "networkidle" });

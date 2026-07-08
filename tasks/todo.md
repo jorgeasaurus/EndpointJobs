@@ -1,5 +1,24 @@
 # Endpoint Jobs Plan
 
+## Publish PowerShell Keyword Filter Branch
+
+- [x] Confirm branch state.
+- [x] Commit PowerShell keyword filter changes.
+- [x] Push branch to `origin`.
+- [x] Document result.
+
+Result: Published branch `powershell-keyword-filter` to `origin`.
+
+## PowerShell Keyword Filter
+
+- [x] Create branch `powershell-keyword-filter` from `main`.
+- [x] Add `PowerShell` to the canonical tool filter taxonomy.
+- [x] Teach refresh normalization to tag PowerShell mentions.
+- [x] Verify URL parsing, active chips, and filtering behavior.
+- [x] Document result.
+
+Result: Added `PowerShell` as a tool filter, normalizer alias, SEO/popular-search link, and static feed tag for 29 current matching jobs. Verified `npm run typecheck`, `npm run lint`, `npm run audit:data` (56/56), `npm run build`, `AUDIT_BASE_URL=http://127.0.0.1:3001 npm run audit:browser` (28/28), and `git diff --check`.
+
 ## Refresh Action Rebase Failure
 
 - [x] Inspect failed scheduled GitHub Action logs.

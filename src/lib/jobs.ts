@@ -31,6 +31,7 @@ export const toolOptions: EndpointTool[] = [
   "Okta",
   "Entra ID",
   "Autopilot",
+  "PowerShell",
   "Defender"
 ];
 

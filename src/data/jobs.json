@@ -1074,7 +1074,8 @@
         "Workspace ONE",
         "Corporate Technology : Factory Systems",
         "Costa Mesa, CA (OC-00)",
-        "Costa Mesa, California, United States"
+        "Costa Mesa, California, United States",
+        "PowerShell"
       ],
       "matchReasons": [
         "Endpoint engineering",
@@ -1086,7 +1087,8 @@
       "tools": [
         "Jamf",
         "Intune",
-        "Workspace ONE"
+        "Workspace ONE",
+        "PowerShell"
       ],
       "platforms": [
         "Windows",
@@ -1138,7 +1140,8 @@
         "Okta",
         "Entra ID",
         "Corporate Technology : Information Security : Endpoint Engineering",
-        "Costa Mesa, CA (OC-00)"
+        "Costa Mesa, CA (OC-00)",
+        "PowerShell"
       ],
       "matchReasons": [
         "Jamf + macOS",
@@ -1154,7 +1157,8 @@
         "Fleet MDM",
         "Workspace ONE",
         "Okta",
-        "Entra ID"
+        "Entra ID",
+        "PowerShell"
       ],
       "platforms": [
         "macOS",
@@ -2987,7 +2991,8 @@
         "Okta",
         "Data, Technology & Systems",
         "San Francisco, CA",
-        "San Francisco, California, United States"
+        "San Francisco, California, United States",
+        "PowerShell"
       ],
       "matchReasons": [
         "Jamf + macOS",
@@ -2998,7 +3003,8 @@
       ],
       "tools": [
         "Jamf",
-        "Okta"
+        "Okta",
+        "PowerShell"
       ],
       "platforms": [
         "Windows",
@@ -3091,13 +3097,16 @@
         "Linux",
         "Global Services Operations and DTIS Office",
         "USA-CA-Los Angeles-Jefferson",
-        "California, United States"
+        "California, United States",
+        "PowerShell"
       ],
       "matchReasons": [
         "PowerShell automation",
         "Windows platform"
       ],
-      "tools": [],
+      "tools": [
+        "PowerShell"
+      ],
       "platforms": [
         "Windows",
         "Linux"
@@ -3136,13 +3145,16 @@
       "tags": [
         "Linux",
         "IT Jobs",
-        "it-jobs"
+        "it-jobs",
+        "PowerShell"
       ],
       "matchReasons": [
         "MDM",
         "PowerShell automation"
       ],
-      "tools": [],
+      "tools": [
+        "PowerShell"
+      ],
       "platforms": [
         "Linux"
       ],
@@ -3409,7 +3421,8 @@
         "Okta",
         "Infrastructure Engineering",
         "San Francisco",
-        "San Francisco, California, United States"
+        "San Francisco, California, United States",
+        "PowerShell"
       ],
       "matchReasons": [
         "Jamf + macOS",
@@ -3422,7 +3435,8 @@
         "Jamf",
         "Intune",
         "Workspace ONE",
-        "Okta"
+        "Okta",
+        "PowerShell"
       ],
       "platforms": [
         "macOS",
@@ -4237,7 +4251,8 @@
         "Bastrop, TX",
         "Bastrop, TX, United States",
         "Hawthorne, CA",
-        "Hawthorne, CA, United States"
+        "Hawthorne, CA, United States",
+        "PowerShell"
       ],
       "matchReasons": [
         "Jamf + macOS",
@@ -4249,7 +4264,8 @@
       "tools": [
         "Jamf",
         "Intune",
-        "Entra ID"
+        "Entra ID",
+        "PowerShell"
       ],
       "platforms": [
         "macOS",
@@ -4299,7 +4315,8 @@
         "Bastrop, TX",
         "Bastrop, TX, United States",
         "Hawthorne, CA",
-        "Hawthorne, CA, United States"
+        "Hawthorne, CA, United States",
+        "PowerShell"
       ],
       "matchReasons": [
         "Jamf + macOS",
@@ -4311,7 +4328,8 @@
       "tools": [
         "Jamf",
         "Intune",
-        "Entra ID"
+        "Entra ID",
+        "PowerShell"
       ],
       "platforms": [
         "macOS",
@@ -4350,7 +4368,8 @@
         "SCCM",
         "Information Technology - Business",
         "Hawthorne, CA",
-        "Hawthorne, CA, United States"
+        "Hawthorne, CA, United States",
+        "PowerShell"
       ],
       "matchReasons": [
         "SCCM/MECM",
@@ -4360,7 +4379,8 @@
         "Windows platform"
       ],
       "tools": [
-        "SCCM"
+        "SCCM",
+        "PowerShell"
       ],
       "platforms": [
         "Windows",
@@ -4402,13 +4422,16 @@
         "Windows",
         "Information Technology - Corporate",
         "Hawthorne, CA",
-        "Hawthorne, CA, United States"
+        "Hawthorne, CA, United States",
+        "PowerShell"
       ],
       "matchReasons": [
         "PowerShell automation",
         "Windows platform"
       ],
-      "tools": [],
+      "tools": [
+        "PowerShell"
+      ],
       "platforms": [
         "Windows"
       ],
@@ -4450,7 +4473,8 @@
         "SCCM",
         "Information Technology - Business",
         "Starbase, TX",
-        "Brownsville, TX, United States"
+        "Brownsville, TX, United States",
+        "PowerShell"
       ],
       "matchReasons": [
         "SCCM/MECM",
@@ -4460,7 +4484,8 @@
         "Windows platform"
       ],
       "tools": [
-        "SCCM"
+        "SCCM",
+        "PowerShell"
       ],
       "platforms": [
         "Windows",
@@ -5674,7 +5699,8 @@
         "SCCM",
         "Computer and IT",
         "Mid Level",
-        "external"
+        "external",
+        "PowerShell"
       ],
       "matchReasons": [
         "SCCM/MECM",
@@ -5684,7 +5710,8 @@
         "Windows platform"
       ],
       "tools": [
-        "SCCM"
+        "SCCM",
+        "PowerShell"
       ],
       "platforms": [
         "Windows",
@@ -5722,7 +5749,8 @@
         "SCCM",
         "Computer and IT",
         "Mid Level",
-        "external"
+        "external",
+        "PowerShell"
       ],
       "matchReasons": [
         "SCCM/MECM",
@@ -5732,7 +5760,8 @@
         "Windows platform"
       ],
       "tools": [
-        "SCCM"
+        "SCCM",
+        "PowerShell"
       ],
       "platforms": [
         "Windows",
@@ -6800,7 +6829,8 @@
         "Okta",
         "Entra ID",
         "SE Field CTO-322",
-        "Bengaluru"
+        "Bengaluru",
+        "PowerShell"
       ],
       "matchReasons": [
         "Jamf + macOS",
@@ -6814,7 +6844,8 @@
         "Intune",
         "Workspace ONE",
         "Okta",
-        "Entra ID"
+        "Entra ID",
+        "PowerShell"
       ],
       "platforms": [
         "Windows",
@@ -7422,7 +7453,8 @@
         "Tanium",
         "IT Support",
         "Durham, NC Office",
-        "Durham, North Carolina, United States"
+        "Durham, North Carolina, United States",
+        "PowerShell"
       ],
       "matchReasons": [
         "Tanium endpoint security",
@@ -7431,7 +7463,8 @@
         "Windows platform"
       ],
       "tools": [
-        "Tanium"
+        "Tanium",
+        "PowerShell"
       ],
       "platforms": [
         "Windows",
@@ -7584,7 +7617,8 @@
         "Intune",
         "Okta",
         "Entra ID",
-        "Enterprise Applications"
+        "Enterprise Applications",
+        "PowerShell"
       ],
       "matchReasons": [
         "Jamf + macOS",
@@ -7597,7 +7631,8 @@
         "Jamf",
         "Intune",
         "Okta",
-        "Entra ID"
+        "Entra ID",
+        "PowerShell"
       ],
       "platforms": [
         "Windows",
@@ -7631,7 +7666,8 @@
         "Entra ID",
         "IT",
         "US Miami FL - 333",
-        "Miami, Florida, United States"
+        "Miami, Florida, United States",
+        "PowerShell"
       ],
       "matchReasons": [
         "Endpoint engineering",
@@ -7642,7 +7678,8 @@
       ],
       "tools": [
         "Intune",
-        "Entra ID"
+        "Entra ID",
+        "PowerShell"
       ],
       "platforms": [
         "macOS",
@@ -7923,7 +7960,8 @@
         "Defender",
         "IT Support",
         "Addison, TX Office",
-        "Addison, Texas, United States"
+        "Addison, Texas, United States",
+        "PowerShell"
       ],
       "matchReasons": [
         "Tanium endpoint security",
@@ -7936,6 +7974,7 @@
         "Intune",
         "Tanium",
         "Entra ID",
+        "PowerShell",
         "Defender"
       ],
       "platforms": [
@@ -8164,7 +8203,8 @@
         "SCCM",
         "Autopilot",
         "IT Jobs",
-        "it-jobs"
+        "it-jobs",
+        "PowerShell"
       ],
       "matchReasons": [
         "Intune + Autopilot",
@@ -8176,7 +8216,8 @@
       "tools": [
         "Intune",
         "SCCM",
-        "Autopilot"
+        "Autopilot",
+        "PowerShell"
       ],
       "platforms": [
         "Windows"
@@ -8568,7 +8609,8 @@
         "Jamf",
         "Intune",
         "IT Operations",
-        "United States"
+        "United States",
+        "PowerShell"
       ],
       "matchReasons": [
         "Jamf + macOS",
@@ -8579,7 +8621,8 @@
       ],
       "tools": [
         "Jamf",
-        "Intune"
+        "Intune",
+        "PowerShell"
       ],
       "platforms": [
         "macOS",
@@ -9751,7 +9794,8 @@
         "New York City, NY",
         "New York, New York, United States",
         "Remote-Friendly US (Travel Required)",
-        "Washington, D.C."
+        "Washington, D.C.",
+        "PowerShell"
       ],
       "matchReasons": [
         "Jamf + macOS",
@@ -9763,7 +9807,8 @@
       "tools": [
         "Jamf",
         "Intune",
-        "Workspace ONE"
+        "Workspace ONE",
+        "PowerShell"
       ],
       "platforms": [
         "macOS",
@@ -11207,7 +11252,8 @@
         "macOS",
         "Tanium",
         "Advanced Consulting Engineers",
-        "Seoul, South Korea Office"
+        "Seoul, South Korea Office",
+        "PowerShell"
       ],
       "matchReasons": [
         "Tanium endpoint security",
@@ -11217,7 +11263,8 @@
         "Windows platform"
       ],
       "tools": [
-        "Tanium"
+        "Tanium",
+        "PowerShell"
       ],
       "platforms": [
         "Windows",
@@ -12635,7 +12682,8 @@
         "Curated",
         "Presence / Mobile",
         "Windows 365",
-        "Zero Trust"
+        "Zero Trust",
+        "PowerShell"
       ],
       "matchReasons": [
         "Intune + Autopilot",
@@ -12648,6 +12696,7 @@
         "Intune",
         "Entra ID",
         "Autopilot",
+        "PowerShell",
         "Defender"
       ],
       "platforms": [
@@ -12690,7 +12739,8 @@
         "Defender",
         "G&A",
         "Watertown, MA",
-        "Watertown, Massachusetts, United States"
+        "Watertown, Massachusetts, United States",
+        "PowerShell"
       ],
       "matchReasons": [
         "Intune + Autopilot",
@@ -12703,6 +12753,7 @@
         "Intune",
         "Entra ID",
         "Autopilot",
+        "PowerShell",
         "Defender"
       ],
       "platforms": [
@@ -12818,7 +12869,8 @@
         "full-time",
         "mid",
         "onsite",
-        "cloud"
+        "cloud",
+        "PowerShell"
       ],
       "matchReasons": [
         "Jamf + macOS",
@@ -12830,7 +12882,8 @@
       "tools": [
         "Jamf",
         "Intune",
-        "Entra ID"
+        "Entra ID",
+        "PowerShell"
       ],
       "platforms": [
         "macOS",
@@ -12864,7 +12917,8 @@
         "Systems, Quality, & Security Engineering",
         "System Development Engineering",
         "full-time",
-        "engine"
+        "engine",
+        "PowerShell"
       ],
       "matchReasons": [
         "Jamf + macOS",
@@ -12875,7 +12929,8 @@
       ],
       "tools": [
         "Jamf",
-        "Kandji"
+        "Kandji",
+        "PowerShell"
       ],
       "platforms": [
         "macOS"
@@ -12967,7 +13022,8 @@
         "IT",
         "Technology",
         "Full-time",
-        "remote"
+        "remote",
+        "PowerShell"
       ],
       "matchReasons": [
         "Kandji MDM",
@@ -12979,7 +13035,8 @@
       "tools": [
         "Intune",
         "Kandji",
-        "NinjaOne"
+        "NinjaOne",
+        "PowerShell"
       ],
       "platforms": [
         "Windows"
@@ -13068,7 +13125,8 @@
         "onsite",
         "cloud",
         "security",
-        "llm"
+        "llm",
+        "PowerShell"
       ],
       "matchReasons": [
         "Jamf + macOS",
@@ -13079,7 +13137,8 @@
       ],
       "tools": [
         "Jamf",
-        "Intune"
+        "Intune",
+        "PowerShell"
       ],
       "platforms": [
         "macOS",
@@ -13213,7 +13272,8 @@
         "Defender",
         "Data & Technology",
         "Full-time",
-        "onsite"
+        "onsite",
+        "PowerShell"
       ],
       "matchReasons": [
         "PowerShell automation",
@@ -13223,6 +13283,7 @@
       "tools": [
         "Intune",
         "Entra ID",
+        "PowerShell",
         "Defender"
       ],
       "platforms": [
