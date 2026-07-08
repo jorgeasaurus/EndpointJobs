@@ -5,8 +5,10 @@
 - [x] Centralize endpoint tool definitions.
 - [x] Centralize PowerShell/sysadmin search defaults.
 - [x] Classify generic PowerShell/sysadmin roles separately from endpoint security.
-- [ ] Refresh listings and verify checks.
-- [ ] Commit and push branch update.
+- [x] Refresh listings and verify checks.
+- [x] Commit and push branch update.
+
+Result: Added a shared endpoint tool taxonomy, derived PowerShell/sysadmin search defaults, and `Systems Administration` role-family handling. Workflow run `28912224130` refreshed listings as `864dcd0`; feed now has 317 jobs, 40 PowerShell-tagged jobs, and 22 PowerShell-tagged `Systems Administration` jobs. Verified `npm run typecheck`, `npm run lint`, `npm run audit:data` (56/56), `npm run build`, `git diff --check`, and the workflow build step.
 
 ## PowerShell Branch Refresh And Preview
 
