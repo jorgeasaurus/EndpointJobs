@@ -87,6 +87,8 @@ Techmap RSS uses `JOB_TECHMAP_RSS_FEEDS=url` or `Feed Name|url` entries, with op
 
 Adzuna defaults to US searches from `JOB_ADZUNA_QUERIES` and supports `JOB_ADZUNA_COUNTRIES`. TheirStack requires `THEIRSTACK_API_KEY` and supports `JOB_THEIRSTACK_TITLE_QUERIES`, `JOB_THEIRSTACK_COMPANY_NAMES`, `JOB_THEIRSTACK_COUNTRY_CODES`, `JOB_THEIRSTACK_MAX_AGE_DAYS`, and `JOB_THEIRSTACK_LIMIT`. SerpAPI Google Jobs requires `SERPAPI_API_KEY` and supports `JOB_SERPAPI_QUERIES`, `JOB_SERPAPI_LOCATION`, `JOB_SERPAPI_GL`, `JOB_SERPAPI_HL`, and `JOB_SERPAPI_MAX_PAGES`. RapidAPI Daily International Jobs requires `RAPIDAPI_DAILY_JOBS_KEY` and supports `JOB_RAPIDAPI_COUNTRY_CODES`, `JOB_RAPIDAPI_HAS_SALARY`, `JOB_RAPIDAPI_MAX_PAGES`, and optional `JOB_RAPIDAPI_QUERIES`. RapidAPI LinkedIn Job Search requires `RAPIDAPI_LINKEDIN_JOBS_KEY` and supports `JOB_RAPIDAPI_LINKEDIN_TITLE_FILTERS`, `JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER`, `JOB_RAPIDAPI_LINKEDIN_LIMIT`, `JOB_RAPIDAPI_LINKEDIN_MAX_PAGES`, and `JOB_RAPIDAPI_LINKEDIN_DESCRIPTION_TYPE`. AI Dev Board supports anonymous trial reads, but recurring workflow use should set `AIDEVBOARD_API_KEY`; it supports `JOB_AIDEVBOARD_QUERIES`, `JOB_AIDEVBOARD_TAGS`, `JOB_AIDEVBOARD_LOCATION`, `JOB_AIDEVBOARD_WORKPLACE`, `JOB_AIDEVBOARD_TYPE`, `JOB_AIDEVBOARD_LEVEL`, `JOB_AIDEVBOARD_LIMIT`, `JOB_AIDEVBOARD_MAX_PAGES`, `JOB_AIDEVBOARD_POSTED_WITHIN_DAYS`, and `JOB_AIDEVBOARD_REQUIRE_API_KEY`.
 
+The scheduled refresh currently asks country-aware paid providers for US, Switzerland, Italy, Spain, and France.
+
 Use `JOB_EXCLUDED_SOURCE_URLS` as a comma-separated list for confirmed-dead source postings that an aggregator still returns.
 
 ## GitHub Action
