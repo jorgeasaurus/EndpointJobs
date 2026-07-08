@@ -1,37 +1,20 @@
-const powerShellSysadminSearchTerms = [
-  {
-    query: "powershell administrator",
-    title: "PowerShell Administrator"
-  },
-  {
-    query: "powershell systems administrator",
-    title: "PowerShell Systems Administrator"
-  },
-  {
-    query: "powershell system administrator",
-    title: "PowerShell System Administrator"
-  },
-  {
-    query: "powershell systems engineer",
-    title: "PowerShell Systems Engineer"
-  },
-  {
-    query: "powershell sysadmin",
-    title: "PowerShell Sysadmin"
-  },
-  {
-    query: "windows sysadmin powershell",
-    title: "Windows Sysadmin PowerShell"
-  }
+export const powerShellSysadminSearchQueries = [
+  "powershell administrator",
+  "powershell systems administrator",
+  "powershell system administrator",
+  "powershell systems engineer",
+  "powershell sysadmin",
+  "windows sysadmin powershell"
 ];
 
-export const powerShellSysadminSearchQueries = powerShellSysadminSearchTerms.map(
-  ({ query }) => query
-);
-
-export const powerShellSysadminTitleFilters = powerShellSysadminSearchTerms.map(
-  ({ title }) => title
-);
+export const powerShellSysadminTitleFilters = [
+  "PowerShell Administrator",
+  "PowerShell Systems Administrator",
+  "PowerShell System Administrator",
+  "PowerShell Systems Engineer",
+  "PowerShell Sysadmin",
+  "Windows Sysadmin PowerShell"
+];
 
 export const defaultEndpointSearchQueries = [
   "endpoint engineer",

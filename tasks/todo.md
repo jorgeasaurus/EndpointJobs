@@ -1,5 +1,15 @@
 # Endpoint Jobs Plan
 
+## Address Taxonomy Review Findings
+
+- [x] Move job taxonomy into one canonical module.
+- [x] Derive refresh role signals from shared taxonomy data.
+- [x] Decouple provider search queries from LinkedIn title filters.
+- [x] Update audits for the new taxonomy boundary.
+- [x] Run verification, commit, and push.
+
+Result: Replaced the narrow endpoint-tool module with a canonical job taxonomy module covering tools, platforms, seniority, role families, aliases, and ordered inference rules. The refresh script now consumes taxonomy data and uses a rule matcher instead of a PowerShell-specific role-family branch. Search query defaults and RapidAPI LinkedIn title filters are explicit arrays again. Verified `npm run typecheck`, `npm run lint`, `npm run audit:data` (56/56), `npm run build`, `git diff --check`, and targeted role-family inference.
+
 ## Address PowerShell Review Findings
 
 - [x] Centralize endpoint tool definitions.

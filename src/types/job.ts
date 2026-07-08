@@ -1,28 +1,13 @@
-import type { EndpointTool } from "../lib/endpoint-tools";
+import type {
+  EndpointTool,
+  Platform,
+  RoleFamily,
+  Seniority
+} from "../lib/job-taxonomy";
 
-export type { EndpointTool };
-
-export type Platform = "macOS" | "Windows" | "iOS" | "Android" | "Linux";
+export type { EndpointTool, Platform, RoleFamily, Seniority };
 
 export type Workplace = "Remote" | "Hybrid" | "On-site" | "Unknown";
-
-export type Seniority =
-  | "Associate"
-  | "Mid"
-  | "Senior"
-  | "Staff"
-  | "Lead"
-  | "Manager";
-
-export type RoleFamily =
-  | "Endpoint Engineering"
-  | "macOS Platform"
-  | "Windows Platform"
-  | "Workplace Systems"
-  | "Endpoint Security"
-  | "Device Compliance"
-  | "Systems Administration"
-  | "Automation";
 
 export type TermsProfile =
   | "seed"

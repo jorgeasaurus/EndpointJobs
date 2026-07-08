@@ -1,34 +1,18 @@
-import type {
-  Job,
-  Platform,
-  RoleFamily,
-  Seniority
-} from "@/types/job";
+import type { Job } from "@/types/job";
 
-import { endpointToolOptions } from "./endpoint-tools";
+import {
+  endpointToolOptions,
+  platformOptions,
+  roleFamilyOptions,
+  seniorityOptions
+} from "./job-taxonomy";
 import {
   isExcludedJobSourceUrl,
   isSourceFreshnessExpired
 } from "./job-exclusions";
 
-export const platformOptions: Platform[] = [
-  "macOS",
-  "Windows",
-  "iOS",
-  "Android",
-  "Linux"
-];
-
 export const toolOptions = endpointToolOptions;
-
-export const seniorityOptions: Seniority[] = [
-  "Associate",
-  "Mid",
-  "Senior",
-  "Staff",
-  "Lead",
-  "Manager"
-];
+export { platformOptions, roleFamilyOptions, seniorityOptions };
 
 const postedDateFormatter = new Intl.DateTimeFormat("en", {
   month: "short",
@@ -41,17 +25,6 @@ const updatedAtFormatter = new Intl.DateTimeFormat("en", {
   hour: "numeric",
   minute: "2-digit"
 });
-
-export const roleFamilyOptions: RoleFamily[] = [
-  "Endpoint Engineering",
-  "macOS Platform",
-  "Windows Platform",
-  "Workplace Systems",
-  "Endpoint Security",
-  "Device Compliance",
-  "Systems Administration",
-  "Automation"
-];
 
 export function formatPostedDate(value: string) {
   const date = new Date(value);

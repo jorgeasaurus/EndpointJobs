@@ -26,7 +26,10 @@ import {
   roleFamilyOptions,
   toolOptions
 } from "../src/lib/jobs";
-import { endpointToolDefinitions } from "../src/lib/endpoint-tools";
+import {
+  endpointToolDefinitions,
+  roleFamilyInferenceRules
+} from "../src/lib/job-taxonomy";
 import {
   isExcludedJobSourceUrl,
   isSourceFreshnessExpired
@@ -85,7 +88,7 @@ const sourcePaths = {
   companyAts: "scripts/job-refresh/providers/company-ats.ts",
   controls: "src/components/job-board/controls.tsx",
   curated: "scripts/job-refresh/providers/curated-jobs.ts",
-  endpointTools: "src/lib/endpoint-tools.ts",
+  jobTaxonomy: "src/lib/job-taxonomy.ts",
   issueConfig: ".github/ISSUE_TEMPLATE/config.yml",
   issueTemplate: ".github/ISSUE_TEMPLATE/report-or-request.yml",
   jobBoard: "src/components/job-board.tsx",
@@ -595,13 +598,19 @@ await run("FEAT-045", "Normalizer derives tools, platforms, tags, and match reas
   const platforms = derivePlatforms(haystack);
   const reasons = deriveMatchReasons(haystack, tools, platforms);
   const canonicalTools = endpointToolDefinitions.map(({ tool }) => tool);
+  const systemsAdministrationRule = roleFamilyInferenceRules.find(
+    (rule) => rule.family === "Systems Administration"
+  );
   assertEqual(toolOptions.join(","), canonicalTools.join(","));
   assertArrayIncludes(tools, ["Jamf", "Intune", "Autopilot", "PowerShell"]);
   assertArrayIncludes(toolOptions, ["PowerShell"]);
   assertArrayIncludes(platforms, ["macOS"]);
   assertArrayIncludes(reasons, ["Jamf + macOS", "PowerShell automation"]);
-  assertIncludes(sources.endpointTools, "endpointToolDefinitions");
+  assertIncludes(sources.jobTaxonomy, "endpointToolDefinitions");
+  assertIncludes(sources.jobTaxonomy, "roleFamilyInferenceRules");
   assertIncludes(sources.shared, "endpointToolDefinitions");
+  assertIncludes(sources.shared, "roleFamilyInferenceRules");
+  assertEqual(systemsAdministrationRule?.match, "all");
 });
 
 await run("FEAT-046", "Normalizer infers workplace, role family, seniority, and employment type", () => {
@@ -1104,7 +1113,7 @@ function assertLabels(items: Array<{ label: string }>, expectedLabels: string[])
   assertEqual(items.map((item) => item.label).join("|"), expectedLabels.join("|"));
 }
 
-function assertArrayIncludes<T>(actual: T[], expectedValues: T[]) {
+function assertArrayIncludes<T>(actual: readonly T[], expectedValues: readonly T[]) {
   for (const value of expectedValues) {
     if (!actual.includes(value)) {
       throw new Error(`expected ${JSON.stringify(actual)} to include ${String(value)}`);
