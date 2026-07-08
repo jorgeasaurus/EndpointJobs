@@ -3,10 +3,12 @@
 ## PowerShell Branch Refresh And Preview
 
 - [x] Confirm branch is pushed.
-- [ ] Run `Refresh job listings` on `powershell-keyword-filter`.
-- [ ] Sync any generated listing commit from the workflow.
-- [ ] Deploy the branch snapshot to Vercel preview.
-- [ ] Inspect preview readiness and document result.
+- [x] Run `Refresh job listings` on `powershell-keyword-filter`.
+- [x] Sync any generated listing commit from the workflow.
+- [x] Deploy the branch snapshot to Vercel preview.
+- [x] Inspect preview readiness and document result.
+
+Result: Workflow run `28910948065` completed successfully and committed refreshed listings as `bb625b1`. Refreshed feed has 318 jobs, including 40 PowerShell-tagged jobs and 27 PowerShell sysadmin/system-administrator title matches. Vercel preview `dpl_HeQR4aDgDWtcpMmBfGzja5EgB23t` is Ready at `https://endpoint-jobs-1n74lvw0k-jorgeasaurus-projects.vercel.app`; `vercel curl` returned the preview HTML.
 
 ## Broaden PowerShell Sysadmin Coverage
 
