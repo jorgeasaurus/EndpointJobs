@@ -1,5 +1,13 @@
 # Endpoint Jobs Plan
 
+## PowerShell Branch Refresh And Preview
+
+- [x] Confirm branch is pushed.
+- [ ] Run `Refresh job listings` on `powershell-keyword-filter`.
+- [ ] Sync any generated listing commit from the workflow.
+- [ ] Deploy the branch snapshot to Vercel preview.
+- [ ] Inspect preview readiness and document result.
+
 ## Broaden PowerShell Sysadmin Coverage
 
 - [x] Make PowerShell a strong relevance signal for technical sysadmin roles.
