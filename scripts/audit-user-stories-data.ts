@@ -54,6 +54,7 @@ import {
   derivePlatforms,
   deriveTools,
   extractSalaryFromText,
+  formatProviderError,
   inferEmploymentType,
   inferRoleFamily,
   inferSeniority,
@@ -566,6 +567,9 @@ await run("FEAT-042", "Optional API providers are key-gated and non-fatal", () =
     sources.aiDevBoard
   ].forEach((source) => assertIncludes(source, "fetchJobs"));
   assertIncludes(sources.refresh, "Skipping ${provider}");
+  assertEqual(formatProviderError(new Error("provider failed")), "provider failed");
+  assertEqual(formatProviderError({ message: "quota exceeded", code: 429 }), "quota exceeded");
+  assertEqual(formatProviderError({ code: 429, title: "Too Many Requests" }), "{\"code\":429,\"title\":\"Too Many Requests\"}");
 });
 
 await run("FEAT-043", "Curated jobs reserve slots and normalize reviewed listings", () => {
@@ -976,6 +980,8 @@ await run("FEAT-069", "Map location resolver maps known places and skips ambiguo
   assertEqual(resolveJobMapLocation("Switzerland")?.label, "Switzerland");
   assertEqual(resolveJobMapLocation("12 locations"), undefined);
   assertIncludes(sources.mapLocation, "locationCoordinates");
+  assertIncludes(sources.mapLocation, "searchableLocationCoordinates");
+  assertIncludes(sources.mapLocation, "normalizedKeys");
   assertIncludes(sources.shared, "resolveJobMapLocation(location)");
 });
 

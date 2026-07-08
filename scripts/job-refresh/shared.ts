@@ -718,7 +718,35 @@ export function getCsvConfig(envKey: string, fallback: string[]) {
 }
 
 export function formatProviderError(error: unknown) {
-  return error instanceof Error ? error.message : String(error);
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === "string") {
+    return error;
+  }
+
+  if (error && typeof error === "object") {
+    const message = (error as { message?: unknown }).message;
+
+    if (typeof message === "string" && message.trim()) {
+      return message;
+    }
+
+    try {
+      const json = JSON.stringify(error);
+
+      if (json && json !== "{}") {
+        return json;
+      }
+    } catch {
+      return Object.prototype.toString.call(error);
+    }
+
+    return Object.prototype.toString.call(error);
+  }
+
+  return String(error);
 }
 
 export function toArray<T>(value: T | T[] | undefined | null): T[] {

@@ -379,6 +379,11 @@ const locationCoordinates: Coordinate[] = [
   { label: "Japan", latitude: 36.2048, longitude: 138.2529, keys: ["japan remote"] }
 ];
 
+const searchableLocationCoordinates = locationCoordinates.map((coordinate) => ({
+  ...coordinate,
+  normalizedKeys: coordinate.keys.map(normalizeLocation).filter(Boolean)
+}));
+
 export function resolveJobMapLocation(location: string): JobMapLocation | undefined {
   const normalized = normalizeLocation(location);
 
@@ -390,16 +395,15 @@ export function resolveJobMapLocation(location: string): JobMapLocation | undefi
     return getCoordinate("United States");
   }
 
-  const coordinate = locationCoordinates.find((candidate) =>
-    candidate.keys.some((key) => containsLocationKey(normalized, key))
+  const coordinate = searchableLocationCoordinates.find((candidate) =>
+    candidate.normalizedKeys.some((key) => containsNormalizedLocationKey(normalized, key))
   );
 
   return coordinate ? toMapLocation(coordinate) : undefined;
 }
 
-function containsLocationKey(normalizedLocation: string, key: string) {
-  const normalizedKey = normalizeLocation(key);
-  return Boolean(normalizedKey) && ` ${normalizedLocation} `.includes(` ${normalizedKey} `);
+function containsNormalizedLocationKey(normalizedLocation: string, normalizedKey: string) {
+  return ` ${normalizedLocation} `.includes(` ${normalizedKey} `);
 }
 
 function getCoordinate(label: string) {

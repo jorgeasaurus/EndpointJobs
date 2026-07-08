@@ -1,5 +1,14 @@
 # Endpoint Jobs Plan
 
+## PR Comment Fixes
+
+- [x] Fetch unresolved review threads for PR #7.
+- [x] Cache normalized map-location keys.
+- [x] Improve provider error formatting for plain thrown objects.
+- [x] Run verification and push the branch update.
+
+Result: Addressed both unresolved Copilot review threads. Verified focused map/error checks, `git diff --check`, `npm run lint`, `npm run typecheck`, `npm run audit:data`, and `npm run build`.
+
 ## PowerShell Filter Branch Check
 
 - [x] Compare stale local branch state with the pushed PR branch.
