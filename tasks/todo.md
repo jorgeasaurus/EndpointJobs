@@ -1,5 +1,15 @@
 # Endpoint Jobs Plan
 
+## Broaden PowerShell Sysadmin Coverage
+
+- [x] Make PowerShell a strong relevance signal for technical sysadmin roles.
+- [x] Add PowerShell/sysadmin default refresh queries.
+- [x] Verify generic PowerShell sysadmin acceptance and false-positive guardrails.
+- [x] Commit and push branch update.
+- [x] Document result.
+
+Result: Broadened refresh matching so technical titles such as `Systems Administrator` with PowerShell now pass relevance, while generic software roles still fail. Added PowerShell sysadmin query defaults for shared search providers and RapidAPI LinkedIn. Verified `git diff --check`, `npm run typecheck`, `npm run lint`, `npm run audit:data` (56/56), and `npm run build`.
+
 ## Publish PowerShell Keyword Filter Branch
 
 - [x] Confirm branch state.

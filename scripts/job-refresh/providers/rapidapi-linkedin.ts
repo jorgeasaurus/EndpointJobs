@@ -91,6 +91,8 @@ const defaultTitleFilters = [
   "macOS Engineer",
   "Client Platform Engineer",
   "Desktop Engineer",
+  "PowerShell Systems Administrator",
+  "PowerShell Sysadmin",
   "Digital Workplace Engineer"
 ];
 

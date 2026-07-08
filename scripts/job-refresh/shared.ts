@@ -48,7 +48,7 @@ const toolAliases: ToolAlias[] = [
   {
     tool: "PowerShell",
     aliases: ["powershell", "power shell", "pwsh"],
-    strong: false
+    strong: true
   },
   { tool: "Defender", aliases: ["defender", "microsoft defender", "mde"], strong: false }
 ];

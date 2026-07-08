@@ -561,8 +561,19 @@ await run("FEAT-043", "Curated jobs reserve slots and normalize reviewed listing
 
 await run("FEAT-044", "Normalizer accepts endpoint roles and rejects generic software roles", () => {
   const endpointHaystack = normalizeSearchText("Endpoint engineer Intune device management");
+  const powershellSysadminHaystack = normalizeSearchText(
+    "Systems Administrator PowerShell automation Active Directory Windows Server"
+  );
   const genericHaystack = normalizeSearchText("Backend software engineer developer platform");
   assertEqual(isEndpointRelevant(endpointHaystack, "Endpoint Engineer", deriveTools(endpointHaystack)), true);
+  assertEqual(
+    isEndpointRelevant(
+      powershellSysadminHaystack,
+      "Systems Administrator",
+      deriveTools(powershellSysadminHaystack)
+    ),
+    true
+  );
   assertEqual(isEndpointRelevant(genericHaystack, "Software Engineer", deriveTools(genericHaystack)), false);
 });
 
@@ -886,6 +897,8 @@ await run("FEAT-068", "Endpoint search defaults include role and company expansi
   assertArrayIncludes(defaultEndpointSearchQueries, [
     "endpoint engineer",
     "client platform engineer",
+    "powershell systems administrator",
+    "powershell sysadmin",
     "intune engineer",
     "jamf engineer"
   ]);
@@ -895,6 +908,8 @@ await run("FEAT-068", "Endpoint search defaults include role and company expansi
     "CrowdStrike endpoint engineer"
   ]);
   assertIncludes(sources.searchConfig, "defaultEndpointSearchQueries");
+  assertIncludes(sources.rapidApiLinkedIn, "PowerShell Systems Administrator");
+  assertIncludes(sources.rapidApiLinkedIn, "PowerShell Sysadmin");
 });
 
 await run("FEAT-069", "Map location resolver maps known places and skips ambiguous rows", () => {
