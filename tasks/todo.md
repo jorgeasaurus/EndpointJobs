@@ -1,5 +1,14 @@
 # Endpoint Jobs Plan
 
+## EU Job Country Coverage PR
+
+- [x] Add Switzerland, Italy, Spain, and France to country-aware provider config.
+- [x] Add EU/Swiss map anchors with diacritic-safe matching.
+- [x] Preserve partial country-provider results when one subfetch fails.
+- [x] Rebase onto current `main` and open a draft PR.
+
+Result: Draft PR #7 opened. Branch was rebased onto current `main`; generated feed snapshots were skipped to avoid stale data conflicts.
+
 ## Address Taxonomy Review Findings
 
 - [x] Move job taxonomy into one canonical module.
