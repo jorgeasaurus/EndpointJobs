@@ -442,6 +442,41 @@ await run("QA-008", "UI filters hydrate from URL and chip removal recovers", () 
   await expect(page.locator(".job-card").first()).toBeVisible();
 }));
 
+await run("QA-015", "PowerShell tool filter renders and hydrates on desktop and mobile", async () => {
+  const desktopPage = await newPage(browser, desktopViewport);
+  const desktopFilterStack = desktopPage.locator(".hero-filter-stack--desktop");
+  const desktopPowerShell = desktopFilterStack.getByRole("button", {
+    name: "PowerShell",
+    exact: true
+  });
+
+  await expect(desktopPowerShell).toBeVisible();
+  await desktopPowerShell.click();
+  await expectActiveFilterChips(desktopPage, ["PowerShell"]);
+  expectUrlParams(desktopPage, { tools: "PowerShell" });
+
+  await desktopPage.goto(withQuery({ tools: "PowerShell" }), { waitUntil: "networkidle" });
+  await expect(desktopPowerShell).toHaveAttribute("aria-pressed", "true");
+  await expect(desktopPage.locator(".job-card").first()).toBeVisible();
+  await desktopPage.close();
+
+  const mobilePage = await newPage(browser, mobileViewport);
+  await mobilePage.getByText("More filters").click();
+  const mobileFilterStack = mobilePage.locator(".hero-filter-stack--mobile");
+  const mobilePowerShell = mobileFilterStack.getByRole("button", {
+    name: "PowerShell",
+    exact: true
+  });
+
+  await expect(mobilePowerShell).toBeVisible();
+  await mobilePowerShell.scrollIntoViewIfNeeded();
+  await expectElementHorizontallyReachable(mobilePage, mobilePowerShell);
+  await mobilePowerShell.click();
+  await expectActiveFilterChips(mobilePage, ["PowerShell"]);
+  expectUrlParams(mobilePage, { tools: "PowerShell" });
+  await mobilePage.close();
+});
+
 await run("QA-014", "Advanced select filters serialize, hydrate, and sort visible results", () => withPage(browser, desktopViewport, async (page) => {
   const roleSelect = page.locator(".high-signal-filters .mini-field", { hasText: "Role" }).locator("select");
   const freshnessSelect = page.locator(".high-signal-filters .mini-field", { hasText: "Freshness" }).locator("select");

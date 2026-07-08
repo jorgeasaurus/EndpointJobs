@@ -1,5 +1,14 @@
 # Endpoint Jobs Plan
 
+## PowerShell Filter Branch Check
+
+- [x] Compare stale local branch state with the pushed PR branch.
+- [x] Verify PowerShell appears in taxonomy, feed data, and rendered controls.
+- [x] Add browser regression coverage for the desktop and mobile PowerShell tool filter.
+- [x] Push the PR branch update.
+
+Result: The pushed PR branch already carried the PowerShell filter from `main`; the local checkout was stale and divergent. Added browser audit coverage so the PowerShell tool chip cannot disappear from desktop or mobile controls unnoticed.
+
 ## EU Job Country Coverage PR
 
 - [x] Add Switzerland, Italy, Spain, and France to country-aware provider config.
