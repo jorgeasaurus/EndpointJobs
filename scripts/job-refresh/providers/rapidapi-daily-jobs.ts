@@ -100,18 +100,25 @@ async function fetchRapidApiDailyJobs(url: string, fetchedAt: Date) {
 
   const configuredQueries = getCsvConfig("JOB_RAPIDAPI_QUERIES", []);
   const queries = configuredQueries.length > 0 ? configuredQueries : [""];
+  const countryCodes = getCsvConfig("JOB_RAPIDAPI_COUNTRY_CODES", [
+    process.env.JOB_RAPIDAPI_COUNTRY_CODE ?? "us"
+  ]);
   const maxPages = Math.max(1, Number(process.env.JOB_RAPIDAPI_MAX_PAGES ?? 1));
   const jobs: Array<Job | null> = [];
 
-  for (const query of queries) {
-    for (let page = 1; page <= maxPages; page += 1) {
-      const queryUrl = buildRapidApiDailyJobsUrl(url, query, page);
-      const payload = await fetchRapidApiDailyJobsPage(queryUrl, apiKey);
-      jobs.push(...payload.jobs.map((job) => normalizeRapidApiDailyJob(job, query, fetchedAt)));
-      console.log(`Fetched ${payload.jobs.length} raw jobs from RapidAPI Daily Jobs ${query || "salary feed"} page ${page}`);
+  for (const countryCode of countryCodes) {
+    for (const query of queries) {
+      for (let page = 1; page <= maxPages; page += 1) {
+        const queryUrl = buildRapidApiDailyJobsUrl(url, query, page, countryCode);
+        const payload = await fetchRapidApiDailyJobsPage(queryUrl, apiKey);
+        jobs.push(...payload.jobs.map((job) => normalizeRapidApiDailyJob(job, query, fetchedAt)));
+        console.log(
+          `Fetched ${payload.jobs.length} raw jobs from RapidAPI Daily Jobs/${countryCode} ${query || "salary feed"} page ${page}`
+        );
 
-      if (payload.jobs.length === 0) {
-        break;
+        if (payload.jobs.length === 0) {
+          break;
+        }
       }
     }
   }
@@ -119,9 +126,13 @@ async function fetchRapidApiDailyJobs(url: string, fetchedAt: Date) {
   return jobs;
 }
 
-function buildRapidApiDailyJobsUrl(baseUrl: string, query: string, page: number) {
+function buildRapidApiDailyJobsUrl(
+  baseUrl: string,
+  query: string,
+  page: number,
+  countryCode: string
+) {
   const url = new URL(baseUrl);
-  const countryCode = process.env.JOB_RAPIDAPI_COUNTRY_CODE ?? "us";
   const hasSalary = process.env.JOB_RAPIDAPI_HAS_SALARY ?? "true";
   const queryParam = process.env.JOB_RAPIDAPI_QUERY_PARAM ?? "query";
 

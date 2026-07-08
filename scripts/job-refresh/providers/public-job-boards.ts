@@ -199,13 +199,16 @@ async function fetchAdzunaJobs(url: string, fetchedAt: Date) {
   }
 
   const queries = getCsvConfig("JOB_ADZUNA_QUERIES", defaultEndpointSearchQueries);
+  const countries = getCsvConfig("JOB_ADZUNA_COUNTRIES", [process.env.JOB_ADZUNA_COUNTRY ?? "us"]);
   const jobs: Array<Job | null> = [];
 
-  for (const query of queries) {
-    const queryUrl = buildAdzunaSearchUrl(url, query, appId, appKey);
-    const payload = await fetchAdzunaSearch(queryUrl);
-    jobs.push(...payload.map((job) => normalizeAdzunaJob(job, fetchedAt)));
-    console.log(`Fetched ${payload.length} raw jobs from Adzuna query ${query}`);
+  for (const country of countries) {
+    for (const query of queries) {
+      const queryUrl = buildAdzunaSearchUrl(url, query, country, appId, appKey);
+      const payload = await fetchAdzunaSearch(queryUrl);
+      jobs.push(...payload.map((job) => normalizeAdzunaJob(job, fetchedAt)));
+      console.log(`Fetched ${payload.length} raw jobs from Adzuna/${country} query ${query}`);
+    }
   }
 
   return jobs;
@@ -791,8 +794,13 @@ function cleanAdzunaJobUrl(value: string | undefined) {
   return url.toString();
 }
 
-function buildAdzunaSearchUrl(baseUrl: string, query: string, appId: string, appKey: string) {
-  const country = process.env.JOB_ADZUNA_COUNTRY ?? "us";
+function buildAdzunaSearchUrl(
+  baseUrl: string,
+  query: string,
+  country: string,
+  appId: string,
+  appKey: string
+) {
   const page = process.env.JOB_ADZUNA_PAGE ?? "1";
   const resultsPerPage = process.env.JOB_ADZUNA_RESULTS_PER_PAGE ?? "25";
   const template = baseUrl
