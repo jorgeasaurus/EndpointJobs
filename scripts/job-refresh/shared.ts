@@ -717,6 +717,10 @@ export function getCsvConfig(envKey: string, fallback: string[]) {
   return values.map((value) => value.trim()).filter(Boolean);
 }
 
+export function formatProviderError(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
+
 export function toArray<T>(value: T | T[] | undefined | null): T[] {
   if (value === undefined || value === null) {
     return [];

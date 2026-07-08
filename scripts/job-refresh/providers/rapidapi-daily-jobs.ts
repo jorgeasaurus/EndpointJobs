@@ -5,6 +5,7 @@ import {
   buildStableJobId,
   cleanText,
   cleanUrl,
+  formatProviderError,
   formatSlugLabel,
   getCsvConfig,
   normalizeFirstEmploymentType,
@@ -105,22 +106,35 @@ async function fetchRapidApiDailyJobs(url: string, fetchedAt: Date) {
   ]);
   const maxPages = Math.max(1, Number(process.env.JOB_RAPIDAPI_MAX_PAGES ?? 1));
   const jobs: Array<Job | null> = [];
+  let successfulPages = 0;
+  const failures: string[] = [];
 
   for (const countryCode of countryCodes) {
     for (const query of queries) {
       for (let page = 1; page <= maxPages; page += 1) {
         const queryUrl = buildRapidApiDailyJobsUrl(url, query, page, countryCode);
-        const payload = await fetchRapidApiDailyJobsPage(queryUrl, apiKey);
-        jobs.push(...payload.jobs.map((job) => normalizeRapidApiDailyJob(job, query, fetchedAt)));
-        console.log(
-          `Fetched ${payload.jobs.length} raw jobs from RapidAPI Daily Jobs/${countryCode} ${query || "salary feed"} page ${page}`
-        );
+        const label = `RapidAPI Daily Jobs/${countryCode} ${query || "salary feed"} page ${page}`;
+        try {
+          const payload = await fetchRapidApiDailyJobsPage(queryUrl, apiKey);
+          successfulPages += 1;
+          jobs.push(...payload.jobs.map((job) => normalizeRapidApiDailyJob(job, query, fetchedAt)));
+          console.log(`Fetched ${payload.jobs.length} raw jobs from ${label}`);
 
-        if (payload.jobs.length === 0) {
+          if (payload.jobs.length === 0) {
+            break;
+          }
+        } catch (error) {
+          const detail = formatProviderError(error);
+          failures.push(`${label}: ${detail}`);
+          console.warn(`Skipping ${label}: ${detail}`);
           break;
         }
       }
     }
+  }
+
+  if (successfulPages === 0 && failures.length > 0) {
+    throw new Error(`All RapidAPI Daily Jobs requests failed: ${failures.join("; ")}`);
   }
 
   return jobs;

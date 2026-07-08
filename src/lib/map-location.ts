@@ -297,7 +297,7 @@ const locationCoordinates: Coordinate[] = [
     label: "Paris, France",
     latitude: 48.8566,
     longitude: 2.3522,
-    keys: ["paris", "ile de france", "le de france", "hauts de seine"]
+    keys: ["paris", "ile de france", "hauts de seine"]
   },
   { label: "Lyon, France", latitude: 45.764, longitude: 4.8357, keys: ["lyon", "limonest"] },
   {
@@ -316,7 +316,7 @@ const locationCoordinates: Coordinate[] = [
     label: "Montpellier, France",
     latitude: 43.6108,
     longitude: 3.8767,
-    keys: ["montpellier", "herault", "h rault"]
+    keys: ["montpellier", "herault"]
   },
   {
     label: "Aix-en-Provence, France",
@@ -341,7 +341,7 @@ const locationCoordinates: Coordinate[] = [
     longitude: -2.6727,
     keys: ["vitoria gasteiz", "alava"]
   },
-  { label: "Spain", latitude: 40.4637, longitude: -3.7492, keys: ["spain", "espana", "espa a"] },
+  { label: "Spain", latitude: 40.4637, longitude: -3.7492, keys: ["spain", "espana"] },
   { label: "Milan, Italy", latitude: 45.4642, longitude: 9.19, keys: ["milan", "milano"] },
   { label: "Rome, Italy", latitude: 41.9028, longitude: 12.4964, keys: ["rome", "roma"] },
   { label: "Turin, Italy", latitude: 45.0703, longitude: 7.6869, keys: ["turin", "torino"] },
@@ -350,9 +350,9 @@ const locationCoordinates: Coordinate[] = [
     label: "Zurich, Switzerland",
     latitude: 47.3769,
     longitude: 8.5417,
-    keys: ["zurich", "z rich", "fehraltorf", "uitikon", "dietikon", "horgen"]
+    keys: ["zurich", "fehraltorf", "uitikon", "dietikon", "horgen"]
   },
-  { label: "Bern, Switzerland", latitude: 46.948, longitude: 7.4474, keys: ["bern mittelland", "zollikofen", "koniz", "k niz"] },
+  { label: "Bern, Switzerland", latitude: 46.948, longitude: 7.4474, keys: ["bern mittelland", "zollikofen", "koniz"] },
   {
     label: "Basel, Switzerland",
     latitude: 47.5596,
@@ -398,7 +398,8 @@ export function resolveJobMapLocation(location: string): JobMapLocation | undefi
 }
 
 function containsLocationKey(normalizedLocation: string, key: string) {
-  return ` ${normalizedLocation} `.includes(` ${key} `);
+  const normalizedKey = normalizeLocation(key);
+  return Boolean(normalizedKey) && ` ${normalizedLocation} `.includes(` ${normalizedKey} `);
 }
 
 function getCoordinate(label: string) {
@@ -412,6 +413,8 @@ function toMapLocation({ label, latitude, longitude }: Coordinate): JobMapLocati
 
 function normalizeLocation(value: string) {
   return value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .replace(/&/g, " and ")
     .replace(/[^a-z0-9]+/g, " ")

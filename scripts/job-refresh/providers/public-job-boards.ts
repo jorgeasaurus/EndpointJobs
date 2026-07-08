@@ -8,6 +8,7 @@ import {
   deriveMatchReasons,
   derivePlatforms,
   deriveTools,
+  formatProviderError,
   getCsvConfig,
   inferEmploymentType,
   inferRoleFamily,
@@ -201,14 +202,27 @@ async function fetchAdzunaJobs(url: string, fetchedAt: Date) {
   const queries = getCsvConfig("JOB_ADZUNA_QUERIES", defaultEndpointSearchQueries);
   const countries = getCsvConfig("JOB_ADZUNA_COUNTRIES", [process.env.JOB_ADZUNA_COUNTRY ?? "us"]);
   const jobs: Array<Job | null> = [];
+  let successfulSearches = 0;
+  const failures: string[] = [];
 
   for (const country of countries) {
     for (const query of queries) {
       const queryUrl = buildAdzunaSearchUrl(url, query, country, appId, appKey);
-      const payload = await fetchAdzunaSearch(queryUrl);
-      jobs.push(...payload.map((job) => normalizeAdzunaJob(job, fetchedAt)));
-      console.log(`Fetched ${payload.length} raw jobs from Adzuna/${country} query ${query}`);
+      try {
+        const payload = await fetchAdzunaSearch(queryUrl);
+        successfulSearches += 1;
+        jobs.push(...payload.map((job) => normalizeAdzunaJob(job, fetchedAt)));
+        console.log(`Fetched ${payload.length} raw jobs from Adzuna/${country} query ${query}`);
+      } catch (error) {
+        const detail = formatProviderError(error);
+        failures.push(`Adzuna/${country} query ${query}: ${detail}`);
+        console.warn(`Skipping Adzuna/${country} query ${query}: ${detail}`);
+      }
     }
+  }
+
+  if (successfulSearches === 0 && failures.length > 0) {
+    throw new Error(`All Adzuna searches failed: ${failures.join("; ")}`);
   }
 
   return jobs;
