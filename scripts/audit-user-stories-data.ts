@@ -568,6 +568,7 @@ await run("FEAT-042", "Optional API providers are key-gated and non-fatal", () =
   ].forEach((source) => assertIncludes(source, "fetchJobs"));
   assertIncludes(sources.refresh, "Skipping ${provider}");
   assertEqual(formatProviderError(new Error("provider failed")), "provider failed");
+  assertEqual(formatProviderError(Object.assign(new Error("  "), { name: "ProviderQuotaError" })), "ProviderQuotaError");
   assertEqual(formatProviderError({ message: "quota exceeded", code: 429 }), "quota exceeded");
   assertEqual(formatProviderError({ code: 429, title: "Too Many Requests" }), "{\"code\":429,\"title\":\"Too Many Requests\"}");
 });

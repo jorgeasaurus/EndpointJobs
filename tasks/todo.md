@@ -2,6 +2,15 @@
 
 ## PR Comment Fixes
 
+- [x] Fetch follow-up Copilot review thread for PR #7.
+- [x] Make blank `Error.message` formatting fall back to the error name.
+- [x] Add audit coverage for blank Error-message formatting.
+- [x] Run verification and push the branch update.
+
+Result: Addressed the follow-up Copilot thread. Verified focused formatter check, `git diff --check`, `npm run lint`, `npm run typecheck`, `npm run audit:data`, and `npm run build`.
+
+## Initial PR Comment Fixes
+
 - [x] Fetch unresolved review threads for PR #7.
 - [x] Cache normalized map-location keys.
 - [x] Improve provider error formatting for plain thrown objects.

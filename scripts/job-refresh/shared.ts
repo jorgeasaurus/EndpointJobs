@@ -719,7 +719,8 @@ export function getCsvConfig(envKey: string, fallback: string[]) {
 
 export function formatProviderError(error: unknown) {
   if (error instanceof Error) {
-    return error.message;
+    const message = error.message.trim();
+    return message || error.name || "Error";
   }
 
   if (typeof error === "string") {
