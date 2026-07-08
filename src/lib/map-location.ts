@@ -294,6 +294,7 @@ const locationCoordinates: Coordinate[] = [
   { label: "London, UK", latitude: 51.5072, longitude: -0.1276, keys: ["london", "england united kingdom"] },
   { label: "Hamburg, Germany", latitude: 53.5511, longitude: 9.9937, keys: ["hamburg"] },
   { label: "Zurich, Switzerland", latitude: 47.3769, longitude: 8.5417, keys: ["zurich", "z rich", "fehraltorf"] },
+  { label: "Bern, Switzerland", latitude: 46.948, longitude: 7.4474, keys: ["bern mittelland", "zollikofen", "koniz", "k niz"] },
   { label: "Basel, Switzerland", latitude: 47.5596, longitude: 7.5886, keys: ["basel", "basel city"] },
   { label: "Geneva, Switzerland", latitude: 46.2044, longitude: 6.1432, keys: ["geneva"] },
   { label: "Lausanne, Switzerland", latitude: 46.5197, longitude: 6.6323, keys: ["lausanne"] },
@@ -320,10 +321,14 @@ export function resolveJobMapLocation(location: string): JobMapLocation | undefi
   }
 
   const coordinate = locationCoordinates.find((candidate) =>
-    candidate.keys.some((key) => normalized.includes(key))
+    candidate.keys.some((key) => containsLocationKey(normalized, key))
   );
 
   return coordinate ? toMapLocation(coordinate) : undefined;
+}
+
+function containsLocationKey(normalizedLocation: string, key: string) {
+  return ` ${normalizedLocation} `.includes(` ${key} `);
 }
 
 function getCoordinate(label: string) {
