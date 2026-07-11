@@ -6,9 +6,11 @@ import { isActiveJob } from "@/lib/jobs";
 import type { JobsFeed } from "@/types/job";
 
 import { getActiveFilterItems } from "./job-board/active-filters";
+import { updateComparisonSelection } from "./job-board/comparison-selection";
 import { CommandPanel } from "./job-board/controls";
 import { filterJobs } from "./job-board/filter-model";
 import { JobMap } from "./job-board/job-map";
+import { JobComparison } from "./job-board/job-comparison";
 import { ParallaxBackground } from "./job-board/parallax-background";
 import { ResultsPanel } from "./job-board/results-panel";
 import { SiteFooter, Topbar } from "./job-board/topbar";
@@ -24,6 +26,7 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
     filterKey: "",
     page: 1
   });
+  const [selectedJobIds, setSelectedJobIds] = useState<Set<string>>(new Set());
   const resultsSectionRef = useRef<HTMLElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -59,6 +62,10 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
 
     return { mappedJobsCount, remoteJobsCount, salaryJobsCount };
   }, [visibleJobs]);
+  const comparedJobs = useMemo(
+    () => activeJobs.filter((job) => selectedJobIds.has(job.id)),
+    [activeJobs, selectedJobIds]
+  );
 
   const totalPages = Math.max(1, Math.ceil(visibleJobs.length / jobsPerPage));
   const currentPage = pagination.filterKey === filterKey ? pagination.page : 1;
@@ -95,6 +102,12 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
     });
   }
 
+  function toggleComparison(job: JobsFeed["jobs"][number]) {
+    setSelectedJobIds((current) =>
+      updateComparisonSelection(current, { type: "toggle", jobId: job.id })
+    );
+  }
+
   return (
     <main className="site-frame">
       <ParallaxBackground />
@@ -123,6 +136,20 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
 
         <JobMap id="map" jobs={visibleJobs} />
 
+        <JobComparison
+          jobs={comparedJobs}
+          onClear={() =>
+            setSelectedJobIds((current) =>
+              updateComparisonSelection(current, { type: "clear" })
+            )
+          }
+          onRemove={(jobId) =>
+            setSelectedJobIds((current) =>
+              updateComparisonSelection(current, { type: "remove", jobId })
+            )
+          }
+        />
+
         <section className="board-grid" id="open-roles" ref={resultsSectionRef}>
           <ResultsPanel
             clearFilters={clearFilters}
@@ -133,6 +160,8 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
             totalJobs={visibleJobs.length}
             totalPages={totalPages}
             query={filters.query}
+            selectedJobIds={selectedJobIds}
+            toggleComparison={toggleComparison}
             visibleJobs={pagedJobs}
           />
         </section>

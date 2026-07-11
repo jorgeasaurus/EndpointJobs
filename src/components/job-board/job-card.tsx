@@ -7,6 +7,7 @@ import {
   Clock3,
   DollarSign,
   ExternalLink,
+  GitCompareArrows,
   MapPin
 } from "lucide-react";
 
@@ -17,7 +18,19 @@ import {
 } from "@/lib/jobs";
 import type { Job } from "@/types/job";
 
-export function JobCard({ job, query }: { job: Job; query: string }) {
+export function JobCard({
+  compareDisabled,
+  isCompared,
+  job,
+  onToggleComparison,
+  query
+}: {
+  compareDisabled: boolean;
+  isCompared: boolean;
+  job: Job;
+  onToggleComparison: (job: Job) => void;
+  query: string;
+}) {
   const descriptionParagraphs = getExpandedDescriptionParagraphs(job);
 
   return (
@@ -103,6 +116,16 @@ export function JobCard({ job, query }: { job: Job; query: string }) {
         <span className="attribution-label" title={job.attributionLabel}>
           {job.attributionLabel}
         </span>
+        <button
+          aria-pressed={isCompared ? "true" : "false"}
+          className={`compare-button${isCompared ? " is-active" : ""}`}
+          disabled={compareDisabled}
+          type="button"
+          onClick={() => onToggleComparison(job)}
+        >
+          <GitCompareArrows size={16} aria-hidden="true" />
+          {isCompared ? "Selected" : "Compare"}
+        </button>
         {job.applyUrl ? (
           <a
             className="apply-link"
