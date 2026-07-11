@@ -8,7 +8,7 @@
 - [x] Run typecheck, lint, tests, build, and browser verification.
 - [x] Run React Doctor and fix regressions.
 - [x] Run thermonuclear review loops until clean.
-- [ ] Commit, push, and verify a Vercel preview.
+- [x] Commit, push, and verify a Vercel preview.
 
 ## Review
 
