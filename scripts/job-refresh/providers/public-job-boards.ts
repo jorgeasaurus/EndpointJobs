@@ -404,7 +404,7 @@ function normalizeRemoteOkJob(raw: RemoteOkJob, fetchedAt: Date): Job | null {
     tools,
     platforms,
     roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack),
+    seniority: inferSeniority(haystack, title),
     employmentType: inferEmploymentType(haystack),
     ...(salary ? { salary } : {})
   };
@@ -468,7 +468,7 @@ function normalizeRemotiveJob(raw: RemotiveJob, fetchedAt: Date): Job | null {
     tools,
     platforms,
     roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack),
+    seniority: inferSeniority(haystack, title),
     employmentType: normalizeRemotiveJobType(raw.job_type),
     ...(raw.salary ? { salary: { currency: "USD", label: cleanText(raw.salary) } } : {})
   };
@@ -526,7 +526,7 @@ function normalizeArbeitnowJob(raw: ArbeitnowJob, fetchedAt: Date): Job | null {
     tools,
     platforms,
     roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack),
+    seniority: inferSeniority(haystack, title),
     employmentType: inferEmploymentType(haystack)
   };
 }
@@ -582,7 +582,7 @@ function normalizeJobicyJob(raw: JobicyJob, fetchedAt: Date): Job | null {
     tools,
     platforms,
     roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack),
+    seniority: inferSeniority(haystack, title),
     employmentType: jobType[0] || inferEmploymentType(haystack)
   };
 }
@@ -645,7 +645,7 @@ function normalizeMuseJob(raw: MuseJob, fetchedAt: Date): Job | null {
     tools,
     platforms,
     roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack),
+    seniority: inferSeniority(haystack, title),
     employmentType: cleanText(raw.type) || inferEmploymentType(haystack)
   };
 }
@@ -702,7 +702,7 @@ function normalizeAdzunaJob(raw: AdzunaJob, fetchedAt: Date): Job | null {
     tools,
     platforms,
     roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack),
+    seniority: inferSeniority(haystack, title),
     employmentType: cleanText(raw.contract_type ?? raw.contract_time) || inferEmploymentType(haystack),
     ...(salary ? { salary } : {})
   };

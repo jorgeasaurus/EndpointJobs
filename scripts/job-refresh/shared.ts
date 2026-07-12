@@ -115,7 +115,7 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
     tools,
     platforms,
     roleFamily: candidate.roleFamily ?? inferRoleFamily(haystack, tools, platforms),
-    seniority: candidate.seniority ?? inferSeniority(haystack),
+    seniority: candidate.seniority ?? inferSeniority(haystack, candidate.title),
     employmentType: cleanText(candidate.employmentType) || inferEmploymentType(haystack),
     ...(candidate.salary ? { salary: candidate.salary } : {})
   };
@@ -354,10 +354,12 @@ function matchesRoleFamilyRule(
     : signals.some(Boolean);
 }
 
-export function inferSeniority(haystack: string): Seniority {
-  if (containsAlias(haystack, "manager")) return "Manager";
-  if (containsAlias(haystack, "lead")) return "Lead";
-  if (containsAlias(haystack, "staff") || containsAlias(haystack, "principal")) return "Staff";
+export function inferSeniority(haystack: string, title = haystack): Seniority {
+  if (containsAlias(title, "manager")) return "Manager";
+  if (containsAlias(title, "lead")) return "Lead";
+  if (containsAlias(title, "staff") || containsAlias(title, "principal")) return "Staff";
+  if (containsAlias(title, "senior") || containsAlias(title, "sr")) return "Senior";
+  if (containsAlias(title, "associate") || containsAlias(title, "junior")) return "Associate";
   if (containsAlias(haystack, "senior") || containsAlias(haystack, "sr")) return "Senior";
   if (containsAlias(haystack, "associate") || containsAlias(haystack, "junior")) return "Associate";
   return "Mid";

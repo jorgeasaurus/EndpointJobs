@@ -522,7 +522,7 @@ function normalizeAmazonJob(raw: AmazonJob, fetchedAt: Date): Job | null {
     tools,
     platforms,
     roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack),
+    seniority: inferSeniority(haystack, title),
     employmentType: cleanText(raw.job_schedule_type) || inferEmploymentType(haystack)
   };
 }
@@ -573,7 +573,7 @@ function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, 
     tools,
     platforms,
     roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack),
+    seniority: inferSeniority(haystack, title),
     employmentType: inferEmploymentType(haystack)
   };
 }
@@ -627,7 +627,7 @@ function normalizeActivateJob(raw: ActivateJob, site: ActivateSite, query: strin
     tools,
     platforms,
     roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack),
+    seniority: inferSeniority(haystack, title),
     employmentType: inferEmploymentType(haystack)
   };
 }
@@ -687,7 +687,7 @@ function normalizeJibeJob(raw: JibeJob, site: JibeSite, query: string, fetchedAt
     tools,
     platforms,
     roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack),
+    seniority: inferSeniority(haystack, title),
     employmentType: cleanText(data.employment_type) || inferEmploymentType(haystack)
   };
 }

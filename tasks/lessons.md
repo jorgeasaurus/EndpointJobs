@@ -43,3 +43,5 @@
 - Tests for canonical provider coverage should inspect provider defaults, not forbid legitimate workflow environment overrides.
 - When remediation removes attempted coverage, update earlier task summaries so the historical record matches the final implementation.
 - When a list-backed provider gains a new first entry, update documentation that describes its defaults or first-item URL behavior.
+- Seniority inference should prioritize title-only management signals; descriptions commonly mention the hiring manager and create false classifications.
+- When adding a location alias, regenerate persisted map data for affected listings and run the mapped-coverage audit.

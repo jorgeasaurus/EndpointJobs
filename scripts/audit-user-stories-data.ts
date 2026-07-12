@@ -685,6 +685,8 @@ await run("FEAT-046", "Normalizer infers workplace, role family, seniority, and 
   assertEqual(inferRoleFamily(securityText, [], ["Windows"]), "Endpoint Security");
   assertEqual(inferRoleFamily(sysadminText, ["PowerShell"], ["Windows"]), "Systems Administration");
   assertEqual(inferSeniority(securityText), "Senior");
+  assertEqual(inferSeniority("senior manager of it", "Senior IT Engineer"), "Senior");
+  assertEqual(inferSeniority("senior manager role", "Senior IT Manager"), "Manager");
   assertEqual(inferEmploymentType(securityText), "Contract");
 });
 
@@ -1026,6 +1028,7 @@ await run("FEAT-068", "Endpoint search defaults include role and company expansi
 
 await run("FEAT-069", "Map location resolver maps known places and skips ambiguous rows", () => {
   assertEqual(resolveJobMapLocation("San Francisco, CA")?.label, "San Francisco, CA");
+  assertEqual(resolveJobMapLocation("NYC")?.label, "New York, NY");
   assertEqual(resolveJobMapLocation("United States")?.label, "United States");
   assertEqual(resolveJobMapLocation("Hawthorne, CA")?.label, "Los Angeles, CA");
   assertEqual(resolveJobMapLocation("Jacks Cabin, Gunnison County")?.label, "Denver, CO");

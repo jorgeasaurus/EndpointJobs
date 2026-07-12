@@ -516,7 +516,7 @@ function normalizeGreenhouseJob(raw: GreenhouseJob, board: string, fetchedAt: Da
     tools,
     platforms,
     roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack),
+    seniority: inferSeniority(haystack, title),
     employmentType: inferEmploymentType(haystack)
   };
 }
@@ -585,7 +585,7 @@ function normalizeLeverJob(raw: LeverJob, companySlug: string, fetchedAt: Date):
     tools,
     platforms,
     roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack),
+    seniority: inferSeniority(haystack, title),
     employmentType: cleanText(raw.categories?.commitment) || inferEmploymentType(haystack)
   };
 }
@@ -644,7 +644,7 @@ function normalizeAshbyJob(raw: AshbyJob, board: string, fetchedAt: Date): Job |
     tools,
     platforms,
     roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack),
+    seniority: inferSeniority(haystack, title),
     employmentType: cleanText(raw.employmentType) || inferEmploymentType(haystack)
   };
 }
@@ -709,7 +709,7 @@ function normalizeWorkableJob(raw: WorkableJob, account: WorkableAccount, fetche
     tools,
     platforms,
     roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack),
+    seniority: inferSeniority(haystack, title),
     employmentType: employmentType || inferEmploymentType(haystack)
   };
 }

@@ -21,7 +21,7 @@ const locationCoordinates: Coordinate[] = [
     label: "New York, NY",
     latitude: 40.7128,
     longitude: -74.006,
-    keys: ["new york city", "grand central", "manhattan", "brooklyn", "flatbush"]
+    keys: ["nyc", "new york city", "grand central", "manhattan", "brooklyn", "flatbush"]
   },
   {
     label: "San Francisco, CA",

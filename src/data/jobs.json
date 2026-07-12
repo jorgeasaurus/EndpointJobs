@@ -200,7 +200,7 @@
         "macOS"
       ],
       "roleFamily": "Device Compliance",
-      "seniority": "Manager",
+      "seniority": "Senior",
       "employmentType": "Full-Time"
     },
     {
@@ -17985,6 +17985,11 @@
         "max": 175000,
         "currency": "USD",
         "label": "$150k-$175k"
+      },
+      "mapLocation": {
+        "label": "New York, NY",
+        "latitude": 40.7128,
+        "longitude": -74.006
       }
     },
     {
