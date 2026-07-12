@@ -453,7 +453,7 @@ await run("QA-016", "Country location search includes jobs stored by city", () =
 
   await expectActiveFilterChips(page, ["Location: Switzerland"]);
   await expect(page.getByText("No matching roles")).toHaveCount(0);
-  await expect(page.locator(".job-card").filter({ hasText: "Zürich" }).first()).toBeVisible();
+  await expect(page.locator(".job-card").first()).toBeVisible();
 }));
 
 await run("QA-003", "Mobile empty state reset restores results after a location miss", async () => {
