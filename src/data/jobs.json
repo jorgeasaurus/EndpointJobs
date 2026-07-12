@@ -200,7 +200,7 @@
         "macOS"
       ],
       "roleFamily": "Device Compliance",
-      "seniority": "Senior",
+      "seniority": "Manager",
       "employmentType": "Full-Time"
     },
     {
@@ -17978,7 +17978,7 @@
         "macOS"
       ],
       "roleFamily": "Endpoint Security",
-      "seniority": "Manager",
+      "seniority": "Senior",
       "employmentType": "FullTime",
       "salary": {
         "min": 150000,

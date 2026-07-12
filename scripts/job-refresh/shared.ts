@@ -115,7 +115,7 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
     tools,
     platforms,
     roleFamily: candidate.roleFamily ?? inferRoleFamily(haystack, tools, platforms),
-    seniority: candidate.seniority ?? inferSeniority(haystack, candidate.title),
+    seniority: candidate.seniority ?? inferSeniority(haystack, title),
     employmentType: cleanText(candidate.employmentType) || inferEmploymentType(haystack),
     ...(candidate.salary ? { salary: candidate.salary } : {})
   };

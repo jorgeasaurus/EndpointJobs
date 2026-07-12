@@ -45,3 +45,5 @@
 - When a list-backed provider gains a new first entry, update documentation that describes its defaults or first-item URL behavior.
 - Seniority inference should prioritize title-only management signals; descriptions commonly mention the hiring manager and create false classifications.
 - When adding a location alias, regenerate persisted map data for affected listings and run the mapped-coverage audit.
+- Pass normalized boundary values into derived-field inference; do not recompute behavior from the provider's raw title after cleaning it.
+- Patch repeated generated JSON fields with record-level context and verify the target ID immediately; a bare field match can silently modify another job.
