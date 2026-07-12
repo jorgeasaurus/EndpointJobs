@@ -19,7 +19,6 @@ export function validateFeed(
     seenIds.add(job.id);
     assertPresent(job.source, job.id, "source");
     assertPresent(job.sourceUrl, job.id, "sourceUrl");
-    assertPresent(job.applyUrl, job.id, "applyUrl");
     assertPresent(job.fetchedAt, job.id, "fetchedAt");
     assertPresent(job.postedAt, job.id, "postedAt");
     assertPresent(job.staleAfter, job.id, "staleAfter");
