@@ -114,11 +114,11 @@ await run("FEAT-015", "Mobile filter stack expands from More filters", async () 
 await run("FEAT-072", "Current-view coverage metrics update with filters", async () => {
   const page = await newPage(browser, desktopViewport);
   const status = page.getByRole("complementary", { name: "Search coverage status" });
-  const trackedBefore = await status.locator(".status-total .slot-number").textContent();
-  const currentBefore = Number(await status.locator(".status-card-heading strong").textContent());
+  const trackedBefore = await readNumericText(status.locator(".status-total .slot-number"));
+  const currentBefore = await readNumericText(status.locator(".status-card-heading strong"));
 
   await page.getByPlaceholder("City, state, or country").fill("Switzerland");
-  await expect(status.locator(".status-card-heading strong")).not.toHaveText(String(currentBefore));
+  await expect(status.locator(".status-card-heading strong")).not.toHaveText(currentBefore.text);
 
   const metrics = await status.evaluate((element) => {
     const readMeter = (label) => {
@@ -140,14 +140,14 @@ await run("FEAT-072", "Current-view coverage metrics update with filters", async
   });
 
   expect(metrics.current).toBeGreaterThan(0);
-  expect(metrics.current).toBeLessThan(currentBefore);
+  expect(metrics.current).toBeLessThan(currentBefore.value);
   expect(metrics.mapped.count).toBeLessThanOrEqual(metrics.current);
   expect(metrics.remote.count).toBeLessThanOrEqual(metrics.current);
   expect(metrics.salary.count).toBeLessThanOrEqual(metrics.current);
   for (const metric of [metrics.mapped, metrics.remote, metrics.salary]) {
     expect(metric.width).toMatch(/^\d+%$/);
   }
-  await expect(status.locator(".status-total .slot-number")).toHaveText(trackedBefore ?? "");
+  await expect(status.locator(".status-total .slot-number")).toHaveText(trackedBefore.text);
   await page.close();
 });
 
@@ -939,4 +939,12 @@ function isMapTileOrGlyphUrl(url) {
     url.includes("cartocdn.com/") ||
     url.includes("demotiles.maplibre.org/font/")
   );
+}
+
+async function readNumericText(locator) {
+  const text = await locator.textContent();
+  expect(text).not.toBeNull();
+  const normalized = text.trim();
+  expect(normalized).toMatch(/^\d+$/);
+  return { text: normalized, value: Number(normalized) };
 }
