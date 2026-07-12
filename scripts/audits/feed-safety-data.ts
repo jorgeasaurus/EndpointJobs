@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+
 import { shouldWriteFeed, validateFeed } from "../job-refresh/feed-safety";
 import type { Job, JobsFeed } from "../../src/types/job";
 
@@ -121,4 +123,3 @@ function assertEqual<T>(actual: T, expected: T, message: string) {
     throw new Error(`${message}: expected ${String(expected)}, got ${String(actual)}`);
   }
 }
-import { readFile } from "node:fs/promises";
