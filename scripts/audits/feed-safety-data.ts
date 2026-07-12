@@ -13,7 +13,16 @@ export async function auditFeedSafetyData(run: RunAudit) {
   await run("FEAT-073", "Feed validation and empty-write protection reject unsafe output", async () => {
     const validJob = makeValidJob();
     validateFeed(makeFeed([validJob]));
-    validateFeed(makeFeed([{ ...validJob, id: "job-without-apply-url", applyUrl: undefined }]));
+    validateFeed(makeFeed([{
+      ...validJob,
+      id: "seed-job-without-apply-url",
+      applyUrl: undefined,
+      termsProfile: "seed"
+    }]));
+    assertThrows(
+      () => validateFeed(makeFeed([{ ...validJob, applyUrl: undefined }])),
+      "missing applyUrl"
+    );
 
     assertThrows(
       () => validateFeed(makeFeed([validJob, { ...validJob }])),
