@@ -72,6 +72,9 @@ function assertOrdered(value: string, expected: string[]) {
 
   for (const text of expected) {
     const index = value.indexOf(text);
+    if (index === -1) {
+      throw new Error(`missing refresh safety step: ${text}`);
+    }
     if (index <= previousIndex) {
       throw new Error(`expected ${text} after the prior refresh safety step`);
     }

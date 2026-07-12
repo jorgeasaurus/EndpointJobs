@@ -220,5 +220,9 @@ function getLocationSearchText(job: Job) {
 }
 
 function normalizeFilterText(value: string) {
-  return value.replace(/[^\p{L}\p{N}]+/gu, " ").trim().toLowerCase();
+  return value
+    .normalize("NFC")
+    .replace(/[^\p{L}\p{M}\p{N}]+/gu, " ")
+    .trim()
+    .toLowerCase();
 }

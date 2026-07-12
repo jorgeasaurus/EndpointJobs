@@ -290,7 +290,7 @@ await run("FEAT-008", "Free-text location search checks location and workplace",
       longitude: 8.5417
     }
   });
-  for (const locationQuery of ["Switzerland", "Zurich", "Zurich Switzerland"]) {
+  for (const locationQuery of ["Switzerland", "Zurich", "Zurich Switzerland", "Zu\u0308rich"]) {
     assertIds(
       filterJobs([zurichJob], { ...initialFilterState, locationQuery }),
       ["zurich-country-search"]
