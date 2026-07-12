@@ -254,6 +254,68 @@
       }
     },
     {
+      "id": "curated-ninjaone-software-packaging-engineer-ccc25d4d3e",
+      "title": "Software Packaging Engineer",
+      "company": "NinjaOne",
+      "location": "United States",
+      "mapLocation": {
+        "label": "United States",
+        "latitude": 39.8283,
+        "longitude": -98.5795
+      },
+      "workplace": "Remote",
+      "postedAt": "2026-07-12T00:00:00.000Z",
+      "fetchedAt": "2026-07-12T19:21:04.786Z",
+      "staleAfter": "2026-08-26T00:00:00.000Z",
+      "expiresAt": "2026-08-26T00:00:00.000Z",
+      "source": "Curated Jobs",
+      "sourceUrl": "https://jobs.jobvite.com/ninjaone/job/oKCZzfwE",
+      "applyUrl": "https://jobs.jobvite.com/ninjaone/job/oKCZzfwE",
+      "attributionLabel": "NinjaOne",
+      "termsProfile": "seed",
+      "summary": "Build production-ready third-party software packages and endpoint automation for NinjaOne's automated patching platform. - Analyze MSI, EXE, and custom installers for silent installation, upgrade behavior, and OS compatibility. - Develop endpoint scripts...",
+      "description": "Build production-ready third-party software packages and endpoint automation for NinjaOne's automated patching platform.\n- Analyze MSI, EXE, and custom installers for silent installation, upgrade behavior, and OS compatibility.\n- Develop endpoint scripts that download, install, upgrade, and verify applications across Windows, macOS, and Linux.\n- Define packaging standards and respond to vulnerabilities, vendor changes, and automation failures.\n- Requires software packaging experience with RMM, SCCM, Intune, or similar endpoint management platforms and strong PowerShell skills.\n- Remote within supported US states; published compensation is $120,000-$150,000 for listed states.",
+      "tags": [
+        "macOS",
+        "Windows",
+        "Linux",
+        "Intune",
+        "SCCM",
+        "NinjaOne",
+        "PowerShell",
+        "Curated",
+        "Software Packaging",
+        "RMM"
+      ],
+      "matchReasons": [
+        "SCCM/MECM",
+        "NinjaOne remediation",
+        "Endpoint engineering",
+        "PowerShell automation",
+        "App packaging"
+      ],
+      "tools": [
+        "Intune",
+        "SCCM",
+        "NinjaOne",
+        "PowerShell"
+      ],
+      "platforms": [
+        "macOS",
+        "Windows",
+        "Linux"
+      ],
+      "roleFamily": "Automation",
+      "seniority": "Mid",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 120000,
+        "max": 150000,
+        "currency": "USD",
+        "label": "$120k-$150k"
+      }
+    },
+    {
       "id": "adzuna-5797576885",
       "title": "Property Technology Operations Engineer",
       "company": "MGM Resorts",
@@ -17870,6 +17932,59 @@
         "label": "Boston, MA",
         "latitude": 42.3601,
         "longitude": -71.0589
+      }
+    },
+    {
+      "id": "ashby-suno-9487fe6a-f607-4814-a916-cc2b2516d2f1",
+      "title": "Senior IT Engineer",
+      "company": "Suno",
+      "location": "NYC",
+      "workplace": "On-site",
+      "postedAt": "2026-05-29T20:22:35.949Z",
+      "fetchedAt": "2026-07-12T19:15:55.825Z",
+      "staleAfter": "2026-08-26T19:15:55.825Z",
+      "expiresAt": "2026-08-26T19:15:55.825Z",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/suno/9487fe6a-f607-4814-a916-cc2b2516d2f1",
+      "applyUrl": "https://jobs.ashbyhq.com/suno/9487fe6a-f607-4814-a916-cc2b2516d2f1/application",
+      "attributionLabel": "Ashby / Suno",
+      "termsProfile": "public-api",
+      "summary": "ABOUT SUNO We're building the world's first creative entertainment platform, where the entire world can feel the joy and fulfilment of making music. Music is for everyone: Our users include everyone from grandmothers creating songs for their loved ones,...",
+      "description": "ABOUT SUNO\n\nWe're building the world's first creative entertainment platform, where the entire world can feel the joy and fulfilment of making music. Music is for everyone: Our users include everyone from grandmothers creating songs for their loved ones, to Grammy winners using Suno Studio, our power tool, to make the most popular hits in the world.\n\nBuilding the future of entertainment requires ambition. The pace is fast, the problems are hard, and the work demands ownership and intensity. For the right people, it’s incredibly rewarding: a chance to shape a new medium, work with a small team that cares deeply about quality, make music, drink too much coffee, and build something that millions of people use to express themselves in ways that were never before possible.\n\nSuno is the fastest growing consumer entertainment company and the leader in AI music. We are backed by leading investors including Bond Capital, Menlo Ventures, Lightspeed Venture Partners, IVP, Forerunner, Union Square Ventures, Alkeon, Quiet, Matrix Partners, Schroders Capital and, NVentures (venture arm of NVIDIA).\n\nABOUT THE ROLE\n\nBuild the systems that every Sunoer touches every day. As a Senior IT Engineer, you'll work with your teammates and the Senior Manager of IT to design and build our identity, endpoint, networking, and office IT systems in close partnership with Operations, People, Finance, and Engineering. Your focus will largely be on 0-to-1 work — you will build the capabilities that let Suno scale quickly and efficiently across our four US offices.\n\nWHAT YOU'LL DO\n\n- Build identity and access management — configure single sign-on, automate joiner / mover / leaver workflows, run access reviews, and automate ad hoc access requests.\n\n- Manage our endpoint fleet — migrate and expand our MDM systems to simplify onboarding, off-boarding, vulnerability management, and compliance.\n\n- Administer the SaaS estate — configure, harden, and manage our Google Workspace, Slack, and portfolio of SaaS tools.\n\n- Keep our office tech stack solid — wired, wireless, and zero-trust VPN networks performant and secure; A/V and videoconferencing reliable across our four offices; outside experts engaged where it makes sense.\n\n- Scale IT support — write runbooks and knowledge articles that enable AI-powered self-service and delegate Tier 0 troubleshooting to office managers.\n\n- Wire automation and AI into how we work — combine deterministic automation and outcome-oriented agentic AI to remove toil, freeing the rest of Suno to focus on making creative fulfillment a daily reality for everyone.\n\nWHAT YOU'LL NEED\n\nMUST-HAVES\n\n- 7–9 years of progressive IT engineering experience, including time at a high-growth company.\n\n- Demonstrated breadth across the IT stack — identity, endpoint, SaaS administration, networking, and office IT — with the depth to operate independently and make sound architectural calls.\n\n- Ability to work independently and on a team — you can work independently or collaboratively to take problems from definition through delivery.\n\n- Strong written communication — you can translate complex technical concepts for a wide range of audiences — engineers, executives, business colleagues, and vendors.\n\n- Learning agility — you pick up new platforms and technologies quickly, you're comfortable being the first person at the company to figure something out, and you aren't afraid to ask for help.\n\nNICE-TO-HAVES\n\n- Hands-on experience with a modern IdP (e.g., Okta, Google IAM, or equivalent) and SCIM-based provisioning.\n\n- Experience with IGA tooling (e.g., Lumos, SailPoint, Saviynt, or comparable) and joiner/mover/leaver automation.\n\n- Modern MDM experience (e.g., Iru, Jamf, Jumpcloud, Intune).\n\n- Networking and A/V engineering experience in a multi-office environment.\n\n- Experience partnering with EDR / MDR providers (CrowdStrike, SentinelOne, Expel, Arctic Wolf, or similar).\n\n- Experience as the first or early IT engineering hire at a growing company.\n\n- Comfort with at least one scripting language (Python, TypeScript, or Bash) and config-as-code approaches to managing infrastructure.\n\nWORK LOCATION POLICY\n\nThis role is expected to work from the designated Suno office 5 days a week, per Suno's company policy. Full-time employees will receive competitive equity packages, and comprehensive benefits. The actual base salary offered may vary depending on location, skills, qualifications, and experience.\n\nADDITIONAL NOTES\n\nApplicants must be eligible to work in the US.\n\nWillingness to travel (up to 15%) to collaborate with team members across Suno office locations.\n\nCOMPENSATION\n\nThe annual salary range for this role is $150K – $175K + target equity + benefits (including medical, dental, vision, and 401k)\n\nPERKS & BENEFITS FOR FULL-TIME EMPLOYEES\n\n- Company Equity Package\n\n- 401(k) with 3% Employer Match & Roth 401(k)\n\n- Medical, Dental, & Vision Insurance (PPO w/ HSA & FSA options)\n\n- 11 Paid Holidays + Unlimited PTO & Sick Time\n\n- 16 Weeks of Paid Parental Leave\n\n- Creative Education Stipend\n\n- Generous Commuter Allowance\n\n- In-Office Lunch (5 days per week)\n\nSuno is proud to be an Equal Opportunity Employer. We consider qualified applicants without regard to race, color, ancestry, religion, sex, national origin, sexual orientation, gender identity, age, marital or family status, disability, genetic information, veteran status, or any other legally protected basis under provincial, federal, state, and local laws, regulations, or ordinances. We will also consider qualified applicants with criminal histories in a manner consistent with the requirements of state and local laws, including the Massachusetts Fair Chance in Employment Act, NYC Fair Chance Act, LA City Fair Chance Ordinance, and San Francisco Fair Chance Ordinance.",
+      "tags": [
+        "Windows",
+        "macOS",
+        "Jamf",
+        "Intune",
+        "Okta",
+        "Operations",
+        "FullTime",
+        "OnSite"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "Endpoint engineering",
+        "MDM",
+        "Endpoint security",
+        "Compliance evidence"
+      ],
+      "tools": [
+        "Jamf",
+        "Intune",
+        "Okta"
+      ],
+      "platforms": [
+        "Windows",
+        "macOS"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Manager",
+      "employmentType": "FullTime",
+      "salary": {
+        "min": 150000,
+        "max": 175000,
+        "currency": "USD",
+        "label": "$150k-$175k"
       }
     },
     {

@@ -154,7 +154,7 @@ const defaultGreenhouseBoards = [
   "ubiquiti"
 ];
 
-const defaultLeverCompanies = ["jumpcloud", "brightonjones", "hermeus", "omnidian"];
+const defaultLeverCompanies = ["jumpcloud", "brightonjones", "hermeus", "omnidian", "whoop"];
 
 const defaultAshbyBoards = [
   "docker",
@@ -163,7 +163,9 @@ const defaultAshbyBoards = [
   "openai",
   "cohere",
   "elevenlabs",
-  "watershed"
+  "watershed",
+  "suno",
+  "voleon"
 ];
 
 const defaultWorkableAccounts: WorkableAccount[] = [];

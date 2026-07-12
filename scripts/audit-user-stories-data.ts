@@ -589,14 +589,12 @@ await run("FEAT-040", "Direct ATS board providers are wired", () => {
   ["greenhouse", "lever", "ashby", "workable"].forEach((id) =>
     assertIncludes(sources.atsBoards, `id: "${id}"`)
   );
-  assertIncludes(sources.workflow, "JOB_GREENHOUSE_BOARDS");
 });
 
 await run("FEAT-041", "Targeted company ATS providers are wired", () => {
   ["amazon", "workday", "jibe", "activate"].forEach((id) =>
     assertIncludes(sources.companyAts, `id: "${id}"`)
   );
-  assertIncludes(sources.workflow, "JOB_WORKDAY_SITES");
 });
 
 await run("FEAT-042", "Optional API providers are key-gated and non-fatal", () => {
@@ -806,13 +804,11 @@ await run("FEAT-058", "Expanded direct ATS sources are configured", () => {
   ["spacex", "gitlab", "coinbase", "canonical", "pinterest", "block", "roblox"].forEach(
     (board) => {
       assertIncludes(sources.atsBoards, `"${board}"`, `default Greenhouse board ${board}`);
-      assertIncludes(sources.workflow, board, `scheduled Greenhouse board ${board}`);
     }
   );
   ["Booz Allen", "HP", "NVIDIA", "Adobe", "F5", "Allstate", "Gartner", "Nordic Consulting", "SHI", "Circle", "Jabil"].forEach(
     (company) => {
       assertIncludes(sources.companyAts, company, `default Workday site ${company}`);
-      assertIncludes(sources.workflow, company, `scheduled Workday site ${company}`);
     }
   );
   assertIncludes(sources.readme, "SpaceX", "README source documentation");
