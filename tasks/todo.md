@@ -44,7 +44,7 @@ Extracted comparison CSS and audit coverage into focused modules, added permanen
 
 ## Review
 
-Location filtering now searches persisted map labels alongside raw provider locations and workplace values, so country and normalized city queries work without regressing unmapped jobs. Lint, typecheck, build, 57 data checks, 31 browser checks, and React Doctor 100/100 pass.
+Location filtering now searches persisted map labels alongside raw provider locations and workplace values, so country and normalized city queries work without regressing unmapped jobs. Lint, typecheck, build, 58 data checks, 32 browser checks, and React Doctor 100/100 pass.
 
 # Canonical feature audit expansion
 
