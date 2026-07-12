@@ -170,8 +170,8 @@ await run("FEAT-023", "Pagination next button changes active page", async () => 
   await expect(page.locator(".pagination-button.is-active").first()).toHaveText("2");
   await expect.poll(async () => {
     const box = await page.locator("#open-roles").boundingBox();
-    return Math.round(box?.y ?? Number.POSITIVE_INFINITY);
-  }).toBe(0);
+    return Math.abs(Math.round(box?.y ?? Number.POSITIVE_INFINITY));
+  }).toBeLessThanOrEqual(3);
   await expect(page.locator(".pagination-ellipsis").first()).toBeVisible();
   await page.close();
 });

@@ -220,5 +220,5 @@ function getLocationSearchText(job: Job) {
 }
 
 function normalizeFilterText(value: string) {
-  return value.replace(/[,/\s]+/g, " ").trim().toLowerCase();
+  return value.replace(/[^\p{L}\p{N}]+/gu, " ").trim().toLowerCase();
 }
