@@ -13,3 +13,24 @@
 ## Review
 
 Implemented an accessible comparison table with a tested four-role selection reducer and responsive horizontal containment. Typecheck, lint, build, 57 data checks, 30 browser checks, React Doctor 100/100, and three thermonuclear review passes completed; the final pass approved cleanly.
+
+# Comparison categories header
+
+- [x] Replace the corner Roles label with Categories in the top-left cell.
+- [x] Preserve accessible table headers and responsive column sizing.
+- [x] Verify mobile and desktop layout with Playwright.
+
+## Review
+
+Placed Categories in the top-left header cell beside the role headings. Lint, typecheck, production build, and Playwright checks at 390px and 1280px pass.
+
+# Thermo-nuclear review remediation
+
+- [x] Extract comparison styles and responsive rules into a feature-owned stylesheet.
+- [x] Move comparison data and browser audits into focused modules.
+- [x] Add static and browser assertions for the top-left Categories header.
+- [x] Run full verification and repeat the strict review.
+
+## Review
+
+Extracted comparison CSS and audit coverage into focused modules, added permanent first-cell and keyboard-focus browser assertions, and restored an accessible named scroll region. Lint, typecheck, build, 57 data checks, 30 browser checks, React Doctor 100/100, and the final thermo-nuclear review pass.

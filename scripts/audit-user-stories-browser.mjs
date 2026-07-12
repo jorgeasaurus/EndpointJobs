@@ -1,6 +1,7 @@
 import { chromium, expect } from "@playwright/test";
 
 import { loadBrowserAuditScenarios } from "./audit-user-stories-browser-fixtures.ts";
+import { auditJobComparisonBrowser } from "./audits/job-comparison-browser.mjs";
 
 const baseUrl = process.env.AUDIT_BASE_URL ?? "http://127.0.0.1:3002";
 const desktopViewport = { width: 1280, height: 900 };
@@ -625,53 +626,12 @@ await run("QA-006", "Footer popular search links do not route-prefetch on scroll
   await page.close();
 });
 
-await run("FEAT-070", "Job comparison supports two to four roles on desktop and mobile", async () => {
-  const desktopPage = await newPage(browser, desktopViewport);
-  const desktopCompareButtons = desktopPage.getByRole("button", { name: "Compare", exact: true });
-  expect(await desktopCompareButtons.count()).toBeGreaterThanOrEqual(5);
-
-  await desktopCompareButtons.first().click();
-  await expect(desktopPage.getByText("Select one more role to compare.")).toBeVisible();
-
-  for (let selectedCount = 1; selectedCount < 4; selectedCount += 1) {
-    await desktopPage.getByRole("button", { name: "Compare", exact: true }).first().click();
-  }
-
-  await expect(desktopPage.getByRole("heading", { name: "Compare 4 roles" })).toBeVisible();
-  const table = desktopPage.getByRole("table", { name: "Job comparison" });
-  await expect(table).toBeVisible();
-  for (const label of ["Employer", "Salary", "Location", "Workplace", "Seniority", "Tools", "Freshness", "Apply"]) {
-    await expect(table.getByRole("rowheader", { name: label })).toBeVisible();
-  }
-  await expect(desktopPage.getByRole("button", { name: "Compare", exact: true }).first()).toBeDisabled();
-
-  await desktopPage.locator(".comparison-remove").first().click();
-  await expect(desktopPage.getByRole("heading", { name: "Compare 3 roles" })).toBeVisible();
-  await expect(desktopPage.getByRole("button", { name: "Compare", exact: true }).first()).toBeEnabled();
-  await desktopPage.getByRole("button", { name: "Clear comparison" }).click();
-  await expect(table).toHaveCount(0);
-  await desktopPage.close();
-
-  const mobilePage = await newPage(browser, mobileViewport);
-  for (let selectedCount = 0; selectedCount < 4; selectedCount += 1) {
-    await mobilePage.getByRole("button", { name: "Compare", exact: true }).first().click();
-  }
-  await expect(mobilePage.getByRole("heading", { name: "Compare 4 roles" })).toBeVisible();
-  const overflow = await mobilePage.evaluate(() => {
-    const comparison = document.querySelector(".comparison-scroll");
-
-    if (!(comparison instanceof HTMLElement)) {
-      throw new Error("comparison scroll container missing");
-    }
-
-    return {
-      documentOverflows: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
-      comparisonScrolls: comparison.scrollWidth > comparison.clientWidth
-    };
-  });
-  expect(overflow.documentOverflows).toBeFalsy();
-  expect(overflow.comparisonScrolls).toBeTruthy();
-  await mobilePage.close();
+await auditJobComparisonBrowser({
+  browser,
+  desktopViewport,
+  mobileViewport,
+  newPage,
+  run
 });
 
 await run("FEAT-034", "Mobile viewport has no document overflow", async () => {

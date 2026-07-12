@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 
-import { ExternalLink, Scale, X } from "lucide-react";
+import { ExternalLink, ListTree, Scale, X } from "lucide-react";
 
 import { formatPostedDate, getFreshnessLabel } from "@/lib/jobs";
 import type { Job } from "@/types/job";
@@ -43,7 +43,12 @@ export function JobComparison({
         </button>
       </div>
 
-      <div className="comparison-scroll" tabIndex={0}>
+      <div
+        aria-label="Scrollable job comparison"
+        className="comparison-scroll"
+        role="region"
+        tabIndex={0}
+      >
         <table
           aria-label="Job comparison"
           className="comparison-grid"
@@ -51,9 +56,11 @@ export function JobComparison({
         >
           <thead>
             <tr>
-              <th className="comparison-label comparison-label--header" scope="col">
-                <Scale size={20} aria-hidden="true" />
-                Roles
+              <th className="comparison-label comparison-categories" scope="col">
+                <span>
+                  <ListTree size={20} aria-hidden="true" />
+                  Categories
+                </span>
               </th>
               {jobs.map((job) => (
                 <th className="comparison-job-heading" key={job.id} scope="col">

@@ -14,8 +14,6 @@ import {
   mergeFilterStateIntoSearchParams
 } from "../src/components/job-board/filter-url";
 import { JobCard } from "../src/components/job-board/job-card";
-import { JobComparison } from "../src/components/job-board/job-comparison";
-import { updateComparisonSelection } from "../src/components/job-board/comparison-selection";
 import { JobMapPopupContent } from "../src/components/job-board/job-map-popup";
 import { ToggleButton } from "../src/components/job-board/toggle-button";
 import feedData from "../src/data/jobs.json";
@@ -66,6 +64,7 @@ import {
   normalizeSearchText,
   summarize
 } from "./job-refresh/shared";
+import { auditJobComparisonData } from "./audits/job-comparison-data";
 
 type AuditStatus = "Passed" | "Failed";
 type AuditResult = { id: string; status: AuditStatus; detail: string };
@@ -478,68 +477,7 @@ await run("FEAT-026", "Salary pill renders accessible salary label", () => {
   assertIncludes(jobCardMarkup, "Salary $120k-$150k");
 });
 
-const comparisonJobs = [
-  makeJob({
-    id: "comparison-one",
-    title: "Endpoint Engineer",
-    company: "Example One",
-    location: "Seattle, WA",
-    workplace: "Hybrid",
-    postedAt: daysAgo(1),
-    salary: { currency: "USD", label: "$120k-$150k" },
-    tools: ["Intune"],
-    platforms: ["Windows"],
-    seniority: "Senior"
-  }),
-  makeJob({
-    id: "comparison-two",
-    title: "Client Platform Engineer",
-    company: "Example Two",
-    location: "Remote",
-    workplace: "Remote",
-    postedAt: daysAgo(3),
-    tools: ["Jamf"],
-    platforms: ["macOS"],
-    seniority: "Mid"
-  })
-];
-const comparisonMarkup = renderToStaticMarkup(
-  createElement(JobComparison, {
-    jobs: comparisonJobs,
-    onClear: () => undefined,
-    onRemove: () => undefined
-  })
-);
-
-await run("FEAT-070", "Job comparison renders requested decision fields", () => {
-  [
-    "Compare 2 roles",
-    "Employer",
-    "Salary",
-    "Location",
-    "Workplace",
-    "Seniority",
-    "Tools",
-    "Freshness",
-    "$120k-$150k",
-    "Not shown"
-  ].forEach((text) => assertIncludes(comparisonMarkup, text));
-  assertIncludes(comparisonMarkup, "Remove Endpoint Engineer at Example One from comparison");
-
-  let selection = new Set<string>();
-  ["one", "two", "three", "four", "five"].forEach((jobId) => {
-    selection = updateComparisonSelection(selection, { type: "toggle", jobId });
-  });
-  assertEqual(selection.size, 4, "comparison selection cap");
-  assertEqual(selection.has("five"), false, "fifth comparison selection rejected");
-
-  selection = updateComparisonSelection(selection, { type: "remove", jobId: "two" });
-  assertEqual(selection.has("two"), false, "comparison selection removed");
-  selection = updateComparisonSelection(selection, { type: "toggle", jobId: "five" });
-  assertEqual(selection.has("five"), true, "comparison slot reused after removal");
-  selection = updateComparisonSelection(selection, { type: "clear" });
-  assertEqual(selection.size, 0, "comparison selection cleared");
-});
+await auditJobComparisonData(run);
 
 await run("FEAT-028", "Match reasons render on job cards", () => {
   assertIncludes(jobCardMarkup, "Endpoint match reasons");
