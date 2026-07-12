@@ -34,3 +34,26 @@ Placed Categories in the top-left header cell beside the role headings. Lint, ty
 ## Review
 
 Extracted comparison CSS and audit coverage into focused modules, added permanent first-cell and keyboard-focus browser assertions, and restored an accessible named scroll region. Lint, typecheck, build, 57 data checks, 30 browser checks, React Doctor 100/100, and the final thermo-nuclear review pass.
+
+# Issue 8: country-aware location filtering
+
+- [x] Reproduce Switzerland returning no results for Zürich listings.
+- [x] Include canonical mapped country labels in location search.
+- [x] Add data and browser regression coverage.
+- [x] Run full verification.
+
+## Review
+
+Location filtering now searches persisted map labels alongside raw provider locations and workplace values, so country and normalized city queries work without regressing unmapped jobs. Lint, typecheck, build, 58 data checks, 32 browser checks, and React Doctor 100/100 pass.
+
+# Canonical feature audit expansion
+
+- [x] Reconcile every canonical story ID with executable audit coverage.
+- [x] Add missing stories for popular searches, live coverage metrics, and feed safety.
+- [x] Correct stale location, SEO, source, curated-provider, comparison, pagination, and feedback contracts.
+- [x] Add behavioral tests for feed validation, curated availability, structured-data limits, metrics, comparison recovery/persistence, pagination scrolling, and topbar feedback.
+- [x] Rerun the complete data and browser behavior suites.
+
+## Review
+
+Canonical tracker now contains 73 sequential stories and all 73 IDs map to executable audits. Data audit passes 58 checks and the production browser audit passes 32 checks; this cycle found and fixed issue #8's country-filter mismatch and found no additional failing user behavior.

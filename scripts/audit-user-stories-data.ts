@@ -64,7 +64,12 @@ import {
   normalizeSearchText,
   summarize
 } from "./job-refresh/shared";
+import {
+  classifyCuratedHttpStatus,
+  evaluateCuratedAvailability
+} from "./job-refresh/providers/curated-jobs";
 import { auditJobComparisonData } from "./audits/job-comparison-data";
+import { auditFeedSafetyData } from "./audits/feed-safety-data";
 
 type AuditStatus = "Passed" | "Failed";
 type AuditResult = { id: string; status: AuditStatus; detail: string };
@@ -87,9 +92,12 @@ const sourcePaths = {
   animatedNumber: "src/components/job-board/animated-number.tsx",
   atsBoards: "scripts/job-refresh/providers/ats-boards.ts",
   browserAudit: "scripts/audit-user-stories-browser.mjs",
+  comparisonBrowserAudit: "scripts/audits/job-comparison-browser.mjs",
+  comparisonDataAudit: "scripts/audits/job-comparison-data.ts",
   companyAts: "scripts/job-refresh/providers/company-ats.ts",
   controls: "src/components/job-board/controls.tsx",
   curated: "scripts/job-refresh/providers/curated-jobs.ts",
+  feedSafetyAudit: "scripts/audits/feed-safety-data.ts",
   jobTaxonomy: "src/lib/job-taxonomy.ts",
   issueConfig: ".github/ISSUE_TEMPLATE/config.yml",
   issueTemplate: ".github/ISSUE_TEMPLATE/report-or-request.yml",
@@ -186,9 +194,9 @@ const filterFixtureJobs = [
   })
 ];
 
-await run("TRACKER-001", "Canonical story sheet has complete source evidence", () => {
+await run("TRACKER-001", "Canonical story sheet has complete source evidence", async () => {
   const rows = parseCsv(sources.sheet);
-  assertEqual(rows.length, 70, "expected 70 user stories");
+  assertEqual(rows.length, 73, "expected 73 user stories");
   assertEqual(new Set(rows.map((row) => row.ID)).size, rows.length, "duplicate story IDs");
 
   rows.forEach((row, index) => {
@@ -207,6 +215,18 @@ await run("TRACKER-001", "Canonical story sheet has complete source evidence", (
       assertTruthy(existsSync(evidencePath), `${row.ID} evidence path missing: ${evidencePath}`);
     }
   });
+
+  const auditSource = [
+    sources.browserAudit,
+    sources.comparisonBrowserAudit,
+    sources.comparisonDataAudit,
+    sources.feedSafetyAudit,
+    await readFile("scripts/audit-user-stories-data.ts", "utf8")
+  ].join("\n");
+  const auditedIds = new Set(
+    [...auditSource.matchAll(/(?:run|audit)\("(FEAT-\d{3})"/g)].map((match) => match[1])
+  );
+  rows.forEach((row) => assertTruthy(auditedIds.has(row.ID), `${row.ID} has no executable audit`));
 });
 
 await run("FEAT-001", "Static job board loads from active feed data", () => {
@@ -261,6 +281,21 @@ await run("FEAT-008", "Free-text location search checks location and workplace",
   assertIds(filterJobs(filterFixtureJobs, { ...initialFilterState, locationQuery: "Remote" }), [
     "mac-jamf"
   ]);
+  const zurichJob = makeJob({
+    id: "zurich-country-search",
+    location: "Zürich",
+    mapLocation: {
+      label: "Zurich, Switzerland",
+      latitude: 47.3769,
+      longitude: 8.5417
+    }
+  });
+  for (const locationQuery of ["Switzerland", "Zurich", "Zurich Switzerland", "Zu\u0308rich"]) {
+    assertIds(
+      filterJobs([zurichJob], { ...initialFilterState, locationQuery }),
+      ["zurich-country-search"]
+    );
+  }
 });
 
 await run("FEAT-009", "Workplace filter requires exact workplace type", () => {
@@ -478,6 +513,7 @@ await run("FEAT-026", "Salary pill renders accessible salary label", () => {
 });
 
 await auditJobComparisonData(run);
+await auditFeedSafetyData(run);
 
 await run("FEAT-028", "Match reasons render on job cards", () => {
   assertIncludes(jobCardMarkup, "Endpoint match reasons");
@@ -583,6 +619,23 @@ await run("FEAT-043", "Curated jobs reserve slots and normalize reviewed listing
   assertIncludes(sources.curated, "curatedJobProvider");
   assertIncludes(sources.curated, "reserveFeedSlots");
   assertIncludes(sources.refresh, "reservedJobIds");
+  const availability = { requiredText: ["Endpoint Engineer", "Example Company"] } as const;
+  assertEqual(
+    evaluateCuratedAvailability(availability, "<h1>Endpoint Engineer</h1><p>Example Company</p>").status,
+    "available"
+  );
+  assertEqual(
+    evaluateCuratedAvailability(availability, "Endpoint Engineer — this job is no longer available").status,
+    "unavailable"
+  );
+  assertEqual(
+    evaluateCuratedAvailability(availability, "Endpoint Engineer at another employer").status,
+    "unavailable"
+  );
+  assertEqual(classifyCuratedHttpStatus(404, false)?.status, "unavailable");
+  assertEqual(classifyCuratedHttpStatus(410, false)?.status, "unavailable");
+  assertEqual(classifyCuratedHttpStatus(503, false)?.status, "unknown");
+  assertEqual(classifyCuratedHttpStatus(200, true), undefined);
 });
 
 await run("FEAT-044", "Normalizer accepts endpoint roles and rejects generic software roles", () => {
@@ -694,14 +747,28 @@ await run("FEAT-051", "Metadata, Open Graph, and Twitter cards are configured", 
 await run("FEAT-052", "Home JSON-LD emits escaped collection data", () => {
   const jsonLd = getHomeJsonLd({
     ...feed,
-    jobs: [makeJob({ title: "Endpoint <Engineer>", company: "Schema Co" })]
+    jobs: Array.from({ length: 25 }, (_, index) =>
+      makeJob({
+        id: `schema-${index}`,
+        title: index === 0 ? "Endpoint <Engineer>" : `Endpoint Engineer ${index}`,
+        company: "Schema Co",
+        applyUrl: index === 0 ? undefined : `https://example.com/apply/${index}`,
+        sourceUrl: `https://example.com/source/${index}`
+      })
+    )
   });
   const serialized = serializeJsonLd(jsonLd);
+  assertEqual(jsonLd["@graph"].length, 6, "structured-data graph node count");
   assertIncludes(serialized, "CollectionPage");
   assertIncludes(serialized, "ItemList");
   assertIncludes(serialized, "SearchAction");
   assertIncludes(serialized, "WebApplication");
-  assertIncludes(serialized, "#job-");
+  assertIncludes(serialized, "BreadcrumbList");
+  assertIncludes(serialized, '"numberOfItems":25');
+  assertIncludes(serialized, "#job-schema-19");
+  assertNotIncludes(serialized, "#job-schema-20", "structured listing cap");
+  assertIncludes(serialized, "https://example.com/source/0", "source URL sameAs fallback");
+  assertIncludes(serialized, "#popular-searches");
   assertIncludes(serialized, "\\u003cEngineer>");
 });
 
