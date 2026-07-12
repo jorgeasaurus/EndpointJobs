@@ -42,3 +42,4 @@
 - Do not add a direct ATS probe to recurring defaults until its API endpoint returns successfully and produces the intended listing.
 - Tests for canonical provider coverage should inspect provider defaults, not forbid legitimate workflow environment overrides.
 - When remediation removes attempted coverage, update earlier task summaries so the historical record matches the final implementation.
+- When a list-backed provider gains a new first entry, update documentation that describes its defaults or first-item URL behavior.

@@ -81,7 +81,7 @@ Career-board defaults include Greenhouse boards for Jamf, Automox, Tanium, Okta,
 
 Workable uses `JOB_WORKABLE_ACCOUNTS=slug` or `Display Name|slug` entries, with optional `JOB_WORKABLE_DETAIL_API_URL` for v1 detail overrides.
 
-Curated jobs are explicit reviewed listings in `scripts/job-refresh/providers/curated-jobs.ts`; the default curated listing is the Greentube EUC Engineer role.
+Curated jobs are explicit reviewed listings in `scripts/job-refresh/providers/curated-jobs.ts`; current defaults include NinjaOne's Software Packaging Engineer and Greentube's EUC Engineer roles.
 
 Techmap RSS uses `JOB_TECHMAP_RSS_FEEDS=url` or `Feed Name|url` entries, with optional `JOB_TECHMAP_RSS_AUTH_HEADER` or `TECHMAP_RSS_TOKEN`.
 
