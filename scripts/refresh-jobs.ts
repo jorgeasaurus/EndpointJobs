@@ -13,6 +13,7 @@ import { serpApiProvider } from "./job-refresh/providers/serpapi";
 import { techmapRssProvider } from "./job-refresh/providers/techmap-rss";
 import { theirStackProvider } from "./job-refresh/providers/theirstack";
 import { resolveJobMapLocation } from "./job-refresh/map-location";
+import { shouldWriteFeed, validateFeed } from "./job-refresh/feed-safety";
 import { extractSalaryFromText, normalizeSearchText } from "./job-refresh/shared";
 
 import {
@@ -52,9 +53,9 @@ async function main() {
     jobs: normalizedJobs
   };
 
-  validateFeed(feed);
+  validateFeed(feed, excludedSourceUrls);
 
-  if (normalizedJobs.length === 0 && process.env.JOB_ALLOW_EMPTY !== "true") {
+  if (!shouldWriteFeed(normalizedJobs.length, process.env.JOB_ALLOW_EMPTY === "true")) {
     console.log(
       "No endpoint jobs matched the configured provider feeds; leaving src/data/jobs.json unchanged."
     );
@@ -287,73 +288,6 @@ function dedupeJobs(jobs: Job[]) {
   }
 
   return Array.from(byKey.values());
-}
-
-function validateFeed(feed: JobsFeed) {
-  const seenIds = new Set<string>();
-
-  for (const job of feed.jobs) {
-    if (seenIds.has(job.id)) {
-      throw new Error(`Duplicate job id in feed: ${job.id}`);
-    }
-
-    seenIds.add(job.id);
-    assertPresent(job.source, job.id, "source");
-    assertPresent(job.sourceUrl, job.id, "sourceUrl");
-    assertPresent(job.applyUrl, job.id, "applyUrl");
-    assertPresent(job.fetchedAt, job.id, "fetchedAt");
-    assertPresent(job.postedAt, job.id, "postedAt");
-    assertPresent(job.staleAfter, job.id, "staleAfter");
-    assertPresent(job.attributionLabel, job.id, "attributionLabel");
-    assertPresent(job.termsProfile, job.id, "termsProfile");
-    assertNonEmptyList(job.matchReasons, job.id, "matchReasons");
-    assertValidMapLocation(job);
-
-    if (job.source === "Adzuna") {
-      assertNotExcludedJob(job);
-      assertNoAdzunaSnippetFields(job);
-    }
-  }
-}
-
-function assertNotExcludedJob(job: Job) {
-  if (isExcludedJobSourceUrl(job.sourceUrl, getConfiguredExcludedSourceUrls())) {
-    throw new Error(`Excluded job ${job.id} is still present in feed`);
-  }
-}
-
-function assertNoAdzunaSnippetFields(job: Job) {
-  if (job.description) {
-    throw new Error(`Adzuna job ${job.id} stores a snippet as description`);
-  }
-
-  if (job.summary.trim().endsWith("...")) {
-    throw new Error(`Adzuna job ${job.id} summary appears to be a clipped API snippet`);
-  }
-}
-
-function assertPresent(value: unknown, id: string, field: string) {
-  if (!value) {
-    throw new Error(`Job ${id} is missing ${field}`);
-  }
-}
-
-function assertNonEmptyList(value: unknown, id: string, field: string) {
-  if (!Array.isArray(value) || value.length === 0) {
-    throw new Error(`Job ${id} is missing ${field}`);
-  }
-}
-
-function assertValidMapLocation(job: Job) {
-  if (!job.mapLocation) {
-    return;
-  }
-
-  const { latitude, longitude } = job.mapLocation;
-
-  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-    throw new Error(`Job ${job.id} has invalid mapLocation coordinates`);
-  }
 }
 
 main().catch((error: unknown) => {

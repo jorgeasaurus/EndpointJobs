@@ -111,6 +111,46 @@ await run("FEAT-015", "Mobile filter stack expands from More filters", async () 
   await page.close();
 });
 
+await run("FEAT-072", "Current-view coverage metrics update with filters", async () => {
+  const page = await newPage(browser, desktopViewport);
+  const status = page.getByRole("complementary", { name: "Search coverage status" });
+  const trackedBefore = await status.locator(".status-total .slot-number").textContent();
+  const currentBefore = Number(await status.locator(".status-card-heading strong").textContent());
+
+  await page.getByPlaceholder("City, state, or country").fill("Switzerland");
+  await expect(status.locator(".status-card-heading strong")).not.toHaveText(String(currentBefore));
+
+  const metrics = await status.evaluate((element) => {
+    const readMeter = (label) => {
+      const meter = [...element.querySelectorAll(".status-meter")].find((item) =>
+        item.querySelector("span")?.textContent?.includes(label)
+      );
+      return {
+        count: Number(meter?.querySelector("strong")?.textContent ?? 0),
+        width: meter?.querySelector(".status-meter-track span")?.style.width ?? ""
+      };
+    };
+
+    return {
+      current: Number(element.querySelector(".status-card-heading strong")?.textContent ?? 0),
+      mapped: readMeter("Mapped"),
+      remote: readMeter("Remote / hybrid"),
+      salary: readMeter("Salary shown")
+    };
+  });
+
+  expect(metrics.current).toBeGreaterThan(0);
+  expect(metrics.current).toBeLessThan(currentBefore);
+  expect(metrics.mapped.count).toBeLessThanOrEqual(metrics.current);
+  expect(metrics.remote.count).toBeLessThanOrEqual(metrics.current);
+  expect(metrics.salary.count).toBeLessThanOrEqual(metrics.current);
+  for (const metric of [metrics.mapped, metrics.remote, metrics.salary]) {
+    expect(metric.width).toMatch(/^\d+%$/);
+  }
+  await expect(status.locator(".status-total .slot-number")).toHaveText(trackedBefore ?? "");
+  await page.close();
+});
+
 await run("FEAT-021", "Back navigation restores URL-derived filter state", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
   await page.goto(baseUrl + "/?q=Jamf", { waitUntil: "networkidle" });
@@ -124,8 +164,15 @@ await run("FEAT-021", "Back navigation restores URL-derived filter state", async
 
 await run("FEAT-023", "Pagination next button changes active page", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
-  await page.getByTitle("Next page").first().click();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.locator("footer").scrollIntoViewIfNeeded();
+  await page.getByTitle("Next page").last().click();
   await expect(page.locator(".pagination-button.is-active").first()).toHaveText("2");
+  await expect.poll(async () => {
+    const box = await page.locator("#open-roles").boundingBox();
+    return Math.round(box?.y ?? Number.POSITIVE_INFINITY);
+  }).toBe(0);
+  await expect(page.locator(".pagination-ellipsis").first()).toBeVisible();
   await page.close();
 });
 
@@ -186,6 +233,10 @@ await run("FEAT-030", "Apply links open externally with safe rel", async () => {
 
 await run("FEAT-031", "Footer attribution and project links are visible", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
+  const topbarFeedback = page.getByRole("link", { name: "Open feedback form on GitHub" });
+  await expect(topbarFeedback).toBeVisible();
+  await expect(topbarFeedback).toHaveAttribute("target", "_blank");
+  await expect(topbarFeedback).toHaveAttribute("rel", /noopener noreferrer/);
   await page.locator("footer").scrollIntoViewIfNeeded();
   await expect(page.getByText("Made by Jorgeasaurus")).toBeVisible();
   await expect(page.getByRole("link", { name: /Report an issue/i })).toHaveAttribute("href", new RegExp("github\\.com/jorgeasaurus/EndpointJobs/issues/new"));
@@ -396,6 +447,15 @@ await run("QA-002", "Location URL with encoded spaces hydrates map results", () 
   await expect(page.locator("#job-map-canvas canvas")).toBeVisible({ timeout: 10000 });
 }));
 
+await run("QA-016", "Country location search includes jobs stored by city", () => withPage(browser, desktopViewport, async (page) => {
+  const locationInput = page.getByPlaceholder("City, state, or country");
+  await locationInput.fill("Switzerland");
+
+  await expectActiveFilterChips(page, ["Location: Switzerland"]);
+  await expect(page.getByText("No matching roles")).toHaveCount(0);
+  await expect(page.locator(".job-card").filter({ hasText: "Zürich" }).first()).toBeVisible();
+}));
+
 await run("QA-003", "Mobile empty state reset restores results after a location miss", async () => {
   const page = await newPage(browser, { width: 390, height: 844 });
   await page.getByPlaceholder("City, state, or country").fill("No Matching City");
@@ -579,7 +639,7 @@ await run("QA-004", "Same-origin links resolve without dead routes", async () =>
   await page.close();
 });
 
-await run("QA-005", "Footer popular search links hydrate filtered result states", async () => {
+await run("FEAT-071", "Footer popular search links hydrate filtered result states", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
   await page.locator("footer").scrollIntoViewIfNeeded();
 

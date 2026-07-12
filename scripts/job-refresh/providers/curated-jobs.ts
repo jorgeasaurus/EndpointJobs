@@ -2,8 +2,8 @@ import type { Job, Workplace } from "../../../src/types/job";
 import type { ProviderAdapter } from "../provider";
 import { buildStableJobId, normalizeSearchText, stripHtml, toEndpointJob } from "../shared";
 
-type CuratedAvailabilityCheck = {
-  requiredText: [string, ...string[]];
+export type CuratedAvailabilityCheck = {
+  requiredText: readonly [string, ...string[]];
   unavailableText?: readonly string[];
 };
 
@@ -126,15 +126,12 @@ async function checkCuratedJobAvailability(job: CuratedJob): Promise<Availabilit
       signal: controller.signal
     });
 
-    if (unavailableStatusCodes.has(response.status)) {
-      return { status: "unavailable", reason: `source returned ${response.status}` };
+    const statusResult = classifyCuratedHttpStatus(response.status, response.ok);
+    if (statusResult) {
+      return statusResult;
     }
 
-    if (!response.ok) {
-      return { status: "unknown", reason: `availability check returned ${response.status}` };
-    }
-
-    return getAvailabilityFromBody(job, await response.text());
+    return evaluateCuratedAvailability(job.availability, await response.text());
   } catch (error) {
     return {
       status: "unknown",
@@ -145,16 +142,32 @@ async function checkCuratedJobAvailability(job: CuratedJob): Promise<Availabilit
   }
 }
 
-function getAvailabilityFromBody(job: CuratedJob, body: string): AvailabilityResult {
+export function classifyCuratedHttpStatus(
+  status: number,
+  ok: boolean
+): AvailabilityResult | undefined {
+  if (unavailableStatusCodes.has(status)) {
+    return { status: "unavailable", reason: `source returned ${status}` };
+  }
+
+  if (!ok) {
+    return { status: "unknown", reason: `availability check returned ${status}` };
+  }
+}
+
+export function evaluateCuratedAvailability(
+  availability: CuratedAvailabilityCheck,
+  body: string
+): AvailabilityResult {
   const text = normalizeSearchText(stripHtml(body));
-  const unavailableText = [...defaultUnavailableText, ...(job.availability.unavailableText ?? [])];
+  const unavailableText = [...defaultUnavailableText, ...(availability.unavailableText ?? [])];
   const matchedUnavailableText = unavailableText.find((phrase) => text.includes(normalizeSearchText(phrase)));
 
   if (matchedUnavailableText) {
     return { status: "unavailable", reason: `source contained "${matchedUnavailableText}"` };
   }
 
-  const missingRequiredText = job.availability.requiredText.find(
+  const missingRequiredText = availability.requiredText.find(
     (requiredText) => !text.includes(normalizeSearchText(requiredText))
   );
 

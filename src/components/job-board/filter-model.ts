@@ -214,7 +214,9 @@ function sortJobs(first: Job, second: Job, sort: SortKey) {
 }
 
 function getLocationSearchText(job: Job) {
-  return normalizeFilterText(`${job.location} ${job.workplace}`);
+  return normalizeFilterText(
+    `${job.location} ${job.mapLocation?.label ?? ""} ${job.workplace}`
+  );
 }
 
 function normalizeFilterText(value: string) {

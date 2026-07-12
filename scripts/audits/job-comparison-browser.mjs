@@ -13,7 +13,11 @@ export async function auditJobComparisonBrowser({
     expect(await desktopCompareButtons.count()).toBeGreaterThanOrEqual(5);
 
     await desktopCompareButtons.first().click();
-    await expect(desktopPage.getByText("Select one more role to compare.")).toBeVisible();
+    const prompt = desktopPage.locator(".comparison-prompt");
+    await expect(prompt.getByText("Select one more role to compare.")).toBeVisible();
+    await prompt.getByRole("button", { name: "Clear" }).click();
+    await expect(prompt).toHaveCount(0);
+    await desktopPage.getByRole("button", { name: "Compare", exact: true }).first().click();
 
     for (let selectedCount = 1; selectedCount < 4; selectedCount += 1) {
       await desktopPage.getByRole("button", { name: "Compare", exact: true }).first().click();
@@ -27,6 +31,13 @@ export async function auditJobComparisonBrowser({
       await expect(table.getByRole("rowheader", { name: label })).toBeVisible();
     }
     await expect(desktopPage.getByRole("button", { name: "Compare", exact: true }).first()).toBeDisabled();
+
+    const search = desktopPage.getByRole("searchbox", { name: "Search jobs" });
+    await search.fill("no matching comparison card");
+    await expect(desktopPage.getByText("No matching roles")).toBeVisible();
+    await expect(desktopPage.getByRole("heading", { name: "Compare 4 roles" })).toBeVisible();
+    await search.fill("");
+    await expect(desktopPage.locator(".job-card").first()).toBeVisible();
 
     await desktopPage.locator(".comparison-remove").first().click();
     await expect(desktopPage.getByRole("heading", { name: "Compare 3 roles" })).toBeVisible();
