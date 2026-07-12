@@ -64,6 +64,7 @@ import {
   normalizeSearchText,
   summarize
 } from "./job-refresh/shared";
+import { auditJobComparisonData } from "./audits/job-comparison-data";
 
 type AuditStatus = "Passed" | "Failed";
 type AuditResult = { id: string; status: AuditStatus; detail: string };
@@ -187,7 +188,7 @@ const filterFixtureJobs = [
 
 await run("TRACKER-001", "Canonical story sheet has complete source evidence", () => {
   const rows = parseCsv(sources.sheet);
-  assertEqual(rows.length, 69, "expected 69 user stories");
+  assertEqual(rows.length, 70, "expected 70 user stories");
   assertEqual(new Set(rows.map((row) => row.ID)).size, rows.length, "duplicate story IDs");
 
   rows.forEach((row, index) => {
@@ -429,6 +430,8 @@ await run("FEAT-024", "Empty state offers recovery through reset filters", () =>
 
 const jobCardMarkup = renderToStaticMarkup(
   createElement(JobCard, {
+    compareDisabled: false,
+    isCompared: false,
     job: makeJob({
       id: "card-job",
       title: "Intune Endpoint Engineer",
@@ -449,6 +452,7 @@ const jobCardMarkup = renderToStaticMarkup(
       seniority: "Senior",
       employmentType: "Full-time"
     }),
+    onToggleComparison: () => undefined,
     query: "Intune"
   })
 );
@@ -472,6 +476,8 @@ await run("FEAT-026", "Salary pill renders accessible salary label", () => {
   assertIncludes(jobCardMarkup, "salary-pill");
   assertIncludes(jobCardMarkup, "Salary $120k-$150k");
 });
+
+await auditJobComparisonData(run);
 
 await run("FEAT-028", "Match reasons render on job cards", () => {
   assertIncludes(jobCardMarkup, "Endpoint match reasons");

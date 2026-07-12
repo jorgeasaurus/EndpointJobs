@@ -3,6 +3,7 @@ import { Clock3, Layers3 } from "lucide-react";
 import type { Job } from "@/types/job";
 
 import { AnimatedNumber } from "./animated-number";
+import { maximumComparedJobs } from "./comparison-selection";
 import { JobCard } from "./job-card";
 import { PaginationControls, type PaginationState } from "./pagination-controls";
 
@@ -15,11 +16,15 @@ export function ResultsPanel({
   totalJobs,
   totalPages,
   query,
+  selectedJobIds,
+  toggleComparison,
   visibleJobs
 }: PaginationState & {
   clearFilters: () => void;
   onPageChange: (page: number) => void;
   query: string;
+  selectedJobIds: Set<string>;
+  toggleComparison: (job: Job) => void;
   visibleJobs: Job[];
 }) {
   return (
@@ -54,7 +59,14 @@ export function ResultsPanel({
           />
           <div className="job-list">
             {visibleJobs.map((job) => (
-              <JobCard key={job.id} job={job} query={query} />
+              <JobCard
+                compareDisabled={selectedJobIds.size >= maximumComparedJobs && !selectedJobIds.has(job.id)}
+                isCompared={selectedJobIds.has(job.id)}
+                key={job.id}
+                job={job}
+                onToggleComparison={toggleComparison}
+                query={query}
+              />
             ))}
           </div>
           <PaginationControls

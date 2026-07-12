@@ -13,6 +13,7 @@ import {
 import "./globals.css";
 import "./parallax-background.css";
 import "./job-board.css";
+import "./job-comparison.css";
 import "./job-board-filters.css";
 import "./job-board-location.css";
 import "./job-board-pagination.css";

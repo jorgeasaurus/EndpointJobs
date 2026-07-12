@@ -1,6 +1,7 @@
 import { chromium, expect } from "@playwright/test";
 
 import { loadBrowserAuditScenarios } from "./audit-user-stories-browser-fixtures.ts";
+import { auditJobComparisonBrowser } from "./audits/job-comparison-browser.mjs";
 
 const baseUrl = process.env.AUDIT_BASE_URL ?? "http://127.0.0.1:3002";
 const desktopViewport = { width: 1280, height: 900 };
@@ -623,6 +624,14 @@ await run("QA-006", "Footer popular search links do not route-prefetch on scroll
 
   expect(routePrefetches, routePrefetches.join("\n")).toHaveLength(0);
   await page.close();
+});
+
+await auditJobComparisonBrowser({
+  browser,
+  desktopViewport,
+  mobileViewport,
+  newPage,
+  run
 });
 
 await run("FEAT-034", "Mobile viewport has no document overflow", async () => {
