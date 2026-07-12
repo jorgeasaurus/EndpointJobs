@@ -57,3 +57,38 @@ Location filtering now searches persisted map labels alongside raw provider loca
 ## Review
 
 Canonical tracker now contains 73 sequential stories and all 73 IDs map to executable audits. Data audit passes 58 checks and the production browser audit passes 32 checks; this cycle found and fixed issue #8's country-filter mismatch and found no additional failing user behavior.
+
+# Discover endpoint jobs from July 12 leads
+
+- [x] Review pasted roles against endpoint relevance and existing feed coverage.
+- [x] Resolve qualifying roles to live direct-employer postings.
+- [x] Add minimal durable provider coverage or reviewed curated listings.
+- [x] Refresh the feed and verify deduplication, URLs, data audits, and build.
+- [x] Record sources, accepted roles, and verification results.
+
+## Review
+
+Added WHOOP Lever and Suno/Voleon Ashby coverage. The feed gained Suno's Senior IT Engineer; Dexcom and Brighton Jones were already present, WHOOP/Voleon were outside the 45-day direct-ATS freshness window, and Nordstrom was excluded after its search API returned 502. Typecheck, lint, 58 data audits, and production build pass with 406 listings.
+
+# Discover endpoint jobs from second July 12 batch
+
+- [x] Check the batch for existing listings and endpoint relevance.
+- [x] Resolve qualifying roles to live direct-employer postings.
+- [x] Add minimal durable source coverage.
+- [x] Refresh targeted sources and merge accepted listings safely.
+- [x] Run feed audits and production verification.
+
+## Review
+
+Added NinjaOne's remote Software Packaging Engineer from its live Jobvite posting with $120k-$150k compensation and Windows/macOS/Linux, PowerShell, SCCM, Intune, and RMM signals. Squint was absent from its official board; generic software, help-desk, and desktop-support roles were excluded. Typecheck, lint, 58 data audits, and production build pass with 407 unique listings.
+
+# Thermo-nuclear review remediation: job discovery
+
+- [x] Rebuild the generated feed with only the two intended additions.
+- [x] Remove CI configuration that duplicates canonical provider defaults.
+- [x] Remove the unverified Nordstrom Workday probe.
+- [x] Run full verification and repeat the strict review.
+
+## Review
+
+Reduced the feed diff to the two intended records, made provider modules canonical for scheduled ATS defaults, and removed the failing Nordstrom probe. Typecheck, lint, 58 data audits, production build, diff checks, and the repeated thermo-nuclear review pass cleanly.

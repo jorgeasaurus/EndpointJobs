@@ -37,3 +37,13 @@
 - After rebasing a PR branch in a temp worktree, verify whether the user-facing local checkout is stale before saying branch UI is current.
 - If Vercel preview content is the acceptance surface, keep generated data commits on the PR branch and verify the protected preview with `vercel curl`.
 - When annotated UI feedback points to a specific table cell, preserve the existing row structure and place the requested label in that cell; do not infer a new spanning row.
+- When merging targeted jobs into a generated feed, start from `HEAD` and insert only accepted records; never sort or reserialize a previously refreshed working copy because it creates unrelated churn.
+- Scheduled refresh workflows should consume canonical TypeScript source defaults; reserve workflow environment overrides for secrets and genuine deployment-specific configuration.
+- Do not add a direct ATS probe to recurring defaults until its API endpoint returns successfully and produces the intended listing.
+- Tests for canonical provider coverage should inspect provider defaults, not forbid legitimate workflow environment overrides.
+- When remediation removes attempted coverage, update earlier task summaries so the historical record matches the final implementation.
+- When a list-backed provider gains a new first entry, update documentation that describes its defaults or first-item URL behavior.
+- Seniority inference should prioritize title-only management signals; descriptions commonly mention the hiring manager and create false classifications.
+- When adding a location alias, regenerate persisted map data for affected listings and run the mapped-coverage audit.
+- Pass normalized boundary values into derived-field inference; do not recompute behavior from the provider's raw title after cleaning it.
+- Patch repeated generated JSON fields with record-level context and verify the target ID immediately; a bare field match can silently modify another job.

@@ -41,6 +41,36 @@ const defaultUnavailableText = [
 
 const curatedJobs = [
   {
+    title: "Software Packaging Engineer",
+    company: "NinjaOne",
+    location: "United States",
+    workplace: "Remote",
+    postedAt: "2026-07-12",
+    sourceUrl: "https://jobs.jobvite.com/ninjaone/job/oKCZzfwE",
+    employmentType: "Full-time",
+    salary: {
+      min: 120000,
+      max: 150000,
+      currency: "USD",
+      label: "$120k-$150k"
+    },
+    sourceTags: ["Curated", "Software Packaging", "RMM", "SCCM", "Intune", "PowerShell"],
+    availability: {
+      requiredText: [
+        "Software Packaging Engineer",
+        "NinjaOne"
+      ]
+    },
+    description: [
+      "Build production-ready third-party software packages and endpoint automation for NinjaOne's automated patching platform.",
+      "- Analyze MSI, EXE, and custom installers for silent installation, upgrade behavior, and OS compatibility.",
+      "- Develop endpoint scripts that download, install, upgrade, and verify applications across Windows, macOS, and Linux.",
+      "- Define packaging standards and respond to vulnerabilities, vendor changes, and automation failures.",
+      "- Requires software packaging experience with RMM, SCCM, Intune, or similar endpoint management platforms and strong PowerShell skills.",
+      "- Remote within supported US states; published compensation is $120,000-$150,000 for listed states."
+    ].join("\n")
+  },
+  {
     title: "EUC Engineer – Endpoint Management (f/m/d)",
     company: "Greentube GmbH",
     location: "Vienna",

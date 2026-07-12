@@ -168,7 +168,7 @@ function normalizeTechmapRssJob(raw: TechmapRssItem, feed: TechmapRssFeed, fetch
     tools,
     platforms,
     roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack),
+    seniority: inferSeniority(haystack, title),
     employmentType: inferEmploymentType(haystack)
   };
 }

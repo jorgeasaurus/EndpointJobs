@@ -589,14 +589,12 @@ await run("FEAT-040", "Direct ATS board providers are wired", () => {
   ["greenhouse", "lever", "ashby", "workable"].forEach((id) =>
     assertIncludes(sources.atsBoards, `id: "${id}"`)
   );
-  assertIncludes(sources.workflow, "JOB_GREENHOUSE_BOARDS");
 });
 
 await run("FEAT-041", "Targeted company ATS providers are wired", () => {
   ["amazon", "workday", "jibe", "activate"].forEach((id) =>
     assertIncludes(sources.companyAts, `id: "${id}"`)
   );
-  assertIncludes(sources.workflow, "JOB_WORKDAY_SITES");
 });
 
 await run("FEAT-042", "Optional API providers are key-gated and non-fatal", () => {
@@ -687,6 +685,8 @@ await run("FEAT-046", "Normalizer infers workplace, role family, seniority, and 
   assertEqual(inferRoleFamily(securityText, [], ["Windows"]), "Endpoint Security");
   assertEqual(inferRoleFamily(sysadminText, ["PowerShell"], ["Windows"]), "Systems Administration");
   assertEqual(inferSeniority(securityText), "Senior");
+  assertEqual(inferSeniority("senior manager of it", "Senior IT Engineer"), "Senior");
+  assertEqual(inferSeniority("senior manager role", "Senior IT Manager"), "Manager");
   assertEqual(inferEmploymentType(securityText), "Contract");
 });
 
@@ -806,13 +806,11 @@ await run("FEAT-058", "Expanded direct ATS sources are configured", () => {
   ["spacex", "gitlab", "coinbase", "canonical", "pinterest", "block", "roblox"].forEach(
     (board) => {
       assertIncludes(sources.atsBoards, `"${board}"`, `default Greenhouse board ${board}`);
-      assertIncludes(sources.workflow, board, `scheduled Greenhouse board ${board}`);
     }
   );
   ["Booz Allen", "HP", "NVIDIA", "Adobe", "F5", "Allstate", "Gartner", "Nordic Consulting", "SHI", "Circle", "Jabil"].forEach(
     (company) => {
       assertIncludes(sources.companyAts, company, `default Workday site ${company}`);
-      assertIncludes(sources.workflow, company, `scheduled Workday site ${company}`);
     }
   );
   assertIncludes(sources.readme, "SpaceX", "README source documentation");
@@ -1030,6 +1028,7 @@ await run("FEAT-068", "Endpoint search defaults include role and company expansi
 
 await run("FEAT-069", "Map location resolver maps known places and skips ambiguous rows", () => {
   assertEqual(resolveJobMapLocation("San Francisco, CA")?.label, "San Francisco, CA");
+  assertEqual(resolveJobMapLocation("NYC")?.label, "New York, NY");
   assertEqual(resolveJobMapLocation("United States")?.label, "United States");
   assertEqual(resolveJobMapLocation("Hawthorne, CA")?.label, "Los Angeles, CA");
   assertEqual(resolveJobMapLocation("Jacks Cabin, Gunnison County")?.label, "Denver, CO");
