@@ -61,8 +61,15 @@ Repeated or unknown parameters are rejected. Multi-value filters use one comma-s
 List jobs:
 
 ```powershell
-$response = Invoke-RestMethod -Uri 'https://endpointjobs.dev/api/jobs'
-$response.data
+$response = Invoke-RestMethod -Uri 'https://endpointjobs.dev/api/jobs?limit=2'
+$response.data | Select-Object id, title, company, location
+```
+
+```text
+id                                                          title                              company          location
+--                                                          -----                              -------          --------
+workday-the-hartford-avp-end-user-engineering-08f75aba96     AVP, End User Engineering          The Hartford     Hartford, CT
+activate-cardinal-health-f989d26e-7ca3-4899-9350-9c5b3a3a1023 Senior Analyst, IT Client Services Cardinal Health  Overland Park, Kansas...
 ```
 
 Filter and paginate:
@@ -74,13 +81,36 @@ $response.meta
 $response.data | Select-Object title, company, location
 ```
 
+```text
+page limit total totalPages updatedAt
+---- ----- ----- ---------- ---------
+   1    20    10          1 2026-07-12T22:35:39.294Z
+
+title                       company  location
+-----                       -------  --------
+IT Systems Engineer         Intercom San Francisco, California
+Senior IT Systems Engineer  Intercom San Francisco, California
+```
+
 Fetch one job from the collection:
 
 ```powershell
 $jobId = $response.data[0].id
 $job = Invoke-RestMethod -Uri "https://endpointjobs.dev/api/jobs/$jobId"
-$job.data
+$job.data | Select-Object id, title, company, location, workplace, tools, platforms
 ```
+
+```text
+id         : greenhouse-intercom-7918638
+title      : IT Systems Engineer
+company    : Intercom
+location   : San Francisco, California
+workplace  : Hybrid
+tools      : {Jamf, Intune, Okta}
+platforms  : {Windows, macOS}
+```
+
+Outputs were captured from the live API on July 13, 2026 and will change as listings refresh.
 
 ## Get one job
 

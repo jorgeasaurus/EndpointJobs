@@ -195,3 +195,13 @@ Added copy-ready PowerShell examples for collection, filtered pagination, and it
 ## Review
 
 The API docs button now targets `main/docs/api.md`, which remains valid after feature-branch deletion. The destination returns successfully; typecheck, lint, React Doctor, and diff checks pass.
+
+# PowerShell example outputs
+
+- [x] Call each documented API flow against production.
+- [x] Add concise, real output beneath each PowerShell example.
+- [x] Verify documentation and push the update.
+
+## Review
+
+Called the live collection, filtered collection, and item endpoints and added representative PowerShell output for each. The guide records the capture date because listing counts and values refresh. JSON parsing, typecheck, lint, and diff checks pass.
