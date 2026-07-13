@@ -59,7 +59,7 @@ function findMinimumSalaryScenario(jobs: Job[]): MinimumSalaryScenario {
   for (const threshold of thresholds) {
     const floor = Number(threshold);
     const matchingJobs = jobs.filter((job) => getUsdSalaryCeiling(job) >= floor);
-    const includedJob = matchingJobs.find((job) => getUsdSalaryCeiling(job) === floor);
+    const includedJob = matchingJobs[0];
     const excludedJob = jobs.find(
       (job) =>
         getUsdSalaryCeiling(job) < floor &&
