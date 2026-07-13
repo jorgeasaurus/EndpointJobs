@@ -15,7 +15,19 @@ GET /api/jobs?tools=Jamf&platforms=macOS&minSalary=150000&page=1&limit=20
 ```json
 {
   "data": [{ "id": "...", "title": "Endpoint Engineer" }],
-  "filters": { "tools": ["Jamf"], "minSalary": "150000" },
+  "filters": {
+    "q": null,
+    "platforms": ["macOS"],
+    "tools": ["Jamf"],
+    "location": null,
+    "workplace": null,
+    "salaryShown": false,
+    "minSalary": "150000",
+    "seniority": null,
+    "family": null,
+    "freshness": null,
+    "sort": "newest"
+  },
   "meta": {
     "page": 1,
     "limit": 20,
