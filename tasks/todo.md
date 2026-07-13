@@ -106,3 +106,15 @@ Reduced the feed diff to the two intended records, made provider modules canonic
 ## Review
 
 Removed the preference editor and all card scoring. Added Any salary and $80k-$200k thresholds to the existing advanced filters; disclosed ranges qualify when `max ?? min` reaches the floor, with active-chip and `minSalary` URL persistence. Typecheck, lint, build, 59 data checks, 33 browser checks, desktop/mobile visual checks, and React Doctor pass.
+
+# Minimum salary review remediation
+
+- [x] Restrict dollar thresholds to USD listings.
+- [x] Add exact-boundary, single-value, missing-salary, and non-USD tests.
+- [x] Replace the browser audit's circular result oracle.
+- [x] Run full verification and repeat the thermonuclear review.
+- [ ] Push and verify the corrected Vercel preview.
+
+## Review
+
+Dollar thresholds now evaluate USD listings only. Data coverage includes exact range ceilings, single-value salaries, missing salaries, and high non-USD salaries; browser expectations are calculated independently from production filtering and assert included/excluded roles. Typecheck, lint, build, 59 data checks, 33 browser checks, React Doctor, and the repeated thermonuclear review pass cleanly.

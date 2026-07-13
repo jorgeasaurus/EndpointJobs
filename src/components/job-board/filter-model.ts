@@ -193,7 +193,7 @@ export function filterJobs(jobs: Job[], filters: FilterState) {
 
       if (
         filters.minimumSalary !== "Any" &&
-        getSalaryCeiling(job) < Number(filters.minimumSalary)
+        getUsdSalaryCeiling(job) < Number(filters.minimumSalary)
       ) {
         return false;
       }
@@ -228,8 +228,10 @@ function hasSalaryShown(job: Job) {
   );
 }
 
-function getSalaryCeiling(job: Job) {
-  return job.salary?.max ?? job.salary?.min ?? 0;
+function getUsdSalaryCeiling(job: Job) {
+  if (job.salary?.currency !== "USD") return 0;
+
+  return job.salary.max ?? job.salary.min ?? 0;
 }
 
 function toggleValue<T>(values: T[], value: T) {

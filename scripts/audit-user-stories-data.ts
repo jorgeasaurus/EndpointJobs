@@ -314,12 +314,36 @@ await run("FEAT-010", "Salary-only filter keeps only transparent pay listings", 
 });
 
 await run("FEAT-074", "Minimum salary keeps ranges that can meet the selected floor", () => {
+  const salaryBoundaryJobs = [
+    ...filterFixtureJobs,
+    makeJob({
+      id: "exact-usd-boundary",
+      postedAt: daysAgo(4),
+      salary: { min: 160000, max: 180000, currency: "USD", label: "$160k-$180k" }
+    }),
+    makeJob({
+      id: "single-usd-boundary",
+      postedAt: daysAgo(5),
+      salary: { min: 180000, currency: "USD", label: "$180k" }
+    }),
+    makeJob({
+      id: "non-usd-above-boundary",
+      postedAt: daysAgo(6),
+      salary: { min: 250000, max: 300000, currency: "EUR", label: "EUR 250k-300k" }
+    })
+  ];
+
   assertIds(
-    filterJobs(filterFixtureJobs, {
+    filterJobs(salaryBoundaryJobs, {
       ...initialFilterState,
       minimumSalary: "180000"
     }),
-    ["recent-intune", "security-tanium"]
+    [
+      "recent-intune",
+      "exact-usd-boundary",
+      "single-usd-boundary",
+      "security-tanium"
+    ]
   );
   assertLabels(
     getActiveFilterItems({ ...initialFilterState, minimumSalary: "180000" }),

@@ -24,6 +24,13 @@ export async function auditMinimumSalaryBrowser({
       minimumSalaryScenario.threshold
     );
 
+    const search = page.getByRole("searchbox", { name: "Search jobs" });
+    await search.fill(minimumSalaryScenario.includedTitle);
+    await expect(page.locator(".job-card").first()).toBeVisible();
+    await search.fill(minimumSalaryScenario.excludedTitle);
+    await expect(page.getByText("No matching roles")).toBeVisible();
+    await search.fill("");
+
     await page.getByRole("button", { name: `Remove filter: Minimum: ${expectedLabel}` }).click();
     await expect(mobileFilterStack.getByLabel("Minimum salary")).toHaveValue("Any");
     expect(new URL(page.url()).searchParams.has("minSalary")).toBeFalsy();

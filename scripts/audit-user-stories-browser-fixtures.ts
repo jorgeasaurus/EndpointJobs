@@ -33,6 +33,8 @@ type DescriptionScenario = {
 };
 
 type MinimumSalaryScenario = {
+  excludedTitle: string;
+  includedTitle: string;
   resultCount: number;
   threshold: Exclude<MinimumSalaryFilter, "Any">;
 };
@@ -55,17 +57,34 @@ function findMinimumSalaryScenario(jobs: Job[]): MinimumSalaryScenario {
   const thresholds = ["200000", "180000", "150000", "120000", "100000", "80000"] satisfies Array<Exclude<MinimumSalaryFilter, "Any">>;
 
   for (const threshold of thresholds) {
-    const matchingJobs = filterJobs(jobs, {
-      ...initialFilterState,
-      minimumSalary: threshold
-    });
+    const floor = Number(threshold);
+    const matchingJobs = jobs.filter((job) => getUsdSalaryCeiling(job) >= floor);
+    const includedJob = matchingJobs.find((job) => getUsdSalaryCeiling(job) === floor);
+    const excludedJob = jobs.find(
+      (job) =>
+        getUsdSalaryCeiling(job) < floor &&
+        jobs
+          .filter((candidate) => candidate.title === job.title)
+          .every((candidate) => getUsdSalaryCeiling(candidate) < floor)
+    );
 
-    if (matchingJobs.length > 0 && matchingJobs.length < jobs.length) {
-      return { resultCount: matchingJobs.length, threshold };
+    if (includedJob && excludedJob && matchingJobs.length < jobs.length) {
+      return {
+        excludedTitle: excludedJob.title,
+        includedTitle: includedJob.title,
+        resultCount: matchingJobs.length,
+        threshold
+      };
     }
   }
 
   throw new Error("missing minimum-salary browser scenario");
+}
+
+function getUsdSalaryCeiling(job: Job) {
+  if (job.salary?.currency !== "USD") return 0;
+
+  return job.salary.max ?? job.salary.min ?? 0;
 }
 
 function findLocationMapScenario(jobs: Job[]): LocationMapScenario {
