@@ -28,7 +28,7 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
         <a
           aria-label="Open API documentation on GitHub"
           className="feedback-link api-docs-link"
-          href="https://github.com/jorgeasaurus/EndpointJobs/blob/feature/jobs-api/docs/api.md"
+          href="https://github.com/jorgeasaurus/EndpointJobs/blob/main/docs/api.md"
           rel="noopener noreferrer"
           target="_blank"
           title="Open API documentation on GitHub"

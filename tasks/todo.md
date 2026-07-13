@@ -186,3 +186,12 @@ Opened ready PR #12 and completed five Copilot review cycles. Addressed nine com
 ## Review
 
 Added copy-ready PowerShell examples for collection, filtered pagination, and item requests. The header API button now opens the rendered branch guide on GitHub in a new tab. Typecheck, lint, React Doctor, and diff checks pass.
+
+# API docs link hotfix
+
+- [x] Replace the deleted feature-branch documentation URL with the durable `main` URL.
+- [x] Run focused verification and push the hotfix.
+
+## Review
+
+The API docs button now targets `main/docs/api.md`, which remains valid after feature-branch deletion. The destination returns successfully; typecheck, lint, React Doctor, and diff checks pass.
