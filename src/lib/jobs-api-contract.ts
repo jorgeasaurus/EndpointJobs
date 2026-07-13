@@ -45,7 +45,7 @@ export const jobsApiQueryContract = {
   minSalary: {
     kind: "enum",
     openApiName: "MinimumSalary",
-    description: "Minimum USD salary ceiling.",
+    description: "Minimum USD salary floor; listings qualify when their salary ceiling meets it.",
     values: minimumSalaryValues
   },
   seniority: { kind: "enum", openApiName: "Seniority", values: seniorityOptions },

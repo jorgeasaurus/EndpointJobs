@@ -4,7 +4,7 @@ Base URL: `https://endpointjobs.dev`
 
 The API is public, read-only, and requires no authentication. It returns active listings from the same normalized feed used by the job board.
 
-Machine-readable contract: [`/openapi.json`](../public/openapi.json)
+Machine-readable contract: [`/openapi.json`](https://endpointjobs.dev/openapi.json)
 
 ## List jobs
 

@@ -241,7 +241,7 @@
       "MinimumSalary": {
         "name": "minSalary",
         "in": "query",
-        "description": "Minimum USD salary ceiling.",
+        "description": "Minimum USD salary floor; listings qualify when their salary ceiling meets it.",
         "schema": {
           "type": "string",
           "enum": [
