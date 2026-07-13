@@ -22,6 +22,8 @@ export type JobFilters = {
 export function filterJobs(jobs: Job[], filters: JobFilters) {
   const query = filters.query.trim().toLowerCase();
   const location = normalize(`${filters.locationQuery}`);
+  const minimumSalary = filters.minimumSalary === "Any" ? null : Number(filters.minimumSalary);
+  const maximumAge = filters.freshness === "Any" ? null : Number(filters.freshness);
   return jobs.filter((job) => {
     if (query && !getSearchText(job).includes(query)) return false;
     if (location && !normalize(`${job.location} ${job.mapLocation?.label ?? ""} ${job.workplace}`).includes(location)) return false;
@@ -29,10 +31,10 @@ export function filterJobs(jobs: Job[], filters: JobFilters) {
     if (filters.selectedTools.length && !filters.selectedTools.some((value) => job.tools.includes(value))) return false;
     if (filters.workplace !== "Any" && job.workplace !== filters.workplace) return false;
     if (filters.salaryOnly && typeof job.salary?.min !== "number" && typeof job.salary?.max !== "number") return false;
-    if (filters.minimumSalary !== "Any" && (job.salary?.currency !== "USD" || (job.salary.max ?? job.salary.min ?? 0) < Number(filters.minimumSalary))) return false;
+    if (minimumSalary !== null && (job.salary?.currency !== "USD" || (job.salary.max ?? job.salary.min ?? 0) < minimumSalary)) return false;
     if (filters.seniority !== "All" && job.seniority !== filters.seniority) return false;
     if (filters.roleFamily !== "All" && job.roleFamily !== filters.roleFamily) return false;
-    return filters.freshness === "Any" || getPostedAgeDays(job.postedAt) <= Number(filters.freshness);
+    return maximumAge === null || getPostedAgeDays(job.postedAt) <= maximumAge;
   }).sort((a, b) => filters.sort === "salary"
     ? getSalarySortValue(b) - getSalarySortValue(a)
     : filters.sort === "company"

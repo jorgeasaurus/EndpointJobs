@@ -94,7 +94,7 @@ export function queryJobs(
         page,
         limit,
         total: filteredJobs.length,
-        totalPages: Math.ceil(filteredJobs.length / limit),
+        totalPages: Math.max(1, Math.ceil(filteredJobs.length / limit)),
         updatedAt: feed.updatedAt
       }
     }

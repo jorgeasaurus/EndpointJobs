@@ -74,6 +74,8 @@ export async function auditJobsApiData(run: RunAudit) {
 
     const active = queryJobs(feed, new URLSearchParams(), now);
     assertEqual(active.ok && active.body.meta.total, 2, "stale job excluded");
+    const empty = queryJobs(feed, new URLSearchParams("q=nonexistent"), now);
+    assertEqual(empty.ok && empty.body.meta.totalPages, 1, "empty results retain one page");
     assertEqual(findActiveJob(feed, "one", now)?.id, "one", "active job lookup");
     assertEqual(findActiveJob(feed, "stale", now), undefined, "stale job lookup excluded");
 

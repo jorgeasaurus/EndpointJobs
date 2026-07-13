@@ -465,7 +465,7 @@
           },
           "totalPages": {
             "type": "integer",
-            "minimum": 0
+            "minimum": 1
           },
           "updatedAt": {
             "type": "string",
