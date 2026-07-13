@@ -113,7 +113,7 @@ Removed the preference editor and all card scoring. Added Any salary and $80k-$2
 - [x] Add exact-boundary, single-value, missing-salary, and non-USD tests.
 - [x] Replace the browser audit's circular result oracle.
 - [x] Run full verification and repeat the thermonuclear review.
-- [ ] Push and verify the corrected Vercel preview.
+- [x] Push and verify the corrected Vercel preview.
 
 ## Review
 
