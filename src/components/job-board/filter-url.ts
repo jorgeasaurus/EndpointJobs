@@ -14,6 +14,7 @@ import type {
   SortKey,
   WorkplaceFilter
 } from "./filter-model";
+import { isMinimumSalaryFilter } from "./filter-model";
 
 const currentFilterSearchParamKeys = [
   "q",
@@ -109,18 +110,7 @@ export function toWorkplaceFilter(value: string): WorkplaceFilter {
 }
 
 export function toMinimumSalaryFilter(value: string): MinimumSalaryFilter {
-  if (
-    value === "80000" ||
-    value === "100000" ||
-    value === "120000" ||
-    value === "150000" ||
-    value === "180000" ||
-    value === "200000"
-  ) {
-    return value;
-  }
-
-  return "Any";
+  return isMinimumSalaryFilter(value) ? value : "Any";
 }
 
 export function toSortKey(value: string): SortKey {

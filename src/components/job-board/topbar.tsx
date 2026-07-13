@@ -1,5 +1,6 @@
 import {
   Github,
+  FileJson,
   MessageSquarePlus,
   MonitorSmartphone,
   RefreshCw
@@ -24,6 +25,15 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
           <RefreshCw size={15} aria-hidden="true" />
           {formatUpdatedAt(updatedAt)}
         </span>
+        <Link
+          aria-label="Open API documentation"
+          className="feedback-link api-docs-link"
+          href={{ pathname: "/openapi.json" }}
+          title="Open API documentation"
+        >
+          <FileJson size={15} aria-hidden="true" />
+          <span>API docs</span>
+        </Link>
         <a
           aria-label="Open feedback form on GitHub"
           className="feedback-link topbar-feedback-link"

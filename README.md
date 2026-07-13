@@ -4,6 +4,8 @@ Focused job board for Endpoint Engineering, macOS, Windows, MDM, UEM, client pla
 
 Live site: https://endpointjobs.dev
 
+Public API: [`GET /api/jobs`](https://endpointjobs.dev/api/jobs) · [usage guide](docs/api.md) · [OpenAPI 3.1](public/openapi.json)
+
 ## Screenshots
 
 | Desktop | Mobile |

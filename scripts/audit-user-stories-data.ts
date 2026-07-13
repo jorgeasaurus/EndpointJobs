@@ -70,6 +70,8 @@ import {
 } from "./job-refresh/providers/curated-jobs";
 import { auditJobComparisonData } from "./audits/job-comparison-data";
 import { auditFeedSafetyData } from "./audits/feed-safety-data";
+import { auditJobsApiData } from "./audits/jobs-api-data";
+import { auditMinimumSalaryData } from "./audits/minimum-salary-data";
 
 type AuditStatus = "Passed" | "Failed";
 type AuditResult = { id: string; status: AuditStatus; detail: string };
@@ -111,6 +113,9 @@ const sourcePaths = {
   jobMapFeatures: "src/components/job-board/job-map-features.ts",
   jobMapLib: "src/lib/job-map.ts",
   jobMapPopup: "src/components/job-board/job-map-popup.tsx",
+  jobsApiAudit: "scripts/audits/jobs-api-data.ts",
+  jobsApiBrowserAudit: "scripts/audits/jobs-api-browser.mjs",
+  minimumSalaryAudit: "scripts/audits/minimum-salary-data.ts",
   layout: "src/app/layout.tsx",
   mapLocation: "src/lib/map-location.ts",
   packageLock: "package-lock.json",
@@ -196,7 +201,7 @@ const filterFixtureJobs = [
 
 await run("TRACKER-001", "Canonical story sheet has complete source evidence", async () => {
   const rows = parseCsv(sources.sheet);
-  assertEqual(rows.length, 74, "expected 74 user stories");
+  assertEqual(rows.length, 75, "expected 75 user stories");
   assertEqual(new Set(rows.map((row) => row.ID)).size, rows.length, "duplicate story IDs");
 
   rows.forEach((row, index) => {
@@ -221,6 +226,9 @@ await run("TRACKER-001", "Canonical story sheet has complete source evidence", a
     sources.comparisonBrowserAudit,
     sources.comparisonDataAudit,
     sources.feedSafetyAudit,
+    sources.jobsApiAudit,
+    sources.jobsApiBrowserAudit,
+    sources.minimumSalaryAudit,
     await readFile("scripts/audit-user-stories-data.ts", "utf8")
   ].join("\n");
   const auditedIds = new Set(
@@ -311,49 +319,6 @@ await run("FEAT-010", "Salary-only filter keeps only transparent pay listings", 
   const filtered = filterJobs(filterFixtureJobs, { ...initialFilterState, salaryOnly: true });
   assertIds(filtered, ["recent-intune", "security-tanium"]);
   assertLabels(getActiveFilterItems({ ...initialFilterState, salaryOnly: true }), ["Salary shown"]);
-});
-
-await run("FEAT-074", "Minimum salary keeps ranges that can meet the selected floor", () => {
-  const salaryBoundaryJobs = [
-    ...filterFixtureJobs,
-    makeJob({
-      id: "exact-usd-boundary",
-      postedAt: daysAgo(4),
-      salary: { min: 160000, max: 180000, currency: "USD", label: "$160k-$180k" }
-    }),
-    makeJob({
-      id: "single-usd-boundary",
-      postedAt: daysAgo(5),
-      salary: { min: 180000, currency: "USD", label: "$180k" }
-    }),
-    makeJob({
-      id: "non-usd-above-boundary",
-      postedAt: daysAgo(6),
-      salary: { min: 250000, max: 300000, currency: "EUR", label: "EUR 250k-300k" }
-    })
-  ];
-
-  assertIds(
-    filterJobs(salaryBoundaryJobs, {
-      ...initialFilterState,
-      minimumSalary: "180000"
-    }),
-    [
-      "recent-intune",
-      "exact-usd-boundary",
-      "single-usd-boundary",
-      "security-tanium"
-    ]
-  );
-  assertLabels(
-    getActiveFilterItems({ ...initialFilterState, minimumSalary: "180000" }),
-    ["Minimum: $180k+"]
-  );
-  const next = filterReducer(initialFilterState, {
-    type: "setMinimumSalary",
-    value: "150000"
-  });
-  assertEqual(next.minimumSalary, "150000");
 });
 
 await run("FEAT-011", "Role family filter matches exact role families", () => {
@@ -565,6 +530,8 @@ await run("FEAT-026", "Salary pill renders accessible salary label", () => {
 
 await auditJobComparisonData(run);
 await auditFeedSafetyData(run);
+await auditJobsApiData(run);
+await auditMinimumSalaryData(run);
 
 await run("FEAT-028", "Match reasons render on job cards", () => {
   assertIncludes(jobCardMarkup, "Endpoint match reasons");

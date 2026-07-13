@@ -92,6 +92,14 @@
     display: none;
   }
 
+  .topbar .api-docs-link {
+    display: inline-flex;
+  }
+
+  .api-docs-link span {
+    display: none;
+  }
+
   .refresh-pill,
   .feedback-link {
     min-width: 0;

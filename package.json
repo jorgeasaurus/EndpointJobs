@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "jobs:refresh": "tsx scripts/refresh-jobs.ts",
+    "docs:api": "tsx scripts/generate-openapi.ts",
     "doctor": "react-doctor",
     "audit:browser": "tsx scripts/audit-user-stories-browser.mjs",
     "audit:data": "tsx scripts/audit-user-stories-data.ts"
@@ -33,6 +34,7 @@
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "@types/three": "^0.185.0",
+    "ajv": "^8.20.0",
     "eslint": "^9.17.0",
     "eslint-config-next": "^16.0.0",
     "postcss": "^8.4.49",
