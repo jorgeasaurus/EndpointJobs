@@ -19,7 +19,7 @@ export type JobFilters = {
   sort: SortKey;
 };
 
-export function filterJobs(jobs: Job[], filters: JobFilters) {
+export function filterJobs(jobs: Job[], filters: JobFilters, now = new Date()) {
   const query = filters.query.trim().toLowerCase();
   const location = normalize(`${filters.locationQuery}`);
   const minimumSalary = filters.minimumSalary === "Any" ? null : Number(filters.minimumSalary);
@@ -34,7 +34,7 @@ export function filterJobs(jobs: Job[], filters: JobFilters) {
     if (minimumSalary !== null && (job.salary?.currency !== "USD" || (job.salary.max ?? job.salary.min ?? 0) < minimumSalary)) return false;
     if (filters.seniority !== "All" && job.seniority !== filters.seniority) return false;
     if (filters.roleFamily !== "All" && job.roleFamily !== filters.roleFamily) return false;
-    return maximumAge === null || getPostedAgeDays(job.postedAt) <= maximumAge;
+    return maximumAge === null || getPostedAgeDays(job.postedAt, now) <= maximumAge;
   }).sort((a, b) => filters.sort === "salary"
     ? getSalarySortValue(b) - getSalarySortValue(a)
     : filters.sort === "company"

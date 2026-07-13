@@ -76,6 +76,12 @@ export async function auditJobsApiData(run: RunAudit) {
     assertEqual(active.ok && active.body.meta.total, 2, "stale job excluded");
     const empty = queryJobs(feed, new URLSearchParams("q=nonexistent"), now);
     assertEqual(empty.ok && empty.body.meta.totalPages, 1, "empty results retain one page");
+    const fresh = queryJobs(
+      feed,
+      new URLSearchParams("freshness=7"),
+      new Date("2026-07-18T00:00:00.000Z")
+    );
+    assertEqual(fresh.ok && fresh.body.meta.total, 0, "freshness uses injected request time");
     assertEqual(findActiveJob(feed, "one", now)?.id, "one", "active job lookup");
     assertEqual(findActiveJob(feed, "stale", now), undefined, "stale job lookup excluded");
 

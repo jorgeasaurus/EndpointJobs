@@ -81,7 +81,8 @@ export function queryJobs(
   const { page, limit, filters } = parsed;
   const filteredJobs = filterJobs(
     feed.jobs.filter((job) => isActiveJob(job, now)),
-    filters
+    filters,
+    now
   );
   const startIndex = (page - 1) * limit;
 
