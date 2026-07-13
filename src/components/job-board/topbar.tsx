@@ -25,16 +25,17 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
           <RefreshCw size={15} aria-hidden="true" />
           {formatUpdatedAt(updatedAt)}
         </span>
-        <Link
-          aria-label="OpenAPI documentation"
+        <a
+          aria-label="Open API documentation on GitHub"
           className="feedback-link api-docs-link"
-          href={{ pathname: "/openapi.json" }}
-          prefetch={false}
-          title="OpenAPI documentation"
+          href="https://github.com/jorgeasaurus/EndpointJobs/blob/feature/jobs-api/docs/api.md"
+          rel="noopener noreferrer"
+          target="_blank"
+          title="Open API documentation on GitHub"
         >
           <FileJson size={15} aria-hidden="true" />
           <span>API docs</span>
-        </Link>
+        </a>
         <a
           aria-label="Open feedback form on GitHub"
           className="feedback-link topbar-feedback-link"

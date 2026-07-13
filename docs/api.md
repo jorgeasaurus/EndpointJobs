@@ -56,6 +56,32 @@ GET /api/jobs?tools=Jamf&platforms=macOS&minSalary=150000&page=1&limit=20
 
 Repeated or unknown parameters are rejected. Multi-value filters use one comma-separated parameter, not repeated keys.
 
+## PowerShell
+
+List jobs:
+
+```powershell
+$response = Invoke-RestMethod -Uri 'https://endpointjobs.dev/api/jobs'
+$response.data
+```
+
+Filter and paginate:
+
+```powershell
+$uri = 'https://endpointjobs.dev/api/jobs?tools=Jamf&platforms=macOS&minSalary=150000&page=1&limit=20'
+$response = Invoke-RestMethod -Uri $uri
+$response.meta
+$response.data | Select-Object title, company, location
+```
+
+Fetch one job from the collection:
+
+```powershell
+$jobId = $response.data[0].id
+$job = Invoke-RestMethod -Uri "https://endpointjobs.dev/api/jobs/$jobId"
+$job.data
+```
+
 ## Get one job
 
 ```http

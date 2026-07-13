@@ -176,3 +176,13 @@ Added an API docs action to the sticky header linking to the published OpenAPI J
 ## Review
 
 Opened ready PR #12 and completed five Copilot review cycles. Addressed nine comments across API normalization, OpenAPI/docs accuracy, header behavior, import clarity, and PR scope; all threads are resolved. The final Copilot review returned no new comments, all PR checks pass, and the working tree is clean.
+
+# PowerShell API examples
+
+- [x] Add PowerShell invocation examples to the API guide.
+- [x] Point the site API button to the rendered GitHub guide.
+- [x] Run typecheck, lint, and React Doctor.
+
+## Review
+
+Added copy-ready PowerShell examples for collection, filtered pagination, and item requests. The header API button now opens the rendered branch guide on GitHub in a new tab. Typecheck, lint, React Doctor, and diff checks pass.
