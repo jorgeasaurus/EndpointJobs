@@ -165,3 +165,14 @@ Moved filtering into a shared domain module, made query parsing return one typed
 ## Review
 
 Added an API docs action to the sticky header linking to the published OpenAPI JSON. The action stays visible as a compact icon on mobile. Typecheck, lint, and React Doctor pass with no findings.
+
+# Pull request review loop
+
+- [ ] Open a ready pull request for `feature/jobs-api`.
+- [ ] Wait for Copilot review and inspect unresolved threads.
+- [ ] Address actionable comments, verify, push, and request re-review.
+- [ ] Repeat until a full review cycle returns no comments.
+
+## Review
+
+Pending.
