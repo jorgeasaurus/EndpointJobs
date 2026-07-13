@@ -101,7 +101,7 @@ Reduced the feed diff to the two intended records, made provider modules canonic
 - [x] Persist the selection in shareable filter URLs and active chips.
 - [x] Add data and browser regression coverage.
 - [x] Run typecheck, lint, audits, build, and React Doctor.
-- [ ] Push and verify the updated Vercel preview.
+- [x] Push and verify the updated Vercel preview.
 
 ## Review
 
