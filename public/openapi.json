@@ -340,6 +340,13 @@
           "example": "public, s-maxage=300, stale-while-revalidate=3600"
         }
       },
+      "NoStore": {
+        "description": "Error responses are not cached.",
+        "schema": {
+          "type": "string",
+          "const": "no-store"
+        }
+      },
       "AllowOrigin": {
         "description": "CORS origin policy.",
         "schema": {
@@ -351,6 +358,14 @@
     "responses": {
       "InvalidQuery": {
         "description": "Invalid query parameters",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/NoStore"
+          },
+          "Access-Control-Allow-Origin": {
+            "$ref": "#/components/headers/AllowOrigin"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {
@@ -361,6 +376,14 @@
       },
       "JobNotFound": {
         "description": "Job is missing or inactive",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/NoStore"
+          },
+          "Access-Control-Allow-Origin": {
+            "$ref": "#/components/headers/AllowOrigin"
+          }
+        },
         "content": {
           "application/json": {
             "schema": {

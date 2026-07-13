@@ -52,6 +52,14 @@ export async function auditJobsApiData(run: RunAudit) {
       assertEqual(invalid.body.error.code, "INVALID_QUERY", "invalid query code");
     }
 
+    for (const query of ["page=1e2", "limit=0x10"]) {
+      assertEqual(
+        queryJobs(feed, new URLSearchParams(query), now).ok,
+        false,
+        `non-decimal integer rejected: ${query}`
+      );
+    }
+
     const active = queryJobs(feed, new URLSearchParams(), now);
     assertEqual(active.ok && active.body.meta.total, 2, "stale job excluded");
     assertEqual(findActiveJob(feed, "one", now)?.id, "one", "active job lookup");

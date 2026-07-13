@@ -175,6 +175,12 @@ function validateValue(
     return;
   }
   if (definition.kind === "integer") {
+    if (!/^[1-9]\d*$/.test(value)) {
+      errors.push(definition.maximum === undefined
+        ? `${key} must be a positive integer`
+        : `${key} must be an integer between ${definition.minimum} and ${definition.maximum}`);
+      return;
+    }
     const parsed = Number(value);
     if (!Number.isSafeInteger(parsed) || parsed < definition.minimum || (definition.maximum !== undefined && parsed > definition.maximum)) {
       errors.push(definition.maximum === undefined
