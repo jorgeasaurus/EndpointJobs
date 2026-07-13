@@ -26,11 +26,11 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
           {formatUpdatedAt(updatedAt)}
         </span>
         <Link
-          aria-label="Open API documentation"
+          aria-label="OpenAPI documentation"
           className="feedback-link api-docs-link"
           href={{ pathname: "/openapi.json" }}
           prefetch={false}
-          title="Open API documentation"
+          title="OpenAPI documentation"
         >
           <FileJson size={15} aria-hidden="true" />
           <span>API docs</span>
