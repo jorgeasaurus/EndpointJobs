@@ -151,7 +151,7 @@ function parseQuery(searchParams: URLSearchParams):
       selectedPlatforms: readMulti(searchParams, "platforms", platformOptions),
       selectedTools: readMulti(searchParams, "tools", toolOptions),
       workplace: readEnum(searchParams, "workplace", ["Remote", "Hybrid", "On-site"] as const, "Any"),
-      salaryOnly: searchParams.get("salary") === "1",
+      salaryOnly: readEnum(searchParams, "salary", ["1"] as const, "0") === "1",
       minimumSalary: readEnum(searchParams, "minSalary", minimumSalaryFilterValues, "Any"),
       seniority: readEnum(searchParams, "seniority", seniorityOptions, "All"),
       roleFamily: readEnum(searchParams, "family", roleFamilyOptions, "All"),
@@ -167,21 +167,22 @@ function validateValue(
   definition: JobsApiQueryDefinition,
   errors: string[]
 ) {
+  const normalizedValue = value.trim();
   if (definition.kind === "text") {
-    const length = value.trim().length;
+    const length = normalizedValue.length;
     if (length < definition.minimumLength || length > definition.maximumLength) {
       errors.push(`${key} must contain ${definition.minimumLength}-${definition.maximumLength} characters`);
     }
     return;
   }
   if (definition.kind === "integer") {
-    if (!/^[1-9]\d*$/.test(value)) {
+    if (!/^[1-9]\d*$/.test(normalizedValue)) {
       errors.push(definition.maximum === undefined
         ? `${key} must be a positive integer`
         : `${key} must be an integer between ${definition.minimum} and ${definition.maximum}`);
       return;
     }
-    const parsed = Number(value);
+    const parsed = Number(normalizedValue);
     if (!Number.isSafeInteger(parsed) || parsed < definition.minimum || (definition.maximum !== undefined && parsed > definition.maximum)) {
       errors.push(definition.maximum === undefined
         ? `${key} must be a positive integer`
@@ -189,7 +190,7 @@ function validateValue(
     }
     return;
   }
-  const values = definition.kind === "multi" ? value.split(",").map((item) => item.trim()) : [value];
+  const values = definition.kind === "multi" ? value.split(",").map((item) => item.trim()) : [normalizedValue];
   if (values.some((item) => !item || !definition.values.includes(item as never))) {
     errors.push(definition.kind === "multi"
       ? `${key} contains an unsupported value`
@@ -198,7 +199,7 @@ function validateValue(
 }
 
 function readInteger(searchParams: URLSearchParams, key: "page" | "limit") {
-  return Number(searchParams.get(key) ?? jobsApiQueryContract[key].default);
+  return Number(searchParams.get(key)?.trim() ?? jobsApiQueryContract[key].default);
 }
 
 function readText(searchParams: URLSearchParams, key: "q" | "location") {
@@ -216,7 +217,7 @@ function readEnum<T extends string, F extends string>(
   options: readonly T[],
   fallback: F
 ): T | F {
-  const value = params.get(key);
+  const value = params.get(key)?.trim();
   return options.find((option) => option === value) ?? fallback;
 }
 

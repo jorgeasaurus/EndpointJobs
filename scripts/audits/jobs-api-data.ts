@@ -60,6 +60,18 @@ export async function auditJobsApiData(run: RunAudit) {
       );
     }
 
+    const paddedValues = queryJobs(
+      feed,
+      new URLSearchParams("workplace=Remote%20&salary=1%20&page=1%20"),
+      now
+    );
+    assertEqual(paddedValues.ok, true, "padded enum and integer values accepted");
+    if (paddedValues.ok) {
+      assertEqual(paddedValues.body.filters.workplace, "Remote", "enum normalized");
+      assertEqual(paddedValues.body.filters.salaryShown, true, "salary flag normalized");
+      assertEqual(paddedValues.body.meta.page, 1, "integer normalized");
+    }
+
     const active = queryJobs(feed, new URLSearchParams(), now);
     assertEqual(active.ok && active.body.meta.total, 2, "stale job excluded");
     assertEqual(findActiveJob(feed, "one", now)?.id, "one", "active job lookup");
