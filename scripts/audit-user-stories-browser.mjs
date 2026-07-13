@@ -2,7 +2,7 @@ import { chromium, expect } from "@playwright/test";
 
 import { loadBrowserAuditScenarios } from "./audit-user-stories-browser-fixtures.ts";
 import { auditJobComparisonBrowser } from "./audits/job-comparison-browser.mjs";
-import { auditJobMatchBrowser } from "./audits/job-match-browser.mjs";
+import { auditMinimumSalaryBrowser } from "./audits/minimum-salary-browser.mjs";
 
 const baseUrl = process.env.AUDIT_BASE_URL ?? "http://127.0.0.1:3002";
 const desktopViewport = { width: 1280, height: 900 };
@@ -11,7 +11,7 @@ const {
   advancedFilterScenario,
   descriptionScenario,
   locationMapScenario,
-  matchScenario
+  minimumSalaryScenario
 } = await loadBrowserAuditScenarios();
 const results = [];
 const consoleMessages = [];
@@ -696,7 +696,13 @@ await auditJobComparisonBrowser({
   run
 });
 
-await auditJobMatchBrowser({ browser, matchScenario, mobileViewport, newPage, run });
+await auditMinimumSalaryBrowser({
+  browser,
+  minimumSalaryScenario,
+  mobileViewport,
+  newPage,
+  run
+});
 
 await run("FEAT-034", "Mobile viewport has no document overflow", async () => {
   const page = await newPage(browser, { width: 390, height: 844 });
@@ -708,7 +714,7 @@ await run("FEAT-034", "Mobile viewport has no document overflow", async () => {
     overflowingElements: [...document.querySelectorAll("body *")]
       .filter((element) =>
         element instanceof HTMLElement &&
-        !element.closest(".quick-filters, .facet-list, .match-preference-scroll") &&
+        !element.closest(".quick-filters, .facet-list") &&
         element.getBoundingClientRect().right > window.innerWidth + 1
       )
       .slice(0, 8)

@@ -4,6 +4,7 @@ import {
   filterJobs,
   initialFilterState,
   type FreshnessFilter,
+  type MinimumSalaryFilter,
   type RoleFamilyFilter,
   type SeniorityFilter
 } from "../src/components/job-board/filter-model";
@@ -31,12 +32,9 @@ type DescriptionScenario = {
   title: string;
 };
 
-type MatchScenario = {
-  job: Job;
-  location: string;
-  platform: Job["platforms"][number];
-  salaryFloor: number;
-  tool: Job["tools"][number];
+type MinimumSalaryScenario = {
+  resultCount: number;
+  threshold: Exclude<MinimumSalaryFilter, "Any">;
 };
 
 export async function loadBrowserAuditScenarios() {
@@ -49,31 +47,25 @@ export async function loadBrowserAuditScenarios() {
     advancedFilterScenario: findAdvancedFilterScenario(activeJobs),
     descriptionScenario: findDescriptionScenario(activeJobs),
     locationMapScenario: findLocationMapScenario(activeJobs),
-    matchScenario: findMatchScenario(activeJobs)
+    minimumSalaryScenario: findMinimumSalaryScenario(activeJobs)
   };
 }
 
-function findMatchScenario(jobs: Job[]): MatchScenario {
-  const job = jobs.find(
-    (candidate) =>
-      candidate.platforms.length > 0 &&
-      candidate.tools.length > 0 &&
-      candidate.salary?.max &&
-      candidate.seniority &&
-      candidate.mapLocation
-  );
+function findMinimumSalaryScenario(jobs: Job[]): MinimumSalaryScenario {
+  const thresholds = ["200000", "180000", "150000", "120000", "100000", "80000"] satisfies Array<Exclude<MinimumSalaryFilter, "Any">>;
 
-  if (!job || !job.salary?.max || !job.mapLocation) {
-    throw new Error("missing fully configured personalized-match scenario");
+  for (const threshold of thresholds) {
+    const matchingJobs = filterJobs(jobs, {
+      ...initialFilterState,
+      minimumSalary: threshold
+    });
+
+    if (matchingJobs.length > 0 && matchingJobs.length < jobs.length) {
+      return { resultCount: matchingJobs.length, threshold };
+    }
   }
 
-  return {
-    job,
-    location: job.mapLocation.label,
-    platform: job.platforms[0],
-    salaryFloor: job.salary.max,
-    tool: job.tools[0]
-  };
+  throw new Error("missing minimum-salary browser scenario");
 }
 
 function findLocationMapScenario(jobs: Job[]): LocationMapScenario {

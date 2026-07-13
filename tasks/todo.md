@@ -93,15 +93,16 @@ Added NinjaOne's remote Software Packaging Engineer from its live Jobvite postin
 
 Reduced the feed diff to the two intended records, made provider modules canonical for scheduled ATS defaults, and removed the failing Nordstrom probe. Typecheck, lint, 58 data audits, production build, diff checks, and the repeated thermo-nuclear review pass cleanly.
 
-# Personalized match score
+# Minimum salary filter
 
-- [x] Create an isolated feature branch and define the preference contract.
-- [x] RED/GREEN: score configured platform, tool, location, salary, and seniority preferences.
-- [x] Add a compact preference editor separate from search filters.
-- [x] Show match labels and explicit reasons on job cards.
-- [x] Add canonical data and browser audit coverage.
-- [x] Run typecheck, lint, audits, build, browser verification, and React Doctor.
+- [x] Remove the personalized match-score feature.
+- [x] RED/GREEN: filter salary ranges by a selected minimum.
+- [x] Add a minimum-salary dropdown to the existing filter stack.
+- [x] Persist the selection in shareable filter URLs and active chips.
+- [x] Add data and browser regression coverage.
+- [x] Run typecheck, lint, audits, build, and React Doctor.
+- [ ] Push and verify the updated Vercel preview.
 
 ## Review
 
-Added a preference profile that scores but does not filter roles, with normalized platform, tool, location, salary-floor, and seniority evaluation. Cards show a percentage, Strong/Good/Partial label, and matched or missing reasons; typecheck, lint, build, 59 data checks, 33 browser checks, desktop/mobile visual checks, and React Doctor 100/100 pass.
+Removed the preference editor and all card scoring. Added Any salary and $80k-$200k thresholds to the existing advanced filters; disclosed ranges qualify when `max ?? min` reaches the floor, with active-chip and `minSalary` URL persistence. Typecheck, lint, build, 59 data checks, 33 browser checks, desktop/mobile visual checks, and React Doctor pass.

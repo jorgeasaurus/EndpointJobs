@@ -70,7 +70,6 @@ import {
 } from "./job-refresh/providers/curated-jobs";
 import { auditJobComparisonData } from "./audits/job-comparison-data";
 import { auditFeedSafetyData } from "./audits/feed-safety-data";
-import { auditJobMatchData } from "./audits/job-match-data";
 
 type AuditStatus = "Passed" | "Failed";
 type AuditResult = { id: string; status: AuditStatus; detail: string };
@@ -99,7 +98,6 @@ const sourcePaths = {
   controls: "src/components/job-board/controls.tsx",
   curated: "scripts/job-refresh/providers/curated-jobs.ts",
   feedSafetyAudit: "scripts/audits/feed-safety-data.ts",
-  jobMatchAudit: "scripts/audits/job-match-data.ts",
   jobTaxonomy: "src/lib/job-taxonomy.ts",
   issueConfig: ".github/ISSUE_TEMPLATE/config.yml",
   issueTemplate: ".github/ISSUE_TEMPLATE/report-or-request.yml",
@@ -223,7 +221,6 @@ await run("TRACKER-001", "Canonical story sheet has complete source evidence", a
     sources.comparisonBrowserAudit,
     sources.comparisonDataAudit,
     sources.feedSafetyAudit,
-    sources.jobMatchAudit,
     await readFile("scripts/audit-user-stories-data.ts", "utf8")
   ].join("\n");
   const auditedIds = new Set(
@@ -314,6 +311,25 @@ await run("FEAT-010", "Salary-only filter keeps only transparent pay listings", 
   const filtered = filterJobs(filterFixtureJobs, { ...initialFilterState, salaryOnly: true });
   assertIds(filtered, ["recent-intune", "security-tanium"]);
   assertLabels(getActiveFilterItems({ ...initialFilterState, salaryOnly: true }), ["Salary shown"]);
+});
+
+await run("FEAT-074", "Minimum salary keeps ranges that can meet the selected floor", () => {
+  assertIds(
+    filterJobs(filterFixtureJobs, {
+      ...initialFilterState,
+      minimumSalary: "180000"
+    }),
+    ["recent-intune", "security-tanium"]
+  );
+  assertLabels(
+    getActiveFilterItems({ ...initialFilterState, minimumSalary: "180000" }),
+    ["Minimum: $180k+"]
+  );
+  const next = filterReducer(initialFilterState, {
+    type: "setMinimumSalary",
+    value: "150000"
+  });
+  assertEqual(next.minimumSalary, "150000");
 });
 
 await run("FEAT-011", "Role family filter matches exact role families", () => {
@@ -424,13 +440,14 @@ await run("FEAT-019", "Active filter chips expose removable labels and clear act
 await run("FEAT-020", "Filter state serializes to shareable URL params", () => {
   const parsed = filterStateFromSearchParams(
     new URLSearchParams(
-      "q=Jamf&platforms=macOS,Nope&tools=Jamf,PowerShell,Bad&location=Austin&remote=1&salary=1&seniority=Senior&family=Endpoint%20Security&freshness=7&sort=company"
+      "q=Jamf&platforms=macOS,Nope&tools=Jamf,PowerShell,Bad&location=Austin&remote=1&salary=1&minSalary=150000&seniority=Senior&family=Endpoint%20Security&freshness=7&sort=company"
     )
   );
   assertEqual(parsed.query, "Jamf");
   assertEqual(parsed.locationQuery, "Austin");
   assertEqual(parsed.workplace, "Remote");
   assertEqual(parsed.salaryOnly, true);
+  assertEqual(parsed.minimumSalary, "150000");
   assertEqual(parsed.selectedPlatforms.join(","), "macOS");
   assertEqual(parsed.selectedTools.join(","), "Jamf,PowerShell");
   assertEqual(parsed.roleFamily, "Endpoint Security");
@@ -444,7 +461,13 @@ await run("FEAT-020", "Filter state serializes to shareable URL params", () => {
 
   const merged = mergeFilterStateIntoSearchParams(
     new URLSearchParams("keep=1&locations=legacy&remote=1"),
-    { ...initialFilterState, query: "Intune", selectedPlatforms: ["Windows"], salaryOnly: true }
+    {
+      ...initialFilterState,
+      query: "Intune",
+      selectedPlatforms: ["Windows"],
+      salaryOnly: true,
+      minimumSalary: "120000"
+    }
   );
   assertEqual(merged.get("keep"), "1");
   assertEqual(merged.get("locations"), null);
@@ -452,6 +475,7 @@ await run("FEAT-020", "Filter state serializes to shareable URL params", () => {
   assertEqual(merged.get("q"), "Intune");
   assertEqual(merged.get("platforms"), "Windows");
   assertEqual(merged.get("salary"), "1");
+  assertEqual(merged.get("minSalary"), "120000");
 });
 
 await run("FEAT-022", "Results panel exposes count and daily refresh note", () => {
@@ -490,7 +514,6 @@ const jobCardMarkup = renderToStaticMarkup(
       seniority: "Senior",
       employmentType: "Full-time"
     }),
-    match: null,
     onToggleComparison: () => undefined,
     query: "Intune"
   })
@@ -514,10 +537,6 @@ await run("FEAT-025", "Job card renders core listing details", () => {
 await run("FEAT-026", "Salary pill renders accessible salary label", () => {
   assertIncludes(jobCardMarkup, "salary-pill");
   assertIncludes(jobCardMarkup, "Salary $120k-$150k");
-});
-
-await run("FEAT-074", "Personalized preferences produce an explained match score", () => {
-  auditJobMatchData({ assertEqual, makeJob });
 });
 
 await auditJobComparisonData(run);

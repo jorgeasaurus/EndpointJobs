@@ -2,11 +2,13 @@ import type {
   FilterAction,
   FilterState,
   FreshnessFilter,
+  MinimumSalaryFilter,
   SortKey,
   WorkplaceFilter
 } from "./filter-model";
 import {
   freshnessFilterOptions,
+  minimumSalaryFilterOptions,
   sortOptions,
   workplaceFilterOptions
 } from "./filter-model";
@@ -53,6 +55,15 @@ export function getActiveFilterItems(filters: FilterState): ActiveFilterItem[] {
       clearAction: { type: "toggleSalaryOnly" },
       id: "salary",
       label: "Salary shown",
+      variant: "salary"
+    });
+  }
+
+  if (filters.minimumSalary !== "Any") {
+    items.push({
+      clearAction: { type: "setMinimumSalary", value: "Any" },
+      id: "minimum-salary",
+      label: `Minimum: ${getMinimumSalaryFilterLabel(filters.minimumSalary)}`,
       variant: "salary"
     });
   }
@@ -111,6 +122,11 @@ export function getActiveFilterItems(filters: FilterState): ActiveFilterItem[] {
 function getFreshnessFilterLabel(value: FreshnessFilter) {
   return freshnessFilterOptions.find((option) => option.value === value)?.label ??
     "Freshness";
+}
+
+function getMinimumSalaryFilterLabel(value: MinimumSalaryFilter) {
+  return minimumSalaryFilterOptions.find((option) => option.value === value)?.label ??
+    "Salary";
 }
 
 function getSortFilterLabel(value: SortKey) {

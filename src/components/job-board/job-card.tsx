@@ -18,20 +18,16 @@ import {
 } from "@/lib/jobs";
 import type { Job } from "@/types/job";
 
-import type { JobMatch } from "./job-match";
-
 export function JobCard({
   compareDisabled,
   isCompared,
   job,
-  match,
   onToggleComparison,
   query
 }: {
   compareDisabled: boolean;
   isCompared: boolean;
   job: Job;
-  match: JobMatch | null;
   onToggleComparison: (job: Job) => void;
   query: string;
 }) {
@@ -59,25 +55,6 @@ export function JobCard({
         </div>
         <span className="workplace">{job.workplace}</span>
       </div>
-
-      {match ? (
-        <div className="personal-match" aria-label={`${match.label}, ${match.score}%`}>
-          <div className="personal-match-heading">
-            <span className={`personal-match-label personal-match-label--${match.label.split(" ")[0].toLowerCase()}`}>
-              {match.label}
-            </span>
-            <strong>{match.score}%</strong>
-          </div>
-          <div className="personal-match-reasons" aria-label="Personalized match reasons">
-            {match.reasons.map((reason) => (
-              <span className={reason.matched ? "is-match" : "is-gap"} key={reason.reason}>
-                {reason.matched ? <CheckCircle2 size={13} aria-hidden="true" /> : null}
-                {reason.reason}
-              </span>
-            ))}
-          </div>
-        </div>
-      ) : null}
 
       {job.salary ? (
         <div className="salary-row">
