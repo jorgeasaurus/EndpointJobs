@@ -8,11 +8,13 @@ import {
 import type {
   FilterState,
   FreshnessFilter,
+  MinimumSalaryFilter,
   RoleFamilyFilter,
   SeniorityFilter,
   SortKey,
   WorkplaceFilter
 } from "./filter-model";
+import { isMinimumSalaryFilter } from "./filter-model";
 
 const currentFilterSearchParamKeys = [
   "q",
@@ -21,6 +23,7 @@ const currentFilterSearchParamKeys = [
   "location",
   "workplace",
   "salary",
+  "minSalary",
   "seniority",
   "family",
   "freshness",
@@ -48,6 +51,7 @@ export function filterStateFromSearchParams(
     selectedTools: parseMultiFilter(searchParams.get("tools"), toolOptions),
     workplace: toWorkplaceFilter(searchParams.get("workplace") ?? legacyWorkplace),
     salaryOnly: searchParams.get("salary") === "1",
+    minimumSalary: toMinimumSalaryFilter(searchParams.get("minSalary") ?? "Any"),
     seniority: toSeniorityFilter(searchParams.get("seniority") ?? "All"),
     roleFamily: toRoleFamilyFilter(searchParams.get("family") ?? "All"),
     freshness: toFreshnessFilter(searchParams.get("freshness") ?? "Any"),
@@ -105,6 +109,10 @@ export function toWorkplaceFilter(value: string): WorkplaceFilter {
   return "Any";
 }
 
+export function toMinimumSalaryFilter(value: string): MinimumSalaryFilter {
+  return isMinimumSalaryFilter(value) ? value : "Any";
+}
+
 export function toSortKey(value: string): SortKey {
   if (value === "salary" || value === "company") {
     return value;
@@ -128,6 +136,9 @@ function filterStateToSearchParams(filters: FilterState) {
   }
   if (filters.workplace !== "Any") searchParams.set("workplace", filters.workplace);
   if (filters.salaryOnly) searchParams.set("salary", "1");
+  if (filters.minimumSalary !== "Any") {
+    searchParams.set("minSalary", filters.minimumSalary);
+  }
   if (filters.seniority !== "All") searchParams.set("seniority", filters.seniority);
   if (filters.roleFamily !== "All") searchParams.set("family", filters.roleFamily);
   if (filters.freshness !== "Any") searchParams.set("freshness", filters.freshness);

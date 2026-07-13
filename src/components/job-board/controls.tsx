@@ -26,18 +26,21 @@ import { ToggleButton } from "./toggle-button";
 import { LocationFilters } from "./location-filters";
 import {
   freshnessFilterOptions,
+  minimumSalaryFilterOptions,
   sortOptions
 } from "./filter-model";
 import type {
   FilterDispatch,
   FilterState,
   FreshnessFilter,
+  MinimumSalaryFilter,
   RoleFamilyFilter,
   SeniorityFilter,
   SortKey
 } from "./filter-model";
 import {
   toFreshnessFilter,
+  toMinimumSalaryFilter,
   toRoleFamilyFilter,
   toSeniorityFilter,
   toSortKey
@@ -122,6 +125,7 @@ export function CommandPanel({
             clearFilters={clearFilters}
             dispatch={dispatch}
             selectedTools={filters.selectedTools}
+            minimumSalary={filters.minimumSalary}
             seniority={filters.seniority}
             sort={filters.sort}
           />
@@ -395,6 +399,7 @@ function FilterStack({
   clearFilters,
   dispatch,
   selectedTools,
+  minimumSalary,
   seniority,
   sort
 }: {
@@ -403,6 +408,7 @@ function FilterStack({
   clearFilters: () => void;
   dispatch: FilterDispatch;
   selectedTools: EndpointTool[];
+  minimumSalary: MinimumSalaryFilter;
   seniority: SeniorityFilter;
   sort: SortKey;
 }) {
@@ -412,6 +418,7 @@ function FilterStack({
     clearFilters,
     dispatch,
     selectedTools,
+    minimumSalary,
     seniority,
     sort
   };
@@ -457,6 +464,7 @@ function FilterStackContent({
   clearFilters,
   dispatch,
   selectedTools,
+  minimumSalary,
   seniority,
   sort
 }: {
@@ -465,12 +473,32 @@ function FilterStackContent({
   clearFilters: () => void;
   dispatch: FilterDispatch;
   selectedTools: EndpointTool[];
+  minimumSalary: MinimumSalaryFilter;
   seniority: SeniorityFilter;
   sort: SortKey;
 }) {
   return (
     <>
       <div className="hero-filter-controls">
+        <label className="field">
+          <span>Minimum salary</span>
+          <select
+            value={minimumSalary}
+            onChange={(event) =>
+              dispatch({
+                type: "setMinimumSalary",
+                value: toMinimumSalaryFilter(event.currentTarget.value)
+              })
+            }
+          >
+            {minimumSalaryFilterOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
         <label className="field">
           <span>Seniority</span>
           <select

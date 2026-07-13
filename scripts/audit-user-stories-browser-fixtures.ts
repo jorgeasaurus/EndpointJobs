@@ -4,6 +4,7 @@ import {
   filterJobs,
   initialFilterState,
   type FreshnessFilter,
+  type MinimumSalaryFilter,
   type RoleFamilyFilter,
   type SeniorityFilter
 } from "../src/components/job-board/filter-model";
@@ -31,6 +32,13 @@ type DescriptionScenario = {
   title: string;
 };
 
+type MinimumSalaryScenario = {
+  excludedTitle: string;
+  includedTitle: string;
+  resultCount: number;
+  threshold: Exclude<MinimumSalaryFilter, "Any">;
+};
+
 export async function loadBrowserAuditScenarios() {
   const jobsFeed = JSON.parse(
     await readFile(new URL("../src/data/jobs.json", import.meta.url), "utf8")
@@ -40,8 +48,43 @@ export async function loadBrowserAuditScenarios() {
   return {
     advancedFilterScenario: findAdvancedFilterScenario(activeJobs),
     descriptionScenario: findDescriptionScenario(activeJobs),
-    locationMapScenario: findLocationMapScenario(activeJobs)
+    locationMapScenario: findLocationMapScenario(activeJobs),
+    minimumSalaryScenario: findMinimumSalaryScenario(activeJobs)
   };
+}
+
+function findMinimumSalaryScenario(jobs: Job[]): MinimumSalaryScenario {
+  const thresholds = ["200000", "180000", "150000", "120000", "100000", "80000"] satisfies Array<Exclude<MinimumSalaryFilter, "Any">>;
+
+  for (const threshold of thresholds) {
+    const floor = Number(threshold);
+    const matchingJobs = jobs.filter((job) => getUsdSalaryCeiling(job) >= floor);
+    const includedJob = matchingJobs[0];
+    const excludedJob = jobs.find(
+      (job) =>
+        getUsdSalaryCeiling(job) < floor &&
+        jobs
+          .filter((candidate) => candidate.title === job.title)
+          .every((candidate) => getUsdSalaryCeiling(candidate) < floor)
+    );
+
+    if (includedJob && excludedJob && matchingJobs.length < jobs.length) {
+      return {
+        excludedTitle: excludedJob.title,
+        includedTitle: includedJob.title,
+        resultCount: matchingJobs.length,
+        threshold
+      };
+    }
+  }
+
+  throw new Error("missing minimum-salary browser scenario");
+}
+
+function getUsdSalaryCeiling(job: Job) {
+  if (job.salary?.currency !== "USD") return 0;
+
+  return job.salary.max ?? job.salary.min ?? 0;
 }
 
 function findLocationMapScenario(jobs: Job[]): LocationMapScenario {

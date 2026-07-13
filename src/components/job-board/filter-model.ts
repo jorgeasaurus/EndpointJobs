@@ -1,35 +1,26 @@
-import {
-  getPostedAgeDays,
-  getSalarySortValue,
-  getSearchText
-} from "@/lib/jobs";
+import { minimumSalaryFilterValues } from "@/lib/job-filters";
+import type {
+  FreshnessFilter,
+  JobFilters,
+  MinimumSalaryFilter,
+  SortKey
+} from "@/lib/job-filters";
+export { filterJobs } from "@/lib/job-filters";
+export type { FreshnessFilter, MinimumSalaryFilter, SortKey } from "@/lib/job-filters";
 import type {
   EndpointTool,
-  Job,
   Platform,
   RoleFamily,
   Seniority,
   Workplace
 } from "@/types/job";
 
-export type SortKey = "newest" | "salary" | "company";
 export type SeniorityFilter = "All" | Seniority;
 export type RoleFamilyFilter = "All" | RoleFamily;
-export type FreshnessFilter = "Any" | "7" | "14" | "30";
 export type WorkplaceFilter = "Any" | Exclude<Workplace, "Unknown">;
+export { minimumSalaryFilterValues } from "@/lib/job-filters";
 
-export type FilterState = {
-  query: string;
-  locationQuery: string;
-  selectedPlatforms: Platform[];
-  selectedTools: EndpointTool[];
-  workplace: WorkplaceFilter;
-  salaryOnly: boolean;
-  seniority: SeniorityFilter;
-  roleFamily: RoleFamilyFilter;
-  freshness: FreshnessFilter;
-  sort: SortKey;
-};
+export type FilterState = JobFilters;
 
 export type FilterAction =
   | { type: "setQuery"; value: string }
@@ -37,6 +28,7 @@ export type FilterAction =
   | { type: "togglePlatform"; value: Platform }
   | { type: "toggleTool"; value: EndpointTool }
   | { type: "toggleSalaryOnly" }
+  | { type: "setMinimumSalary"; value: MinimumSalaryFilter }
   | { type: "setWorkplace"; value: WorkplaceFilter }
   | { type: "setSeniority"; value: SeniorityFilter }
   | { type: "setRoleFamily"; value: RoleFamilyFilter }
@@ -54,6 +46,7 @@ export const initialFilterState: FilterState = {
   selectedTools: [],
   workplace: "Any",
   salaryOnly: false,
+  minimumSalary: "Any",
   seniority: "All",
   roleFamily: "All",
   freshness: "Any",
@@ -86,6 +79,25 @@ export const sortOptions: { value: SortKey; label: string }[] = [
   { value: "company", label: "Company" }
 ];
 
+export const minimumSalaryFilterOptions: {
+  value: MinimumSalaryFilter;
+  label: string;
+}[] = [
+  { value: "Any", label: "Any salary" },
+  { value: "80000", label: "$80k+" },
+  { value: "100000", label: "$100k+" },
+  { value: "120000", label: "$120k+" },
+  { value: "150000", label: "$150k+" },
+  { value: "180000", label: "$180k+" },
+  { value: "200000", label: "$200k+" }
+];
+
+export function isMinimumSalaryFilter(
+  value: string
+): value is MinimumSalaryFilter {
+  return minimumSalaryFilterValues.some((option) => option === value);
+}
+
 export function filterReducer(
   state: FilterState,
   action: FilterAction
@@ -107,6 +119,8 @@ export function filterReducer(
       };
     case "toggleSalaryOnly":
       return { ...state, salaryOnly: !state.salaryOnly };
+    case "setMinimumSalary":
+      return { ...state, minimumSalary: action.value };
     case "setWorkplace":
       return { ...state, workplace: action.value };
     case "setSeniority":
@@ -124,105 +138,8 @@ export function filterReducer(
   }
 }
 
-export function filterJobs(jobs: Job[], filters: FilterState) {
-  const normalizedQuery = filters.query.trim().toLowerCase();
-  const normalizedLocationQuery = normalizeFilterText(filters.locationQuery);
-
-  return jobs
-    .filter((job) => {
-      if (normalizedQuery && !getSearchText(job).includes(normalizedQuery)) {
-        return false;
-      }
-
-      if (
-        normalizedLocationQuery &&
-        !getLocationSearchText(job).includes(normalizedLocationQuery)
-      ) {
-        return false;
-      }
-
-      if (
-        filters.selectedPlatforms.length > 0 &&
-        !filters.selectedPlatforms.some((platform) =>
-          job.platforms.includes(platform)
-        )
-      ) {
-        return false;
-      }
-
-      if (
-        filters.selectedTools.length > 0 &&
-        !filters.selectedTools.some((tool) => job.tools.includes(tool))
-      ) {
-        return false;
-      }
-
-      if (filters.workplace !== "Any" && job.workplace !== filters.workplace) {
-        return false;
-      }
-
-      if (filters.salaryOnly && !hasSalaryShown(job)) {
-        return false;
-      }
-
-      if (filters.seniority !== "All" && job.seniority !== filters.seniority) {
-        return false;
-      }
-
-      if (
-        filters.roleFamily !== "All" &&
-        job.roleFamily !== filters.roleFamily
-      ) {
-        return false;
-      }
-
-      if (
-        filters.freshness !== "Any" &&
-        getPostedAgeDays(job.postedAt) > Number(filters.freshness)
-      ) {
-        return false;
-      }
-
-      return true;
-    })
-    .sort((first, second) => sortJobs(first, second, filters.sort));
-}
-
-function hasSalaryShown(job: Job) {
-  return (
-    typeof job.salary?.min === "number" ||
-    typeof job.salary?.max === "number"
-  );
-}
-
 function toggleValue<T>(values: T[], value: T) {
   return values.includes(value)
     ? values.filter((current) => current !== value)
     : [...values, value];
-}
-
-function sortJobs(first: Job, second: Job, sort: SortKey) {
-  if (sort === "salary") {
-    return getSalarySortValue(second) - getSalarySortValue(first);
-  }
-
-  if (sort === "company") {
-    return first.company.localeCompare(second.company);
-  }
-
-  return new Date(second.postedAt).getTime() - new Date(first.postedAt).getTime();
-}
-
-function getLocationSearchText(job: Job) {
-  return normalizeFilterText(
-    `${job.location} ${job.mapLocation?.label ?? ""} ${job.workplace}`
-  );
-}
-
-function normalizeFilterText(value: string) {
-  return value
-    .normalize("NFC")
-    .replace(/[^\p{L}\p{M}\p{N}]+/gu, " ")
-    .trim()
-    .toLowerCase();
 }

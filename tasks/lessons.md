@@ -47,3 +47,5 @@
 - When adding a location alias, regenerate persisted map data for affected listings and run the mapped-coverage audit.
 - Pass normalized boundary values into derived-field inference; do not recompute behavior from the provider's raw title after cleaning it.
 - Patch repeated generated JSON fields with record-level context and verify the target ID immediately; a bare field match can silently modify another job.
+- When a terse feature prompt can mean either scoring or filtering, confirm the intended interaction before building a new preference system; reuse the existing filter model when the user wants a dropdown constraint.
+- Public API validation, typed parsing, and OpenAPI parameters must derive from one contract; never expose UI reducer state or rely on a separate cast-heavy parsing pass.

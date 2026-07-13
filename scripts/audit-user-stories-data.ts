@@ -70,6 +70,8 @@ import {
 } from "./job-refresh/providers/curated-jobs";
 import { auditJobComparisonData } from "./audits/job-comparison-data";
 import { auditFeedSafetyData } from "./audits/feed-safety-data";
+import { auditJobsApiData } from "./audits/jobs-api-data";
+import { auditMinimumSalaryData } from "./audits/minimum-salary-data";
 
 type AuditStatus = "Passed" | "Failed";
 type AuditResult = { id: string; status: AuditStatus; detail: string };
@@ -111,6 +113,9 @@ const sourcePaths = {
   jobMapFeatures: "src/components/job-board/job-map-features.ts",
   jobMapLib: "src/lib/job-map.ts",
   jobMapPopup: "src/components/job-board/job-map-popup.tsx",
+  jobsApiAudit: "scripts/audits/jobs-api-data.ts",
+  jobsApiBrowserAudit: "scripts/audits/jobs-api-browser.mjs",
+  minimumSalaryAudit: "scripts/audits/minimum-salary-data.ts",
   layout: "src/app/layout.tsx",
   mapLocation: "src/lib/map-location.ts",
   packageLock: "package-lock.json",
@@ -196,7 +201,7 @@ const filterFixtureJobs = [
 
 await run("TRACKER-001", "Canonical story sheet has complete source evidence", async () => {
   const rows = parseCsv(sources.sheet);
-  assertEqual(rows.length, 73, "expected 73 user stories");
+  assertEqual(rows.length, 75, "expected 75 user stories");
   assertEqual(new Set(rows.map((row) => row.ID)).size, rows.length, "duplicate story IDs");
 
   rows.forEach((row, index) => {
@@ -221,6 +226,9 @@ await run("TRACKER-001", "Canonical story sheet has complete source evidence", a
     sources.comparisonBrowserAudit,
     sources.comparisonDataAudit,
     sources.feedSafetyAudit,
+    sources.jobsApiAudit,
+    sources.jobsApiBrowserAudit,
+    sources.minimumSalaryAudit,
     await readFile("scripts/audit-user-stories-data.ts", "utf8")
   ].join("\n");
   const auditedIds = new Set(
@@ -421,13 +429,14 @@ await run("FEAT-019", "Active filter chips expose removable labels and clear act
 await run("FEAT-020", "Filter state serializes to shareable URL params", () => {
   const parsed = filterStateFromSearchParams(
     new URLSearchParams(
-      "q=Jamf&platforms=macOS,Nope&tools=Jamf,PowerShell,Bad&location=Austin&remote=1&salary=1&seniority=Senior&family=Endpoint%20Security&freshness=7&sort=company"
+      "q=Jamf&platforms=macOS,Nope&tools=Jamf,PowerShell,Bad&location=Austin&remote=1&salary=1&minSalary=150000&seniority=Senior&family=Endpoint%20Security&freshness=7&sort=company"
     )
   );
   assertEqual(parsed.query, "Jamf");
   assertEqual(parsed.locationQuery, "Austin");
   assertEqual(parsed.workplace, "Remote");
   assertEqual(parsed.salaryOnly, true);
+  assertEqual(parsed.minimumSalary, "150000");
   assertEqual(parsed.selectedPlatforms.join(","), "macOS");
   assertEqual(parsed.selectedTools.join(","), "Jamf,PowerShell");
   assertEqual(parsed.roleFamily, "Endpoint Security");
@@ -441,7 +450,13 @@ await run("FEAT-020", "Filter state serializes to shareable URL params", () => {
 
   const merged = mergeFilterStateIntoSearchParams(
     new URLSearchParams("keep=1&locations=legacy&remote=1"),
-    { ...initialFilterState, query: "Intune", selectedPlatforms: ["Windows"], salaryOnly: true }
+    {
+      ...initialFilterState,
+      query: "Intune",
+      selectedPlatforms: ["Windows"],
+      salaryOnly: true,
+      minimumSalary: "120000"
+    }
   );
   assertEqual(merged.get("keep"), "1");
   assertEqual(merged.get("locations"), null);
@@ -449,6 +464,7 @@ await run("FEAT-020", "Filter state serializes to shareable URL params", () => {
   assertEqual(merged.get("q"), "Intune");
   assertEqual(merged.get("platforms"), "Windows");
   assertEqual(merged.get("salary"), "1");
+  assertEqual(merged.get("minSalary"), "120000");
 });
 
 await run("FEAT-022", "Results panel exposes count and daily refresh note", () => {
@@ -514,6 +530,8 @@ await run("FEAT-026", "Salary pill renders accessible salary label", () => {
 
 await auditJobComparisonData(run);
 await auditFeedSafetyData(run);
+await auditJobsApiData(run);
+await auditMinimumSalaryData(run);
 
 await run("FEAT-028", "Match reasons render on job cards", () => {
   assertIncludes(jobCardMarkup, "Endpoint match reasons");
