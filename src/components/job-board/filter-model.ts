@@ -213,13 +213,13 @@ function sortJobs(first: Job, second: Job, sort: SortKey) {
   return new Date(second.postedAt).getTime() - new Date(first.postedAt).getTime();
 }
 
-function getLocationSearchText(job: Job) {
+export function getLocationSearchText(job: Job) {
   return normalizeFilterText(
     `${job.location} ${job.mapLocation?.label ?? ""} ${job.workplace}`
   );
 }
 
-function normalizeFilterText(value: string) {
+export function normalizeFilterText(value: string) {
   return value
     .normalize("NFC")
     .replace(/[^\p{L}\p{M}\p{N}]+/gu, " ")

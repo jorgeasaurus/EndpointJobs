@@ -2,6 +2,7 @@ import { chromium, expect } from "@playwright/test";
 
 import { loadBrowserAuditScenarios } from "./audit-user-stories-browser-fixtures.ts";
 import { auditJobComparisonBrowser } from "./audits/job-comparison-browser.mjs";
+import { auditJobMatchBrowser } from "./audits/job-match-browser.mjs";
 
 const baseUrl = process.env.AUDIT_BASE_URL ?? "http://127.0.0.1:3002";
 const desktopViewport = { width: 1280, height: 900 };
@@ -9,7 +10,8 @@ const mobileViewport = { width: 390, height: 844 };
 const {
   advancedFilterScenario,
   descriptionScenario,
-  locationMapScenario
+  locationMapScenario,
+  matchScenario
 } = await loadBrowserAuditScenarios();
 const results = [];
 const consoleMessages = [];
@@ -694,6 +696,8 @@ await auditJobComparisonBrowser({
   run
 });
 
+await auditJobMatchBrowser({ browser, matchScenario, mobileViewport, newPage, run });
+
 await run("FEAT-034", "Mobile viewport has no document overflow", async () => {
   const page = await newPage(browser, { width: 390, height: 844 });
   await page.getByText("More filters").click();
@@ -704,7 +708,7 @@ await run("FEAT-034", "Mobile viewport has no document overflow", async () => {
     overflowingElements: [...document.querySelectorAll("body *")]
       .filter((element) =>
         element instanceof HTMLElement &&
-        !element.closest(".quick-filters, .facet-list") &&
+        !element.closest(".quick-filters, .facet-list, .match-preference-scroll") &&
         element.getBoundingClientRect().right > window.innerWidth + 1
       )
       .slice(0, 8)

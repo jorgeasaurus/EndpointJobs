@@ -70,6 +70,7 @@ import {
 } from "./job-refresh/providers/curated-jobs";
 import { auditJobComparisonData } from "./audits/job-comparison-data";
 import { auditFeedSafetyData } from "./audits/feed-safety-data";
+import { auditJobMatchData } from "./audits/job-match-data";
 
 type AuditStatus = "Passed" | "Failed";
 type AuditResult = { id: string; status: AuditStatus; detail: string };
@@ -98,6 +99,7 @@ const sourcePaths = {
   controls: "src/components/job-board/controls.tsx",
   curated: "scripts/job-refresh/providers/curated-jobs.ts",
   feedSafetyAudit: "scripts/audits/feed-safety-data.ts",
+  jobMatchAudit: "scripts/audits/job-match-data.ts",
   jobTaxonomy: "src/lib/job-taxonomy.ts",
   issueConfig: ".github/ISSUE_TEMPLATE/config.yml",
   issueTemplate: ".github/ISSUE_TEMPLATE/report-or-request.yml",
@@ -196,7 +198,7 @@ const filterFixtureJobs = [
 
 await run("TRACKER-001", "Canonical story sheet has complete source evidence", async () => {
   const rows = parseCsv(sources.sheet);
-  assertEqual(rows.length, 73, "expected 73 user stories");
+  assertEqual(rows.length, 74, "expected 74 user stories");
   assertEqual(new Set(rows.map((row) => row.ID)).size, rows.length, "duplicate story IDs");
 
   rows.forEach((row, index) => {
@@ -221,6 +223,7 @@ await run("TRACKER-001", "Canonical story sheet has complete source evidence", a
     sources.comparisonBrowserAudit,
     sources.comparisonDataAudit,
     sources.feedSafetyAudit,
+    sources.jobMatchAudit,
     await readFile("scripts/audit-user-stories-data.ts", "utf8")
   ].join("\n");
   const auditedIds = new Set(
@@ -487,6 +490,7 @@ const jobCardMarkup = renderToStaticMarkup(
       seniority: "Senior",
       employmentType: "Full-time"
     }),
+    match: null,
     onToggleComparison: () => undefined,
     query: "Intune"
   })
@@ -510,6 +514,10 @@ await run("FEAT-025", "Job card renders core listing details", () => {
 await run("FEAT-026", "Salary pill renders accessible salary label", () => {
   assertIncludes(jobCardMarkup, "salary-pill");
   assertIncludes(jobCardMarkup, "Salary $120k-$150k");
+});
+
+await run("FEAT-074", "Personalized preferences produce an explained match score", () => {
+  auditJobMatchData({ assertEqual, makeJob });
 });
 
 await auditJobComparisonData(run);

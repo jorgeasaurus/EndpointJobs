@@ -10,7 +10,9 @@ import { updateComparisonSelection } from "./job-board/comparison-selection";
 import { CommandPanel } from "./job-board/controls";
 import { filterJobs } from "./job-board/filter-model";
 import { JobMap } from "./job-board/job-map";
+import { getJobMatch, initialMatchPreferences } from "./job-board/job-match";
 import { JobComparison } from "./job-board/job-comparison";
+import { MatchProfile } from "./job-board/match-profile";
 import { ParallaxBackground } from "./job-board/parallax-background";
 import { ResultsPanel } from "./job-board/results-panel";
 import { SiteFooter, Topbar } from "./job-board/topbar";
@@ -27,6 +29,7 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
     page: 1
   });
   const [selectedJobIds, setSelectedJobIds] = useState<Set<string>>(new Set());
+  const [matchPreferences, setMatchPreferences] = useState(initialMatchPreferences);
   const resultsSectionRef = useRef<HTMLElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -134,6 +137,11 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
           />
         </section>
 
+        <MatchProfile
+          onChange={setMatchPreferences}
+          preferences={matchPreferences}
+        />
+
         <JobMap id="map" jobs={visibleJobs} />
 
         <JobComparison
@@ -160,6 +168,7 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
             totalJobs={visibleJobs.length}
             totalPages={totalPages}
             query={filters.query}
+            getMatch={(job) => getJobMatch(job, matchPreferences)}
             selectedJobIds={selectedJobIds}
             toggleComparison={toggleComparison}
             visibleJobs={pagedJobs}

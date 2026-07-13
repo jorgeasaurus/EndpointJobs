@@ -31,6 +31,14 @@ type DescriptionScenario = {
   title: string;
 };
 
+type MatchScenario = {
+  job: Job;
+  location: string;
+  platform: Job["platforms"][number];
+  salaryFloor: number;
+  tool: Job["tools"][number];
+};
+
 export async function loadBrowserAuditScenarios() {
   const jobsFeed = JSON.parse(
     await readFile(new URL("../src/data/jobs.json", import.meta.url), "utf8")
@@ -40,7 +48,31 @@ export async function loadBrowserAuditScenarios() {
   return {
     advancedFilterScenario: findAdvancedFilterScenario(activeJobs),
     descriptionScenario: findDescriptionScenario(activeJobs),
-    locationMapScenario: findLocationMapScenario(activeJobs)
+    locationMapScenario: findLocationMapScenario(activeJobs),
+    matchScenario: findMatchScenario(activeJobs)
+  };
+}
+
+function findMatchScenario(jobs: Job[]): MatchScenario {
+  const job = jobs.find(
+    (candidate) =>
+      candidate.platforms.length > 0 &&
+      candidate.tools.length > 0 &&
+      candidate.salary?.max &&
+      candidate.seniority &&
+      candidate.mapLocation
+  );
+
+  if (!job || !job.salary?.max || !job.mapLocation) {
+    throw new Error("missing fully configured personalized-match scenario");
+  }
+
+  return {
+    job,
+    location: job.mapLocation.label,
+    platform: job.platforms[0],
+    salaryFloor: job.salary.max,
+    tool: job.tools[0]
   };
 }
 

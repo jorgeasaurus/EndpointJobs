@@ -5,11 +5,13 @@ import type { Job } from "@/types/job";
 import { AnimatedNumber } from "./animated-number";
 import { maximumComparedJobs } from "./comparison-selection";
 import { JobCard } from "./job-card";
+import type { JobMatch } from "./job-match";
 import { PaginationControls, type PaginationState } from "./pagination-controls";
 
 export function ResultsPanel({
   clearFilters,
   currentPage,
+  getMatch,
   onPageChange,
   pageEnd,
   pageStart,
@@ -21,6 +23,7 @@ export function ResultsPanel({
   visibleJobs
 }: PaginationState & {
   clearFilters: () => void;
+  getMatch: (job: Job) => JobMatch | null;
   onPageChange: (page: number) => void;
   query: string;
   selectedJobIds: Set<string>;
@@ -64,6 +67,7 @@ export function ResultsPanel({
                 isCompared={selectedJobIds.has(job.id)}
                 key={job.id}
                 job={job}
+                match={getMatch(job)}
                 onToggleComparison={toggleComparison}
                 query={query}
               />

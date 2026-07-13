@@ -92,3 +92,16 @@ Added NinjaOne's remote Software Packaging Engineer from its live Jobvite postin
 ## Review
 
 Reduced the feed diff to the two intended records, made provider modules canonical for scheduled ATS defaults, and removed the failing Nordstrom probe. Typecheck, lint, 58 data audits, production build, diff checks, and the repeated thermo-nuclear review pass cleanly.
+
+# Personalized match score
+
+- [x] Create an isolated feature branch and define the preference contract.
+- [x] RED/GREEN: score configured platform, tool, location, salary, and seniority preferences.
+- [x] Add a compact preference editor separate from search filters.
+- [x] Show match labels and explicit reasons on job cards.
+- [x] Add canonical data and browser audit coverage.
+- [x] Run typecheck, lint, audits, build, browser verification, and React Doctor.
+
+## Review
+
+Added a preference profile that scores but does not filter roles, with normalized platform, tool, location, salary-floor, and seniority evaluation. Cards show a percentage, Strong/Good/Partial label, and matched or missing reasons; typecheck, lint, build, 59 data checks, 33 browser checks, desktop/mobile visual checks, and React Doctor 100/100 pass.
