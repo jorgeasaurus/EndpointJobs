@@ -39,6 +39,12 @@ export async function auditJobsApiData(run: RunAudit) {
     assertEqual(result.body.filters.tools[0], "Jamf", "public applied-filter DTO");
     assertEqual("selectedTools" in result.body.filters, false, "UI filter field excluded");
 
+    const paddedText = queryJobs(feed, new URLSearchParams("q=%20Endpoint%20"), now);
+    assertEqual(paddedText.ok, true, "padded text query accepted");
+    if (paddedText.ok) {
+      assertEqual(paddedText.body.filters.q, "Endpoint", "text query normalized");
+    }
+
     const invalid = queryJobs(feed, new URLSearchParams("limit=101&unknown=1"), now);
     assertEqual(invalid.ok, false, "invalid query rejected");
     if (!invalid.ok) {

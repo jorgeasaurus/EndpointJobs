@@ -1,5 +1,6 @@
 import {
   filterJobs,
+  minimumSalaryFilterValues,
   type FreshnessFilter,
   type JobFilters,
   type MinimumSalaryFilter,
@@ -9,9 +10,13 @@ import {
   jobsApiQueryContract,
   type JobsApiQueryDefinition
 } from "@/lib/jobs-api-contract";
-import { isActiveJob } from "@/lib/jobs";
-import { platformOptions, roleFamilyOptions, seniorityOptions, toolOptions } from "@/lib/jobs";
-import { minimumSalaryFilterValues } from "@/lib/job-filters";
+import {
+  isActiveJob,
+  platformOptions,
+  roleFamilyOptions,
+  seniorityOptions,
+  toolOptions
+} from "@/lib/jobs";
 import type {
   EndpointTool,
   Job,
@@ -141,8 +146,8 @@ function parseQuery(searchParams: URLSearchParams):
     page: readInteger(searchParams, "page"),
     limit: readInteger(searchParams, "limit"),
     filters: {
-      query: searchParams.get("q") ?? "",
-      locationQuery: searchParams.get("location") ?? "",
+      query: readText(searchParams, "q"),
+      locationQuery: readText(searchParams, "location"),
       selectedPlatforms: readMulti(searchParams, "platforms", platformOptions),
       selectedTools: readMulti(searchParams, "tools", toolOptions),
       workplace: readEnum(searchParams, "workplace", ["Remote", "Hybrid", "On-site"] as const, "Any"),
@@ -163,7 +168,8 @@ function validateValue(
   errors: string[]
 ) {
   if (definition.kind === "text") {
-    if (value.trim().length < definition.minimumLength || value.length > definition.maximumLength) {
+    const length = value.trim().length;
+    if (length < definition.minimumLength || length > definition.maximumLength) {
       errors.push(`${key} must contain ${definition.minimumLength}-${definition.maximumLength} characters`);
     }
     return;
@@ -187,6 +193,10 @@ function validateValue(
 
 function readInteger(searchParams: URLSearchParams, key: "page" | "limit") {
   return Number(searchParams.get(key) ?? jobsApiQueryContract[key].default);
+}
+
+function readText(searchParams: URLSearchParams, key: "q" | "location") {
+  return searchParams.get(key)?.trim() ?? "";
 }
 
 function readMulti<T extends string>(params: URLSearchParams, key: string, options: readonly T[]) {
