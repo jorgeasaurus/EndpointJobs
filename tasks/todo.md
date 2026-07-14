@@ -205,3 +205,22 @@ The API docs button now targets `main/docs/api.md`, which remains valid after fe
 ## Review
 
 Called the live collection, filtered collection, and item endpoints and added representative PowerShell output for each. The guide records the capture date because listing counts and values refresh. JSON parsing, typecheck, lint, and diff checks pass.
+
+# PowerShell salary-label example
+
+- [x] Run the minimum-salary query against the live API.
+- [x] Add the nested salary label and application URL example with output.
+- [x] Verify the documentation diff.
+
+## Review
+
+Added the exact remote minimum-salary request with a calculated `salary.label` property and representative live output. The production request and `git diff --check` pass.
+
+# PowerShell example screenshot
+
+- [x] Add the supplied terminal screenshot to the API guide.
+- [x] Verify the image path and documentation diff.
+
+## Review
+
+Added the supplied `limit=5` terminal output beneath the related PowerShell example. The image path resolves and `git diff --check` passes.

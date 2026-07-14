@@ -92,6 +92,39 @@ IT Systems Engineer         Intercom San Francisco, California
 Senior IT Systems Engineer  Intercom San Francisco, California
 ```
 
+Show application links and nested salary labels:
+
+```powershell
+$uri = 'https://endpointjobs.dev/api/jobs?minSalary=150000&workplace=Remote&limit=20'
+$response = Invoke-RestMethod -Uri $uri
+$response.data |
+    Select-Object title, company, location, applyUrl, @{
+        Name = 'salary'
+        Expression = { $_.salary.label }
+    } |
+    Format-List
+```
+
+```text
+title    : Senior End-User Computing Engineer
+company  : Lakeview Loan Servicing
+location : Coral Gables, FL
+applyUrl : https://careers.bayview.com/lls/jobs/8600?lang=en-us&utm_campaign=google_jobs_apply...
+salary   : $140k-$150k
+
+title    : Senior Digital Workplace Technician - USDS
+company  : TikTok USDS JV
+location : Washington, DC
+applyUrl : https://www.indeed.com/viewjob?jk=2252f6e089670fcb&utm_campaign=google_jobs_apply...
+salary   : $99k-$163k
+
+...
+```
+
+Example terminal output using `limit=5`:
+
+![PowerShell query returning remote jobs with salary and application links](screenshots/powershell-api-example.png)
+
 Fetch one job from the collection:
 
 ```powershell
@@ -110,7 +143,7 @@ tools      : {Jamf, Intune, Okta}
 platforms  : {Windows, macOS}
 ```
 
-Outputs were captured from the live API on July 13, 2026 and will change as listings refresh.
+Outputs were captured from the live API on July 13–14, 2026 and will change as listings refresh. Long URLs are shortened in the examples.
 
 ## Get one job
 
