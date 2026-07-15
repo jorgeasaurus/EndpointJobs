@@ -26,7 +26,12 @@ test("Recruitee keeps jobs with well-formed three-letter currency codes", async 
       status: "published",
       published_at: "2026-07-10T00:00:00.000Z",
       location: "Berlin, Germany",
-      description: "Manage Microsoft Intune endpoints and Windows devices.",
+      description: "   ",
+      translations: {
+        en: {
+          description: "Manage Microsoft Intune endpoints and Windows devices."
+        }
+      },
       careers_url: "https://example.recruitee.com/o/endpoint-engineer",
       careers_apply_url: "https://example.recruitee.com/o/endpoint-engineer/apply",
       salary: {
@@ -50,6 +55,7 @@ test("Recruitee keeps jobs with well-formed three-letter currency codes", async 
   }
 
   assert.equal(jobs.length, 1);
+  assert.match(jobs[0]?.summary ?? "", /Microsoft Intune endpoints/);
   assert.deepEqual(jobs[0]?.salary && {
     min: jobs[0].salary.min,
     max: jobs[0].salary.max,

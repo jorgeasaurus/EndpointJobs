@@ -228,8 +228,8 @@ function getRecruiteeDescription(raw: RecruiteeOffer) {
   );
 
   return [
-    raw.description ?? translated?.description,
-    raw.requirements ?? translated?.requirements
+    raw.description?.trim() ? raw.description : translated?.description,
+    raw.requirements?.trim() ? raw.requirements : translated?.requirements
   ].filter(Boolean).join("\n\n");
 }
 

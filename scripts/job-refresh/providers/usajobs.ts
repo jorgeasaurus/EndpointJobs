@@ -241,7 +241,7 @@ export function normalizeUsaJobsItem(item: UsaJobsSearchItem, fetchedAt: Date) {
     termsProfile: "public-api",
     description,
     sourceTags,
-    haystackParts: [descriptor.DepartmentName, ...sourceTags],
+    haystackParts: sourceTags,
     salary: normalizeUsaJobsSalary(descriptor.PositionRemuneration),
     employmentType: normalizeFirstEmploymentType(
       toArray(descriptor.PositionSchedule).map((schedule) => schedule.Name)
