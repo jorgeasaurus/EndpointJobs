@@ -272,3 +272,40 @@ Added Last 1 day as a shared UI/API freshness value with 24-hour filtering, URL 
 ## Review
 
 Replaced implicit floored-age comparison with a tested timestamp cutoff, removed UI pass-through exports, and generated all enum-valued applied-filter schemas from the canonical API contract. Typecheck, lint, build, 60 data checks, 34 browser checks, and the repeated thermo-nuclear review pass cleanly; React Doctor retains two pre-existing small-array advisories.
+
+# Research potential new job sources
+
+- [x] Inventory current providers and employer-specific ATS coverage.
+- [x] Measure current feed concentration and coverage gaps.
+- [x] Research public boards, aggregators, and unsupported ATS families.
+- [x] Validate access, terms, duplication risk, and implementation effort.
+- [x] Rank source candidates and record recommendations.
+
+## Review
+
+Prioritize SmartRecruiters, USAJOBS, France Travail, and Recruitee; pilot authorized NEOGOV and Jobvite feeds next. Before adding volume, fix canonical-URL dedupe, unknown-date ranking, and direct-source cap pressure; 82.8% of the current 500-row feed comes from SerpAPI and Adzuna.
+
+# Implement new job sources and Germany coverage
+
+- [x] RED/GREEN: prefer canonical direct postings and known publication dates.
+- [x] RED/GREEN: add SmartRecruiters normalization and configured boards.
+- [x] RED/GREEN: add Recruitee normalization and configured accounts.
+- [x] Expand verified direct ATS targets using existing adapters.
+- [x] Add Germany to every country-aware scheduled source.
+- [x] Refresh targeted sources and verify accepted job yield.
+- [x] Run typecheck, lint, data/browser audits, build, and final review.
+
+## Review
+
+Added default SmartRecruiters and Recruitee sources, optional USAJOBS support, six verified Workday targets, and 1Password's Ashby board. Germany is scheduled across country-aware providers with German search/taxonomy/map coverage; live probes accepted one Recruitee and one SmartRecruiters role. Typecheck, lint, build, 60 data checks, 34 browser checks, seven focused tests, diff checks, and changed-file React Doctor pass.
+
+# Publish new job sources preview
+
+- [ ] Commit and push the feature branch.
+- [ ] Dispatch and verify the job refresh workflow.
+- [ ] Synchronize the refreshed feed commit.
+- [ ] Deploy and verify a Vercel preview.
+
+## Review
+
+In progress.

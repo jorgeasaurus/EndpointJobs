@@ -188,6 +188,14 @@ export function isEndpointRelevant(
     containsAlias(normalizedTitle, "software engineer") ||
     containsAlias(normalizedTitle, "software development engineer") ||
     containsAlias(normalizedTitle, "developer");
+  const looksLikeSapDataManagement =
+    containsAlias(normalizedTitle, "sap") &&
+    (containsAlias(normalizedTitle, "mdm") ||
+      containsAlias(normalizedTitle, "mdg") ||
+      containsAlias(haystack, "master data")) &&
+    !["endpoint", "intune", "device", "workplace", "end user"].some((term) =>
+      containsAlias(normalizedTitle, term)
+    );
   const hasClientEngineeringTitle = [
     "client engineering",
     "macos client",
@@ -199,6 +207,7 @@ export function isEndpointRelevant(
 
   if (
     looksLikeEntrySupport ||
+    looksLikeSapDataManagement ||
     (looksLikeFrontlineSupport && !hasEndpointTitle) ||
     (looksLikeApplicationSecurity && !hasEndpointTitle) ||
     (looksLikeSoftwareProductRole && !hasClientEngineeringTitle)

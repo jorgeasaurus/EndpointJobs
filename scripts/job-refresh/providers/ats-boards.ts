@@ -157,6 +157,7 @@ const defaultGreenhouseBoards = [
 const defaultLeverCompanies = ["jumpcloud", "brightonjones", "hermeus", "omnidian", "whoop"];
 
 const defaultAshbyBoards = [
+  "1password",
   "docker",
   "cursor",
   "perplexity",
