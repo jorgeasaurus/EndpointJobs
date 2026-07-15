@@ -41,6 +41,7 @@ import {
 } from "../src/components/job-board/job-map-features";
 
 import { resolveJobMapLocation } from "./job-refresh/map-location";
+import { selectFeedJobs } from "./job-refresh/job-selection";
 import {
   defaultCompanyJobQueries,
   defaultEndpointSearchQueries,
@@ -127,12 +128,15 @@ const sourcePaths = {
   providersPublic: "scripts/job-refresh/providers/public-job-boards.ts",
   rapidApiDaily: "scripts/job-refresh/providers/rapidapi-daily-jobs.ts",
   rapidApiLinkedIn: "scripts/job-refresh/providers/rapidapi-linkedin.ts",
+  recruitee: "scripts/job-refresh/providers/recruitee.ts",
   reactDoctorWorkflow: ".github/workflows/react-doctor.yml",
   readme: "README.md",
   refresh: "scripts/refresh-jobs.ts",
   resultsPanel: "src/components/job-board/results-panel.tsx",
   robots: "src/app/robots.ts",
   serpApi: "scripts/job-refresh/providers/serpapi.ts",
+  smartRecruiters: "scripts/job-refresh/providers/smartrecruiters.ts",
+  usaJobs: "scripts/job-refresh/providers/usajobs.ts",
   shared: "scripts/job-refresh/shared.ts",
   searchConfig: "scripts/job-refresh/search-config.ts",
   sheet: "docs/feature-user-stories.csv",
@@ -768,6 +772,12 @@ await run("FEAT-044", "Normalizer accepts endpoint roles and rejects generic sof
     "Systems Administrator PowerShell automation Active Directory Windows Server"
   );
   const genericHaystack = normalizeSearchText("Backend software engineer developer platform");
+  const germanEndpointHaystack = normalizeSearchText(
+    "Microsoft Intune Spezialist fuer Endpoint Management und Windows Clients"
+  );
+  const sapDataHaystack = normalizeSearchText(
+    "Functional Specialist SAP MDM MDG master data governance"
+  );
   assertEqual(isEndpointRelevant(endpointHaystack, "Endpoint Engineer", deriveTools(endpointHaystack)), true);
   assertEqual(
     isEndpointRelevant(
@@ -778,6 +788,22 @@ await run("FEAT-044", "Normalizer accepts endpoint roles and rejects generic sof
     true
   );
   assertEqual(isEndpointRelevant(genericHaystack, "Software Engineer", deriveTools(genericHaystack)), false);
+  assertEqual(
+    isEndpointRelevant(
+      germanEndpointHaystack,
+      "Microsoft Intune Spezialist",
+      deriveTools(germanEndpointHaystack)
+    ),
+    true
+  );
+  assertEqual(
+    isEndpointRelevant(
+      sapDataHaystack,
+      "Functional Specialist SAP MDM MDG",
+      deriveTools(sapDataHaystack)
+    ),
+    false
+  );
 });
 
 await run("FEAT-045", "Normalizer derives tools, platforms, tags, and match reasons", () => {
@@ -841,7 +867,25 @@ await run("FEAT-049", "Dedupe and stable IDs use source URLs and React job IDs",
   const firstId = buildStableJobId("greenhouse", "spacex", "Endpoint Engineer", "https://example.com/a");
   const secondId = buildStableJobId("greenhouse", "spacex", "Endpoint Engineer", "https://example.com/b");
   assertNotEqual(firstId, secondId);
-  assertIncludes(sources.refresh, "dedupeJobs");
+  const selectedJobs = selectFeedJobs([
+    makeJob({
+      id: "aggregated",
+      source: "SerpAPI Google Jobs",
+      sourceUrl: "https://aggregator.example/endpoint",
+      postedAt: fixedAuditNow.toISOString(),
+      fetchedAt: fixedAuditNow.toISOString()
+    }),
+    makeJob({
+      id: "direct",
+      source: "Greenhouse",
+      sourceUrl: "https://boards.greenhouse.io/example/jobs/123",
+      postedAt: daysAgo(3),
+      fetchedAt: fixedAuditNow.toISOString()
+    })
+  ]);
+  assertEqual(selectedJobs.length, 1);
+  assertEqual(selectedJobs[0]?.id, "direct");
+  assertIncludes(sources.refresh, "selectFeedJobs");
   assertIncludes(sources.resultsPanel, "key={job.id}");
 });
 
@@ -855,6 +899,8 @@ await run("FEAT-050", "Stale filtering and result cap are enforced", () => {
     false
   );
   assertIncludes(sources.refresh, "JOB_MAX_RESULTS");
+  assertIncludes(sources.refresh, "defaultMaxJobs = 750");
+  assertIncludes(sources.workflow, 'JOB_MAX_RESULTS: "750"');
   assertIncludes(sources.refresh, "limitFeedJobs");
   assertIncludes(sources.refresh, "staleAfter");
 });
@@ -934,13 +980,20 @@ await run("FEAT-058", "Expanded direct ATS sources are configured", () => {
       assertIncludes(sources.atsBoards, `"${board}"`, `default Greenhouse board ${board}`);
     }
   );
+  assertIncludes(sources.atsBoards, '"1password"', "monitored Ashby board 1password");
   ["Booz Allen", "HP", "NVIDIA", "Adobe", "F5", "Allstate", "Gartner", "Nordic Consulting", "SHI", "Circle", "Jabil"].forEach(
     (company) => {
       assertIncludes(sources.companyAts, company, `default Workday site ${company}`);
     }
   );
+  ["Chatham Financial", "Austal USA", "MBDA Italy", "Velera", "Pacific Life", "General Motors"].forEach(
+    (company) => assertIncludes(sources.companyAts, company, `verified Workday site ${company}`)
+  );
   assertIncludes(sources.readme, "SpaceX", "README source documentation");
   assertIncludes(sources.readme, "GitLab", "README expanded source documentation");
+  assertIncludes(sources.workflow, "us,ch,it,es,fr,de", "scheduled Adzuna Germany coverage");
+  assertIncludes(sources.workflow, "US,CH,IT,ES,FR,DE", "scheduled TheirStack Germany coverage");
+  assertIncludes(sources.workflow, '"Germany" OR "Remote"', "scheduled LinkedIn Germany coverage");
 });
 
 await run("FEAT-059", "Confirmed-dead Adzuna listing is excluded from data and runtime active jobs", () => {
@@ -1126,6 +1179,12 @@ await run("FEAT-067", "Provider adapter contract is shared by refresh orchestrat
   assertIncludes(sources.providerContract, "reserveFeedSlots");
   assertIncludes(sources.refresh, "ProviderAdapter");
   assertIncludes(sources.refresh, "providerAdapters");
+  assertIncludes(sources.refresh, "smartRecruitersProvider");
+  assertIncludes(sources.refresh, "recruiteeProvider");
+  assertIncludes(sources.refresh, "usaJobsProvider");
+  assertIncludes(sources.smartRecruiters, 'id: "smartrecruiters"');
+  assertIncludes(sources.recruitee, 'id: "recruitee"');
+  assertIncludes(sources.usaJobs, 'id: "usajobs"');
 });
 
 await run("FEAT-068", "Endpoint search defaults include role and company expansion", () => {
@@ -1135,7 +1194,10 @@ await run("FEAT-068", "Endpoint search defaults include role and company expansi
     "powershell systems administrator",
     "powershell sysadmin",
     "intune engineer",
-    "jamf engineer"
+    "jamf engineer",
+    "endpoint spezialist",
+    "intune spezialist",
+    "it arbeitsplatz"
   ]);
   assertArrayIncludes(powerShellSysadminSearchQueries, [
     "powershell systems administrator",
@@ -1156,6 +1218,27 @@ await run("FEAT-068", "Endpoint search defaults include role and company expansi
 
 await run("FEAT-069", "Map location resolver maps known places and skips ambiguous rows", () => {
   assertEqual(resolveJobMapLocation("San Francisco, CA")?.label, "San Francisco, CA");
+  assertEqual(resolveJobMapLocation("Berlin, Germany")?.label, "Berlin, Germany");
+  assertEqual(resolveJobMapLocation("Berlin, DE")?.label, "Berlin, Germany");
+  assertEqual(resolveJobMapLocation("München, Deutschland")?.label, "Munich, Germany");
+  assertEqual(resolveJobMapLocation("Germany")?.label, "Germany");
+  assertEqual(resolveJobMapLocation("Stuttgart, AR"), undefined);
+  assertEqual(resolveJobMapLocation("Stuttgart, AR 72150"), undefined);
+  assertEqual(
+    resolveJobMapLocation("Stuttgart, AR, United States")?.label,
+    "United States"
+  );
+  for (const [location, label] of [
+    ["Frankfurt am Main, Germany", "Frankfurt, Germany"],
+    ["Köln, Deutschland", "Cologne, Germany"],
+    ["Koeln, Germany", "Cologne, Germany"],
+    ["Muenchen, Germany", "Munich, Germany"],
+    ["Stuttgart, Germany", "Stuttgart, Germany"],
+    ["Düsseldorf, Germany", "Düsseldorf, Germany"],
+    ["Duesseldorf, Germany", "Düsseldorf, Germany"]
+  ] as const) {
+    assertEqual(resolveJobMapLocation(location)?.label, label);
+  }
   assertEqual(resolveJobMapLocation("NYC")?.label, "New York, NY");
   assertEqual(resolveJobMapLocation("United States")?.label, "United States");
   assertEqual(resolveJobMapLocation("Hawthorne, CA")?.label, "Los Angeles, CA");

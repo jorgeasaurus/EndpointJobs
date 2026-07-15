@@ -253,6 +253,36 @@ const defaultWorkdaySites: WorkdaySite[] = [
     name: "Thermo Fisher",
     url: "https://thermofisher.wd5.myworkdayjobs.com/wday/cxs/thermofisher/ThermoFisherCareers/jobs",
     queries: ["Endpoint Services", "Endpoint", "Desktop", "Intune", "SCCM", "End User Computing"]
+  },
+  {
+    name: "Chatham Financial",
+    url: "https://chathamfinancial.wd501.myworkdayjobs.com/wday/cxs/chathamfinancial/ChathamFinancial/jobs",
+    queries: ["Digital Workplace Service Engineer", "Digital Workplace Engineer", "Endpoint", "Intune"]
+  },
+  {
+    name: "Austal USA",
+    url: "https://austalusa.wd1.myworkdayjobs.com/wday/cxs/austalusa/austal/jobs",
+    queries: ["Desktop Engineer", "Endpoint", "Intune", "SCCM"]
+  },
+  {
+    name: "MBDA Italy",
+    url: "https://mbda.wd3.myworkdayjobs.com/wday/cxs/mbda/MBDA-Italy/jobs",
+    queries: ["Digital Workplace", "User Support Specialist", "Endpoint", "Intune"]
+  },
+  {
+    name: "Velera",
+    url: "https://velera.wd5.myworkdayjobs.com/wday/cxs/velera/VeleraCareers/jobs",
+    queries: ["Windows Platform", "Endpoint", "Intune", "Desktop Engineer"]
+  },
+  {
+    name: "Pacific Life",
+    url: "https://pacificlife.wd1.myworkdayjobs.com/wday/cxs/pacificlife/PacificLifeCareers/jobs",
+    queries: ["Windows Infrastructure", "Endpoint", "Intune", "Desktop"]
+  },
+  {
+    name: "General Motors",
+    url: "https://generalmotors.wd5.myworkdayjobs.com/wday/cxs/generalmotors/Careers_GM/jobs",
+    queries: ["Global Design IT", "Endpoint Engineer", "Client Platform", "Digital Workplace", "Intune"]
   }
 ];
 

@@ -9,12 +9,19 @@ import { curatedJobProvider } from "./job-refresh/providers/curated-jobs";
 import { publicJobBoardProviders } from "./job-refresh/providers/public-job-boards";
 import { rapidApiDailyJobsProvider } from "./job-refresh/providers/rapidapi-daily-jobs";
 import { rapidApiLinkedInProvider } from "./job-refresh/providers/rapidapi-linkedin";
+import { recruiteeProvider } from "./job-refresh/providers/recruitee";
 import { serpApiProvider } from "./job-refresh/providers/serpapi";
+import { smartRecruitersProvider } from "./job-refresh/providers/smartrecruiters";
 import { techmapRssProvider } from "./job-refresh/providers/techmap-rss";
 import { theirStackProvider } from "./job-refresh/providers/theirstack";
+import { usaJobsProvider } from "./job-refresh/providers/usajobs";
 import { resolveJobMapLocation } from "./job-refresh/map-location";
 import { shouldWriteFeed, validateFeed } from "./job-refresh/feed-safety";
-import { extractSalaryFromText, normalizeSearchText } from "./job-refresh/shared";
+import {
+  compareFeedSelectionPriority,
+  selectFeedJobs
+} from "./job-refresh/job-selection";
+import { extractSalaryFromText } from "./job-refresh/shared";
 
 import {
   isExcludedJobSourceUrl,
@@ -25,7 +32,7 @@ import type { Job, JobsFeed } from "../src/types/job";
 
 const outputPath = resolve(process.env.JOB_OUTPUT_PATH ?? "src/data/jobs.json");
 
-const defaultMaxJobs = 500;
+const defaultMaxJobs = 750;
 const maxJobs = getPositiveIntegerConfig(process.env.JOB_MAX_RESULTS, defaultMaxJobs);
 
 async function main() {
@@ -33,18 +40,20 @@ async function main() {
   const fetchedAt = new Date();
   const excludedSourceUrls = getConfiguredExcludedSourceUrls();
   const result = await fetchConfiguredProviderJobs(configuredProviders, fetchedAt);
+  const reservedJobIds = new Set(result.reservedJobIds);
   const normalizedJobs = limitFeedJobs(
-    dedupeJobs(
+    selectFeedJobs(
       result.jobs
         .filter((job): job is Job => Boolean(job))
         .map(addExtractedSalary)
         .map(addResolvedMapLocation)
         .filter((job) => !isExcludedJobSourceUrl(job.sourceUrl, excludedSourceUrls))
         .filter((job) => !isSourceFreshnessExpired(job, fetchedAt))
-        .filter((job) => new Date(job.staleAfter).getTime() >= fetchedAt.getTime())
-    ).sort(compareJobsByPostedAtDesc),
+        .filter((job) => new Date(job.staleAfter).getTime() >= fetchedAt.getTime()),
+      reservedJobIds
+    ),
     maxJobs,
-    new Set(result.reservedJobIds)
+    reservedJobIds
   );
 
   const feed: JobsFeed = {
@@ -80,6 +89,9 @@ const providerAdapters = [
   serpApiProvider,
   rapidApiDailyJobsProvider,
   rapidApiLinkedInProvider,
+  smartRecruitersProvider,
+  recruiteeProvider,
+  usaJobsProvider,
   aiDevBoardProvider
 ] as const satisfies readonly ProviderAdapter[];
 type SupportedProvider = (typeof providerAdapters)[number]["id"];
@@ -97,6 +109,8 @@ const defaultProviders: SupportedProvider[] = [
   "workday",
   "jibe",
   "activate",
+  "smartrecruiters",
+  "recruitee",
   "curated"
 ];
 
@@ -265,29 +279,8 @@ function limitFeedJobs(jobs: Job[], limit: number, reservedJobIds: Set<string>) 
     .slice(0, regularLimit);
 
   return [...regularJobs, ...reservedJobs]
-    .sort(compareJobsByPostedAtDesc)
+    .sort(compareFeedSelectionPriority)
     .slice(0, limit);
-}
-
-function compareJobsByPostedAtDesc(first: Job, second: Job) {
-  return new Date(second.postedAt).getTime() - new Date(first.postedAt).getTime();
-}
-
-function dedupeJobs(jobs: Job[]) {
-  const byKey = new Map<string, Job>();
-
-  for (const job of jobs) {
-    const sourceKey = normalizeSearchText(job.sourceUrl);
-    const roleKey = normalizeSearchText([job.title, job.company, job.location].join("|"));
-    const key = roleKey || sourceKey;
-    const existing = byKey.get(key);
-
-    if (!existing || new Date(job.postedAt).getTime() > new Date(existing.postedAt).getTime()) {
-      byKey.set(key, job);
-    }
-  }
-
-  return Array.from(byKey.values());
 }
 
 main().catch((error: unknown) => {

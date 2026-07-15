@@ -292,7 +292,14 @@ const locationCoordinates: Coordinate[] = [
   { label: "Mexico City, Mexico", latitude: 19.4326, longitude: -99.1332, keys: ["mexico city"] },
   { label: "Medellin, Colombia", latitude: 6.2476, longitude: -75.5658, keys: ["medellin"] },
   { label: "London, UK", latitude: 51.5072, longitude: -0.1276, keys: ["london", "england united kingdom"] },
+  { label: "Berlin, Germany", latitude: 52.52, longitude: 13.405, keys: ["berlin"] },
   { label: "Hamburg, Germany", latitude: 53.5511, longitude: 9.9937, keys: ["hamburg"] },
+  { label: "Munich, Germany", latitude: 48.1351, longitude: 11.582, keys: ["munich", "munchen", "muenchen"] },
+  { label: "Frankfurt, Germany", latitude: 50.1109, longitude: 8.6821, keys: ["frankfurt", "frankfurt am main"] },
+  { label: "Cologne, Germany", latitude: 50.9375, longitude: 6.9603, keys: ["cologne", "koln", "koeln"] },
+  { label: "Stuttgart, Germany", latitude: 48.7758, longitude: 9.1829, keys: ["stuttgart"] },
+  { label: "Düsseldorf, Germany", latitude: 51.2277, longitude: 6.7735, keys: ["dusseldorf", "duesseldorf"] },
+  { label: "Germany", latitude: 51.1657, longitude: 10.4515, keys: ["germany", "deutschland"] },
   {
     label: "Paris, France",
     latitude: 48.8566,
@@ -396,10 +403,27 @@ export function resolveJobMapLocation(location: string): JobMapLocation | undefi
   }
 
   const coordinate = searchableLocationCoordinates.find((candidate) =>
+    !isGermanCityWithExplicitUsState(candidate.label, normalized) &&
     candidate.normalizedKeys.some((key) => containsNormalizedLocationKey(normalized, key))
   );
 
   return coordinate ? toMapLocation(coordinate) : undefined;
+}
+
+function isGermanCityWithExplicitUsState(label: string, normalizedLocation: string) {
+  if (!label.endsWith(", Germany")) {
+    return false;
+  }
+
+  const locationWithoutCountry = normalizedLocation.replace(
+    / (?:us|usa|united states(?: of america)?)$/,
+    ""
+  );
+  const locationWithoutTrailingZip = locationWithoutCountry.replace(/ \d{5}(?: \d{4})?$/, "");
+
+  return /(?:^| )(?:al|ak|az|ar|ca|co|ct|dc|fl|ga|hi|id|il|in|ia|ks|ky|la|me|md|ma|mi|mn|ms|mo|mt|ne|nv|nh|nj|nm|ny|nc|nd|oh|ok|or|pa|ri|sc|sd|tn|tx|ut|vt|va|wa|wv|wi|wy)$/.test(
+    locationWithoutTrailingZip
+  );
 }
 
 function containsNormalizedLocationKey(normalizedLocation: string, normalizedKey: string) {

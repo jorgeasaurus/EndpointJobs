@@ -150,6 +150,7 @@ export const endpointRoleTerms = [
 ] as const;
 
 const specialistTechnicalRoleTerms = [
+  "spezialist",
   "endpoint administrator",
   "system development engineer",
   "systems development engineer",
