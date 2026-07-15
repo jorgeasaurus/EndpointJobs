@@ -1,0 +1,260 @@
+name: PowerShell Module CI/CD
+
+on:
+  push:
+    branches: ['**']
+    tags:
+      - 'powershell-v*.*.*'
+    paths:
+      - 'powershell/EndpointJobs/**'
+      - '.github/workflows/powershell-module.yml'
+  pull_request:
+    branches: ['**']
+    paths:
+      - 'powershell/EndpointJobs/**'
+      - '.github/workflows/powershell-module.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and Test (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: PowerShell 7 / Linux
+            os: ubuntu-latest
+            shell: pwsh
+            artifact: true
+          - name: PowerShell 7 / Windows
+            os: windows-latest
+            shell: pwsh
+            artifact: false
+          - name: Windows PowerShell 5.1
+            os: windows-latest
+            shell: powershell
+            artifact: false
+          - name: PowerShell 7 / macOS
+            os: macos-latest
+            shell: pwsh
+            artifact: false
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Bootstrap Build Environment
+        shell: ${{ matrix.shell }}
+        run: ./powershell/EndpointJobs/build.ps1 -Task Bootstrap
+
+      - name: Run PSScriptAnalyzer
+        shell: ${{ matrix.shell }}
+        run: ./powershell/EndpointJobs/build.ps1 -Task Analyze
+
+      - name: Run Pester Tests
+        shell: ${{ matrix.shell }}
+        run: ./powershell/EndpointJobs/build.ps1 -Task Test
+
+      - name: Build Module
+        shell: ${{ matrix.shell }}
+        run: ./powershell/EndpointJobs/build.ps1 -Task Build
+
+      - name: Upload Build Artifacts
+        if: success() && matrix.artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: module-build
+          path: powershell/EndpointJobs/build/EndpointJobs/
+          if-no-files-found: error
+
+  release:
+    name: Publish and Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/powershell-v')
+    permissions:
+      contents: write
+    concurrency:
+      group: powershell-release-${{ github.ref }}
+      cancel-in-progress: false
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Verify Release Provenance
+        shell: pwsh
+        run: |
+          git fetch origin main --no-tags
+          git merge-base --is-ancestor $env:GITHUB_SHA origin/main
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Release tags must point to a commit reachable from origin/main.'
+          }
+
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: module-build
+          path: powershell/EndpointJobs/build/EndpointJobs/
+
+      - name: Verify Build Artifacts
+        shell: pwsh
+        run: |
+          $manifestPath = './powershell/EndpointJobs/build/EndpointJobs/EndpointJobs.psd1'
+          if (-not (Test-Path $manifestPath)) {
+            throw 'Build artifacts missing.'
+          }
+          $manifest = Test-ModuleManifest -Path $manifestPath
+          Write-Host "Module: $($manifest.Name) v$($manifest.Version)"
+          Write-Host "Files: $((Get-ChildItem -Path ./powershell/EndpointJobs/build/EndpointJobs -Recurse -File).Count)"
+
+      - name: Get Module Info
+        id: module_info
+        shell: pwsh
+        run: |
+          $manifest = Import-PowerShellDataFile -Path ./powershell/EndpointJobs/build/EndpointJobs/EndpointJobs.psd1
+          "version=$($manifest.ModuleVersion)" >> $env:GITHUB_OUTPUT
+          @"
+          ## EndpointJobs v$($manifest.ModuleVersion)
+
+          ### Installation
+
+          ``````powershell
+          Install-Module -Name EndpointJobs -Scope CurrentUser
+          ``````
+
+          ### Usage
+
+          ``````powershell
+          Get-EndpointJob -Workplace Remote -SalaryShown
+          ``````
+
+          ### Release Notes
+
+          $($manifest.PrivateData.PSData.ReleaseNotes ?? 'No release notes.')
+          "@ | Set-Content -Path (Join-Path $env:RUNNER_TEMP 'endpointjobs-release.md')
+
+      - name: Validate Tag Matches Module Version
+        shell: pwsh
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          $manifest = Import-PowerShellDataFile -Path ./powershell/EndpointJobs/build/EndpointJobs/EndpointJobs.psd1
+          $moduleVersion = $manifest.ModuleVersion
+          $tagVersion = $env:TAG_NAME -replace '^powershell-v', ''
+          if ($moduleVersion -ne $tagVersion) {
+            throw "Tag version ($tagVersion) does not match module version ($moduleVersion). Update the manifest first."
+          }
+          Write-Host "Version validated: $moduleVersion"
+
+      - name: Create Release Archive
+        shell: pwsh
+        env:
+          MODULE_VERSION: ${{ steps.module_info.outputs.version }}
+        run: |
+          $archive = "./powershell/EndpointJobs/build/EndpointJobs-v$env:MODULE_VERSION.zip"
+          Compress-Archive -Path ./powershell/EndpointJobs/build/EndpointJobs/* -DestinationPath $archive -Force
+
+      - name: Stage GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.ref_name }}
+          MODULE_VERSION: ${{ steps.module_info.outputs.version }}
+        run: |
+          set -euo pipefail
+          tag="$TAG_NAME"
+          archive="powershell/EndpointJobs/build/EndpointJobs-v$MODULE_VERSION.zip"
+          notes="$RUNNER_TEMP/endpointjobs-release.md"
+
+          if ! gh release view "$tag" >/dev/null 2>&1; then
+            gh release create "$tag" "$archive" --draft --title "EndpointJobs v$MODULE_VERSION" --notes-file "$notes"
+            exit 0
+          fi
+
+          if [[ "$(gh release view "$tag" --json isDraft --jq .isDraft)" == 'true' ]]; then
+            gh release edit "$tag" --title "EndpointJobs v$MODULE_VERSION" --notes-file "$notes"
+            gh release upload "$tag" "$archive" --clobber
+            exit 0
+          fi
+
+          mkdir -p "$RUNNER_TEMP/existing-release"
+          gh release download "$tag" --pattern "$(basename "$archive")" --dir "$RUNNER_TEMP/existing-release"
+          mkdir -p "$RUNNER_TEMP/current-archive" "$RUNNER_TEMP/published-archive"
+          unzip -q "$archive" -d "$RUNNER_TEMP/current-archive"
+          unzip -q "$RUNNER_TEMP/existing-release/$(basename "$archive")" -d "$RUNNER_TEMP/published-archive"
+          diff --brief --recursive "$RUNNER_TEMP/current-archive" "$RUNNER_TEMP/published-archive" || {
+            echo 'Published GitHub release archive does not match this build.' >&2
+            exit 1
+          }
+
+      - name: Install Publishing Toolchain
+        shell: pwsh
+        run: |
+          Install-Module -Name PackageManagement -RequiredVersion 1.4.8.1 -Scope CurrentUser -Force
+          Install-Module -Name PowerShellGet -RequiredVersion 2.2.5 -Scope CurrentUser -Force -AllowClobber
+          Import-Module -Name PackageManagement -RequiredVersion 1.4.8.1 -Force
+          Import-Module -Name PowerShellGet -RequiredVersion 2.2.5 -Force
+
+      - name: Publish to PowerShell Gallery
+        shell: pwsh
+        env:
+          PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
+          MODULE_VERSION: ${{ steps.module_info.outputs.version }}
+        run: |
+          if (-not $env:PSGALLERY_API_KEY) {
+            throw 'PSGALLERY_API_KEY secret is not set.'
+          }
+
+          $version = $env:MODULE_VERSION
+          $published = Find-Module -Name EndpointJobs -RequiredVersion $version -Repository PSGallery -ErrorAction SilentlyContinue
+          if ($published) {
+            $savedRoot = Join-Path $env:RUNNER_TEMP 'published-module'
+            Save-Module -Name EndpointJobs -RequiredVersion $version -Repository PSGallery -Path $savedRoot
+            $galleryPath = Join-Path $savedRoot "EndpointJobs/$version"
+            $buildPath = (Resolve-Path './powershell/EndpointJobs/build/EndpointJobs').Path
+
+            function Get-ModuleContentDigest {
+              param([Parameter(Mandatory)][string]$Path)
+
+              $root = (Resolve-Path $Path).Path.TrimEnd([IO.Path]::DirectorySeparatorChar)
+              $entries = Get-ChildItem -Path $root -Recurse -File |
+                Where-Object Name -ne 'PSGetModuleInfo.xml' |
+                Sort-Object FullName |
+                ForEach-Object {
+                  $relativePath = $_.FullName.Substring($root.Length + 1).Replace([IO.Path]::DirectorySeparatorChar, [char]'/')
+                  "$relativePath`n$((Get-FileHash -Path $_.FullName -Algorithm SHA256).Hash)"
+                }
+              $bytes = [Text.Encoding]::UTF8.GetBytes(($entries -join "`n"))
+              $sha256 = [Security.Cryptography.SHA256]::Create()
+              try {
+                ([BitConverter]::ToString($sha256.ComputeHash($bytes))).Replace('-', '').ToLowerInvariant()
+              } finally {
+                $sha256.Dispose()
+              }
+            }
+
+            if ((Get-ModuleContentDigest $galleryPath) -ne (Get-ModuleContentDigest $buildPath)) {
+              throw "PowerShell Gallery already contains different content for EndpointJobs $version."
+            }
+            Write-Host "EndpointJobs $version is already published with matching content."
+          } else {
+            Publish-Module -Path ./powershell/EndpointJobs/build/EndpointJobs -NuGetApiKey $env:PSGALLERY_API_KEY -Repository PSGallery -Force
+          }
+
+      - name: Publish GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: gh release edit "$TAG_NAME" --draft=false
