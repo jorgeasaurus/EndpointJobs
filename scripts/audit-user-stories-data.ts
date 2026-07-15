@@ -960,7 +960,11 @@ await run("FEAT-051", "Metadata, Open Graph, and Twitter cards are configured", 
   );
   assertIncludes(sources.siteMetadata, "Endpoint Engineering Jobs", "search-focused title");
   assertNotIncludes(sources.siteMetadata, "specialtySearchLinks", "removed specialty links");
-  assertNotIncludes(sources.topbar, "Popular searches", "removed footer search navigation");
+  assertNotIncludes(
+    sources.topbar,
+    "Popular endpoint job searches",
+    "removed footer search navigation"
+  );
   assertIncludes(sources.jobCard, "id={`job-${job.id}`}", "stable job anchors");
   assertTruthy(existsSync("public/og-image.png"), "missing public/og-image.png");
 });
