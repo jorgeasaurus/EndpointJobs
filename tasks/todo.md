@@ -217,6 +217,17 @@ Called the live collection, filtered collection, and item endpoints and added re
 
 The documented Tacoma RSS feed is now a direct provider with source-specific fields, UTC closing-date handling, original-link attribution, and normal endpoint relevance filtering. A live refresh fetched 60 postings and accepted the one endpoint role with its $103,855-$143,503 salary; 13 provider tests, typecheck, lint, 60 data audits, and the production build pass.
 
+# Preserve partial SerpAPI refresh results
+
+- [x] Reproduce successful queries being discarded after a later 429 response.
+- [x] Preserve completed query results while reporting later failures.
+- [x] Keep total-provider failure behavior intact.
+- [x] Run provider tests, audits, typecheck, lint, and build.
+
+## Review
+
+SerpAPI now returns previously normalized jobs when a later request fails, stops issuing queries after the failure, and still rejects runs with no usable results. Fifteen provider tests, typecheck, lint, and the production build pass; the data audit retains main's unrelated FEAT-036 failure for an empty RapidAPI LinkedIn summary.
+
 # SerpAPI description line breaks
 
 - [x] Reproduce line-break loss through SerpAPI normalization.
