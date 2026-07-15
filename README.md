@@ -73,11 +73,11 @@ npm run dev
 npm run jobs:refresh
 ```
 
-Use `JOB_PROVIDERS=remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,smartrecruiters,recruitee,curated,techmaprss,adzuna,theirstack,serpapi,rapidapi,rapidapilinkedin,usajobs,aidevboard` to choose sources.
+Use `JOB_PROVIDERS=remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,smartrecruiters,recruitee,schooljobs,curated,techmaprss,adzuna,theirstack,serpapi,rapidapi,rapidapilinkedin,usajobs,aidevboard` to choose sources.
 
 Single-provider legacy mode still works with `JOB_PROVIDER=remoteok` and `JOB_API_URL=https://remoteok.com/api`.
 
-Override individual URLs with `JOB_REMOTIVE_API_URL`, `JOB_ARBEITNOW_API_URL`, `JOB_JOBICY_API_URL`, `JOB_REMOTEOK_API_URL`, `JOB_GREENHOUSE_API_URL`, `JOB_LEVER_API_URL`, `JOB_MUSE_API_URL`, `JOB_ASHBY_API_URL`, `JOB_WORKABLE_API_URL`, `JOB_AMAZON_API_URL`, `JOB_WORKDAY_API_URL`, `JOB_JIBE_API_URL`, `JOB_ACTIVATE_API_URL`, `JOB_SMARTRECRUITERS_API_URL`, `JOB_RECRUITEE_API_URL`, `JOB_TECHMAP_RSS_API_URL`, `JOB_ADZUNA_API_URL`, `JOB_THEIRSTACK_API_URL`, `JOB_SERPAPI_API_URL`, `JOB_RAPIDAPI_API_URL`, `JOB_RAPIDAPILINKEDIN_API_URL`, `JOB_USAJOBS_API_URL`, or `JOB_AIDEVBOARD_API_URL`.
+Override individual URLs with `JOB_REMOTIVE_API_URL`, `JOB_ARBEITNOW_API_URL`, `JOB_JOBICY_API_URL`, `JOB_REMOTEOK_API_URL`, `JOB_GREENHOUSE_API_URL`, `JOB_LEVER_API_URL`, `JOB_MUSE_API_URL`, `JOB_ASHBY_API_URL`, `JOB_WORKABLE_API_URL`, `JOB_AMAZON_API_URL`, `JOB_WORKDAY_API_URL`, `JOB_JIBE_API_URL`, `JOB_ACTIVATE_API_URL`, `JOB_SMARTRECRUITERS_API_URL`, `JOB_RECRUITEE_API_URL`, `JOB_SCHOOLJOBS_API_URL`, `JOB_TECHMAP_RSS_API_URL`, `JOB_ADZUNA_API_URL`, `JOB_THEIRSTACK_API_URL`, `JOB_SERPAPI_API_URL`, `JOB_RAPIDAPI_API_URL`, `JOB_RAPIDAPILINKEDIN_API_URL`, `JOB_USAJOBS_API_URL`, or `JOB_AIDEVBOARD_API_URL`.
 
 Career-board defaults include Greenhouse boards for Jamf, Automox, Tanium, Okta, PlayStation, Verkada, Anthropic, DoorDash, Commvault, Kaseya, Kymera, Databricks, Zscaler, Samsara, Scale AI, Wiz, Stripe, SpaceX, Robinhood, Box, Datadog, Elastic, Lyft, Instacart, Anduril, Asana, MongoDB, Brex, Figma, Airbnb, Discord, Reddit, Rubrik, Dropbox, Affirm, Duolingo, GitLab, Coinbase, Canonical, Pinterest, Block, and Roblox; Lever companies JumpCloud, Brighton Jones, Hermeus, Omnidian, and WHOOP; Ashby boards 1Password, Docker, Cursor, Perplexity, OpenAI, Cohere, ElevenLabs, Watershed, Suno, and Voleon; targeted Workday, Amazon, Jibe, and Activate searches; SmartRecruiters company identifiers `Continental` and `BoschGroup`; German and Swiss Recruitee accounts; and five Muse pages.
 

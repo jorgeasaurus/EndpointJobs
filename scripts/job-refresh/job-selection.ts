@@ -10,6 +10,7 @@ const directJobSources = new Set([
   "Jibe",
   "Lever",
   "Recruitee",
+  "SchoolJobs",
   "SmartRecruiters",
   "USAJOBS",
   "Workable",
