@@ -218,6 +218,17 @@ Called the live collection, filtered collection, and item endpoints and added re
 
 SerpAPI descriptions sometimes contain literal newline markers or arrive flattened despite structured `job_highlights`. Provider normalization now decodes literal markers and conservatively inserts breaks only when every highlight item has one unique ordered match; ambiguous text remains unchanged. Typecheck, lint, build, and the SerpAPI audit pass; the full data audit retains main's unrelated feed-dependent FEAT-061 failure.
 
+# PR 14 review loop
+
+- [x] Guard malformed SerpAPI highlight payloads.
+- [x] Run focused and full verification.
+- [ ] Push the fix, resolve the thread, and request Copilot re-review.
+- [ ] Repeat until a full review cycle returns no comments.
+
+## Review
+
+Malformed highlight containers, sections, item arrays, and item values now preserve the normalized description without throwing. Typecheck, lint, 60 data audits, and production build pass.
+
 # PowerShell salary-label example
 
 - [x] Run the minimum-salary query against the live API.

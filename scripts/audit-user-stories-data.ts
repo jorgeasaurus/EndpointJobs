@@ -711,6 +711,32 @@ await run("FEAT-042", "Optional API providers are key-gated and non-fatal", () =
     "\n",
     "ambiguous SerpAPI highlights should not rewrite description structure"
   );
+
+  for (const [jobHighlights, label] of [
+    [{}, "non-array highlights"],
+    [[null], "null highlight section"],
+    [{ items: [null] }, "non-string highlight item"],
+    [{ items: "Manage Intune endpoints." }, "non-array highlight items"]
+  ] as const) {
+    const malformedHighlightJob = normalizeSerpApiGoogleJob(
+      {
+        job_id: `serpapi-malformed-highlight-${label}`,
+        title: "Endpoint Engineer",
+        company_name: "Audit Company",
+        location: "Remote",
+        description: repeatedHighlightText,
+        job_highlights: jobHighlights,
+        apply_options: [{ link: "https://example.com/jobs/serpapi-malformed-highlight-audit" }]
+      },
+      "endpoint engineer",
+      fixedAuditNow
+    );
+    assertEqual(
+      malformedHighlightJob?.description,
+      ambiguousSerpApiJob?.description,
+      `${label} should preserve the original SerpAPI description`
+    );
+  }
 });
 
 await run("FEAT-043", "Curated jobs reserve slots and normalize reviewed listings", () => {

@@ -26,11 +26,6 @@ type SerpApiDetectedExtensions = {
   work_from_home?: boolean;
 };
 
-type SerpApiJobHighlight = {
-  title?: string;
-  items?: string[];
-};
-
 export type SerpApiGoogleJob = {
   title?: string;
   company_name?: string;
@@ -38,7 +33,7 @@ export type SerpApiGoogleJob = {
   via?: string;
   share_link?: string;
   description?: string;
-  job_highlights?: SerpApiJobHighlight[];
+  job_highlights?: unknown;
   extensions?: string[];
   detected_extensions?: SerpApiDetectedExtensions;
   apply_options?: SerpApiApplyOption[];
@@ -197,10 +192,29 @@ function restoreSerpApiDescriptionStructure(raw: SerpApiGoogleJob) {
     return description;
   }
 
-  const items = (raw.job_highlights ?? [])
-    .flatMap((section) => section.items ?? [])
-    .map((item) => item.trim())
-    .filter(Boolean);
+  if (!Array.isArray(raw.job_highlights)) {
+    return description;
+  }
+
+  const items: string[] = [];
+
+  for (const section of raw.job_highlights) {
+    if (!section || typeof section !== "object" || !("items" in section) || !Array.isArray(section.items)) {
+      return description;
+    }
+
+    for (const item of section.items) {
+      if (typeof item !== "string") {
+        return description;
+      }
+
+      const trimmedItem = item.trim();
+
+      if (trimmedItem) {
+        items.push(trimmedItem);
+      }
+    }
+  }
   const matches: Array<{ end: number; start: number }> = [];
   let previousEnd = 0;
 
