@@ -1,4 +1,7 @@
-import { minimumSalaryFilterValues } from "@/lib/job-filters";
+import {
+  freshnessFilterDayValues,
+  minimumSalaryFilterValues
+} from "@/lib/job-filters";
 import {
   platformOptions,
   roleFamilyOptions,
@@ -54,7 +57,7 @@ export const jobsApiQueryContract = {
     kind: "enum",
     openApiName: "Freshness",
     description: "Maximum posted age in days.",
-    values: ["7", "14", "30"]
+    values: freshnessFilterDayValues
   },
   sort: {
     kind: "enum",
@@ -67,6 +70,24 @@ export const jobsApiQueryContract = {
 } as const satisfies Record<string, JobsApiQueryDefinition>;
 
 export type JobsApiQueryKey = keyof typeof jobsApiQueryContract;
+
+const appliedFilterEnumDefinitions = [
+  { name: "workplace", query: "workplace", nullable: true },
+  { name: "minSalary", query: "minSalary", nullable: true },
+  { name: "seniority", query: "seniority", nullable: true },
+  { name: "family", query: "family", nullable: true },
+  { name: "freshness", query: "freshness", nullable: true },
+  { name: "sort", query: "sort", nullable: false }
+] as const;
+
+export function getJobsApiOpenApiAppliedFilterEnums() {
+  return Object.fromEntries(
+    appliedFilterEnumDefinitions.map(({ name, query, nullable }) => [
+      name,
+      [...jobsApiQueryContract[query].values, ...(nullable ? [null] : [])]
+    ])
+  );
+}
 
 export function getJobsApiOpenApiParameters() {
   return Object.fromEntries(

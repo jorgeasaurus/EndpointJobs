@@ -49,7 +49,7 @@ GET /api/jobs?tools=Jamf&platforms=macOS&minSalary=150000&page=1&limit=20
 | `minSalary` | USD floor: `80000`, `100000`, `120000`, `150000`, `180000`, `200000` |
 | `seniority` | `Associate`, `Mid`, `Senior`, `Staff`, `Lead`, or `Manager` |
 | `family` | Role family listed in the OpenAPI enum |
-| `freshness` | Posted within `7`, `14`, or `30` days |
+| `freshness` | Posted within `1`, `7`, `14`, or `30` days |
 | `sort` | `newest`, `salary`, or `company` |
 | `page` | Positive integer; default `1` |
 | `limit` | `1`–`100`; default `20` |

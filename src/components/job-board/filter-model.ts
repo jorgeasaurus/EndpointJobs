@@ -58,6 +58,7 @@ export const freshnessFilterOptions: {
   label: string;
 }[] = [
   { value: "Any", label: "Any" },
+  { value: "1", label: "Last 1 day" },
   { value: "7", label: "Last 7 days" },
   { value: "14", label: "Last 14 days" },
   { value: "30", label: "Last 30 days" }

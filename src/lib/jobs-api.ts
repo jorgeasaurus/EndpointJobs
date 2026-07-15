@@ -1,5 +1,6 @@
 import {
   filterJobs,
+  freshnessFilterDayValues,
   minimumSalaryFilterValues,
   type FreshnessFilter,
   type JobFilters,
@@ -156,7 +157,7 @@ function parseQuery(searchParams: URLSearchParams):
       minimumSalary: readEnum(searchParams, "minSalary", minimumSalaryFilterValues, "Any"),
       seniority: readEnum(searchParams, "seniority", seniorityOptions, "All"),
       roleFamily: readEnum(searchParams, "family", roleFamilyOptions, "All"),
-      freshness: readEnum(searchParams, "freshness", ["7", "14", "30"] as const, "Any"),
+      freshness: readEnum(searchParams, "freshness", freshnessFilterDayValues, "Any"),
       sort: readEnum(searchParams, "sort", ["newest", "salary", "company"] as const, "newest")
     }
   };

@@ -224,3 +224,28 @@ Added the exact remote minimum-salary request with a calculated `salary.label` p
 ## Review
 
 Added the supplied `limit=5` terminal output beneath the related PowerShell example. The image path resolves and `git diff --check` passes.
+
+# One-day freshness filter
+
+- [x] RED: prove jobs posted within one day are included and older jobs are excluded.
+- [x] GREEN: add `1` to the shared freshness contract and UI option.
+- [x] Verify URL, API, OpenAPI, documentation, and user-story coverage.
+- [x] Run typecheck, lint, data/browser audits, build, and React Doctor.
+- [x] Review the final diff for minimal scope and record results.
+
+## Review
+
+Added Last 1 day as a shared UI/API freshness value with 24-hour filtering, URL persistence, active-chip text, generated OpenAPI enums, and documentation. Typecheck, lint, build, 60 data checks, and 34 browser checks pass; React Doctor reports 91/100 with two pre-existing small-array lookup advisories and no feature regression.
+
+# One-day freshness review remediation
+
+- [x] RED/GREEN: lock exact freshness cutoffs with timestamp-boundary tests.
+- [x] Replace floored-age filtering with an explicit timestamp helper.
+- [x] Remove UI-layer freshness pass-through exports.
+- [x] Generate applied-filter OpenAPI enums through one generic contract path.
+- [x] Add direct OpenAPI response-contract coverage.
+- [x] Run full verification and repeat the thermo-nuclear review.
+
+## Review
+
+Replaced implicit floored-age comparison with a tested timestamp cutoff, removed UI pass-through exports, and generated all enum-valued applied-filter schemas from the canonical API contract. Typecheck, lint, build, 60 data checks, 34 browser checks, and the repeated thermo-nuclear review pass cleanly; React Doctor retains two pre-existing small-array advisories.

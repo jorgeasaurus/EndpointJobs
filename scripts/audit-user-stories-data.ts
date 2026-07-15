@@ -332,6 +332,9 @@ await run("FEAT-011", "Role family filter matches exact role families", () => {
 });
 
 await run("FEAT-012", "Posted-age freshness filters use postedAt age", () => {
+  assertLabels(getActiveFilterItems({ ...initialFilterState, freshness: "1" }), [
+    "Last 1 day"
+  ]);
   assertIds(filterJobs(filterFixtureJobs, { ...initialFilterState, freshness: "7" }), [
     "recent-intune"
   ]);
@@ -429,7 +432,7 @@ await run("FEAT-019", "Active filter chips expose removable labels and clear act
 await run("FEAT-020", "Filter state serializes to shareable URL params", () => {
   const parsed = filterStateFromSearchParams(
     new URLSearchParams(
-      "q=Jamf&platforms=macOS,Nope&tools=Jamf,PowerShell,Bad&location=Austin&remote=1&salary=1&minSalary=150000&seniority=Senior&family=Endpoint%20Security&freshness=7&sort=company"
+      "q=Jamf&platforms=macOS,Nope&tools=Jamf,PowerShell,Bad&location=Austin&remote=1&salary=1&minSalary=150000&seniority=Senior&family=Endpoint%20Security&freshness=1&sort=company"
     )
   );
   assertEqual(parsed.query, "Jamf");
@@ -440,6 +443,7 @@ await run("FEAT-020", "Filter state serializes to shareable URL params", () => {
   assertEqual(parsed.selectedPlatforms.join(","), "macOS");
   assertEqual(parsed.selectedTools.join(","), "Jamf,PowerShell");
   assertEqual(parsed.roleFamily, "Endpoint Security");
+  assertEqual(parsed.freshness, "1");
   assertEqual(parsed.sort, "company");
 
   const systemsAdministration = filterStateFromSearchParams(
@@ -455,7 +459,8 @@ await run("FEAT-020", "Filter state serializes to shareable URL params", () => {
       query: "Intune",
       selectedPlatforms: ["Windows"],
       salaryOnly: true,
-      minimumSalary: "120000"
+      minimumSalary: "120000",
+      freshness: "1"
     }
   );
   assertEqual(merged.get("keep"), "1");
@@ -465,6 +470,7 @@ await run("FEAT-020", "Filter state serializes to shareable URL params", () => {
   assertEqual(merged.get("platforms"), "Windows");
   assertEqual(merged.get("salary"), "1");
   assertEqual(merged.get("minSalary"), "120000");
+  assertEqual(merged.get("freshness"), "1");
 });
 
 await run("FEAT-022", "Results panel exposes count and daily refresh note", () => {
@@ -900,11 +906,13 @@ await run("FEAT-061", "Mapped count and ratio come from active job map points", 
     (job) => !job.mapLocation && resolveJobMapLocation(job.location)
   );
   const points = buildJobMapPoints(activeJobs);
-  const sanDiegoJobs = filterJobs(activeJobs, {
+  const mappedScenarioJob = activeJobs.find((job) => job.mapLocation);
+  assertTruthy(mappedScenarioJob, "active feed has no mapped scenario job");
+  const mappedLocationJobs = filterJobs(activeJobs, {
     ...initialFilterState,
-    locationQuery: "San Diego"
+    locationQuery: mappedScenarioJob?.location ?? ""
   });
-  const sanDiegoPoints = buildJobMapPoints(sanDiegoJobs);
+  const mappedLocationPoints = buildJobMapPoints(mappedLocationJobs);
 
   assertTruthy(points.length > 0, "active feed has no mapped jobs");
   assertTruthy(
@@ -914,8 +922,8 @@ await run("FEAT-061", "Mapped count and ratio come from active job map points", 
   assertTruthy(points.length <= activeJobs.length, "mapped points exceed active jobs");
   assertEqual(points.length, activeJobsWithMapLocation.length, "map points should come from persisted mapLocation");
   assertEqual(fallbackResolvedJobs.length, 0, "active feed relies on client map-location fallback");
-  assertTruthy(sanDiegoJobs.length > 0, "San Diego location filter returned no jobs");
-  assertTruthy(sanDiegoPoints.length > 0, "San Diego location filter returned no mapped jobs");
+  assertTruthy(mappedLocationJobs.length > 0, "mapped location filter returned no jobs");
+  assertTruthy(mappedLocationPoints.length > 0, "mapped location filter returned no mapped jobs");
   assertNoStaticImport(sources.jobMap, "./job-map-canvas", "map canvas should not be a static import");
   assertIncludes(sources.jobMap, "const mappedJobCount = points.length");
   assertIncludes(sources.jobMap, "{mappedJobCount} of {jobs.length}");
