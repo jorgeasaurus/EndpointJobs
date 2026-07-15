@@ -26,17 +26,30 @@ test("SerpAPI preserves successful query results when a later query fails", asyn
 
     if (requestCount === 1) {
       return Response.json({
-        jobs_results: [{
-          job_id: "endpoint-123",
-          title: "Endpoint Engineer",
-          company_name: "Example Company",
-          location: "Remote",
-          description: "Manage Microsoft Intune, Windows endpoints, and device automation.",
-          apply_options: [{
-            title: "Example Company",
-            link: "https://example.com/jobs/endpoint-123"
-          }]
-        }]
+        jobs_results: [
+          {
+            job_id: "endpoint-123",
+            title: "Endpoint Engineer",
+            company_name: "Example Company",
+            location: "Remote",
+            description: "Manage Microsoft Intune, Windows endpoints, and device automation.",
+            apply_options: [{
+              title: "Example Company",
+              link: "https://example.com/jobs/endpoint-123"
+            }]
+          },
+          {
+            job_id: "unrelated-456",
+            title: "Account Executive",
+            company_name: "Example Company",
+            location: "Remote",
+            description: "Sell enterprise software subscriptions.",
+            apply_options: [{
+              title: "Example Company",
+              link: "https://example.com/jobs/unrelated-456"
+            }]
+          }
+        ]
       });
     }
 
