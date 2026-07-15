@@ -309,3 +309,14 @@ Added default SmartRecruiters and Recruitee sources, optional USAJOBS support, s
 ## Review
 
 Pushed the feature branch, ran GitHub Actions refresh `29387102479`, and synchronized its 500-job feed commit. Feed verification found and fixed one ambiguous `Stuttgart, AR` Germany mapping; the preview homepage and Germany-filtered API return 200, with 21 Germany-based roles.
+
+# PR 15 Copilot review loop
+
+- [ ] Address every actionable review thread.
+- [x] Create and validate a reusable review-loop skill.
+- [ ] Request repeated Copilot reviews until a clean cycle.
+- [ ] Run verification and record the final review state.
+
+## Review
+
+In progress.

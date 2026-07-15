@@ -119,7 +119,10 @@ async function fetchUsaJobs(baseUrl: string, fetchedAt: Date) {
     ?? process.env.USAJOBS_EMAIL;
 
   if (!apiKey || !userAgentEmail) {
-    throw new Error("USAJOBS_API_KEY and USAJOBS_USER_AGENT_EMAIL are required");
+    throw new Error(
+      "USAJOBS credentials are required: set USAJOBS_API_KEY or JOB_USAJOBS_API_KEY, "
+      + "and USAJOBS_USER_AGENT_EMAIL, JOB_USAJOBS_USER_AGENT_EMAIL, or USAJOBS_EMAIL"
+    );
   }
 
   const queries = getCsvConfig("JOB_USAJOBS_QUERIES", defaultQueries);
@@ -331,7 +334,6 @@ async function fetchSearchPage(url: string, apiKey: string, userAgentEmail: stri
   const response = await fetch(url, {
     headers: {
       accept: "application/json",
-      host: "data.usajobs.gov",
       "user-agent": userAgentEmail,
       "authorization-key": apiKey
     }

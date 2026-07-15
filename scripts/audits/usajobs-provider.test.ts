@@ -47,6 +47,29 @@ test("USAJOBS search sends registered credentials and endpoint search filters", 
   const headers = new Headers(requests[0].init?.headers);
   assert.equal(headers.get("Authorization-Key"), "test-api-key");
   assert.equal(headers.get("User-Agent"), "jobs@example.com");
+  assert.equal(headers.get("Host"), null);
+});
+
+test("USAJOBS missing-credential error names every supported alias", async () => {
+  const originalEnv = { ...process.env };
+
+  delete process.env.USAJOBS_API_KEY;
+  delete process.env.JOB_USAJOBS_API_KEY;
+  delete process.env.USAJOBS_USER_AGENT_EMAIL;
+  delete process.env.JOB_USAJOBS_USER_AGENT_EMAIL;
+  delete process.env.USAJOBS_EMAIL;
+
+  try {
+    await assert.rejects(
+      usaJobsProvider.fetchJobs({
+        url: usaJobsProvider.defaultUrl,
+        fetchedAt: new Date("2026-07-14T12:00:00.000Z")
+      }),
+      /USAJOBS_API_KEY.*JOB_USAJOBS_API_KEY.*USAJOBS_USER_AGENT_EMAIL.*JOB_USAJOBS_USER_AGENT_EMAIL.*USAJOBS_EMAIL/
+    );
+  } finally {
+    process.env = originalEnv;
+  }
 });
 
 test("USAJOBS result preserves structured federal job details", async () => {

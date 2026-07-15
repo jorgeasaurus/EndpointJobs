@@ -1219,6 +1219,7 @@ await run("FEAT-068", "Endpoint search defaults include role and company expansi
 await run("FEAT-069", "Map location resolver maps known places and skips ambiguous rows", () => {
   assertEqual(resolveJobMapLocation("San Francisco, CA")?.label, "San Francisco, CA");
   assertEqual(resolveJobMapLocation("Berlin, Germany")?.label, "Berlin, Germany");
+  assertEqual(resolveJobMapLocation("Berlin, DE")?.label, "Berlin, Germany");
   assertEqual(resolveJobMapLocation("München, Deutschland")?.label, "Munich, Germany");
   assertEqual(resolveJobMapLocation("Germany")?.label, "Germany");
   assertEqual(resolveJobMapLocation("Stuttgart, AR"), undefined);
