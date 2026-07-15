@@ -165,8 +165,6 @@ export function isEndpointRelevant(
     "jamf",
     "macos client",
     "digital employee experience",
-    "corporate engineering",
-    "enterprise engineering",
     "tech operations"
   ].some((term) => containsAlias(haystack, term));
   const looksLikeFrontlineSupport =

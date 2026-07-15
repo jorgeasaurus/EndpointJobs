@@ -783,6 +783,18 @@ await run("FEAT-044", "Normalizer accepts endpoint roles and rejects generic sof
   const sapDataHaystack = normalizeSearchText(
     "Functional Specialist SAP MDM MDG master data governance"
   );
+  const corporateTaxHaystack = normalizeSearchText(
+    "Business Systems Engineer Tax Technology Corporate Engineering & IT Oracle ERP tax compliance"
+  );
+  const corporateEndpointHaystack = normalizeSearchText(
+    "Senior Client Platform Engineer Corporate Engineering Intune Windows device management"
+  );
+  const corporateWorkdayHaystack = normalizeSearchText(
+    "Senior Platform Engineer Corporate Engineering & IT Workday payroll finance integrations"
+  );
+  const corporateFinanceDataHaystack = normalizeSearchText(
+    "Staff Data Engineer Corporate Engineering financial systems ERP treasury accounting tax warehouse"
+  );
   assertEqual(isEndpointRelevant(endpointHaystack, "Endpoint Engineer", deriveTools(endpointHaystack)), true);
   assertEqual(
     isEndpointRelevant(
@@ -806,6 +818,38 @@ await run("FEAT-044", "Normalizer accepts endpoint roles and rejects generic sof
       sapDataHaystack,
       "Functional Specialist SAP MDM MDG",
       deriveTools(sapDataHaystack)
+    ),
+    false
+  );
+  assertEqual(
+    isEndpointRelevant(
+      corporateTaxHaystack,
+      "Business Systems Engineer, Tax Technology",
+      deriveTools(corporateTaxHaystack)
+    ),
+    false
+  );
+  assertEqual(
+    isEndpointRelevant(
+      corporateEndpointHaystack,
+      "Senior Client Platform Engineer, Windows",
+      deriveTools(corporateEndpointHaystack)
+    ),
+    true
+  );
+  assertEqual(
+    isEndpointRelevant(
+      corporateWorkdayHaystack,
+      "Senior Platform Engineer, Workday Extend & Integrations",
+      deriveTools(corporateWorkdayHaystack)
+    ),
+    false
+  );
+  assertEqual(
+    isEndpointRelevant(
+      corporateFinanceDataHaystack,
+      "Staff Data Engineer, Corporate Engineering",
+      deriveTools(corporateFinanceDataHaystack)
     ),
     false
   );

@@ -120,8 +120,6 @@ export const endpointRoleTerms = [
   "end-user computing",
   "end-user compute",
   "end-user engineering",
-  "enterprise engineering",
-  "corporate engineering",
   "digital workplace",
   "it client services",
   "studio it",
