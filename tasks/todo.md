@@ -206,6 +206,17 @@ The API docs button now targets `main/docs/api.md`, which remains valid after fe
 
 Called the live collection, filtered collection, and item endpoints and added representative PowerShell output for each. The guide records the capture date because listing counts and values refresh. JSON parsing, typecheck, lint, and diff checks pass.
 
+# Tacoma SchoolJobs source
+
+- [x] Validate the documented SchoolJobs RSS endpoint and provider fit.
+- [x] Add source-specific RSS parsing and endpoint relevance filtering.
+- [x] Register Tacoma Public Schools in default and scheduled refreshes.
+- [x] Run provider tests, live refresh verification, audits, and build.
+
+## Review
+
+The documented Tacoma RSS feed is now a direct provider with source-specific fields, UTC closing-date handling, original-link attribution, and normal endpoint relevance filtering. A live refresh fetched 60 postings and accepted the one endpoint role with its $103,855-$143,503 salary; 13 provider tests, typecheck, lint, 60 data audits, and the production build pass.
+
 # SerpAPI description line breaks
 
 - [x] Reproduce line-break loss through SerpAPI normalization.

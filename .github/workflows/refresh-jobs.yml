@@ -27,7 +27,7 @@ jobs:
       - name: Refresh endpoint jobs
         run: npm run jobs:refresh
         env:
-          JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,smartrecruiters,recruitee,curated,techmaprss,adzuna,theirstack,serpapi,rapidapi,rapidapilinkedin,aidevboard
+          JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,smartrecruiters,recruitee,schooljobs,curated,techmaprss,adzuna,theirstack,serpapi,rapidapi,rapidapilinkedin,aidevboard
           JOB_WORKABLE_ACCOUNTS: ${{ vars.JOB_WORKABLE_ACCOUNTS }}
           JOB_TECHMAP_RSS_FEEDS: ${{ secrets.JOB_TECHMAP_RSS_FEEDS }}
           JOB_TECHMAP_RSS_AUTH_HEADER: ${{ secrets.JOB_TECHMAP_RSS_AUTH_HEADER }}

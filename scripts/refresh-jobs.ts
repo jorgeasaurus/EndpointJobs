@@ -10,6 +10,7 @@ import { publicJobBoardProviders } from "./job-refresh/providers/public-job-boar
 import { rapidApiDailyJobsProvider } from "./job-refresh/providers/rapidapi-daily-jobs";
 import { rapidApiLinkedInProvider } from "./job-refresh/providers/rapidapi-linkedin";
 import { recruiteeProvider } from "./job-refresh/providers/recruitee";
+import { schoolJobsProvider } from "./job-refresh/providers/schooljobs";
 import { serpApiProvider } from "./job-refresh/providers/serpapi";
 import { smartRecruitersProvider } from "./job-refresh/providers/smartrecruiters";
 import { techmapRssProvider } from "./job-refresh/providers/techmap-rss";
@@ -89,6 +90,7 @@ const providerAdapters = [
   serpApiProvider,
   rapidApiDailyJobsProvider,
   rapidApiLinkedInProvider,
+  schoolJobsProvider,
   smartRecruitersProvider,
   recruiteeProvider,
   usaJobsProvider,
@@ -111,6 +113,7 @@ const defaultProviders: SupportedProvider[] = [
   "activate",
   "smartrecruiters",
   "recruitee",
+  "schooljobs",
   "curated"
 ];
 

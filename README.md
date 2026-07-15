@@ -73,7 +73,7 @@ npm run dev
 npm run jobs:refresh
 ```
 
-Use `JOB_PROVIDERS=remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,smartrecruiters,recruitee,curated,techmaprss,adzuna,theirstack,serpapi,rapidapi,rapidapilinkedin,usajobs,aidevboard` to choose sources.
+Use `JOB_PROVIDERS=remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,smartrecruiters,recruitee,schooljobs,curated,techmaprss,adzuna,theirstack,serpapi,rapidapi,rapidapilinkedin,usajobs,aidevboard` to choose sources.
 
 Single-provider legacy mode still works with `JOB_PROVIDER=remoteok` and `JOB_API_URL=https://remoteok.com/api`.
 
