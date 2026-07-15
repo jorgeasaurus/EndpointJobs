@@ -206,6 +206,29 @@ The API docs button now targets `main/docs/api.md`, which remains valid after fe
 
 Called the live collection, filtered collection, and item endpoints and added representative PowerShell output for each. The guide records the capture date because listing counts and values refresh. JSON parsing, typecheck, lint, and diff checks pass.
 
+# SerpAPI description line breaks
+
+- [x] Reproduce line-break loss through SerpAPI normalization.
+- [x] Identify the exact normalization boundary causing the loss.
+- [x] RED/GREEN: preserve paragraph and bullet breaks without provider-specific UI logic.
+- [x] Run focused and full verification.
+- [x] Record root cause and results.
+
+## Review
+
+SerpAPI descriptions sometimes contain literal newline markers or arrive flattened despite structured `job_highlights`. Provider normalization now decodes literal markers and conservatively inserts breaks only when every highlight item has one unique ordered match; ambiguous text remains unchanged. Typecheck, lint, build, and the SerpAPI audit pass; the full data audit retains main's unrelated feed-dependent FEAT-061 failure.
+
+# PR 14 review loop
+
+- [x] Guard malformed SerpAPI highlight payloads.
+- [x] Run focused and full verification.
+- [x] Push the fix, resolve the thread, and request Copilot re-review.
+- [x] Repeat until a full review cycle returns no comments.
+
+## Review
+
+Malformed highlight containers, sections, item arrays, and item values now preserve the normalized description without throwing. Typecheck, lint, 60 data audits, and production build pass; Copilot's repeated review found no issues.
+
 # PowerShell salary-label example
 
 - [x] Run the minimum-salary query against the live API.

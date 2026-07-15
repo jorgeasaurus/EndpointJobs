@@ -26,13 +26,14 @@ type SerpApiDetectedExtensions = {
   work_from_home?: boolean;
 };
 
-type SerpApiGoogleJob = {
+export type SerpApiGoogleJob = {
   title?: string;
   company_name?: string;
   location?: string;
   via?: string;
   share_link?: string;
   description?: string;
+  job_highlights?: unknown;
   extensions?: string[];
   detected_extensions?: SerpApiDetectedExtensions;
   apply_options?: SerpApiApplyOption[];
@@ -148,7 +149,7 @@ function isSerpApiGoogleJob(value: unknown): value is SerpApiGoogleJob {
   return Boolean(candidate.job_id && candidate.title && candidate.company_name);
 }
 
-function normalizeSerpApiGoogleJob(raw: SerpApiGoogleJob, query: string, fetchedAt: Date) {
+export function normalizeSerpApiGoogleJob(raw: SerpApiGoogleJob, query: string, fetchedAt: Date) {
   const title = cleanText(raw.title);
   const company = cleanText(raw.company_name);
   const sourceJobUrl = getSerpApiGoogleJobsApplyUrl(raw) ?? cleanUrl(raw.share_link);
@@ -176,12 +177,71 @@ function normalizeSerpApiGoogleJob(raw: SerpApiGoogleJob, query: string, fetched
     applyUrl: sourceJobUrl,
     attributionLabel: "Google Jobs via SerpAPI",
     termsProfile: "partner-terms",
-    description: raw.description ?? "",
+    description: restoreSerpApiDescriptionStructure(raw),
     sourceTags,
     haystackParts: [raw.via],
     salary: getSerpApiGoogleJobsSalary(raw),
     employmentType: normalizeSerpApiGoogleJobsEmploymentType(raw)
   });
+}
+
+function restoreSerpApiDescriptionStructure(raw: SerpApiGoogleJob) {
+  const description = (raw.description ?? "").replace(/\\r\\n|\\n|\\r/g, "\n");
+
+  if (!description || description.includes("\n")) {
+    return description;
+  }
+
+  if (!Array.isArray(raw.job_highlights)) {
+    return description;
+  }
+
+  const items: string[] = [];
+
+  for (const section of raw.job_highlights) {
+    if (!section || typeof section !== "object" || !("items" in section) || !Array.isArray(section.items)) {
+      return description;
+    }
+
+    for (const item of section.items) {
+      if (typeof item !== "string") {
+        return description;
+      }
+
+      const trimmedItem = item.trim();
+
+      if (trimmedItem) {
+        items.push(trimmedItem);
+      }
+    }
+  }
+  const matches: Array<{ end: number; start: number }> = [];
+  let previousEnd = 0;
+
+  for (const item of items) {
+    const start = description.indexOf(item);
+
+    if (start < previousEnd || start < 0 || start !== description.lastIndexOf(item)) {
+      return description;
+    }
+
+    previousEnd = start + item.length;
+    matches.push({ end: previousEnd, start });
+  }
+
+  if (matches.length === 0) {
+    return description;
+  }
+
+  let formatted = "";
+  let cursor = 0;
+
+  for (const match of matches) {
+    formatted += `${description.slice(cursor, match.start)}\n\n${description.slice(match.start, match.end)}\n\n`;
+    cursor = match.end;
+  }
+
+  return formatted + description.slice(cursor);
 }
 
 function buildSerpApiGoogleJobsUrl(

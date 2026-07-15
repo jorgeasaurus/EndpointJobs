@@ -68,6 +68,7 @@ import {
   classifyCuratedHttpStatus,
   evaluateCuratedAvailability
 } from "./job-refresh/providers/curated-jobs";
+import { normalizeSerpApiGoogleJob } from "./job-refresh/providers/serpapi";
 import { auditJobComparisonData } from "./audits/job-comparison-data";
 import { auditFeedSafetyData } from "./audits/feed-safety-data";
 import { auditJobsApiData } from "./audits/jobs-api-data";
@@ -635,6 +636,107 @@ await run("FEAT-042", "Optional API providers are key-gated and non-fatal", () =
   assertEqual(formatProviderError(Object.assign(new Error("  "), { name: "ProviderQuotaError" })), "ProviderQuotaError");
   assertEqual(formatProviderError({ message: "quota exceeded", code: 429 }), "quota exceeded");
   assertEqual(formatProviderError({ code: 429, title: "Too Many Requests" }), "{\"code\":429,\"title\":\"Too Many Requests\"}");
+
+  const serpApiJob = normalizeSerpApiGoogleJob(
+    {
+      job_id: "serpapi-line-break-audit",
+      title: "Endpoint Engineer",
+      company_name: "Audit Company",
+      location: "Remote",
+      description: `${"Endpoint engineering overview for a global Windows environment. ".repeat(8)}\\n\\nResponsibilities\\n\\n${"Manage Intune and Windows endpoints across the enterprise. ".repeat(10)}\\n\\nQualifications\\n\\n${"Deep endpoint engineering and PowerShell automation experience. ".repeat(10)}`,
+      apply_options: [{ link: "https://example.com/jobs/serpapi-line-break-audit" }]
+    },
+    "endpoint engineer",
+    fixedAuditNow
+  );
+  assertIncludes(serpApiJob?.description ?? "", "\n\n", "SerpAPI literal line breaks were flattened");
+  assertNotIncludes(serpApiJob?.description ?? "", "\\n", "SerpAPI literal line-break markers remained visible");
+  assertTruthy(
+    serpApiJob && getExpandedDescriptionParagraphs(serpApiJob).length > 1,
+    "SerpAPI description did not render as multiple paragraphs"
+  );
+
+  const flattenedDescription = [
+    "Endpoint engineering overview for a global environment. ".repeat(8),
+    "Manage Intune and Windows endpoints across the enterprise.",
+    " Coordinate endpoint delivery with infrastructure and security teams. ".repeat(6),
+    "Automate endpoint operations with PowerShell.",
+    " Equal opportunity employer."
+  ].join("");
+  const flattenedSerpApiJob = normalizeSerpApiGoogleJob(
+    {
+      job_id: "serpapi-highlight-audit",
+      title: "Endpoint Engineer",
+      company_name: "Audit Company",
+      location: "Remote",
+      description: flattenedDescription,
+      job_highlights: [{
+        title: "Responsibilities",
+        items: [
+          "Manage Intune and Windows endpoints across the enterprise.",
+          "Automate endpoint operations with PowerShell."
+        ]
+      }],
+      apply_options: [{ link: "https://example.com/jobs/serpapi-highlight-audit" }]
+    },
+    "endpoint engineer",
+    fixedAuditNow
+  );
+  assertTruthy(
+    flattenedSerpApiJob && getExpandedDescriptionParagraphs(flattenedSerpApiJob).length > 1,
+    "SerpAPI job highlights did not restore flattened description structure"
+  );
+  assertEqual(
+    normalizeSearchText(flattenedSerpApiJob?.description ?? ""),
+    normalizeSearchText(flattenedDescription),
+    "SerpAPI highlight formatting changed description content"
+  );
+
+  const repeatedHighlightText = "Manage Intune endpoints. ".repeat(25);
+  const ambiguousSerpApiJob = normalizeSerpApiGoogleJob(
+    {
+      job_id: "serpapi-ambiguous-highlight-audit",
+      title: "Endpoint Engineer",
+      company_name: "Audit Company",
+      location: "Remote",
+      description: repeatedHighlightText,
+      job_highlights: [{ title: "Responsibilities", items: ["Manage Intune endpoints."] }],
+      apply_options: [{ link: "https://example.com/jobs/serpapi-ambiguous-highlight-audit" }]
+    },
+    "endpoint engineer",
+    fixedAuditNow
+  );
+  assertNotIncludes(
+    ambiguousSerpApiJob?.description ?? "",
+    "\n",
+    "ambiguous SerpAPI highlights should not rewrite description structure"
+  );
+
+  for (const [jobHighlights, label] of [
+    [{}, "non-array highlights"],
+    [[null], "null highlight section"],
+    [{ items: [null] }, "non-string highlight item"],
+    [{ items: "Manage Intune endpoints." }, "non-array highlight items"]
+  ] as const) {
+    const malformedHighlightJob = normalizeSerpApiGoogleJob(
+      {
+        job_id: `serpapi-malformed-highlight-${label}`,
+        title: "Endpoint Engineer",
+        company_name: "Audit Company",
+        location: "Remote",
+        description: repeatedHighlightText,
+        job_highlights: jobHighlights,
+        apply_options: [{ link: "https://example.com/jobs/serpapi-malformed-highlight-audit" }]
+      },
+      "endpoint engineer",
+      fixedAuditNow
+    );
+    assertEqual(
+      malformedHighlightJob?.description,
+      ambiguousSerpApiJob?.description,
+      `${label} should preserve the original SerpAPI description`
+    );
+  }
 });
 
 await run("FEAT-043", "Curated jobs reserve slots and normalize reviewed listings", () => {
