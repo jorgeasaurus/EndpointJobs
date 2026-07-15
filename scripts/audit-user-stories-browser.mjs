@@ -234,7 +234,7 @@ await run("FEAT-030", "Apply links open externally with safe rel", async () => {
   await page.close();
 });
 
-await run("FEAT-031", "Footer attribution and project links are visible", async () => {
+await run("FEAT-031", "Topbar and footer project links are visible", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
   const topbarFeedback = page.getByRole("link", { name: "Open feedback form on GitHub" });
   await expect(topbarFeedback).toBeVisible();
