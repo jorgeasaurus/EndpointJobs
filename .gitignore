@@ -3,6 +3,7 @@ node_modules/
 out/
 dist/
 coverage/
+powershell/EndpointJobs/build/
 .vercel/
 .playwright-mcp/
 endpoint-jobs-*.png

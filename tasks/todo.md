@@ -239,6 +239,42 @@ Malformed highlight containers, sections, item arrays, and item values now prese
 
 Added the exact remote minimum-salary request with a calculated `salary.label` property and representative live output. The production request and `git diff --check` pass.
 
+# EndpointJobs PowerShell module
+
+- [x] Define the public cmdlet and API parameter contract.
+- [x] Scaffold the module manifest, loader, build, and analyzer settings.
+- [x] Implement request, pagination, and API error handling.
+- [x] Add focused Pester tests for list and item requests.
+- [x] Run manifest, analyzer, tests, build, and a live smoke test.
+
+## Review
+
+Added an in-repo EndpointJobs module with filtered collection queries, streamed and raw responses, automatic pagination, pipeline item lookup, typed output, and structured API errors. PSScriptAnalyzer, manifest/build validation, eight Pester tests, diff checks, and a live list-to-item production smoke test pass.
+
+# PowerShell module publishing workflow
+
+- [x] Match the InTUI and IntuneHydrationKit release convention.
+- [x] Add scoped cross-platform module CI and artifact creation.
+- [x] Publish version-matched tags to PowerShell Gallery.
+- [x] Create the versioned archive and GitHub release.
+- [x] Validate workflow syntax and rerun module CI.
+
+## Review
+
+Added a module-scoped three-OS CI/CD workflow matching the established tag, artifact, PSGallery, archive, and GitHub Release conventions. YAML parsing, path and version checks, module CI, eight Pester tests, build-manifest validation, and a `Publish-Module -WhatIf` package validation pass.
+
+# PowerShell module thermo-nuclear review
+
+- [x] Audit module structure, runtime contract, errors, and packaging.
+- [x] Audit workflow permissions, reproducibility, and release retryability.
+- [x] Remove dynamic loading and verify the built artifact.
+- [x] Add Windows PowerShell 5.1 and pinned dependency coverage.
+- [x] Repeat strict review and rerun all verification.
+
+## Review
+
+Repeated clean-room reviews strictly approve the module and workflow. Module releases use the isolated `powershell-v*.*.*` tag namespace; actions and tools are pinned without publisher-check bypasses, provenance is restricted to `main`, existing Gallery/GitHub content is verified before recovery, and tag data remains quoted environment input. Analyzer, 10 Pester tests, build/package validation, tag validation, YAML parsing, and diff checks pass.
+
 # PowerShell example screenshot
 
 - [x] Add the supplied terminal screenshot to the API guide.

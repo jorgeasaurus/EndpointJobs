@@ -51,3 +51,4 @@
 - When a terse feature prompt can mean either scoring or filtering, confirm the intended interaction before building a new preference system; reuse the existing filter model when the user wants a dropdown constraint.
 - Public API validation, typed parsing, and OpenAPI parameters must derive from one contract; never expose UI reducer state or rely on a separate cast-heavy parsing pass.
 - User-facing repository links must target a durable branch such as `main`; feature-branch URLs break when the branch is deleted after merge.
+- GitHub Actions does not resolve `matrix` expressions in `shell:`; use a static shell per job and split runtime-specific shells into separate jobs.
