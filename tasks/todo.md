@@ -367,3 +367,14 @@ Repeated Copilot cycles addressed every actionable comment; two rejected finding
 ## Review
 
 Added a concise module guide covering installation, filtering, pipeline lookup, raw responses, help, and development. The desktop top bar now links to the durable README with accessible external-link behavior; 11 PowerShell tests, typecheck, lint, production build, 60 data audits, and 34 browser audits pass.
+
+# Reject finance job false positives
+
+- [x] RED/GREEN: reject corporate-finance roles admitted by broad department metadata.
+- [x] Preserve legitimate endpoint roles within Corporate Engineering organizations.
+- [x] Regenerate the feed and remove the confirmed production false positives.
+- [x] Run full verification and open a pull request.
+
+## Review
+
+Removed Corporate Engineering and Enterprise Engineering as standalone endpoint signals while preserving roles with concrete client-platform, device, or endpoint evidence. Removed eight confirmed Greenhouse false positives from the generated feed; typecheck, lint, production build, 60 data audits, and 34 browser audits pass.
