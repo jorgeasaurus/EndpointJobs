@@ -167,7 +167,8 @@ export function normalizeUsaJobsItem(item: UsaJobsSearchItem, fetchedAt: Date) {
   }
 
   const title = cleanText(descriptor.PositionTitle);
-  const company = cleanText(descriptor.OrganizationName ?? descriptor.DepartmentName);
+  const company = cleanText(descriptor.OrganizationName)
+    || cleanText(descriptor.DepartmentName);
   const sourceUrl = cleanUrl(descriptor.PositionURI);
   const applyUrl = toArray(descriptor.ApplyURI)
     .map((value) => cleanUrl(value))

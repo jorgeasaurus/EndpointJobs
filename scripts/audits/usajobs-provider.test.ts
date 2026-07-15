@@ -93,7 +93,7 @@ test("USAJOBS result preserves structured federal job details", async () => {
             LocationName: "Location Negotiable After Selection, United States",
             CountryCode: "United States"
           }],
-          OrganizationName: "Office of Personnel Management",
+          OrganizationName: "   ",
           DepartmentName: "Office of Personnel Management",
           JobCategory: [{ Name: "Information Technology Management", Code: "2210" }],
           JobGrade: [{ Code: "GS" }],
@@ -148,6 +148,7 @@ test("USAJOBS result preserves structured federal job details", async () => {
   assert.equal(job.source, "USAJOBS");
   assert.equal(job.sourceUrl, "https://www.usajobs.gov/job/123456789");
   assert.equal(job.applyUrl, "https://www.usajobs.gov/job/123456789/apply");
+  assert.equal(job.company, "Office of Personnel Management");
   assert.equal(job.location, "Location Negotiable After Selection, United States");
   assert.equal(job.workplace, "Remote");
   assert.equal(job.postedAt, "2026-07-10T00:00:00.000Z");
