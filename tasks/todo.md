@@ -301,9 +301,9 @@ Added default SmartRecruiters and Recruitee sources, optional USAJOBS support, s
 
 # Publish new job sources preview
 
-- [ ] Commit and push the feature branch.
-- [ ] Dispatch and verify the job refresh workflow.
-- [ ] Synchronize the refreshed feed commit.
+- [x] Commit and push the feature branch.
+- [x] Dispatch and verify the job refresh workflow.
+- [x] Synchronize the refreshed feed commit.
 - [ ] Deploy and verify a Vercel preview.
 
 ## Review

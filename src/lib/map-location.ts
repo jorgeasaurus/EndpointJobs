@@ -403,10 +403,21 @@ export function resolveJobMapLocation(location: string): JobMapLocation | undefi
   }
 
   const coordinate = searchableLocationCoordinates.find((candidate) =>
+    !isGermanCityWithExplicitUsState(candidate.label, normalized) &&
     candidate.normalizedKeys.some((key) => containsNormalizedLocationKey(normalized, key))
   );
 
   return coordinate ? toMapLocation(coordinate) : undefined;
+}
+
+function isGermanCityWithExplicitUsState(label: string, normalizedLocation: string) {
+  if (!label.endsWith(", Germany")) {
+    return false;
+  }
+
+  return /(?:^| )(?:al|ak|az|ar|ca|co|ct|dc|fl|ga|hi|id|il|in|ia|ks|ky|la|me|md|ma|mi|mn|ms|mo|mt|ne|nv|nh|nj|nm|ny|nc|nd|oh|ok|or|pa|ri|sc|sd|tn|tx|ut|vt|va|wa|wv|wi|wy)$/.test(
+    normalizedLocation
+  );
 }
 
 function containsNormalizedLocationKey(normalizedLocation: string, normalizedKey: string) {
