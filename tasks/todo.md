@@ -304,8 +304,8 @@ Added default SmartRecruiters and Recruitee sources, optional USAJOBS support, s
 - [x] Commit and push the feature branch.
 - [x] Dispatch and verify the job refresh workflow.
 - [x] Synchronize the refreshed feed commit.
-- [ ] Deploy and verify a Vercel preview.
+- [x] Deploy and verify a Vercel preview.
 
 ## Review
 
-In progress.
+Pushed the feature branch, ran GitHub Actions refresh `29387102479`, and synchronized its 500-job feed commit. Feed verification found and fixed one ambiguous `Stuttgart, AR` Germany mapping; the preview homepage and Germany-filtered API return 200, with 21 Germany-based roles.
