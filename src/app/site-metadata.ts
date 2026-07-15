@@ -25,15 +25,3 @@ export const ogImage = {
   alt: "Endpoint Jobs social card with endpoint engineering job board details"
 };
 export const repositoryUrl = "https://github.com/jorgeasaurus/EndpointJobs";
-
-export const specialtySearchLinks = [
-  { label: "Jamf jobs", href: "/?tools=Jamf" },
-  { label: "Intune jobs", href: "/?tools=Intune" },
-  { label: "SCCM jobs", href: "/?tools=SCCM" },
-  { label: "PowerShell jobs", href: "/?tools=PowerShell" },
-  { label: "macOS endpoint jobs", href: "/?platforms=macOS" },
-  { label: "Windows endpoint jobs", href: "/?platforms=Windows" },
-  { label: "Endpoint security jobs", href: "/?family=Endpoint%20Security" },
-  { label: "Client platform jobs", href: "/?q=client%20platform" },
-  { label: "Remote endpoint jobs", href: "/?workplace=Remote" }
-] as const;

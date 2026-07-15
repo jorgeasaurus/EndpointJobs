@@ -653,50 +653,11 @@ await run("QA-004", "Same-origin links resolve without dead routes", async () =>
   await page.close();
 });
 
-await run("FEAT-071", "Footer popular search links hydrate filtered result states", async () => {
+await run("FEAT-071", "Popular footer searches are removed", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
   await page.locator("footer").scrollIntoViewIfNeeded();
-
-  const popularLinks = await page.locator("footer .footer-search-link").evaluateAll((links) =>
-    links.map((link) => ({
-      href: link.getAttribute("href") ?? "",
-      label: link.textContent?.trim() ?? ""
-    }))
-  );
-
-  expect(popularLinks).toHaveLength(9);
-
-  for (const link of popularLinks) {
-    await page.goto(new URL(link.href, baseUrl).toString(), { waitUntil: "networkidle" });
-
-    const activeLabels = await page.locator(".active-filter-chip").evaluateAll((chips) =>
-      chips
-        .map((chip) => chip.textContent?.replace(/\s+/g, " ").trim() ?? "")
-        .filter((label) => label && label !== "Clear all")
-    );
-
-    expect(activeLabels.length, `${link.label} should activate at least one filter`).toBeGreaterThan(0);
-    await expect(page.locator(".job-card").first(), `${link.label} should show matching jobs`).toBeVisible();
-    await expect(page.locator(".empty-state"), `${link.label} should not show empty state`).toHaveCount(0);
-  }
-
-  await page.close();
-});
-
-await run("QA-006", "Footer popular search links do not route-prefetch on scroll", async () => {
-  const page = await newPage(browser, { width: 1280, height: 900 });
-  const routePrefetches = [];
-  page.on("response", (response) => {
-    const url = response.url();
-    if (url.includes("_rsc=") && isPopularSearchUrl(url)) {
-      routePrefetches.push(url);
-    }
-  });
-
-  await page.locator("footer").scrollIntoViewIfNeeded();
-  await page.waitForLoadState("networkidle");
-
-  expect(routePrefetches, routePrefetches.join("\n")).toHaveLength(0);
+  await expect(page.locator("footer .footer-searches, footer .footer-search-link")).toHaveCount(0);
+  await expect(page.getByText("Popular searches", { exact: true })).toHaveCount(0);
   await page.close();
 });
 
@@ -945,17 +906,6 @@ async function expectElementHorizontallyReachable(page, locator) {
 
   expect(box.x).toBeGreaterThanOrEqual(-1);
   expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
-}
-
-function isPopularSearchUrl(url) {
-  return (
-    url.includes("tools=") ||
-    url.includes("platforms=") ||
-    url.includes("family=") ||
-    url.includes("workplace=") ||
-    url.includes("q=client%20platform") ||
-    url.includes("q=client+platform")
-  );
 }
 
 function isMapTileOrGlyphUrl(url) {

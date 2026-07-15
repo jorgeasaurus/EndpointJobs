@@ -959,8 +959,8 @@ await run("FEAT-051", "Metadata, Open Graph, and Twitter cards are configured", 
     assertIncludes(sources.layout, text)
   );
   assertIncludes(sources.siteMetadata, "Endpoint Engineering Jobs", "search-focused title");
-  assertIncludes(sources.siteMetadata, "specialtySearchLinks", "crawlable specialty links");
-  assertIncludes(sources.topbar, "Popular endpoint job searches", "footer search navigation");
+  assertNotIncludes(sources.siteMetadata, "specialtySearchLinks", "removed specialty links");
+  assertNotIncludes(sources.topbar, "Popular searches", "removed footer search navigation");
   assertIncludes(sources.jobCard, "id={`job-${job.id}`}", "stable job anchors");
   assertTruthy(existsSync("public/og-image.png"), "missing public/og-image.png");
 });
@@ -979,7 +979,7 @@ await run("FEAT-052", "Home JSON-LD emits escaped collection data", () => {
     )
   });
   const serialized = serializeJsonLd(jsonLd);
-  assertEqual(jsonLd["@graph"].length, 6, "structured-data graph node count");
+  assertEqual(jsonLd["@graph"].length, 5, "structured-data graph node count");
   assertIncludes(serialized, "CollectionPage");
   assertIncludes(serialized, "ItemList");
   assertIncludes(serialized, "SearchAction");
@@ -989,7 +989,7 @@ await run("FEAT-052", "Home JSON-LD emits escaped collection data", () => {
   assertIncludes(serialized, "#job-schema-19");
   assertNotIncludes(serialized, "#job-schema-20", "structured listing cap");
   assertIncludes(serialized, "https://example.com/source/0", "source URL sameAs fallback");
-  assertIncludes(serialized, "#popular-searches");
+  assertNotIncludes(serialized, "#popular-searches");
   assertIncludes(serialized, "\\u003cEngineer>");
 });
 

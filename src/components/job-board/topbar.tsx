@@ -9,7 +9,6 @@ import {
 import Link from "next/link";
 
 import { formatUpdatedAt } from "@/lib/jobs";
-import { specialtySearchLinks } from "@/app/site-metadata";
 
 export function Topbar({ updatedAt }: { updatedAt: string }) {
   return (
@@ -67,22 +66,6 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
 export function SiteFooter({ updatedAt }: { updatedAt: string }) {
   return (
     <footer className="site-footer">
-      <nav className="footer-searches" aria-label="Popular endpoint job searches">
-        <span className="footer-search-title">Popular searches</span>
-        <div className="footer-search-links">
-          {specialtySearchLinks.map((link) => (
-            <Link
-              className="footer-search-link"
-              href={link.href}
-              key={link.href}
-              prefetch={false}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
-      </nav>
-
       <div className="footer-bottom">
         <div className="footer-meta">
           <span>Made by Jorgeasaurus</span>
