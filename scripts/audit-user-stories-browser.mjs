@@ -234,12 +234,22 @@ await run("FEAT-030", "Apply links open externally with safe rel", async () => {
   await page.close();
 });
 
-await run("FEAT-031", "Footer attribution and project links are visible", async () => {
+await run("FEAT-031", "Topbar and footer project links are visible", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
   const topbarFeedback = page.getByRole("link", { name: "Open feedback form on GitHub" });
   await expect(topbarFeedback).toBeVisible();
   await expect(topbarFeedback).toHaveAttribute("target", "_blank");
   await expect(topbarFeedback).toHaveAttribute("rel", /noopener noreferrer/);
+  const powerShellDocs = page.getByRole("link", {
+    name: "Open PowerShell module documentation on GitHub"
+  });
+  await expect(powerShellDocs).toBeVisible();
+  await expect(powerShellDocs).toHaveAttribute(
+    "href",
+    "https://github.com/jorgeasaurus/EndpointJobs/blob/main/powershell/EndpointJobs/README.md"
+  );
+  await expect(powerShellDocs).toHaveAttribute("target", "_blank");
+  await expect(powerShellDocs).toHaveAttribute("rel", /noopener noreferrer/);
   await page.locator("footer").scrollIntoViewIfNeeded();
   await expect(page.getByText("Made by Jorgeasaurus")).toBeVisible();
   await expect(page.getByRole("link", { name: /Report an issue/i })).toHaveAttribute("href", new RegExp("github\\.com/jorgeasaurus/EndpointJobs/issues/new"));

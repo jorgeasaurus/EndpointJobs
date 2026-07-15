@@ -249,10 +249,15 @@ await run("FEAT-001", "Static job board loads from active feed data", () => {
   assertIncludes(sources.page, "<JobBoard feed={activeFeed} />");
 });
 
-await run("FEAT-002", "Topbar brand links back home", () => {
+await run("FEAT-002", "Topbar brand and documentation links are present", () => {
   assertIncludes(sources.topbar, "href=\"/\"");
   assertIncludes(sources.topbar, "Endpoint Jobs home");
   assertIncludes(sources.topbar, "Endpoint Jobs");
+  assertIncludes(
+    sources.topbar,
+    "https://github.com/jorgeasaurus/EndpointJobs/blob/main/powershell/EndpointJobs/README.md"
+  );
+  assertIncludes(sources.topbar, "Open PowerShell module documentation on GitHub");
 });
 
 await run("FEAT-003", "Refresh timestamps format valid and invalid feed dates", () => {
