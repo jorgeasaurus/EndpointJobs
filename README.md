@@ -1,5 +1,11 @@
 # Endpoint Jobs
 
+[![Refresh job listings](https://github.com/jorgeasaurus/EndpointJobs/actions/workflows/refresh-jobs.yml/badge.svg?branch=main)](https://github.com/jorgeasaurus/EndpointJobs/actions/workflows/refresh-jobs.yml)
+[![PowerShell Module CI/CD](https://github.com/jorgeasaurus/EndpointJobs/actions/workflows/powershell-module.yml/badge.svg?branch=main)](https://github.com/jorgeasaurus/EndpointJobs/actions/workflows/powershell-module.yml)
+[![React Doctor](https://github.com/jorgeasaurus/EndpointJobs/actions/workflows/react-doctor.yml/badge.svg?branch=main)](https://github.com/jorgeasaurus/EndpointJobs/actions/workflows/react-doctor.yml)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/EndpointJobs?label=PowerShell%20Gallery)](https://www.powershellgallery.com/packages/EndpointJobs)
+[![PowerShell Gallery downloads](https://img.shields.io/powershellgallery/dt/EndpointJobs?label=downloads)](https://www.powershellgallery.com/packages/EndpointJobs)
+
 Focused job board for Endpoint Engineering, macOS, Windows, MDM, UEM, client platform, and endpoint security roles.
 
 Live site: https://endpointjobs.dev

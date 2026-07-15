@@ -228,6 +228,16 @@ The documented Tacoma RSS feed is now a direct provider with source-specific fie
 
 SerpAPI now returns previously normalized jobs when a later request fails, stops issuing queries after the failure, and still rejects runs with no usable results. Fifteen provider tests, typecheck, lint, and the production build pass; the data audit retains main's unrelated FEAT-036 failure for an empty RapidAPI LinkedIn summary.
 
+# README status badges
+
+- [x] Add main-branch refresh, PowerShell module, and React Doctor status badges.
+- [x] Add PowerShell Gallery version and total-download badges.
+- [x] Verify every badge image and destination.
+
+## Review
+
+Added linked main-branch badges for job refresh, PowerShell CI/CD, React Doctor, PowerShell Gallery version, and total downloads. All five images and four destination types return HTTP 200; Gallery badges resolve to v0.1.0 and the current download count.
+
 # SerpAPI description line breaks
 
 - [x] Reproduce line-break loss through SerpAPI normalization.
