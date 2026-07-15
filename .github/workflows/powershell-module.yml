@@ -20,62 +20,70 @@ permissions:
 
 jobs:
   build:
-    name: Build and Test (${{ matrix.name }})
+    name: Build and Test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     strategy:
       fail-fast: true
       matrix:
-        include:
-          - name: PowerShell 7 / Linux
-            os: ubuntu-latest
-            shell: pwsh
-            artifact: true
-          - name: PowerShell 7 / Windows
-            os: windows-latest
-            shell: pwsh
-            artifact: false
-          - name: Windows PowerShell 5.1
-            os: windows-latest
-            shell: powershell
-            artifact: false
-          - name: PowerShell 7 / macOS
-            os: macos-latest
-            shell: pwsh
-            artifact: false
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Bootstrap Build Environment
-        shell: ${{ matrix.shell }}
+        shell: pwsh
         run: ./powershell/EndpointJobs/build.ps1 -Task Bootstrap
 
       - name: Run PSScriptAnalyzer
-        shell: ${{ matrix.shell }}
+        shell: pwsh
         run: ./powershell/EndpointJobs/build.ps1 -Task Analyze
 
       - name: Run Pester Tests
-        shell: ${{ matrix.shell }}
+        shell: pwsh
         run: ./powershell/EndpointJobs/build.ps1 -Task Test
 
       - name: Build Module
-        shell: ${{ matrix.shell }}
+        shell: pwsh
         run: ./powershell/EndpointJobs/build.ps1 -Task Build
 
       - name: Upload Build Artifacts
-        if: success() && matrix.artifact
+        if: success() && matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: module-build
           path: powershell/EndpointJobs/build/EndpointJobs/
           if-no-files-found: error
 
+  windows-powershell:
+    name: Build and Test (Windows PowerShell 5.1)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Bootstrap Build Environment
+        shell: powershell
+        run: ./powershell/EndpointJobs/build.ps1 -Task Bootstrap
+
+      - name: Run PSScriptAnalyzer
+        shell: powershell
+        run: ./powershell/EndpointJobs/build.ps1 -Task Analyze
+
+      - name: Run Pester Tests
+        shell: powershell
+        run: ./powershell/EndpointJobs/build.ps1 -Task Test
+
+      - name: Build Module
+        shell: powershell
+        run: ./powershell/EndpointJobs/build.ps1 -Task Build
+
   release:
     name: Publish and Release
-    needs: build
+    needs: [build, windows-powershell]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/powershell-v')
     permissions:
