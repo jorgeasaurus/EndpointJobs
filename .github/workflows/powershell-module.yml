@@ -104,7 +104,11 @@ jobs:
         shell: pwsh
         run: |
           git fetch origin main --no-tags
-          git merge-base --is-ancestor $env:GITHUB_SHA origin/main
+          $tagCommit = git rev-list -n 1 $env:GITHUB_REF
+          if (-not $tagCommit) {
+            throw "Could not resolve $env:GITHUB_REF to a commit."
+          }
+          git merge-base --is-ancestor $tagCommit origin/main
           if ($LASTEXITCODE -ne 0) {
             throw 'Release tags must point to a commit reachable from origin/main.'
           }

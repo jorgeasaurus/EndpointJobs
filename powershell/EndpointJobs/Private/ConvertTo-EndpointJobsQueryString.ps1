@@ -7,7 +7,8 @@ function ConvertTo-EndpointJobsQueryString {
     )
 
     $parts = foreach ($entry in $Parameters.GetEnumerator()) {
-        if ($null -eq $entry.Value -or $entry.Value -eq '') {
+        if ($null -eq $entry.Value -or $entry.Value -eq '' -or
+            ($entry.Value -is [array] -and $entry.Value.Count -eq 0)) {
             continue
         }
 

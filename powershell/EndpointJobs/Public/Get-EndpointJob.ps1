@@ -109,7 +109,9 @@ function Get-EndpointJob {
         }
 
         if ($All -and $RawResponse) {
-            throw 'All and RawResponse cannot be used together because RawResponse represents one page.'
+            throw [System.ArgumentException]::new(
+                'All and RawResponse cannot be used together because RawResponse represents one page.'
+            )
         }
 
         $parameters = [ordered]@{

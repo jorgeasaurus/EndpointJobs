@@ -49,6 +49,14 @@ Describe 'Get-EndpointJob' {
             $response.data[0].id | Should -Be 'job-1'
         }
 
+        It 'omits empty array filters' {
+            Get-EndpointJob -Platform @() -BaseUri 'https://example.test' | Out-Null
+
+            Should -Invoke Invoke-RestMethod -Times 1 -ParameterFilter {
+                $Uri.Query -notmatch 'platforms='
+            }
+        }
+
         It 'requests every page with All' {
             Mock Invoke-RestMethod {
                 $page = if ($Uri.Query -match 'page=2') { 2 } else { 1 }
@@ -119,7 +127,9 @@ Describe 'Get-EndpointJob' {
         }
 
         It 'rejects All with RawResponse before making a request' {
-            { Get-EndpointJob -All -RawResponse -BaseUri 'https://example.test' } | Should -Throw '*cannot be used together*'
+            $thrown = { Get-EndpointJob -All -RawResponse -BaseUri 'https://example.test' } | Should -Throw -PassThru
+            $thrown.Exception | Should -BeOfType ([System.ArgumentException])
+            $thrown.Exception.Message | Should -BeLike '*cannot be used together*'
             Should -Invoke Invoke-RestMethod -Times 0
         }
     }
