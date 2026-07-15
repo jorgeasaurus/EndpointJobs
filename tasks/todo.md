@@ -222,12 +222,12 @@ SerpAPI descriptions sometimes contain literal newline markers or arrive flatten
 
 - [x] Guard malformed SerpAPI highlight payloads.
 - [x] Run focused and full verification.
-- [ ] Push the fix, resolve the thread, and request Copilot re-review.
-- [ ] Repeat until a full review cycle returns no comments.
+- [x] Push the fix, resolve the thread, and request Copilot re-review.
+- [x] Repeat until a full review cycle returns no comments.
 
 ## Review
 
-Malformed highlight containers, sections, item arrays, and item values now preserve the normalized description without throwing. Typecheck, lint, 60 data audits, and production build pass.
+Malformed highlight containers, sections, item arrays, and item values now preserve the normalized description without throwing. Typecheck, lint, 60 data audits, and production build pass; Copilot's repeated review found no issues.
 
 # PowerShell salary-label example
 
