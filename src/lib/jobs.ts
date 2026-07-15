@@ -25,6 +25,7 @@ const updatedAtFormatter = new Intl.DateTimeFormat("en", {
   hour: "numeric",
   minute: "2-digit"
 });
+const millisecondsPerDay = 1000 * 60 * 60 * 24;
 
 export function formatPostedDate(value: string) {
   const date = new Date(value);
@@ -45,8 +46,17 @@ export function getPostedAgeDays(value: string, now = new Date()) {
 
   return Math.max(
     0,
-    Math.floor((now.getTime() - posted.getTime()) / (1000 * 60 * 60 * 24))
+    Math.floor((now.getTime() - posted.getTime()) / millisecondsPerDay)
   );
+}
+
+export function isPostedWithinDays(
+  value: string,
+  maximumAgeDays: number,
+  now = new Date()
+) {
+  const postedAt = new Date(value).getTime();
+  return Number.isFinite(postedAt) && postedAt > now.getTime() - maximumAgeDays * millisecondsPerDay;
 }
 
 export function getFreshnessLabel(value: string) {

@@ -548,6 +548,7 @@ await run("QA-014", "Advanced select filters serialize, hydrate, and sort visibl
   const senioritySelect = desktopFilterStack.locator(".field", { hasText: "Seniority" }).locator("select");
   const sortSelect = desktopFilterStack.locator(".field", { hasText: "Sort" }).locator("select");
 
+  await expect(freshnessSelect.locator('option[value="1"]')).toHaveText("Last 1 day");
   await roleSelect.selectOption(advancedFilterScenario.roleFamily);
   await freshnessSelect.selectOption(advancedFilterScenario.freshness);
   await senioritySelect.selectOption(advancedFilterScenario.seniority);

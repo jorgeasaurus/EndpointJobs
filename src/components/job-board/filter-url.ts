@@ -4,6 +4,7 @@ import {
   seniorityOptions,
   toolOptions
 } from "@/lib/jobs";
+import { isFreshnessFilter } from "@/lib/job-filters";
 
 import type {
   FilterState,
@@ -94,11 +95,7 @@ export function toRoleFamilyFilter(value: string): RoleFamilyFilter {
 }
 
 export function toFreshnessFilter(value: string): FreshnessFilter {
-  if (value === "7" || value === "14" || value === "30") {
-    return value;
-  }
-
-  return "Any";
+  return isFreshnessFilter(value) ? value : "Any";
 }
 
 export function toWorkplaceFilter(value: string): WorkplaceFilter {

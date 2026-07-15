@@ -1,8 +1,11 @@
-import { getPostedAgeDays, getSalarySortValue, getSearchText } from "@/lib/jobs";
+import { getSalarySortValue, getSearchText, isPostedWithinDays } from "@/lib/jobs";
 import type { EndpointTool, Job, Platform, RoleFamily, Seniority, Workplace } from "@/types/job";
 
 export type SortKey = "newest" | "salary" | "company";
-export type FreshnessFilter = "Any" | "7" | "14" | "30";
+export const freshnessFilterDayValues = ["1", "7", "14", "30"] as const;
+export const freshnessFilterValues = ["Any", ...freshnessFilterDayValues] as const;
+export type FreshnessFilter = (typeof freshnessFilterValues)[number];
+const freshnessFilterValueSet: ReadonlySet<string> = new Set(freshnessFilterValues);
 export const minimumSalaryFilterValues = ["Any", "80000", "100000", "120000", "150000", "180000", "200000"] as const;
 export type MinimumSalaryFilter = (typeof minimumSalaryFilterValues)[number];
 export type JobFilters = {
@@ -19,11 +22,15 @@ export type JobFilters = {
   sort: SortKey;
 };
 
+export function isFreshnessFilter(value: string): value is FreshnessFilter {
+  return freshnessFilterValueSet.has(value);
+}
+
 export function filterJobs(jobs: Job[], filters: JobFilters, now = new Date()) {
   const query = filters.query.trim().toLowerCase();
   const location = normalize(`${filters.locationQuery}`);
   const minimumSalary = filters.minimumSalary === "Any" ? null : Number(filters.minimumSalary);
-  const maximumAge = filters.freshness === "Any" ? null : Number(filters.freshness);
+  const maximumAgeDays = filters.freshness === "Any" ? null : Number(filters.freshness);
   return jobs.filter((job) => {
     if (query && !getSearchText(job).includes(query)) return false;
     if (location && !normalize(`${job.location} ${job.mapLocation?.label ?? ""} ${job.workplace}`).includes(location)) return false;
@@ -34,7 +41,7 @@ export function filterJobs(jobs: Job[], filters: JobFilters, now = new Date()) {
     if (minimumSalary !== null && (job.salary?.currency !== "USD" || (job.salary.max ?? job.salary.min ?? 0) < minimumSalary)) return false;
     if (filters.seniority !== "All" && job.seniority !== filters.seniority) return false;
     if (filters.roleFamily !== "All" && job.roleFamily !== filters.roleFamily) return false;
-    return maximumAge === null || getPostedAgeDays(job.postedAt, now) <= maximumAge;
+    return maximumAgeDays === null || isPostedWithinDays(job.postedAt, maximumAgeDays, now);
   }).sort((a, b) => filters.sort === "salary"
     ? getSalarySortValue(b) - getSalarySortValue(a)
     : filters.sort === "company"

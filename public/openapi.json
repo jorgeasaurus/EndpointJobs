@@ -293,6 +293,7 @@
         "schema": {
           "type": "string",
           "enum": [
+            "1",
             "7",
             "14",
             "30"
@@ -547,12 +548,32 @@
             "type": [
               "string",
               "null"
+            ],
+            "enum": [
+              "Associate",
+              "Mid",
+              "Senior",
+              "Staff",
+              "Lead",
+              "Manager",
+              null
             ]
           },
           "family": {
             "type": [
               "string",
               "null"
+            ],
+            "enum": [
+              "Endpoint Engineering",
+              "macOS Platform",
+              "Windows Platform",
+              "Workplace Systems",
+              "Endpoint Security",
+              "Device Compliance",
+              "Systems Administration",
+              "Automation",
+              null
             ]
           },
           "freshness": {
@@ -561,6 +582,7 @@
               "null"
             ],
             "enum": [
+              "1",
               "7",
               "14",
               "30",

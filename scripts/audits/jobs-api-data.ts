@@ -7,7 +7,10 @@ import {
   findActiveJob,
   queryJobs
 } from "../../src/lib/jobs-api";
-import { getJobsApiOpenApiParameters } from "../../src/lib/jobs-api-contract";
+import {
+  getJobsApiOpenApiAppliedFilterEnums,
+  getJobsApiOpenApiParameters
+} from "../../src/lib/jobs-api-contract";
 import type { Job, JobsFeed } from "../../src/types/job";
 
 type RunAudit = (
@@ -51,6 +54,11 @@ export async function auditJobsApiData(run: RunAudit) {
       assertEqual(invalid.status, 400, "invalid query status");
       assertEqual(invalid.body.error.code, "INVALID_QUERY", "invalid query code");
     }
+    assertEqual(
+      queryJobs(feed, new URLSearchParams("freshness=Any"), now).ok,
+      false,
+      "UI freshness sentinel rejected"
+    );
 
     for (const query of ["page=1e2", "limit=0x10"]) {
       assertEqual(
@@ -82,6 +90,20 @@ export async function auditJobsApiData(run: RunAudit) {
       new Date("2026-07-18T00:00:00.000Z")
     );
     assertEqual(fresh.ok && fresh.body.meta.total, 0, "freshness uses injected request time");
+
+    const oneDay = queryJobs(
+      makeFeed([
+        makeJob({ id: "within-one-day", postedAt: "2026-07-17T00:00:00.001Z" }),
+        makeJob({ id: "exactly-one-day", postedAt: "2026-07-17T00:00:00.000Z" }),
+        makeJob({ id: "older-than-one-day", postedAt: "2026-07-16T23:59:59.999Z" })
+      ]),
+      new URLSearchParams("freshness=1"),
+      new Date("2026-07-18T00:00:00.000Z")
+    );
+    assertEqual(oneDay.ok && oneDay.body.meta.total, 1, "one-day freshness filters by posted age");
+    assertEqual(oneDay.ok && oneDay.body.data[0]?.id, "within-one-day", "one-day freshness keeps recent jobs");
+    assertEqual(oneDay.ok && oneDay.body.filters.freshness, "1", "one-day freshness is returned in applied filters");
+
     assertEqual(findActiveJob(feed, "one", now)?.id, "one", "active job lookup");
     assertEqual(findActiveJob(feed, "stale", now), undefined, "stale job lookup excluded");
 
@@ -97,7 +119,17 @@ export async function auditJobsApiData(run: RunAudit) {
       getJobsApiOpenApiParameters(),
       "OpenAPI query parameters match canonical contract"
     );
+    for (const [name, values] of Object.entries(getJobsApiOpenApiAppliedFilterEnums())) {
+      assertDeepEqual(
+        readPointer(specification, `#/components/schemas/Filters/properties/${name}/enum`),
+        values,
+        `OpenAPI applied filter enum matches canonical contract: ${name}`
+      );
+    }
     assertSchema(specification, "#/components/schemas/JobCollection", result.body);
+    if (oneDay.ok) {
+      assertSchema(specification, "#/components/schemas/JobCollection", oneDay.body);
+    }
     assertSchema(specification, "#/components/schemas/ApiError", invalid.body);
     assertSchema(
       specification,
