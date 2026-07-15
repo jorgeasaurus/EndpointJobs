@@ -3,6 +3,16 @@ import test from "node:test";
 
 import { usaJobsProvider } from "../job-refresh/providers/usajobs";
 
+function restoreProcessEnv(originalEnv: NodeJS.ProcessEnv) {
+  for (const key of Object.keys(process.env)) {
+    if (!(key in originalEnv)) {
+      delete process.env[key];
+    }
+  }
+
+  Object.assign(process.env, originalEnv);
+}
+
 test("USAJOBS search sends registered credentials and endpoint search filters", async () => {
   const originalFetch = globalThis.fetch;
   const originalEnv = { ...process.env };
@@ -31,7 +41,7 @@ test("USAJOBS search sends registered credentials and endpoint search filters", 
     });
   } finally {
     globalThis.fetch = originalFetch;
-    process.env = originalEnv;
+    restoreProcessEnv(originalEnv);
   }
 
   assert.equal(requests.length, 1);
@@ -68,7 +78,7 @@ test("USAJOBS missing-credential error names every supported alias", async () =>
       /USAJOBS_API_KEY.*JOB_USAJOBS_API_KEY.*USAJOBS_USER_AGENT_EMAIL.*JOB_USAJOBS_USER_AGENT_EMAIL.*USAJOBS_EMAIL/
     );
   } finally {
-    process.env = originalEnv;
+    restoreProcessEnv(originalEnv);
   }
 });
 
@@ -139,7 +149,7 @@ test("USAJOBS result preserves structured federal job details", async () => {
     });
   } finally {
     globalThis.fetch = originalFetch;
-    process.env = originalEnv;
+    restoreProcessEnv(originalEnv);
   }
 
   assert.equal(jobs.length, 1);
@@ -191,7 +201,7 @@ test("USAJOBS search follows response paging within the configured cap", async (
     });
   } finally {
     globalThis.fetch = originalFetch;
-    process.env = originalEnv;
+    restoreProcessEnv(originalEnv);
   }
 
   assert.deepEqual(requestedPages, ["1", "2"]);

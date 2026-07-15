@@ -64,7 +64,7 @@ type SmartRecruitersPosting = {
 };
 
 type SmartRecruitersPage = {
-  content: SmartRecruitersPosting[];
+  content: unknown[];
   limit: number;
   offset: number;
   totalFound: number;
@@ -194,7 +194,7 @@ async function fetchSmartRecruitersQuery(
     const offset = page * pageLimit;
     const pageUrl = buildSmartRecruitersListUrl(baseUrl, company, query, pageLimit, offset);
     const payload = await fetchSmartRecruitersPage(pageUrl, company);
-    postings.push(...payload.content);
+    postings.push(...payload.content.filter(isSmartRecruitersPosting));
 
     const nextOffset = payload.offset + payload.content.length;
 
@@ -467,7 +467,6 @@ function isSmartRecruitersPage(value: unknown): value is SmartRecruitersPage {
   };
 
   return Array.isArray(candidate.content)
-    && candidate.content.every(isSmartRecruitersPosting)
     && typeof candidate.limit === "number"
     && typeof candidate.offset === "number"
     && typeof candidate.totalFound === "number";

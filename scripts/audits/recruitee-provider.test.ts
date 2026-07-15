@@ -3,7 +3,17 @@ import test from "node:test";
 
 import { recruiteeProvider } from "../job-refresh/providers/recruitee";
 
-test("Recruitee keeps jobs with well-formed non-ISO currency codes", async () => {
+function restoreProcessEnv(originalEnv: NodeJS.ProcessEnv) {
+  for (const key of Object.keys(process.env)) {
+    if (!(key in originalEnv)) {
+      delete process.env[key];
+    }
+  }
+
+  Object.assign(process.env, originalEnv);
+}
+
+test("Recruitee keeps jobs with well-formed three-letter currency codes", async () => {
   const originalFetch = globalThis.fetch;
   const originalEnv = { ...process.env };
 
@@ -36,7 +46,7 @@ test("Recruitee keeps jobs with well-formed non-ISO currency codes", async () =>
     });
   } finally {
     globalThis.fetch = originalFetch;
-    process.env = originalEnv;
+    restoreProcessEnv(originalEnv);
   }
 
   assert.equal(jobs.length, 1);

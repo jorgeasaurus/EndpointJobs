@@ -1231,8 +1231,11 @@ await run("FEAT-069", "Map location resolver maps known places and skips ambiguo
   for (const [location, label] of [
     ["Frankfurt am Main, Germany", "Frankfurt, Germany"],
     ["Köln, Deutschland", "Cologne, Germany"],
+    ["Koeln, Germany", "Cologne, Germany"],
+    ["Muenchen, Germany", "Munich, Germany"],
     ["Stuttgart, Germany", "Stuttgart, Germany"],
-    ["Düsseldorf, Germany", "Düsseldorf, Germany"]
+    ["Düsseldorf, Germany", "Düsseldorf, Germany"],
+    ["Duesseldorf, Germany", "Düsseldorf, Germany"]
   ] as const) {
     assertEqual(resolveJobMapLocation(location)?.label, label);
   }
