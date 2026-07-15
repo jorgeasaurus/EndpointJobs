@@ -52,3 +52,4 @@
 - Public API validation, typed parsing, and OpenAPI parameters must derive from one contract; never expose UI reducer state or rely on a separate cast-heavy parsing pass.
 - User-facing repository links must target a durable branch such as `main`; feature-branch URLs break when the branch is deleted after merge.
 - GitHub Actions does not resolve `matrix` expressions in `shell:`; use a static shell per job and split runtime-specific shells into separate jobs.
+- Filtered navigation links need a production click-through check that verifies the final URL and hydrated filter state; local href and route-status audits alone can miss client hydration rewriting the query.

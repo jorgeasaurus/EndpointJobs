@@ -5,8 +5,7 @@ import {
   siteDescription,
   siteKeywords,
   siteName,
-  siteUrl,
-  specialtySearchLinks
+  siteUrl
 } from "./site-metadata";
 
 export function getHomeJsonLd(feed: JobsFeed) {
@@ -23,13 +22,6 @@ export function getHomeJsonLd(feed: JobsFeed) {
       sameAs: job.applyUrl ?? job.sourceUrl
     }
   }));
-  const specialtyLinks = specialtySearchLinks.map((link, index) => ({
-    "@type": "ListItem",
-    position: index + 1,
-    name: link.label,
-    url: `${siteUrl}${link.href}`
-  }));
-
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -83,12 +75,6 @@ export function getHomeJsonLd(feed: JobsFeed) {
           numberOfItems: feed.jobs.length,
           itemListElement: topListings
         }
-      },
-      {
-        "@type": "ItemList",
-        "@id": `${siteUrl}/#popular-searches`,
-        name: "Popular endpoint job searches",
-        itemListElement: specialtyLinks
       },
       {
         "@type": "WebApplication",

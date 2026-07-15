@@ -49,7 +49,7 @@ Location filtering now searches persisted map labels alongside raw provider loca
 # Canonical feature audit expansion
 
 - [x] Reconcile every canonical story ID with executable audit coverage.
-- [x] Add missing stories for popular searches, live coverage metrics, and feed safety.
+- [x] Add missing stories for live coverage metrics and feed safety.
 - [x] Correct stale location, SEO, source, curated-provider, comparison, pagination, and feedback contracts.
 - [x] Add behavioral tests for feed validation, curated availability, structured-data limits, metrics, comparison recovery/persistence, pagination scrolling, and topbar feedback.
 - [x] Rerun the complete data and browser behavior suites.
@@ -378,3 +378,14 @@ Added a concise module guide covering installation, filtering, pipeline lookup, 
 ## Review
 
 Removed Corporate Engineering and Enterprise Engineering as standalone endpoint signals while preserving roles with concrete client-platform, device, or endpoint evidence. Removed eight confirmed Greenhouse false positives from the generated feed; typecheck, lint, production build, 60 data audits, and 34 browser audits pass.
+
+# Remove popular footer searches
+
+- [x] Reproduce the broken production navigation.
+- [x] Remove footer markup, metadata, JSON-LD, and styles.
+- [x] Remove stale feature claims and replace them with absence checks.
+- [x] Run data, browser, type, lint, and build verification.
+
+## Review
+
+Reproduced production links dropping their query and returning to the unfiltered home page. Removed the feature from the footer, site metadata, JSON-LD, desktop/mobile styles, and stale audits while retaining project links; typecheck, lint, production build, 60 data audits, and 33 browser audits pass.
