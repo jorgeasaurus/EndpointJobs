@@ -40,6 +40,7 @@ async function main() {
   const fetchedAt = new Date();
   const excludedSourceUrls = getConfiguredExcludedSourceUrls();
   const result = await fetchConfiguredProviderJobs(configuredProviders, fetchedAt);
+  const reservedJobIds = new Set(result.reservedJobIds);
   const normalizedJobs = limitFeedJobs(
     selectFeedJobs(
       result.jobs
@@ -48,10 +49,11 @@ async function main() {
         .map(addResolvedMapLocation)
         .filter((job) => !isExcludedJobSourceUrl(job.sourceUrl, excludedSourceUrls))
         .filter((job) => !isSourceFreshnessExpired(job, fetchedAt))
-        .filter((job) => new Date(job.staleAfter).getTime() >= fetchedAt.getTime())
+        .filter((job) => new Date(job.staleAfter).getTime() >= fetchedAt.getTime()),
+      reservedJobIds
     ),
     maxJobs,
-    new Set(result.reservedJobIds)
+    reservedJobIds
   );
 
   const feed: JobsFeed = {

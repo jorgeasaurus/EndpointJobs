@@ -16,14 +16,20 @@ const directJobSources = new Set([
   "Workday"
 ]);
 
-export function selectFeedJobs(jobs: Job[]) {
+export function selectFeedJobs(
+  jobs: Job[],
+  reservedJobIds: ReadonlySet<string> = new Set()
+) {
   const byCanonicalSourceUrl = new Map<string, Job>();
 
   for (const job of jobs) {
     const key = normalizeJobSourceUrl(job.sourceUrl) ?? job.sourceUrl;
     const existing = byCanonicalSourceUrl.get(key);
 
-    byCanonicalSourceUrl.set(key, existing ? pickPreferredDuplicate(existing, job) : job);
+    byCanonicalSourceUrl.set(
+      key,
+      existing ? pickPreferredDuplicate(existing, job, reservedJobIds) : job
+    );
   }
 
   const byEquivalentRole = new Map<string, Job>();
@@ -32,13 +38,27 @@ export function selectFeedJobs(jobs: Job[]) {
     const key = normalizeSearchText([job.title, job.company, job.location].join("|"));
     const existing = byEquivalentRole.get(key);
 
-    byEquivalentRole.set(key, existing ? pickPreferredDuplicate(existing, job) : job);
+    byEquivalentRole.set(
+      key,
+      existing ? pickPreferredDuplicate(existing, job, reservedJobIds) : job
+    );
   }
 
   return Array.from(byEquivalentRole.values()).sort(compareFeedSelectionPriority);
 }
 
-function pickPreferredDuplicate(first: Job, second: Job) {
+function pickPreferredDuplicate(
+  first: Job,
+  second: Job,
+  reservedJobIds: ReadonlySet<string>
+) {
+  const reservationDifference = Number(reservedJobIds.has(second.id))
+    - Number(reservedJobIds.has(first.id));
+
+  if (reservationDifference !== 0) {
+    return reservationDifference > 0 ? second : first;
+  }
+
   const directSourceDifference = Number(isDirectJob(second)) - Number(isDirectJob(first));
 
   if (directSourceDifference !== 0) {

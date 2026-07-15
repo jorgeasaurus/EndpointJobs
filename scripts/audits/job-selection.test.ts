@@ -61,6 +61,28 @@ test("direct ATS job beats an equivalent aggregator listing", () => {
   assert.deepEqual(jobs.map((job) => job.id), ["direct-ats"]);
 });
 
+test("reserved jobs survive equivalent-role selection", () => {
+  const jobs = selectFeedJobs(
+    [
+      makeJob({
+        id: "reserved-aggregator",
+        source: "Curated",
+        sourceUrl: "https://curated.example/jobs/endpoint-123",
+        attributionLabel: "Curated listing"
+      }),
+      makeJob({
+        id: "direct-ats",
+        source: "USAJOBS",
+        sourceUrl: "https://www.usajobs.gov/job/123456789",
+        attributionLabel: "USAJOBS"
+      })
+    ],
+    new Set(["reserved-aggregator"])
+  );
+
+  assert.deepEqual(jobs.map((job) => job.id), ["reserved-aggregator"]);
+});
+
 test("same role remains available in multiple legitimate locations", () => {
   const jobs = selectFeedJobs([
     makeJob({ id: "berlin" }),
