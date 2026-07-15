@@ -72,7 +72,25 @@ async function fetchSerpApiGoogleJobs(url: string, fetchedAt: Date) {
 
     for (let page = 0; page < maxPages; page += 1) {
       const queryUrl = buildSerpApiGoogleJobsUrl(url, query, apiKey, nextPageToken);
-      const payload = await fetchSerpApiGoogleJobsPage(queryUrl);
+      let payload: SerpApiGoogleJobsPage;
+
+      try {
+        payload = await fetchSerpApiGoogleJobsPage(queryUrl);
+      } catch (error) {
+        const usableJobCount = jobs.filter(Boolean).length;
+
+        if (usableJobCount === 0) {
+          throw error;
+        }
+
+        console.warn(
+          `Returning ${usableJobCount} partial SerpAPI jobs after query ${query} page ${page} failed: ${
+            error instanceof Error ? error.message : String(error)
+          }`
+        );
+        return jobs;
+      }
+
       jobs.push(...payload.jobs.map((job) => normalizeSerpApiGoogleJob(job, query, fetchedAt)));
       console.log(`Fetched ${payload.jobs.length} raw jobs from SerpAPI Google Jobs query ${query} page ${page}`);
 
