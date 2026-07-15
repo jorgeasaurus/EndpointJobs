@@ -356,3 +356,14 @@ Pushed the feature branch, ran GitHub Actions refresh `29387102479`, and synchro
 ## Review
 
 Repeated Copilot cycles addressed every actionable comment; two rejected findings are answered with passing regressions. The final latest-head review generated no new comments. Eleven focused tests, 60 data audits, typecheck, lint, build, and diff checks pass; the reusable skill is validated and forward-tested.
+
+# PowerShell module README and site link
+
+- [x] Add concise installation, usage, and development documentation.
+- [x] Add an accessible site button with a durable README URL.
+- [x] Add regression coverage for the button contract.
+- [x] Run module and site verification.
+
+## Review
+
+Added a concise module guide covering installation, filtering, pipeline lookup, raw responses, help, and development. The desktop top bar now links to the durable README with accessible external-link behavior; 11 PowerShell tests, typecheck, lint, production build, 60 data audits, and 34 browser audits pass.

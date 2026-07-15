@@ -3,7 +3,8 @@ import {
   FileJson,
   MessageSquarePlus,
   MonitorSmartphone,
-  RefreshCw
+  RefreshCw,
+  SquareTerminal
 } from "lucide-react";
 import Link from "next/link";
 
@@ -35,6 +36,17 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
         >
           <FileJson size={15} aria-hidden="true" />
           <span>API docs</span>
+        </a>
+        <a
+          aria-label="Open PowerShell module documentation on GitHub"
+          className="feedback-link powershell-docs-link"
+          href="https://github.com/jorgeasaurus/EndpointJobs/blob/main/powershell/EndpointJobs/README.md"
+          rel="noopener noreferrer"
+          target="_blank"
+          title="Open PowerShell module documentation on GitHub"
+        >
+          <SquareTerminal size={15} aria-hidden="true" />
+          <span>PowerShell</span>
         </a>
         <a
           aria-label="Open feedback form on GitHub"
