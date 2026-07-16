@@ -1269,6 +1269,10 @@ await run("FEAT-068", "Endpoint search defaults include role and company expansi
   assertIncludes(sources.searchConfig, "defaultEndpointSearchQueries");
   assertIncludes(sources.rapidApiLinkedIn, "powerShellSysadminTitleFilters");
   assertIncludes(sources.workflow, "JOB_SERPAPI_COUNTRIES: us,au");
+  const serpApiUsQueries = sources.workflow.match(/JOB_SERPAPI_US_QUERIES:\s*([^\n]+)/)?.[1];
+  const serpApiAuQueries = sources.workflow.match(/JOB_SERPAPI_AU_QUERIES:\s*([^\n]+)/)?.[1];
+  assertEqual(serpApiUsQueries?.split(",").length, 26);
+  assertEqual(serpApiAuQueries?.split(",").length, 2);
   assertIncludes(sources.workflow, 'JOB_SERPAPI_MAX_SEARCHES_PER_RUN: "28"');
   assertIncludes(sources.workflow, 'JOB_SERPAPI_MONTHLY_RESERVE: "100"');
   assertIncludes(sources.workflow, 'JOB_SERPAPI_QUOTA_PREFLIGHT: "true"');

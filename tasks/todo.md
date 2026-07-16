@@ -506,3 +506,16 @@ Added fair US/Australia SerpAPI scheduling, a 28-search run cap, Account API res
 ## Review
 
 Raised the default and scheduled feed cap from 750 to 1,000. Typecheck, lint, and production build pass; the data audit retains only the unrelated FEAT-036 feed failure.
+
+# Rebalance SerpAPI searches 26/2
+
+- [x] Confirm the 28-search budget and current feed regression.
+- [x] RED/GREEN: support market-specific query pools with shared-query fallback.
+- [x] Configure 26 US queries and 2 Australian queries.
+- [x] Update documentation and static audit coverage.
+- [x] Run provider tests, typecheck, lint, data audit, and build.
+- [x] Review, push, and open the follow-up PR.
+
+## Review
+
+Added per-market SerpAPI query pools with round-robin scheduling and shared-query fallback. The workflow now spends 26 searches on US coverage and 2 on Sydney/Melbourne while retaining the 28-search cap; 31 tests, 60 data audits, typecheck, lint, and build pass.
