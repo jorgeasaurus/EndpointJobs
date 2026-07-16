@@ -48,7 +48,9 @@ async function main() {
   const reservedJobIds = new Set(result.reservedJobIds);
   const currentJobs = result.jobs.filter((job): job is Job => Boolean(job));
   const candidateJobs = mergeRetainedSerpApiJobs(currentJobs, previousJobs, fetchedAt);
-  const retainedJobCount = candidateJobs.length - currentJobs.length;
+  const retainedJobIds = new Set(
+    candidateJobs.slice(currentJobs.length).map((job) => job.id)
+  );
   const normalizedJobs = limitFeedJobs(
     selectFeedJobs(
       candidateJobs
@@ -62,6 +64,7 @@ async function main() {
     maxJobs,
     reservedJobIds
   );
+  const retainedJobCount = normalizedJobs.filter((job) => retainedJobIds.has(job.id)).length;
 
   if (retainedJobCount > 0) {
     console.log(`Retained ${retainedJobCount} recent SerpAPI jobs from the previous feed`);
