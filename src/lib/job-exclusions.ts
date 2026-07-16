@@ -10,6 +10,9 @@ const sourceFreshnessRules: Partial<
   Adzuna: {
     maxFetchedAgeDays: 7,
     maxPostedAgeDays: 30
+  },
+  "SerpAPI Google Jobs": {
+    maxFetchedAgeDays: 7
   }
 };
 

@@ -263,6 +263,19 @@ Added a title-aware Leadership toggle covering genuine management, executive, an
 
 SerpAPI descriptions sometimes contain literal newline markers or arrive flattened despite structured `job_highlights`. Provider normalization now decodes literal markers and conservatively inserts breaks only when every highlight item has one unique ordered match; ambiguous text remains unchanged. Typecheck, lint, build, and the SerpAPI audit pass; the full data audit retains main's unrelated feed-dependent FEAT-061 failure.
 
+# Stable SerpAPI coverage
+
+- [x] RED/GREEN: continue after transient query failures.
+- [x] RED/GREEN: send city-specific Australian locations.
+- [x] RED/GREEN: rotate 26 US queries across the full pool.
+- [x] RED/GREEN: retain freshness-valid SerpAPI jobs for seven days.
+- [x] Run focused tests, audits, typecheck, lint, and build.
+- [x] Review the final diff and record results.
+
+## Review
+
+SerpAPI now pins six high-yield searches, rotates the other 60 across three runs, targets Sydney and Melbourne through `location`, and continues after isolated request failures. Seven-day source-specific retention preserves original timestamps and passes through existing exclusions, stale checks, dedupe, and the 1,000-job cap; 33 tests, 60 data audits, typecheck, lint, build, YAML parsing, and an independent diff review pass.
+
 # PR 14 review loop
 
 - [x] Guard malformed SerpAPI highlight payloads.

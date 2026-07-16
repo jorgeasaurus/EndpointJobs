@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
 import type { ProviderAdapter } from "./job-refresh/provider";
@@ -17,6 +17,7 @@ import { techmapRssProvider } from "./job-refresh/providers/techmap-rss";
 import { theirStackProvider } from "./job-refresh/providers/theirstack";
 import { usaJobsProvider } from "./job-refresh/providers/usajobs";
 import { resolveJobMapLocation } from "./job-refresh/map-location";
+import { mergeRetainedSerpApiJobs } from "./job-refresh/retained-jobs";
 import { shouldWriteFeed, validateFeed } from "./job-refresh/feed-safety";
 import {
   compareFeedSelectionPriority,
@@ -40,12 +41,17 @@ async function main() {
   const configuredProviders = getConfiguredProviders();
   const fetchedAt = new Date();
   const excludedSourceUrls = getConfiguredExcludedSourceUrls();
+  const previousJobs = configuredProviders.includes("serpapi")
+    ? await readPreviousFeedJobs(outputPath)
+    : [];
   const result = await fetchConfiguredProviderJobs(configuredProviders, fetchedAt);
   const reservedJobIds = new Set(result.reservedJobIds);
+  const currentJobs = result.jobs.filter((job): job is Job => Boolean(job));
+  const candidateJobs = mergeRetainedSerpApiJobs(currentJobs, previousJobs, fetchedAt);
+  const retainedJobCount = candidateJobs.length - currentJobs.length;
   const normalizedJobs = limitFeedJobs(
     selectFeedJobs(
-      result.jobs
-        .filter((job): job is Job => Boolean(job))
+      candidateJobs
         .map(addExtractedSalary)
         .map(addResolvedMapLocation)
         .filter((job) => !isExcludedJobSourceUrl(job.sourceUrl, excludedSourceUrls))
@@ -56,6 +62,10 @@ async function main() {
     maxJobs,
     reservedJobIds
   );
+
+  if (retainedJobCount > 0) {
+    console.log(`Retained ${retainedJobCount} recent SerpAPI jobs from the previous feed`);
+  }
 
   const feed: JobsFeed = {
     updatedAt: fetchedAt.toISOString(),
@@ -78,6 +88,46 @@ async function main() {
   console.log(
     `Wrote ${normalizedJobs.length} endpoint jobs from ${result.providers.length} provider(s) to ${outputPath}`
   );
+}
+
+async function readPreviousFeedJobs(path: string): Promise<Job[]> {
+  try {
+    const parsed: unknown = JSON.parse(await readFile(path, "utf8"));
+
+    if (!isJobsFeed(parsed)) {
+      console.warn(`Skipping SerpAPI retention because ${path} is not a jobs feed`);
+      return [];
+    }
+
+    validateFeed(parsed);
+    return parsed.jobs;
+  } catch (error) {
+    if (isNodeError(error) && error.code === "ENOENT") {
+      return [];
+    }
+
+    console.warn(
+      `Skipping SerpAPI retention because the previous feed could not be read: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+    return [];
+  }
+}
+
+function isJobsFeed(value: unknown): value is JobsFeed {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Partial<JobsFeed>;
+  return typeof candidate.updatedAt === "string"
+    && Boolean(candidate.source)
+    && Array.isArray(candidate.jobs);
+}
+
+function isNodeError(error: unknown): error is NodeJS.ErrnoException {
+  return error instanceof Error && "code" in error;
 }
 
 const providerAdapters = [

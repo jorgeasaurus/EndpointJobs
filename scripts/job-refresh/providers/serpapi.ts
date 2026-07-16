@@ -55,6 +55,11 @@ type SerpApiMarket = {
   location?: string;
 };
 
+type SerpApiSearch = {
+  market: SerpApiMarket;
+  query: string;
+};
+
 const serpApiMarketPresets = {
   au: {
     code: "au",
@@ -78,6 +83,14 @@ const defaultSerpApiQueries = Array.from(new Set([
   ...defaultEndpointSearchQueries,
   ...defaultCompanyJobQueries
 ]));
+const pinnedSerpApiQueries = [
+  "endpoint engineer",
+  "endpoint administrator",
+  "end user computing engineer",
+  "digital workplace engineer",
+  "zero-touch deployment",
+  "powershell administrator"
+];
 export const serpApiProvider: ProviderAdapter<"serpapi"> = {
   id: "serpapi",
   displayName: "SerpAPI Google Jobs",
@@ -93,37 +106,53 @@ async function fetchSerpApiGoogleJobs(url: string, fetchedAt: Date) {
   }
 
   const sharedQueries = getCsvConfig("JOB_SERPAPI_QUERIES", defaultSerpApiQueries);
-  const marketSchedules = getSerpApiMarkets().map((market) => ({
-    market,
-    queries: getCsvConfig(
+  const rotationIndex = getSerpApiRotationIndex(fetchedAt);
+  const marketSchedules = getSerpApiMarkets().map((market) => {
+    const queries = getCsvConfig(
       `JOB_SERPAPI_${market.code.toUpperCase()}_QUERIES`,
       sharedQueries
-    )
-  }));
+    );
+    const locations = getDelimitedConfig(
+      `JOB_SERPAPI_${market.code.toUpperCase()}_LOCATIONS`,
+      "|"
+    );
+
+    const searches = buildMarketSearches(market, queries, locations);
+
+    return {
+      market,
+      searches: selectRotatingSearches(
+        searches,
+        getOptionalPositiveInteger(
+          process.env[`JOB_SERPAPI_${market.code.toUpperCase()}_QUERY_LIMIT`]
+        ),
+        rotationIndex,
+        pinnedSerpApiQueries
+      )
+    };
+  });
   const maxPages = getPositiveInteger(process.env.JOB_SERPAPI_MAX_PAGES, 1);
   const configuredMaxSearches = getPositiveInteger(
     process.env.JOB_SERPAPI_MAX_SEARCHES_PER_RUN,
     28
   );
   const maxSearches = await getSerpApiSearchBudget(apiKey, configuredMaxSearches);
-  const disabledMarkets = new Set<string>();
   const jobs: Array<Job | null> = [];
   let firstError: unknown;
   let searchCount = 0;
   let successfulSearches = 0;
 
-  const queryRoundCount = Math.max(...marketSchedules.map(({ queries }) => queries.length));
+  const queryRoundCount = Math.max(...marketSchedules.map(({ searches }) => searches.length));
 
   for (let queryIndex = 0; queryIndex < queryRoundCount; queryIndex += 1) {
     const marketStates = marketSchedules
-      .filter(({ market, queries }) => (
-        !disabledMarkets.has(market.code) && Boolean(queries[queryIndex])
-      ))
-      .map(({ market, queries }) => ({
+      .map(({ searches }) => searches[queryIndex])
+      .filter((search): search is SerpApiSearch => Boolean(search))
+      .map(({ market, query }) => ({
         active: true,
         market,
         nextPageToken: undefined as string | undefined,
-        query: queries[queryIndex]
+        query
       }));
 
     for (let page = 0; page < maxPages; page += 1) {
@@ -166,10 +195,9 @@ async function fetchSerpApiGoogleJobs(url: string, fetchedAt: Date) {
           }
 
           firstError ??= error;
-          disabledMarkets.add(market.code);
           state.active = false;
           console.warn(
-            `Disabling SerpAPI market ${market.code} after query ${query} page ${page} failed: ${formatError(error)}`
+            `Skipping SerpAPI market ${market.code} query ${query} page ${page} after request failed: ${formatError(error)}`
           );
           continue;
         }
@@ -195,6 +223,70 @@ async function fetchSerpApiGoogleJobs(url: string, fetchedAt: Date) {
   }
 
   return jobs;
+}
+
+function buildMarketSearches(
+  market: SerpApiMarket,
+  queries: string[],
+  locations: string[]
+): SerpApiSearch[] {
+  if (locations.length === 0) {
+    return queries.map((query) => ({ market, query }));
+  }
+
+  return locations.flatMap((location) => queries.map((query) => ({
+    market: { ...market, location },
+    query
+  })));
+}
+
+function getDelimitedConfig(envKey: string, delimiter: string) {
+  return (process.env[envKey] ?? "")
+    .split(delimiter)
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
+function selectRotatingSearches(
+  searches: SerpApiSearch[],
+  limit: number | undefined,
+  rotationIndex: number,
+  pinnedQueries: string[]
+) {
+  if (!limit || searches.length <= limit) {
+    return searches;
+  }
+
+  const pinnedQuerySet = new Set(pinnedQueries);
+  const pinned = searches.filter(({ query }) => pinnedQuerySet.has(query)).slice(0, limit);
+  const rotating = searches.filter(({ query }) => !pinnedQuerySet.has(query));
+  const rotatingLimit = limit - pinned.length;
+
+  if (rotatingLimit <= 0 || rotating.length === 0) {
+    return pinned;
+  }
+
+  const offset = (rotationIndex * rotatingLimit) % rotating.length;
+  const selected = Array.from(
+    { length: Math.min(rotatingLimit, rotating.length) },
+    (_, index) => rotating[(offset + index) % rotating.length]
+  );
+
+  return [...pinned, ...selected];
+}
+
+function getSerpApiRotationIndex(fetchedAt: Date) {
+  const configured = process.env.JOB_SERPAPI_ROTATION_INDEX ?? process.env.GITHUB_RUN_NUMBER;
+
+  if (configured !== undefined && /^\d+$/.test(configured.trim())) {
+    const parsed = Number.parseInt(configured, 10);
+
+    if (Number.isSafeInteger(parsed) && parsed >= 0) {
+      return parsed;
+    }
+  }
+
+  return Math.floor(fetchedAt.getTime() / (24 * 60 * 60 * 1000));
 }
 
 async function getSerpApiSearchBudget(apiKey: string, configuredMaxSearches: number) {
@@ -248,6 +340,15 @@ function getPositiveInteger(value: string | undefined, fallback: number) {
 
   const parsed = Number.parseInt(value, 10);
   return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function getOptionalPositiveInteger(value: string | undefined) {
+  if (!value || !/^\d+$/.test(value.trim())) {
+    return undefined;
+  }
+
+  const parsed = Number.parseInt(value, 10);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : undefined;
 }
 
 function getNonNegativeInteger(value: string | undefined, fallback: number) {

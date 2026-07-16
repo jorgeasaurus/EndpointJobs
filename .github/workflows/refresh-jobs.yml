@@ -43,8 +43,10 @@ jobs:
           JOB_THEIRSTACK_COUNTRY_CODES: US,CH,IT,ES,FR,DE
           SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
           JOB_SERPAPI_COUNTRIES: us,au
-          JOB_SERPAPI_US_QUERIES: endpoint engineer,endpoint administrator,desktop engineer,desktop systems engineer,systems engineer macos,windows endpoint engineer,client platform engineer,client infrastructure engineer,end user computing engineer,digital workplace engineer,workplace engineer,intune engineer,jamf engineer,sccm engineer,desktop administrator,macos engineer,windows engineer,client engineering,employee experience engineer,digital workplace,corporate engineering,enterprise engineering,it systems engineer,tech operations engineer,technology operations engineer,mdm engineer
-          JOB_SERPAPI_AU_QUERIES: endpoint engineer Sydney,endpoint engineer Melbourne
+          JOB_SERPAPI_US_QUERY_LIMIT: "26"
+          JOB_SERPAPI_ROTATION_INDEX: ${{ github.run_number }}
+          JOB_SERPAPI_AU_QUERIES: endpoint engineer
+          JOB_SERPAPI_AU_LOCATIONS: Sydney, New South Wales, Australia|Melbourne, Victoria, Australia
           JOB_SERPAPI_MAX_PAGES: "1"
           JOB_SERPAPI_MAX_SEARCHES_PER_RUN: "28"
           JOB_SERPAPI_MONTHLY_RESERVE: "100"
