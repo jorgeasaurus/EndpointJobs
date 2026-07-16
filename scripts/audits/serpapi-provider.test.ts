@@ -165,6 +165,58 @@ test("SerpAPI searches every configured country with its market localization", a
   );
 });
 
+test("SerpAPI allocates searches from market-specific query pools", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalEnv = { ...process.env };
+  const searches: string[] = [];
+
+  process.env.SERPAPI_API_KEY = "test-key";
+  process.env.JOB_SERPAPI_COUNTRIES = "us,au";
+  process.env.JOB_SERPAPI_QUERIES = "fallback endpoint engineer";
+  process.env.JOB_SERPAPI_US_QUERIES = "endpoint engineer,desktop engineer,jamf engineer";
+  process.env.JOB_SERPAPI_AU_QUERIES = "intune engineer";
+  process.env.JOB_SERPAPI_MAX_PAGES = "1";
+  process.env.JOB_SERPAPI_MAX_SEARCHES_PER_RUN = "4";
+  globalThis.fetch = async (input) => {
+    const url = new URL(String(input));
+    const country = url.searchParams.get("gl") ?? "unknown";
+    const query = url.searchParams.get("q") ?? "unknown";
+    const key = `${query}/${country}`;
+    searches.push(key);
+
+    return Response.json({
+      jobs_results: [{
+        job_id: key,
+        title: "Endpoint Engineer",
+        company_name: "Example Company",
+        location: country === "au" ? "Sydney, Australia" : "Austin, TX",
+        description: "Manage Microsoft Intune and Windows endpoints.",
+        apply_options: [{
+          title: "Example Company",
+          link: `https://example.com/jobs/${encodeURIComponent(key)}`
+        }]
+      }]
+    });
+  };
+
+  try {
+    await serpApiProvider.fetchJobs({
+      url: serpApiProvider.defaultUrl,
+      fetchedAt: new Date("2026-07-16T12:00:00.000Z")
+    });
+  } finally {
+    globalThis.fetch = originalFetch;
+    restoreProcessEnv(originalEnv);
+  }
+
+  assert.deepEqual(searches, [
+    "endpoint engineer/us",
+    "intune engineer/au",
+    "desktop engineer/us",
+    "jamf engineer/us"
+  ]);
+});
+
 test("SerpAPI preserves numeric bounds from explicit Australian salary labels", () => {
   const jobs = ["AUD 120K–140K a year", "A$120K–A$140K a year"].map((salary, index) =>
     normalizeSerpApiGoogleJob({

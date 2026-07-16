@@ -92,8 +92,14 @@ async function fetchSerpApiGoogleJobs(url: string, fetchedAt: Date) {
     throw new Error("SERPAPI_API_KEY is required");
   }
 
-  const queries = getCsvConfig("JOB_SERPAPI_QUERIES", defaultSerpApiQueries);
-  const markets = getSerpApiMarkets();
+  const sharedQueries = getCsvConfig("JOB_SERPAPI_QUERIES", defaultSerpApiQueries);
+  const marketSchedules = getSerpApiMarkets().map((market) => ({
+    market,
+    queries: getCsvConfig(
+      `JOB_SERPAPI_${market.code.toUpperCase()}_QUERIES`,
+      sharedQueries
+    )
+  }));
   const maxPages = getPositiveInteger(process.env.JOB_SERPAPI_MAX_PAGES, 1);
   const configuredMaxSearches = getPositiveInteger(
     process.env.JOB_SERPAPI_MAX_SEARCHES_PER_RUN,
@@ -106,10 +112,19 @@ async function fetchSerpApiGoogleJobs(url: string, fetchedAt: Date) {
   let searchCount = 0;
   let successfulSearches = 0;
 
-  for (const query of queries) {
-    const marketStates = markets
-      .filter((market) => !disabledMarkets.has(market.code))
-      .map((market) => ({ active: true, market, nextPageToken: undefined as string | undefined }));
+  const queryRoundCount = Math.max(...marketSchedules.map(({ queries }) => queries.length));
+
+  for (let queryIndex = 0; queryIndex < queryRoundCount; queryIndex += 1) {
+    const marketStates = marketSchedules
+      .filter(({ market, queries }) => (
+        !disabledMarkets.has(market.code) && Boolean(queries[queryIndex])
+      ))
+      .map(({ market, queries }) => ({
+        active: true,
+        market,
+        nextPageToken: undefined as string | undefined,
+        query: queries[queryIndex]
+      }));
 
     for (let page = 0; page < maxPages; page += 1) {
       for (const state of marketStates) {
@@ -117,7 +132,7 @@ async function fetchSerpApiGoogleJobs(url: string, fetchedAt: Date) {
           continue;
         }
 
-        const { market } = state;
+        const { market, query } = state;
         if (searchCount >= maxSearches) {
           console.log(`Reached SerpAPI run cap after ${searchCount} searches`);
           return jobs;
