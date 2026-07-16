@@ -496,3 +496,13 @@ The current US-only daily configuration attempts 66 searches per run, or 1,848-2
 ## Review
 
 Added fair US/Australia SerpAPI scheduling, a 28-search run cap, Account API reserve protection, serialized refreshes, AUD salary handling, and Australian map aliases. Thirty tests, 34 browser audits, typecheck, lint, build, YAML, and diff checks pass; the data audit's only failure is the pre-existing malformed Franklin Fitch feed record (FEAT-036). Independent review found no remaining medium or blocking issues.
+
+# Raise feed limit to 1,000
+
+- [x] Raise the refresh default and scheduled workflow cap.
+- [x] Update audit coverage and run verification.
+- [x] Push the PR update and complete a clean Copilot review.
+
+## Review
+
+Raised the default and scheduled feed cap from 750 to 1,000. Typecheck, lint, and production build pass; the data audit retains only the unrelated FEAT-036 feed failure.
