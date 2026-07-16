@@ -376,6 +376,13 @@ const locationCoordinates: Coordinate[] = [
   { label: "Sarnen, Switzerland", latitude: 46.8961, longitude: 8.2453, keys: ["sarnen", "obwalden"] },
   { label: "Fribourg, Switzerland", latitude: 46.8065, longitude: 7.1619, keys: ["fribourg", "villars sur glane", "saane"] },
   { label: "Switzerland", latitude: 46.8182, longitude: 8.2275, keys: ["switzerland", "schweiz", "suisse", "svizzera"] },
+  { label: "Sydney, Australia", latitude: -33.8688, longitude: 151.2093, keys: ["sydney", "new south wales"] },
+  { label: "Melbourne, Australia", latitude: -37.8136, longitude: 144.9631, keys: ["melbourne", "victoria australia"] },
+  { label: "Brisbane, Australia", latitude: -27.4698, longitude: 153.0251, keys: ["brisbane", "queensland australia"] },
+  { label: "Perth, Australia", latitude: -31.9523, longitude: 115.8613, keys: ["perth australia", "perth wa australia", "perth western australia"] },
+  { label: "Adelaide, Australia", latitude: -34.9285, longitude: 138.6007, keys: ["adelaide", "south australia"] },
+  { label: "Canberra, Australia", latitude: -35.2809, longitude: 149.13, keys: ["canberra", "australian capital territory"] },
+  { label: "Australia", latitude: -25.2744, longitude: 133.7751, keys: ["australia", "remote australia", "australian remote"] },
   { label: "Hyderabad, India", latitude: 17.385, longitude: 78.4867, keys: ["hyderabad"] },
   { label: "Bengaluru, India", latitude: 12.9716, longitude: 77.5946, keys: ["bengaluru", "bangalore"] },
   { label: "India", latitude: 20.5937, longitude: 78.9629, keys: ["india"] },
@@ -403,15 +410,15 @@ export function resolveJobMapLocation(location: string): JobMapLocation | undefi
   }
 
   const coordinate = searchableLocationCoordinates.find((candidate) =>
-    !isGermanCityWithExplicitUsState(candidate.label, normalized) &&
+    !isInternationalCityWithExplicitUsState(candidate.label, normalized) &&
     candidate.normalizedKeys.some((key) => containsNormalizedLocationKey(normalized, key))
   );
 
   return coordinate ? toMapLocation(coordinate) : undefined;
 }
 
-function isGermanCityWithExplicitUsState(label: string, normalizedLocation: string) {
-  if (!label.endsWith(", Germany")) {
+function isInternationalCityWithExplicitUsState(label: string, normalizedLocation: string) {
+  if (!label.endsWith(", Germany") && !label.endsWith(", Australia")) {
     return false;
   }
 
