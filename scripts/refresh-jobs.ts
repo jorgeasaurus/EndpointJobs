@@ -17,7 +17,10 @@ import { techmapRssProvider } from "./job-refresh/providers/techmap-rss";
 import { theirStackProvider } from "./job-refresh/providers/theirstack";
 import { usaJobsProvider } from "./job-refresh/providers/usajobs";
 import { resolveJobMapLocation } from "./job-refresh/map-location";
-import { mergeRetainedSerpApiJobs } from "./job-refresh/retained-jobs";
+import {
+  getValidatedPreviousSerpApiJobs,
+  mergeRetainedSerpApiJobs
+} from "./job-refresh/retained-jobs";
 import { shouldWriteFeed, validateFeed } from "./job-refresh/feed-safety";
 import {
   compareFeedSelectionPriority,
@@ -102,8 +105,7 @@ async function readPreviousFeedJobs(path: string): Promise<Job[]> {
       return [];
     }
 
-    validateFeed(parsed);
-    return parsed.jobs;
+    return getValidatedPreviousSerpApiJobs(parsed);
   } catch (error) {
     if (isNodeError(error) && error.code === "ENOENT") {
       return [];

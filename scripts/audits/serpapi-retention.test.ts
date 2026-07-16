@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { mergeRetainedSerpApiJobs } from "../job-refresh/retained-jobs";
+import {
+  getValidatedPreviousSerpApiJobs,
+  mergeRetainedSerpApiJobs
+} from "../job-refresh/retained-jobs";
 import type { Job } from "../../src/types/job";
 
 test("refresh retains only recent SerpAPI jobs without changing their timestamps", () => {
@@ -45,6 +48,25 @@ test("refresh retains only recent SerpAPI jobs without changing their timestamps
   assert.deepEqual(jobs.map((job) => job.id), ["rediscovered", "carried"]);
   assert.equal(jobs[0], current);
   assert.equal(jobs[1]?.fetchedAt, "2026-07-09T12:00:00.000Z");
+});
+
+test("retention validation ignores invalid jobs from unrelated providers", () => {
+  const serpApiJob = makeJob({ id: "retained" });
+  const previousJobs = getValidatedPreviousSerpApiJobs({
+    updatedAt: "2026-07-16T12:00:00.000Z",
+    source: { name: "Previous feed", url: "https://example.com/feed" },
+    jobs: [
+      serpApiJob,
+      makeJob({
+        id: "invalid-adzuna",
+        source: "Adzuna",
+        description: "Provider snippet that is invalid for Adzuna",
+        sourceUrl: "https://example.com/jobs/invalid-adzuna"
+      })
+    ]
+  });
+
+  assert.deepEqual(previousJobs, [serpApiJob]);
 });
 
 function makeJob(overrides: Partial<Job> = {}): Job {
