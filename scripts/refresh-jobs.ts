@@ -107,7 +107,7 @@ async function readPreviousFeedJobs(path: string): Promise<Job[]> {
     }
 
     console.warn(
-      `Skipping SerpAPI retention because the previous feed could not be read: ${
+      `Skipping SerpAPI retention because the previous feed could not be loaded as a valid jobs feed: ${
         error instanceof Error ? error.message : String(error)
       }`
     );
