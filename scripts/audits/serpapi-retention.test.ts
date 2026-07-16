@@ -5,6 +5,7 @@ import {
   getValidatedPreviousSerpApiJobs,
   mergeRetainedSerpApiJobs
 } from "../job-refresh/retained-jobs";
+import { serpApiJobSourceName } from "../../src/lib/job-sources";
 import type { Job } from "../../src/types/job";
 
 test("refresh retains only recent SerpAPI jobs without changing their timestamps", () => {
@@ -79,7 +80,7 @@ function makeJob(overrides: Partial<Job> = {}): Job {
     postedAt: "2026-07-08T12:00:00.000Z",
     fetchedAt: "2026-07-10T12:00:00.000Z",
     staleAfter: "2026-08-20T12:00:00.000Z",
-    source: "SerpAPI Google Jobs",
+    source: serpApiJobSourceName,
     sourceUrl: "https://example.com/jobs/serpapi-job",
     applyUrl: "https://example.com/jobs/serpapi-job",
     attributionLabel: "Google Jobs via SerpAPI",
