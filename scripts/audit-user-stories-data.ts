@@ -99,6 +99,7 @@ const sourcePaths = {
   comparisonBrowserAudit: "scripts/audits/job-comparison-browser.mjs",
   comparisonDataAudit: "scripts/audits/job-comparison-data.ts",
   companyAts: "scripts/job-refresh/providers/company-ats.ts",
+  workdaySites: "scripts/job-refresh/providers/workday-sites.ts",
   controls: "src/components/job-board/controls.tsx",
   curated: "scripts/job-refresh/providers/curated-jobs.ts",
   feedSafetyAudit: "scripts/audits/feed-safety-data.ts",
@@ -206,7 +207,7 @@ const filterFixtureJobs = [
 
 await run("TRACKER-001", "Canonical story sheet has complete source evidence", async () => {
   const rows = parseCsv(sources.sheet);
-  assertEqual(rows.length, 75, "expected 75 user stories");
+  assertEqual(rows.length, 76, "expected 76 user stories");
   assertEqual(new Set(rows.map((row) => row.ID)).size, rows.length, "duplicate story IDs");
 
   rows.forEach((row, index) => {
@@ -1036,11 +1037,11 @@ await run("FEAT-058", "Expanded direct ATS sources are configured", () => {
   assertIncludes(sources.atsBoards, '"1password"', "monitored Ashby board 1password");
   ["Booz Allen", "HP", "NVIDIA", "Adobe", "F5", "Allstate", "Gartner", "Nordic Consulting", "SHI", "Circle", "Jabil"].forEach(
     (company) => {
-      assertIncludes(sources.companyAts, company, `default Workday site ${company}`);
+      assertIncludes(sources.workdaySites, company, `default Workday site ${company}`);
     }
   );
-  ["Chatham Financial", "Austal USA", "MBDA Italy", "Velera", "Pacific Life", "General Motors"].forEach(
-    (company) => assertIncludes(sources.companyAts, company, `verified Workday site ${company}`)
+  ["Chatham Financial", "Austal USA", "MBDA Italy", "Velera", "Pacific Life", "General Motors", "GEICO"].forEach(
+    (company) => assertIncludes(sources.workdaySites, company, `verified Workday site ${company}`)
   );
   assertIncludes(sources.readme, "SpaceX", "README source documentation");
   assertIncludes(sources.readme, "GitLab", "README expanded source documentation");

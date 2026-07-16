@@ -8,7 +8,7 @@ import {
   queryJobs
 } from "../../src/lib/jobs-api";
 import {
-  getJobsApiOpenApiAppliedFilterEnums,
+  getJobsApiOpenApiAppliedFiltersSchema,
   getJobsApiOpenApiParameters
 } from "../../src/lib/jobs-api-contract";
 import type { Job, JobsFeed } from "../../src/types/job";
@@ -40,6 +40,7 @@ export async function auditJobsApiData(run: RunAudit) {
     assertEqual(result.body.meta.page, 1, "page metadata");
     assertEqual(result.body.meta.limit, 1, "limit metadata");
     assertEqual(result.body.filters.tools[0], "Jamf", "public applied-filter DTO");
+    assertEqual(result.body.filters.leadership, false, "leadership defaults off");
     assertEqual("selectedTools" in result.body.filters, false, "UI filter field excluded");
 
     const paddedText = queryJobs(feed, new URLSearchParams("q=%20Endpoint%20"), now);
@@ -59,6 +60,23 @@ export async function auditJobsApiData(run: RunAudit) {
       false,
       "UI freshness sentinel rejected"
     );
+    assertEqual(
+      queryJobs(feed, new URLSearchParams("leadership=0"), now).ok,
+      false,
+      "unsupported leadership value rejected"
+    );
+
+    const leadership = queryJobs(
+      makeFeed([
+        makeJob({ id: "manager", title: "Manager, Endpoint Engineering" }),
+        makeJob({ id: "lead", title: "Endpoint Engineering Lead" }),
+        makeJob({ id: "staff", title: "Staff Endpoint Engineer" })
+      ]),
+      new URLSearchParams("leadership=1"),
+      now
+    );
+    assertEqual(leadership.ok && leadership.body.meta.total, 2, "leadership roles filtered");
+    assertEqual(leadership.ok && leadership.body.filters.leadership, true, "leadership applied filter returned");
 
     for (const query of ["page=1e2", "limit=0x10"]) {
       assertEqual(
@@ -114,21 +132,27 @@ export async function auditJobsApiData(run: RunAudit) {
     assertTruthy(readPointer(specification, "#/paths/~1api~1jobs/get"), "collection path");
     assertTruthy(readPointer(specification, "#/paths/~1api~1jobs~1{id}/get"), "item path");
     assertLocalReferencesResolve(specification);
+    assertTruthy(
+      (readPointer(specification, "#/paths/~1api~1jobs/get/parameters") as Array<{ $ref?: string }>)
+        .some((parameter) => parameter.$ref === "#/components/parameters/Leadership"),
+      "collection leadership parameter"
+    );
     assertDeepEqual(
       readPointer(specification, "#/components/parameters"),
       getJobsApiOpenApiParameters(),
       "OpenAPI query parameters match canonical contract"
     );
-    for (const [name, values] of Object.entries(getJobsApiOpenApiAppliedFilterEnums())) {
-      assertDeepEqual(
-        readPointer(specification, `#/components/schemas/Filters/properties/${name}/enum`),
-        values,
-        `OpenAPI applied filter enum matches canonical contract: ${name}`
-      );
-    }
+    assertDeepEqual(
+      readPointer(specification, "#/components/schemas/Filters"),
+      getJobsApiOpenApiAppliedFiltersSchema(),
+      "OpenAPI applied filters match canonical contract"
+    );
     assertSchema(specification, "#/components/schemas/JobCollection", result.body);
     if (oneDay.ok) {
       assertSchema(specification, "#/components/schemas/JobCollection", oneDay.body);
+    }
+    if (leadership.ok) {
+      assertSchema(specification, "#/components/schemas/JobCollection", leadership.body);
     }
     assertSchema(specification, "#/components/schemas/ApiError", invalid.body);
     assertSchema(

@@ -61,6 +61,64 @@ export const seniorityOptions = [
 
 export type Seniority = (typeof seniorityOptions)[number];
 
+const nonLeadershipManagerTitleTerms = [
+  "account",
+  "policy",
+  "product",
+  "program",
+  "project",
+  "resource",
+  "risk"
+] as const;
+
+const nonLeadershipManagerTitlePhrases = [
+  "configuration manager",
+  "microsoft endpoint manager"
+] as const;
+
+const executiveLeadershipTitleTerms = [
+  "chief",
+  "cio",
+  "ciso",
+  "cto",
+  "director",
+  "evp",
+  "head",
+  "svp",
+  "vice president",
+  "vp"
+] as const;
+
+export function isLeadershipTitle(title: string) {
+  const normalizedTitle = normalizeTitle(title);
+
+  if (executiveLeadershipTitleTerms.some((term) => hasTitleTerm(normalizedTitle, term))) {
+    return true;
+  }
+
+  if (
+    hasTitleTerm(normalizedTitle, "manager")
+    && !nonLeadershipManagerTitleTerms.some((term) => hasTitleTerm(normalizedTitle, term))
+    && !nonLeadershipManagerTitlePhrases.some((phrase) => normalizedTitle.includes(phrase))
+  ) {
+    return true;
+  }
+
+  return hasTitleTerm(normalizedTitle, "lead");
+}
+
+function normalizeTitle(value: string) {
+  return value
+    .normalize("NFC")
+    .replace(/[^\p{L}\p{M}\p{N}]+/gu, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function hasTitleTerm(value: string, term: string) {
+  return (` ${value} `).includes(` ${term} `);
+}
+
 export const roleFamilyOptions = [
   "Endpoint Engineering",
   "macOS Platform",

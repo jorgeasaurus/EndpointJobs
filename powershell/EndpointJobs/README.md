@@ -16,7 +16,7 @@ Get-EndpointJob -Limit 10
 
 # Filter jobs
 Get-EndpointJob -Tool Jamf -Platform macOS -MinimumSalary 150000
-Get-EndpointJob -Workplace Remote -SalaryShown -Freshness 7 -All
+Get-EndpointJob -Workplace Remote -Leadership -SalaryShown -Freshness 7 -All
 
 # Get one job by ID or from the pipeline
 Get-EndpointJob -Id 'greenhouse-intercom-7918638'

@@ -59,6 +59,14 @@ export function getActiveFilterItems(filters: FilterState): ActiveFilterItem[] {
     });
   }
 
+  if (filters.leadershipOnly) {
+    items.push({
+      clearAction: { type: "toggleLeadershipOnly" },
+      id: "leadership",
+      label: "Leadership"
+    });
+  }
+
   if (filters.minimumSalary !== "Any") {
     items.push({
       clearAction: { type: "setMinimumSalary", value: "Any" },

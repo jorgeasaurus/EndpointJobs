@@ -36,6 +36,9 @@
             "$ref": "#/components/parameters/SalaryShown"
           },
           {
+            "$ref": "#/components/parameters/Leadership"
+          },
+          {
             "$ref": "#/components/parameters/MinimumSalary"
           },
           {
@@ -233,6 +236,15 @@
         "name": "salary",
         "in": "query",
         "description": "Require disclosed salary.",
+        "schema": {
+          "type": "string",
+          "const": "1"
+        }
+      },
+      "Leadership": {
+        "name": "leadership",
+        "in": "query",
+        "description": "Require leadership roles.",
         "schema": {
           "type": "string",
           "const": "1"
@@ -483,6 +495,7 @@
           "location",
           "workplace",
           "salaryShown",
+          "leadership",
           "minSalary",
           "seniority",
           "family",
@@ -499,13 +512,35 @@
           "platforms": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "macOS",
+                "Windows",
+                "iOS",
+                "Android",
+                "Linux"
+              ]
             }
           },
           "tools": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "Jamf",
+                "Intune",
+                "SCCM",
+                "Fleet MDM",
+                "Kandji",
+                "NinjaOne",
+                "Workspace ONE",
+                "Tanium",
+                "Okta",
+                "Entra ID",
+                "Autopilot",
+                "PowerShell",
+                "Defender"
+              ]
             }
           },
           "location": {
@@ -527,6 +562,9 @@
             ]
           },
           "salaryShown": {
+            "type": "boolean"
+          },
+          "leadership": {
             "type": "boolean"
           },
           "minSalary": {

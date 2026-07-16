@@ -28,6 +28,7 @@ export type FilterAction =
   | { type: "togglePlatform"; value: Platform }
   | { type: "toggleTool"; value: EndpointTool }
   | { type: "toggleSalaryOnly" }
+  | { type: "toggleLeadershipOnly" }
   | { type: "setMinimumSalary"; value: MinimumSalaryFilter }
   | { type: "setWorkplace"; value: WorkplaceFilter }
   | { type: "setSeniority"; value: SeniorityFilter }
@@ -46,6 +47,7 @@ export const initialFilterState: FilterState = {
   selectedTools: [],
   workplace: "Any",
   salaryOnly: false,
+  leadershipOnly: false,
   minimumSalary: "Any",
   seniority: "All",
   roleFamily: "All",
@@ -120,6 +122,8 @@ export function filterReducer(
       };
     case "toggleSalaryOnly":
       return { ...state, salaryOnly: !state.salaryOnly };
+    case "toggleLeadershipOnly":
+      return { ...state, leadershipOnly: !state.leadershipOnly };
     case "setMinimumSalary":
       return { ...state, minimumSalary: action.value };
     case "setWorkplace":

@@ -238,6 +238,19 @@ SerpAPI now returns previously normalized jobs when a later request fails, stops
 
 Added linked main-branch badges for job refresh, PowerShell CI/CD, React Doctor, PowerShell Gallery version, and total downloads. All five images and four destination types return HTTP 200; Gallery badges resolve to v0.1.0 and the current download count.
 
+# Leadership filter
+
+- [x] RED/GREEN: classify organizational and technical leadership titles without manager-product false positives.
+- [x] RED/GREEN: filter leadership jobs and reset exact seniority in the UI reducer.
+- [x] Add Leadership UI, active chip, and shareable URL hydration.
+- [x] Add `leadership=1` to the public API and generated OpenAPI contract.
+- [x] Add data, API, and browser regression coverage.
+- [x] Run typecheck, lint, audits, build, browser verification, and React Doctor.
+
+## Review
+
+Added a title-aware Leadership toggle covering genuine management, executive, and technical-lead roles while excluding product/tool manager titles. Seven focused leadership tests, 22 provider/unit tests, typecheck, lint, production build, 34 browser audits, visual desktop/mobile checks, and React Doctor changed-scope review pass; the data audit retains main's unrelated FEAT-036 empty-summary failure.
+
 # SerpAPI description line breaks
 
 - [x] Reproduce line-break loss through SerpAPI normalization.
@@ -421,3 +434,25 @@ Removed Corporate Engineering and Enterprise Engineering as standalone endpoint 
 ## Review
 
 Reproduced production links dropping their query and returning to the unfiltered home page. Removed the feature from the footer, site metadata, JSON-LD, desktop/mobile styles, and stale audits while retaining project links; typecheck, lint, production build, 60 data audits, and 33 browser audits pass.
+
+# GEICO Workday source
+
+- [x] RED/GREEN: prove the default Workday provider discovers and normalizes GEICO endpoint roles.
+- [x] Add GEICO with narrow endpoint-specific queries.
+- [x] Run a live targeted refresh and verify accepted listings.
+- [x] Run provider tests, data audits, typecheck, lint, and build.
+
+## Review
+
+Added GEICO's public Workday tenant with narrow Endpoint and Intune searches plus the language header required by its Node fetch path. A live isolated refresh accepted only R0064292; 24 provider/unit tests, typecheck, lint, and production build pass, while the data audit retains main's unrelated FEAT-036 missing-field failure.
+
+# Thermo-nuclear review: Leadership and GEICO
+
+- [x] Audit the complete branch for structural regressions and file-size growth.
+- [x] Remediate every high-confidence maintainability finding.
+- [x] Run full verification after remediation.
+- [x] Repeat the strict review until clean.
+
+## Review
+
+Separated Leadership from seniority, made UI/API filters composable, generated the complete applied-filter OpenAPI schema from typed metadata, and replaced hidden title-policy coupling with explicit rules. Extracted the Workday registry into a focused module, reducing the provider from 1,146 to 967 lines and deleting roughly 142 mocked requests. Two strict review passes approve; 24 unit/provider tests, 11 PowerShell tests, 34 browser audits, typecheck, lint, build, React Doctor, and diff checks pass, with only main's unrelated FEAT-036 feed failure remaining.

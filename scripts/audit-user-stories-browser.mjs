@@ -516,6 +516,32 @@ await run("QA-008", "UI filters hydrate from URL and chip removal recovers", () 
   await expect(page.locator(".job-card").first()).toBeVisible();
 }));
 
+await run("FEAT-076", "Leadership filter composes with seniority and persists", () => withPage(browser, desktopViewport, async (page) => {
+  const desktopFilterStack = page.locator(".hero-filter-stack--desktop");
+  const senioritySelect = desktopFilterStack.locator(".field", { hasText: "Seniority" }).locator("select");
+  const leadershipToggle = page.getByRole("button", { name: "Leadership", exact: true });
+
+  await senioritySelect.selectOption("Manager");
+  await expectActiveFilterChips(page, ["Manager"]);
+  await leadershipToggle.click();
+
+  await expect(leadershipToggle).toHaveAttribute("aria-pressed", "true");
+  await expect(senioritySelect).toHaveValue("Manager");
+  await expectActiveFilterChips(page, ["Leadership", "Manager"]);
+  expectUrlParams(page, { leadership: "1", seniority: "Manager" });
+  await expect(page.locator(".job-card").first()).toBeVisible();
+
+  await page.reload({ waitUntil: "networkidle" });
+  await expect(leadershipToggle).toHaveAttribute("aria-pressed", "true");
+  await expect(senioritySelect).toHaveValue("Manager");
+  await expectActiveFilterChips(page, ["Leadership", "Manager"]);
+
+  await page.getByRole("button", { name: "Remove filter: Leadership" }).click();
+  await expect(leadershipToggle).toHaveAttribute("aria-pressed", "false");
+  await expectActiveFilterChips(page, ["Manager"]);
+  expectUrlParams(page, { leadership: null, seniority: "Manager" });
+}));
+
 await run("QA-015", "PowerShell tool filter renders and hydrates on desktop and mobile", async () => {
   const desktopPage = await newPage(browser, desktopViewport);
   const desktopFilterStack = desktopPage.locator(".hero-filter-stack--desktop");
