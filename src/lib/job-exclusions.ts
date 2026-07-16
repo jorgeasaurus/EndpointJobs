@@ -1,4 +1,5 @@
 import type { Job } from "../types/job";
+import { serpApiJobSourceName } from "./job-sources";
 
 const defaultExcludedJobSourceUrls = [
   "https://www.adzuna.com/details/5763079616"
@@ -10,6 +11,9 @@ const sourceFreshnessRules: Partial<
   Adzuna: {
     maxFetchedAgeDays: 7,
     maxPostedAgeDays: 30
+  },
+  [serpApiJobSourceName]: {
+    maxFetchedAgeDays: 7
   }
 };
 

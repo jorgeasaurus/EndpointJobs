@@ -101,14 +101,16 @@ test("SerpAPI still fails when no query returns successfully", async () => {
   }
 });
 
-test("SerpAPI searches every configured country with its market localization", async () => {
+test("SerpAPI searches configured markets and city-specific locations", async () => {
   const originalFetch = globalThis.fetch;
   const originalEnv = { ...process.env };
   const requestUrls: URL[] = [];
 
   process.env.SERPAPI_API_KEY = "test-key";
   process.env.JOB_SERPAPI_COUNTRIES = "us,au";
-  process.env.JOB_SERPAPI_QUERIES = "endpoint engineer";
+  process.env.JOB_SERPAPI_US_QUERIES = "endpoint engineer";
+  process.env.JOB_SERPAPI_AU_QUERIES = "endpoint engineer";
+  process.env.JOB_SERPAPI_AU_LOCATIONS = "Sydney, Australia|Melbourne, Australia";
   process.env.JOB_SERPAPI_MAX_PAGES = "1";
   globalThis.fetch = async (input) => {
     const url = new URL(String(input));
@@ -142,13 +144,14 @@ test("SerpAPI searches every configured country with its market localization", a
     restoreProcessEnv(originalEnv);
   }
 
-  assert.equal(jobs.length, 2);
+  assert.equal(jobs.length, 3);
   assert.deepEqual(jobs.map((job) => ({
     currency: job?.salary?.currency,
     max: job?.salary?.max,
     min: job?.salary?.min
   })), [
     { currency: "USD", max: 140_000, min: 120_000 },
+    { currency: "AUD", max: 140_000, min: 120_000 },
     { currency: "AUD", max: 140_000, min: 120_000 }
   ]);
   assert.deepEqual(
@@ -160,7 +163,8 @@ test("SerpAPI searches every configured country with its market localization", a
     })),
     [
       { domain: "google.com", gl: "us", hl: "en", location: "United States" },
-      { domain: "google.com.au", gl: "au", hl: "en", location: "Australia" }
+      { domain: "google.com.au", gl: "au", hl: "en", location: "Sydney, Australia" },
+      { domain: "google.com.au", gl: "au", hl: "en", location: "Melbourne, Australia" }
     ]
   );
 });
@@ -214,6 +218,70 @@ test("SerpAPI allocates searches from market-specific query pools", async () => 
     "intune engineer/au",
     "desktop engineer/us",
     "jamf engineer/us"
+  ]);
+});
+
+test("SerpAPI rotates a bounded US query batch across runs", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalEnv = { ...process.env };
+  const searches: string[] = [];
+
+  process.env.SERPAPI_API_KEY = "test-key";
+  process.env.JOB_SERPAPI_COUNTRIES = "us,au";
+  process.env.JOB_SERPAPI_US_QUERIES = "query one,query two,query three,query four";
+  process.env.JOB_SERPAPI_US_QUERY_LIMIT = "2";
+  process.env.JOB_SERPAPI_AU_QUERIES = "endpoint engineer";
+  process.env.JOB_SERPAPI_AU_LOCATIONS = "Sydney, Australia|Melbourne, Australia";
+  process.env.JOB_SERPAPI_MAX_PAGES = "1";
+  process.env.JOB_SERPAPI_MAX_SEARCHES_PER_RUN = "4";
+  globalThis.fetch = async (input) => {
+    const url = new URL(String(input));
+    const country = url.searchParams.get("gl") ?? "unknown";
+    const query = url.searchParams.get("q") ?? "unknown";
+    const location = url.searchParams.get("location") ?? "unknown";
+    searches.push(`${query}/${country}/${location}`);
+
+    return Response.json({
+      jobs_results: [{
+        job_id: `${query}-${country}-${location}`,
+        title: "Endpoint Engineer",
+        company_name: "Example Company",
+        location,
+        description: "Manage Microsoft Intune and Windows endpoints.",
+        apply_options: [{
+          title: "Example Company",
+          link: `https://example.com/jobs/${encodeURIComponent(`${query}-${country}-${location}`)}`
+        }]
+      }]
+    });
+  };
+
+  try {
+    for (const rotationIndex of [0, 1, 2]) {
+      process.env.JOB_SERPAPI_ROTATION_INDEX = String(rotationIndex);
+      await serpApiProvider.fetchJobs({
+        url: serpApiProvider.defaultUrl,
+        fetchedAt: new Date("2026-07-16T12:00:00.000Z")
+      });
+    }
+  } finally {
+    globalThis.fetch = originalFetch;
+    restoreProcessEnv(originalEnv);
+  }
+
+  assert.deepEqual(searches, [
+    "query one/us/United States",
+    "endpoint engineer/au/Sydney, Australia",
+    "query two/us/United States",
+    "endpoint engineer/au/Melbourne, Australia",
+    "query three/us/United States",
+    "endpoint engineer/au/Sydney, Australia",
+    "query four/us/United States",
+    "endpoint engineer/au/Melbourne, Australia",
+    "query one/us/United States",
+    "endpoint engineer/au/Sydney, Australia",
+    "query two/us/United States",
+    "endpoint engineer/au/Melbourne, Australia"
   ]);
 });
 
@@ -290,7 +358,7 @@ test("SerpAPI applies its request cap fairly across configured countries", async
   ]);
 });
 
-test("SerpAPI continues with other countries after a market request fails", async () => {
+test("SerpAPI continues with later queries after a transient market request fails", async () => {
   const originalFetch = globalThis.fetch;
   const originalEnv = { ...process.env };
   const searchedCountries: string[] = [];
@@ -338,7 +406,7 @@ test("SerpAPI continues with other countries after a market request fails", asyn
     restoreProcessEnv(originalEnv);
   }
 
-  assert.deepEqual(searchedCountries, ["us", "au", "au"]);
+  assert.deepEqual(searchedCountries, ["us", "au", "us", "au"]);
   assert.equal(jobs.length, 2);
   assert.equal(jobs[0]?.location, "Sydney, Australia");
 });
