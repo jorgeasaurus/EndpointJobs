@@ -1,4 +1,5 @@
 import type { Job, Workplace } from "../../../src/types/job";
+import { serpApiJobSourceName } from "../../../src/lib/job-sources";
 
 import type { ProviderAdapter } from "../provider";
 import { defaultCompanyJobQueries, defaultEndpointSearchQueries } from "../search-config";
@@ -93,7 +94,7 @@ const pinnedSerpApiQueries = [
 ];
 export const serpApiProvider: ProviderAdapter<"serpapi"> = {
   id: "serpapi",
-  displayName: "SerpAPI Google Jobs",
+  displayName: serpApiJobSourceName,
   defaultUrl: "https://serpapi.com/search.json",
   fetchJobs: ({ url, fetchedAt }) => fetchSerpApiGoogleJobs(url, fetchedAt)
 };
@@ -206,7 +207,7 @@ async function fetchSerpApiGoogleJobs(url: string, fetchedAt: Date) {
           normalizeSerpApiGoogleJob(job, query, fetchedAt, market.currency)
         ));
         console.log(
-          `Fetched ${payload.jobs.length} raw jobs from SerpAPI Google Jobs market ${market.code} query ${query} page ${page}`
+          `Fetched ${payload.jobs.length} raw jobs from ${serpApiJobSourceName} market ${market.code} query ${query} page ${page}`
         );
 
         state.nextPageToken = payload.nextPageToken;
@@ -475,7 +476,7 @@ export function normalizeSerpApiGoogleJob(
     workplace: inferSerpApiGoogleJobsWorkplace(raw),
     postedAt: getSerpApiGoogleJobsPostedAt(raw, fetchedAt),
     fetchedAt,
-    source: "SerpAPI Google Jobs",
+    source: serpApiJobSourceName,
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,
     attributionLabel: "Google Jobs via SerpAPI",
