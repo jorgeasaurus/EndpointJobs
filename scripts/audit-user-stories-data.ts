@@ -949,8 +949,8 @@ await run("FEAT-050", "Stale filtering and result cap are enforced", () => {
     false
   );
   assertIncludes(sources.refresh, "JOB_MAX_RESULTS");
-  assertIncludes(sources.refresh, "defaultMaxJobs = 750");
-  assertIncludes(sources.workflow, 'JOB_MAX_RESULTS: "750"');
+  assertIncludes(sources.refresh, "defaultMaxJobs = 1000");
+  assertIncludes(sources.workflow, 'JOB_MAX_RESULTS: "1000"');
   assertIncludes(sources.refresh, "limitFeedJobs");
   assertIncludes(sources.refresh, "staleAfter");
 });
@@ -1268,6 +1268,10 @@ await run("FEAT-068", "Endpoint search defaults include role and company expansi
   ]);
   assertIncludes(sources.searchConfig, "defaultEndpointSearchQueries");
   assertIncludes(sources.rapidApiLinkedIn, "powerShellSysadminTitleFilters");
+  assertIncludes(sources.workflow, "JOB_SERPAPI_COUNTRIES: us,au");
+  assertIncludes(sources.workflow, 'JOB_SERPAPI_MAX_SEARCHES_PER_RUN: "28"');
+  assertIncludes(sources.workflow, 'JOB_SERPAPI_MONTHLY_RESERVE: "100"');
+  assertIncludes(sources.workflow, 'JOB_SERPAPI_QUOTA_PREFLIGHT: "true"');
 });
 
 await run("FEAT-069", "Map location resolver maps known places and skips ambiguous rows", () => {
@@ -1276,6 +1280,16 @@ await run("FEAT-069", "Map location resolver maps known places and skips ambiguo
   assertEqual(resolveJobMapLocation("Berlin, DE")?.label, "Berlin, Germany");
   assertEqual(resolveJobMapLocation("München, Deutschland")?.label, "Munich, Germany");
   assertEqual(resolveJobMapLocation("Germany")?.label, "Germany");
+  assertEqual(
+    resolveJobMapLocation("Sydney, New South Wales, Australia")?.label,
+    "Sydney, Australia"
+  );
+  assertEqual(
+    resolveJobMapLocation("Canberra, Australian Capital Territory, Australia")?.label,
+    "Canberra, Australia"
+  );
+  assertEqual(resolveJobMapLocation("Perth, WA, Australia")?.label, "Perth, Australia");
+  assertEqual(resolveJobMapLocation("Australia")?.label, "Australia");
   assertEqual(resolveJobMapLocation("Stuttgart, AR"), undefined);
   assertEqual(resolveJobMapLocation("Stuttgart, AR 72150"), undefined);
   assertEqual(

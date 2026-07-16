@@ -6,6 +6,7 @@ import {
   buildStableJobId,
   cleanText,
   cleanUrl,
+  extractSalaryFromText,
   getCsvConfig,
   getString,
   normalizeEmploymentTypeLabel,
@@ -45,6 +46,34 @@ type SerpApiGoogleJobsPage = {
   nextPageToken?: string;
 };
 
+type SerpApiMarket = {
+  code: string;
+  currency: string;
+  gl: string;
+  googleDomain: string;
+  hl: string;
+  location?: string;
+};
+
+const serpApiMarketPresets = {
+  au: {
+    code: "au",
+    currency: "AUD",
+    gl: "au",
+    googleDomain: "google.com.au",
+    hl: "en",
+    location: "Australia"
+  },
+  us: {
+    code: "us",
+    currency: "USD",
+    gl: "us",
+    googleDomain: "google.com",
+    hl: "en",
+    location: "United States"
+  }
+} as const satisfies Record<string, SerpApiMarket>;
+
 const defaultSerpApiQueries = Array.from(new Set([
   ...defaultEndpointSearchQueries,
   ...defaultCompanyJobQueries
@@ -64,45 +93,179 @@ async function fetchSerpApiGoogleJobs(url: string, fetchedAt: Date) {
   }
 
   const queries = getCsvConfig("JOB_SERPAPI_QUERIES", defaultSerpApiQueries);
-  const maxPages = Math.max(1, Number(process.env.JOB_SERPAPI_MAX_PAGES ?? 1));
+  const markets = getSerpApiMarkets();
+  const maxPages = getPositiveInteger(process.env.JOB_SERPAPI_MAX_PAGES, 1);
+  const configuredMaxSearches = getPositiveInteger(
+    process.env.JOB_SERPAPI_MAX_SEARCHES_PER_RUN,
+    28
+  );
+  const maxSearches = await getSerpApiSearchBudget(apiKey, configuredMaxSearches);
+  const disabledMarkets = new Set<string>();
   const jobs: Array<Job | null> = [];
+  let firstError: unknown;
+  let searchCount = 0;
+  let successfulSearches = 0;
 
   for (const query of queries) {
-    let nextPageToken: string | undefined;
+    const marketStates = markets
+      .filter((market) => !disabledMarkets.has(market.code))
+      .map((market) => ({ active: true, market, nextPageToken: undefined as string | undefined }));
 
     for (let page = 0; page < maxPages; page += 1) {
-      const queryUrl = buildSerpApiGoogleJobsUrl(url, query, apiKey, nextPageToken);
-      let payload: SerpApiGoogleJobsPage;
-
-      try {
-        payload = await fetchSerpApiGoogleJobsPage(queryUrl);
-      } catch (error) {
-        const usableJobs = jobs.filter((job): job is Job => Boolean(job));
-
-        if (usableJobs.length === 0) {
-          throw error;
+      for (const state of marketStates) {
+        if (!state.active) {
+          continue;
         }
 
-        console.warn(
-          `Returning ${usableJobs.length} partial SerpAPI jobs after query ${query} page ${page} failed: ${
-            error instanceof Error ? error.message : String(error)
-          }`
+        const { market } = state;
+        if (searchCount >= maxSearches) {
+          console.log(`Reached SerpAPI run cap after ${searchCount} searches`);
+          return jobs;
+        }
+
+        const queryUrl = buildSerpApiGoogleJobsUrl(
+          url,
+          query,
+          apiKey,
+          market,
+          state.nextPageToken
         );
-        return usableJobs;
-      }
+        let payload: SerpApiGoogleJobsPage;
+        searchCount += 1;
 
-      jobs.push(...payload.jobs.map((job) => normalizeSerpApiGoogleJob(job, query, fetchedAt)));
-      console.log(`Fetched ${payload.jobs.length} raw jobs from SerpAPI Google Jobs query ${query} page ${page}`);
+        try {
+          payload = await fetchSerpApiGoogleJobsPage(queryUrl);
+          successfulSearches += 1;
+        } catch (error) {
+          const usableJobs = jobs.filter((job): job is Job => Boolean(job));
 
-      nextPageToken = payload.nextPageToken;
+          if (isSerpApiQuotaError(error)) {
+            if (usableJobs.length > 0) {
+              console.warn(
+                `Returning ${usableJobs.length} partial SerpAPI jobs after quota exhaustion in market ${market.code} query ${query} page ${page}: ${formatError(error)}`
+              );
+              return usableJobs;
+            }
 
-      if (!nextPageToken || payload.jobs.length === 0) {
-        break;
+            throw error;
+          }
+
+          firstError ??= error;
+          disabledMarkets.add(market.code);
+          state.active = false;
+          console.warn(
+            `Disabling SerpAPI market ${market.code} after query ${query} page ${page} failed: ${formatError(error)}`
+          );
+          continue;
+        }
+
+        jobs.push(...payload.jobs.map((job) =>
+          normalizeSerpApiGoogleJob(job, query, fetchedAt, market.currency)
+        ));
+        console.log(
+          `Fetched ${payload.jobs.length} raw jobs from SerpAPI Google Jobs market ${market.code} query ${query} page ${page}`
+        );
+
+        state.nextPageToken = payload.nextPageToken;
+
+        if (!state.nextPageToken || payload.jobs.length === 0) {
+          state.active = false;
+        }
       }
     }
   }
 
+  if (successfulSearches === 0 && firstError) {
+    throw firstError;
+  }
+
   return jobs;
+}
+
+async function getSerpApiSearchBudget(apiKey: string, configuredMaxSearches: number) {
+  if (process.env.JOB_SERPAPI_QUOTA_PREFLIGHT !== "true") {
+    return configuredMaxSearches;
+  }
+
+  const reserve = getNonNegativeInteger(process.env.JOB_SERPAPI_MONTHLY_RESERVE, 100);
+  const url = new URL("https://serpapi.com/account.json");
+  url.searchParams.set("api_key", apiKey);
+  const response = await fetch(url, {
+    headers: {
+      accept: "application/json",
+      "user-agent": "EndpointJobs/1.0 (+https://github.com/)"
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`SerpAPI account preflight failed: ${response.status} ${response.statusText}`);
+  }
+
+  const payload: unknown = await response.json();
+
+  if (!payload || typeof payload !== "object") {
+    throw new Error("SerpAPI account preflight response was not an object");
+  }
+
+  const account = payload as {
+    plan_searches_left?: unknown;
+    total_searches_left?: unknown;
+  };
+  const remaining = getNonNegativeNumber(
+    account.plan_searches_left ?? account.total_searches_left
+  );
+
+  if (remaining === undefined) {
+    throw new Error("SerpAPI account preflight response did not include remaining searches");
+  }
+
+  const budget = Math.min(configuredMaxSearches, Math.max(0, Math.floor(remaining) - reserve));
+  console.log(
+    `SerpAPI quota preflight allows ${budget} searches (${Math.floor(remaining)} remaining, ${reserve} reserved)`
+  );
+  return budget;
+}
+
+function getPositiveInteger(value: string | undefined, fallback: number) {
+  if (!value || !/^\d+$/.test(value.trim())) {
+    return fallback;
+  }
+
+  const parsed = Number.parseInt(value, 10);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function getNonNegativeInteger(value: string | undefined, fallback: number) {
+  if (value === undefined || !/^\d+$/.test(value.trim())) {
+    return fallback;
+  }
+
+  const parsed = Number.parseInt(value, 10);
+  return Number.isSafeInteger(parsed) && parsed >= 0 ? parsed : fallback;
+}
+
+function getNonNegativeNumber(value: unknown) {
+  if (typeof value !== "number" || !Number.isFinite(value) || value < 0) {
+    return undefined;
+  }
+
+  return value;
+}
+
+function isSerpApiQuotaError(error: unknown) {
+  return (error instanceof SerpApiRequestError && error.status === 429)
+    || /run out of searches|quota exhausted/i.test(formatError(error));
+}
+
+function formatError(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
+
+class SerpApiRequestError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+    this.name = "SerpApiRequestError";
+  }
 }
 
 async function fetchSerpApiGoogleJobsPage(url: string): Promise<SerpApiGoogleJobsPage> {
@@ -115,10 +278,11 @@ async function fetchSerpApiGoogleJobsPage(url: string): Promise<SerpApiGoogleJob
 
   if (!response.ok) {
     const detail = summarize(cleanText(await response.text()));
-    throw new Error(
+    throw new SerpApiRequestError(
       `SerpAPI request failed: ${response.status} ${response.statusText}${
         detail ? ` - ${detail}` : ""
-      }`
+      }`,
+      response.status
     );
   }
 
@@ -167,7 +331,12 @@ function isSerpApiGoogleJob(value: unknown): value is SerpApiGoogleJob {
   return Boolean(candidate.job_id && candidate.title && candidate.company_name);
 }
 
-export function normalizeSerpApiGoogleJob(raw: SerpApiGoogleJob, query: string, fetchedAt: Date) {
+export function normalizeSerpApiGoogleJob(
+  raw: SerpApiGoogleJob,
+  query: string,
+  fetchedAt: Date,
+  marketCurrency = "USD"
+) {
   const title = cleanText(raw.title);
   const company = cleanText(raw.company_name);
   const sourceJobUrl = getSerpApiGoogleJobsApplyUrl(raw) ?? cleanUrl(raw.share_link);
@@ -198,7 +367,7 @@ export function normalizeSerpApiGoogleJob(raw: SerpApiGoogleJob, query: string, 
     description: restoreSerpApiDescriptionStructure(raw),
     sourceTags,
     haystackParts: [raw.via],
-    salary: getSerpApiGoogleJobsSalary(raw),
+    salary: getSerpApiGoogleJobsSalary(raw, marketCurrency),
     employmentType: normalizeSerpApiGoogleJobsEmploymentType(raw)
   });
 }
@@ -266,6 +435,7 @@ function buildSerpApiGoogleJobsUrl(
   baseUrl: string,
   query: string,
   apiKey: string,
+  market: SerpApiMarket,
   nextPageToken?: string
 ) {
   const url = new URL(baseUrl);
@@ -273,13 +443,13 @@ function buildSerpApiGoogleJobsUrl(
   url.searchParams.set("engine", "google_jobs");
   url.searchParams.set("api_key", apiKey);
   url.searchParams.set("q", query);
-  url.searchParams.set("google_domain", process.env.JOB_SERPAPI_GOOGLE_DOMAIN ?? "google.com");
-  url.searchParams.set("gl", process.env.JOB_SERPAPI_GL ?? "us");
-  url.searchParams.set("hl", process.env.JOB_SERPAPI_HL ?? "en");
+  url.searchParams.set("google_domain", market.googleDomain);
+  url.searchParams.set("gl", market.gl);
+  url.searchParams.set("hl", market.hl);
   url.searchParams.set("output", "json");
 
-  if (process.env.JOB_SERPAPI_LOCATION) {
-    url.searchParams.set("location", process.env.JOB_SERPAPI_LOCATION);
+  if (market.location) {
+    url.searchParams.set("location", market.location);
   }
 
   if (process.env.JOB_SERPAPI_LRAD) {
@@ -297,6 +467,32 @@ function buildSerpApiGoogleJobsUrl(
   return url.toString();
 }
 
+function getSerpApiMarkets(): SerpApiMarket[] {
+  const configuredCountries = getCsvConfig("JOB_SERPAPI_COUNTRIES", []);
+
+  if (configuredCountries.length === 0) {
+    return [{
+      code: process.env.JOB_SERPAPI_GL ?? "us",
+      currency: "USD",
+      gl: process.env.JOB_SERPAPI_GL ?? "us",
+      googleDomain: process.env.JOB_SERPAPI_GOOGLE_DOMAIN ?? "google.com",
+      hl: process.env.JOB_SERPAPI_HL ?? "en",
+      location: process.env.JOB_SERPAPI_LOCATION
+    }];
+  }
+
+  return Array.from(new Set(configuredCountries.map((country) => country.toLowerCase())))
+    .map((country) => {
+      const market = serpApiMarketPresets[country as keyof typeof serpApiMarketPresets];
+
+      if (!market) {
+        throw new Error(`Unsupported JOB_SERPAPI_COUNTRIES entry: ${country}`);
+      }
+
+      return market;
+    });
+}
+
 function getSerpApiGoogleJobsApplyUrl(raw: SerpApiGoogleJob) {
   return (raw.apply_options ?? [])
     .map((option) => cleanUrl(option.link))
@@ -312,7 +508,7 @@ function getSerpApiGoogleJobsPostedAt(raw: SerpApiGoogleJob, fetchedAt: Date) {
   return parseRelativeAgeDate(detected || extension, fetchedAt) ?? fetchedAt.toISOString();
 }
 
-function getSerpApiGoogleJobsSalary(raw: SerpApiGoogleJob) {
+function getSerpApiGoogleJobsSalary(raw: SerpApiGoogleJob, marketCurrency: string) {
   const label = cleanText(raw.detected_extensions?.salary)
     || (raw.extensions ?? []).map(cleanText).find((value) => /[$€£]/.test(value));
 
@@ -320,9 +516,28 @@ function getSerpApiGoogleJobsSalary(raw: SerpApiGoogleJob) {
     return undefined;
   }
 
-  const currency = label.includes("€") ? "EUR" : label.includes("£") ? "GBP" : "USD";
+  const numericSalary = extractSalaryFromText(
+    label
+      .replace(/\b(?:AUD|CHF|EUR|GBP|USD)\b/gi, "")
+      .replace(/(?:A|US)\$/gi, "$")
+      .replace(/[€£]/g, "$")
+  );
 
-  return { currency, label };
+  return {
+    ...(numericSalary?.min ? { min: numericSalary.min } : {}),
+    ...(numericSalary?.max ? { max: numericSalary.max } : {}),
+    currency: getSerpApiSalaryCurrency(label, marketCurrency),
+    label
+  };
+}
+
+function getSerpApiSalaryCurrency(label: string, marketCurrency: string) {
+  if (/A\$|\bAUD\b/i.test(label)) return "AUD";
+  if (/\bCHF\b/i.test(label)) return "CHF";
+  if (/€|\bEUR\b/i.test(label)) return "EUR";
+  if (/£|\bGBP\b/i.test(label)) return "GBP";
+  if (/US\$|\bUSD\b/i.test(label)) return "USD";
+  return marketCurrency;
 }
 
 function inferSerpApiGoogleJobsWorkplace(raw: SerpApiGoogleJob): Workplace | undefined {

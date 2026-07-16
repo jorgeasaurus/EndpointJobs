@@ -26781,7 +26781,12 @@
       ],
       "roleFamily": "Windows Platform",
       "seniority": "Mid",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "Canberra, Australia",
+        "latitude": -35.2809,
+        "longitude": 149.13
+      }
     },
     {
       "id": "workday-autodesk-digital-workplace-services-specialist-9289334e8d",

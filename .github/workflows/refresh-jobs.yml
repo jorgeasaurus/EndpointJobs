@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: refresh-jobs
+  cancel-in-progress: false
+
 jobs:
   refresh:
     runs-on: ubuntu-latest
@@ -38,10 +42,12 @@ jobs:
           JOB_THEIRSTACK_LIMIT: "25"
           JOB_THEIRSTACK_COUNTRY_CODES: US,CH,IT,ES,FR,DE
           SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
-          JOB_SERPAPI_LOCATION: United States
-          JOB_SERPAPI_GL: us
-          JOB_SERPAPI_HL: en
+          JOB_SERPAPI_COUNTRIES: us,au
+          JOB_SERPAPI_QUERIES: endpoint engineer,endpoint administrator,desktop engineer,desktop systems engineer,systems engineer macos,windows endpoint engineer,client platform engineer,client infrastructure engineer,end user computing engineer,digital workplace engineer,workplace engineer,intune engineer,jamf engineer,sccm engineer
           JOB_SERPAPI_MAX_PAGES: "1"
+          JOB_SERPAPI_MAX_SEARCHES_PER_RUN: "28"
+          JOB_SERPAPI_MONTHLY_RESERVE: "100"
+          JOB_SERPAPI_QUOTA_PREFLIGHT: "true"
           RAPIDAPI_DAILY_JOBS_KEY: ${{ secrets.RAPIDAPI_DAILY_JOBS_KEY }}
           JOB_RAPIDAPI_COUNTRY_CODES: us,ch,it,es,fr,de
           JOB_RAPIDAPI_HAS_SALARY: "true"
@@ -57,7 +63,7 @@ jobs:
           ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
           JOB_FEED_SOURCE_URL: https://github.com/jorgeasaurus/EndpointJobs
           JOB_STALE_DAYS: "45"
-          JOB_MAX_RESULTS: "750"
+          JOB_MAX_RESULTS: "1000"
           JOB_EXCLUDED_SOURCE_URLS: ${{ vars.JOB_EXCLUDED_SOURCE_URLS }}
 
       - name: Verify build

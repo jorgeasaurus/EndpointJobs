@@ -33,7 +33,7 @@ import type { Job, JobsFeed } from "../src/types/job";
 
 const outputPath = resolve(process.env.JOB_OUTPUT_PATH ?? "src/data/jobs.json");
 
-const defaultMaxJobs = 750;
+const defaultMaxJobs = 1000;
 const maxJobs = getPositiveIntegerConfig(process.env.JOB_MAX_RESULTS, defaultMaxJobs);
 
 async function main() {

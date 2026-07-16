@@ -456,3 +456,53 @@ Added GEICO's public Workday tenant with narrow Endpoint and Intune searches plu
 ## Review
 
 Separated Leadership from seniority, made UI/API filters composable, generated the complete applied-filter OpenAPI schema from typed metadata, and replaced hidden title-policy coupling with explicit rules. Extracted the Workday registry into a focused module, reducing the provider from 1,146 to 967 lines and deleting roughly 142 mocked requests. Two strict review passes approve; 24 unit/provider tests, 11 PowerShell tests, 34 browser audits, typecheck, lint, build, React Doctor, and diff checks pass, with only main's unrelated FEAT-036 feed failure remaining.
+
+# Explore Australia job coverage
+
+- [x] Inventory country-aware providers, defaults, and Australia support.
+- [x] Measure current Australian feed and map coverage.
+- [x] Probe high-value sources for endpoint-relevant Australian roles.
+- [x] Identify required code, configuration, tests, and operational risks.
+- [x] Record a ranked implementation recommendation.
+
+## Review
+
+The 687-job feed has one explicitly Australian role and one Canberra role mis-mapped to the US. Start with Australian map aliases and location/currency fixes, then add narrow Avanade and Houlihan Lokey Workday searches; a live probe accepted three current Sydney/Melbourne roles. Add `AU` to paid aggregators only after checking Adzuna quota headroom and cross-country result caps; leave single-locale SerpAPI unchanged initially.
+
+# Explore multi-country SerpAPI searches
+
+- [x] Measure current queries and searches per scheduled run.
+- [x] Verify SerpAPI localization, pagination, cache, and billing behavior.
+- [x] Model country schedules within 1,000 monthly searches.
+- [x] Compare multi-country provider implementation options.
+- [x] Record a recommended search budget and rollout design.
+
+## Review
+
+The current US-only daily configuration attempts 66 searches per run, or 1,848-2,046 per month, before adding countries. Add typed country profiles, a SerpAPI-specific compact query matrix, one-page searches, a 28-request run cap, and free Account API quota preflight. A daily US/Australia pilot can run 14 queries per country for at most 868 searches in a 31-day cycle; seven countries fit with four queries each for the same cost.
+
+# SerpAPI US/Australia pilot
+
+- [x] Create an isolated feature branch.
+- [x] RED/GREEN: search configured markets fairly within a hard request cap.
+- [x] RED/GREEN: preserve partial results across market failures and stop globally on quota exhaustion.
+- [x] RED/GREEN: preflight remaining quota without consuming search credits.
+- [x] RED/GREEN: normalize Australian salaries as AUD.
+- [x] Configure the daily workflow for 14 queries across US and Australia.
+- [x] Add concise configuration documentation and data-contract coverage.
+- [x] Run provider tests, typecheck, lint, audits, and production build.
+- [x] Review the final design for budget safety and minimal scope.
+
+## Review
+
+Added fair US/Australia SerpAPI scheduling, a 28-search run cap, Account API reserve protection, serialized refreshes, AUD salary handling, and Australian map aliases. Thirty tests, 34 browser audits, typecheck, lint, build, YAML, and diff checks pass; the data audit's only failure is the pre-existing malformed Franklin Fitch feed record (FEAT-036). Independent review found no remaining medium or blocking issues.
+
+# Raise feed limit to 1,000
+
+- [x] Raise the refresh default and scheduled workflow cap.
+- [x] Update audit coverage and run verification.
+- [x] Push the PR update and complete a clean Copilot review.
+
+## Review
+
+Raised the default and scheduled feed cap from 750 to 1,000. Typecheck, lint, and production build pass; the data audit retains only the unrelated FEAT-036 feed failure.
