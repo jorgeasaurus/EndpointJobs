@@ -2,13 +2,11 @@ import {
   filterJobs,
   freshnessFilterDayValues,
   minimumSalaryFilterValues,
-  type FreshnessFilter,
-  type JobFilters,
-  type MinimumSalaryFilter,
-  type SortKey
+  type JobFilters
 } from "@/lib/job-filters";
 import {
   jobsApiQueryContract,
+  type JobsApiAppliedFilters,
   type JobsApiQueryDefinition
 } from "@/lib/jobs-api-contract";
 import {
@@ -18,15 +16,7 @@ import {
   seniorityOptions,
   toolOptions
 } from "@/lib/jobs";
-import type {
-  EndpointTool,
-  Job,
-  JobsFeed,
-  Platform,
-  RoleFamily,
-  Seniority,
-  Workplace
-} from "@/types/job";
+import type { Job, JobsFeed } from "@/types/job";
 
 export const jobsApiHeaders = {
   "Access-Control-Allow-Headers": "Content-Type",
@@ -41,20 +31,6 @@ export type JobsApiError = {
     details?: string[];
     message: string;
   };
-};
-
-export type JobsApiAppliedFilters = {
-  q: string | null;
-  platforms: Platform[];
-  tools: EndpointTool[];
-  location: string | null;
-  workplace: Exclude<Workplace, "Unknown"> | null;
-  salaryShown: boolean;
-  minSalary: Exclude<MinimumSalaryFilter, "Any"> | null;
-  seniority: Seniority | null;
-  family: RoleFamily | null;
-  freshness: Exclude<FreshnessFilter, "Any"> | null;
-  sort: SortKey;
 };
 
 export type JobsApiCollection = {
@@ -154,6 +130,7 @@ function parseQuery(searchParams: URLSearchParams):
       selectedTools: readMulti(searchParams, "tools", toolOptions),
       workplace: readEnum(searchParams, "workplace", ["Remote", "Hybrid", "On-site"] as const, "Any"),
       salaryOnly: readEnum(searchParams, "salary", ["1"] as const, "0") === "1",
+      leadershipOnly: readEnum(searchParams, "leadership", ["1"] as const, "0") === "1",
       minimumSalary: readEnum(searchParams, "minSalary", minimumSalaryFilterValues, "Any"),
       seniority: readEnum(searchParams, "seniority", seniorityOptions, "All"),
       roleFamily: readEnum(searchParams, "family", roleFamilyOptions, "All"),
@@ -231,6 +208,7 @@ function toAppliedFilters(filters: JobFilters): JobsApiAppliedFilters {
     location: filters.locationQuery || null,
     workplace: filters.workplace === "Any" ? null : filters.workplace,
     salaryShown: filters.salaryOnly,
+    leadership: filters.leadershipOnly,
     minSalary: filters.minimumSalary === "Any" ? null : filters.minimumSalary,
     seniority: filters.seniority === "All" ? null : filters.seniority,
     family: filters.roleFamily === "All" ? null : filters.roleFamily,

@@ -26,7 +26,7 @@ Users can:
 
 - Search across title, company, location, summary, description, tags, tools, and platforms.
 - Toggle `Remote` and `Salary shown` for high-signal narrowing.
-- Filter by role family, freshness, platform, seniority, and endpoint tools.
+- Filter by leadership, role family, freshness, platform, seniority, and endpoint tools.
 - Sort by newest, compensation, or company.
 - Expand long descriptions when providers expose useful details beyond the summary.
 - Open job applications directly from each listing.

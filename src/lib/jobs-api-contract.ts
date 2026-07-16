@@ -1,6 +1,9 @@
 import {
   freshnessFilterDayValues,
-  minimumSalaryFilterValues
+  minimumSalaryFilterValues,
+  type FreshnessFilter,
+  type MinimumSalaryFilter,
+  type SortKey
 } from "@/lib/job-filters";
 import {
   platformOptions,
@@ -8,6 +11,13 @@ import {
   seniorityOptions,
   toolOptions
 } from "@/lib/jobs";
+import type {
+  EndpointTool,
+  Platform,
+  RoleFamily,
+  Seniority,
+  Workplace
+} from "@/types/job";
 
 export type JobsApiQueryDefinition =
   | { kind: "text"; openApiName: string; minimumLength: number; maximumLength: number }
@@ -45,6 +55,12 @@ export const jobsApiQueryContract = {
     description: "Require disclosed salary.",
     values: ["1"]
   },
+  leadership: {
+    kind: "enum",
+    openApiName: "Leadership",
+    description: "Require leadership roles.",
+    values: ["1"]
+  },
   minSalary: {
     kind: "enum",
     openApiName: "MinimumSalary",
@@ -71,22 +87,57 @@ export const jobsApiQueryContract = {
 
 export type JobsApiQueryKey = keyof typeof jobsApiQueryContract;
 
-const appliedFilterEnumDefinitions = [
-  { name: "workplace", query: "workplace", nullable: true },
-  { name: "minSalary", query: "minSalary", nullable: true },
-  { name: "seniority", query: "seniority", nullable: true },
-  { name: "family", query: "family", nullable: true },
-  { name: "freshness", query: "freshness", nullable: true },
-  { name: "sort", query: "sort", nullable: false }
-] as const;
+export type JobsApiAppliedFilters = {
+  q: string | null;
+  platforms: Platform[];
+  tools: EndpointTool[];
+  location: string | null;
+  workplace: Exclude<Workplace, "Unknown"> | null;
+  salaryShown: boolean;
+  leadership: boolean;
+  minSalary: Exclude<MinimumSalaryFilter, "Any"> | null;
+  seniority: Seniority | null;
+  family: RoleFamily | null;
+  freshness: Exclude<FreshnessFilter, "Any"> | null;
+  sort: SortKey;
+};
 
-export function getJobsApiOpenApiAppliedFilterEnums() {
-  return Object.fromEntries(
-    appliedFilterEnumDefinitions.map(({ name, query, nullable }) => [
-      name,
-      [...jobsApiQueryContract[query].values, ...(nullable ? [null] : [])]
-    ])
-  );
+type AppliedFilterDefinition =
+  | { kind: "nullableText" }
+  | { kind: "multi"; query: "platforms" | "tools" }
+  | { kind: "boolean" }
+  | {
+      kind: "enum";
+      query: "workplace" | "minSalary" | "seniority" | "family" | "freshness" | "sort";
+      nullable: boolean;
+    };
+
+const appliedFilterDefinitions = {
+  q: { kind: "nullableText" },
+  platforms: { kind: "multi", query: "platforms" },
+  tools: { kind: "multi", query: "tools" },
+  location: { kind: "nullableText" },
+  workplace: { kind: "enum", query: "workplace", nullable: true },
+  salaryShown: { kind: "boolean" },
+  leadership: { kind: "boolean" },
+  minSalary: { kind: "enum", query: "minSalary", nullable: true },
+  seniority: { kind: "enum", query: "seniority", nullable: true },
+  family: { kind: "enum", query: "family", nullable: true },
+  freshness: { kind: "enum", query: "freshness", nullable: true },
+  sort: { kind: "enum", query: "sort", nullable: false }
+} as const satisfies Record<keyof JobsApiAppliedFilters, AppliedFilterDefinition>;
+
+export function getJobsApiOpenApiAppliedFiltersSchema() {
+  return {
+    type: "object",
+    required: Object.keys(appliedFilterDefinitions),
+    properties: Object.fromEntries(
+      Object.entries(appliedFilterDefinitions).map(([name, definition]) => [
+        name,
+        toAppliedFilterSchema(definition)
+      ])
+    )
+  };
 }
 
 export function getJobsApiOpenApiParameters() {
@@ -135,5 +186,27 @@ function toOpenApiSchema(definition: JobsApiQueryDefinition) {
       ? { const: definition.values[0] }
       : { enum: definition.values }),
     ...(definition.default === undefined ? {} : { default: definition.default })
+  };
+}
+
+function toAppliedFilterSchema(definition: AppliedFilterDefinition) {
+  if (definition.kind === "nullableText") {
+    return { type: ["string", "null"] };
+  }
+  if (definition.kind === "boolean") {
+    return { type: "boolean" };
+  }
+  if (definition.kind === "multi") {
+    return {
+      type: "array",
+      items: { type: "string", enum: jobsApiQueryContract[definition.query].values }
+    };
+  }
+  return {
+    type: definition.nullable ? ["string", "null"] : "string",
+    enum: [
+      ...jobsApiQueryContract[definition.query].values,
+      ...(definition.nullable ? [null] : [])
+    ]
   };
 }

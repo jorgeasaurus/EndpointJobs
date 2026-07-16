@@ -11,10 +11,12 @@ function Get-EndpointJob {
         Gets every page matching the supplied filters.
     .PARAMETER RawResponse
         Returns the API response envelope instead of individual job objects.
+    .PARAMETER Leadership
+        Requires management, executive, or technical-lead roles.
     .EXAMPLE
         Get-EndpointJob -Tool Jamf -Platform macOS -MinimumSalary 150000
     .EXAMPLE
-        Get-EndpointJob -Workplace Remote -SalaryShown -All
+        Get-EndpointJob -Workplace Remote -Leadership -SalaryShown -All
     .EXAMPLE
         Get-EndpointJob -Id 'greenhouse-intercom-7918638'
     #>
@@ -46,6 +48,9 @@ function Get-EndpointJob {
 
         [Parameter(ParameterSetName = 'List')]
         [switch]$SalaryShown,
+
+        [Parameter(ParameterSetName = 'List')]
+        [switch]$Leadership,
 
         [Parameter(ParameterSetName = 'List')]
         [ValidateSet(80000, 100000, 120000, 150000, 180000, 200000)]
@@ -121,6 +126,7 @@ function Get-EndpointJob {
             location   = $Location
             workplace  = $Workplace
             salary     = if ($SalaryShown) { '1' } else { $null }
+            leadership = if ($Leadership) { '1' } else { $null }
             minSalary  = if ($PSBoundParameters.ContainsKey('MinimumSalary')) { $MinimumSalary } else { $null }
             seniority  = $Seniority
             family     = $RoleFamily

@@ -1,4 +1,5 @@
 import { getSalarySortValue, getSearchText, isPostedWithinDays } from "@/lib/jobs";
+import { isLeadershipTitle } from "@/lib/job-taxonomy";
 import type { EndpointTool, Job, Platform, RoleFamily, Seniority, Workplace } from "@/types/job";
 
 export type SortKey = "newest" | "salary" | "company";
@@ -15,6 +16,7 @@ export type JobFilters = {
   selectedTools: EndpointTool[];
   workplace: "Any" | Exclude<Workplace, "Unknown">;
   salaryOnly: boolean;
+  leadershipOnly: boolean;
   minimumSalary: MinimumSalaryFilter;
   seniority: "All" | Seniority;
   roleFamily: "All" | RoleFamily;
@@ -24,6 +26,10 @@ export type JobFilters = {
 
 export function isFreshnessFilter(value: string): value is FreshnessFilter {
   return freshnessFilterValueSet.has(value);
+}
+
+export function isLeadershipJob(job: Pick<Job, "title">) {
+  return isLeadershipTitle(job.title);
 }
 
 export function filterJobs(jobs: Job[], filters: JobFilters, now = new Date()) {
@@ -38,6 +44,7 @@ export function filterJobs(jobs: Job[], filters: JobFilters, now = new Date()) {
     if (filters.selectedTools.length && !filters.selectedTools.some((value) => job.tools.includes(value))) return false;
     if (filters.workplace !== "Any" && job.workplace !== filters.workplace) return false;
     if (filters.salaryOnly && typeof job.salary?.min !== "number" && typeof job.salary?.max !== "number") return false;
+    if (filters.leadershipOnly && !isLeadershipJob(job)) return false;
     if (minimumSalary !== null && (job.salary?.currency !== "USD" || (job.salary.max ?? job.salary.min ?? 0) < minimumSalary)) return false;
     if (filters.seniority !== "All" && job.seniority !== filters.seniority) return false;
     if (filters.roleFamily !== "All" && job.roleFamily !== filters.roleFamily) return false;

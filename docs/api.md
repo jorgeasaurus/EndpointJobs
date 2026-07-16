@@ -22,6 +22,7 @@ GET /api/jobs?tools=Jamf&platforms=macOS&minSalary=150000&page=1&limit=20
     "location": null,
     "workplace": null,
     "salaryShown": false,
+    "leadership": false,
     "minSalary": "150000",
     "seniority": null,
     "family": null,
@@ -46,6 +47,7 @@ GET /api/jobs?tools=Jamf&platforms=macOS&minSalary=150000&page=1&limit=20
 | `location` | City, state, or country text, 1–200 characters |
 | `workplace` | `Remote`, `Hybrid`, or `On-site` |
 | `salary` | `1` to require disclosed compensation |
+| `leadership` | `1` to require leadership roles |
 | `minSalary` | USD floor: `80000`, `100000`, `120000`, `150000`, `180000`, `200000` |
 | `seniority` | `Associate`, `Mid`, `Senior`, `Staff`, `Lead`, or `Manager` |
 | `family` | Role family listed in the OpenAPI enum |

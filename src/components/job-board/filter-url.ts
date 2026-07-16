@@ -24,6 +24,7 @@ const currentFilterSearchParamKeys = [
   "location",
   "workplace",
   "salary",
+  "leadership",
   "minSalary",
   "seniority",
   "family",
@@ -52,6 +53,7 @@ export function filterStateFromSearchParams(
     selectedTools: parseMultiFilter(searchParams.get("tools"), toolOptions),
     workplace: toWorkplaceFilter(searchParams.get("workplace") ?? legacyWorkplace),
     salaryOnly: searchParams.get("salary") === "1",
+    leadershipOnly: searchParams.get("leadership") === "1",
     minimumSalary: toMinimumSalaryFilter(searchParams.get("minSalary") ?? "Any"),
     seniority: toSeniorityFilter(searchParams.get("seniority") ?? "All"),
     roleFamily: toRoleFamilyFilter(searchParams.get("family") ?? "All"),
@@ -133,6 +135,7 @@ function filterStateToSearchParams(filters: FilterState) {
   }
   if (filters.workplace !== "Any") searchParams.set("workplace", filters.workplace);
   if (filters.salaryOnly) searchParams.set("salary", "1");
+  if (filters.leadershipOnly) searchParams.set("leadership", "1");
   if (filters.minimumSalary !== "Any") {
     searchParams.set("minSalary", filters.minimumSalary);
   }

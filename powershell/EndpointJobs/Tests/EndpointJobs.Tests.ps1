@@ -34,11 +34,11 @@ Describe 'Get-EndpointJob' {
         }
 
         It 'encodes list filters using the API contract' {
-            $result = @(Get-EndpointJob -Query 'device & endpoint' -Platform macOS, Windows -Tool 'Jamf Pro', Intune -Workplace Remote -SalaryShown -MinimumSalary 150000 -RoleFamily 'Endpoint Engineering' -Freshness 7 -Limit 50 -BaseUri 'https://example.test')
+            $result = @(Get-EndpointJob -Query 'device & endpoint' -Platform macOS, Windows -Tool 'Jamf Pro', Intune -Workplace Remote -SalaryShown -Leadership -MinimumSalary 150000 -RoleFamily 'Endpoint Engineering' -Freshness 7 -Limit 50 -BaseUri 'https://example.test')
 
             $result.id | Should -Be 'job-1'
             Should -Invoke Invoke-RestMethod -Times 1 -ParameterFilter {
-                $Uri.AbsoluteUri -eq 'https://example.test/api/jobs?q=device%20%26%20endpoint&platforms=macOS%2CWindows&tools=Jamf%20Pro%2CIntune&workplace=Remote&salary=1&minSalary=150000&family=Endpoint%20Engineering&freshness=7&sort=newest&page=1&limit=50'
+                $Uri.AbsoluteUri -eq 'https://example.test/api/jobs?q=device%20%26%20endpoint&platforms=macOS%2CWindows&tools=Jamf%20Pro%2CIntune&workplace=Remote&salary=1&leadership=1&minSalary=150000&family=Endpoint%20Engineering&freshness=7&sort=newest&page=1&limit=50'
             }
         }
 

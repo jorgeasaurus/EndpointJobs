@@ -9,6 +9,7 @@ import {
   Search,
   ShieldCheck,
   SlidersHorizontal,
+  UsersRound,
   X
 } from "lucide-react";
 
@@ -94,6 +95,7 @@ export function CommandPanel({
 
           <SearchStrip
             dispatch={dispatch}
+            leadershipOnly={filters.leadershipOnly}
             query={filters.query}
             salaryOnly={filters.salaryOnly}
             searchInputRef={searchInputRef}
@@ -229,11 +231,13 @@ function getPercentage(value: number, total: number) {
 
 function SearchStrip({
   dispatch,
+  leadershipOnly,
   query,
   salaryOnly,
   searchInputRef
 }: {
   dispatch: FilterDispatch;
+  leadershipOnly: boolean;
   query: string;
   salaryOnly: boolean;
   searchInputRef: RefObject<HTMLInputElement | null>;
@@ -255,15 +259,26 @@ function SearchStrip({
         />
       </label>
 
-      <ToggleButton
-        activeClassName="mode-button is-active"
-        inactiveClassName="mode-button"
-        isActive={salaryOnly}
-        onClick={() => dispatch({ type: "toggleSalaryOnly" })}
-      >
-        <DollarSign size={18} aria-hidden="true" />
-        Salary shown
-      </ToggleButton>
+      <div className="search-mode-buttons">
+        <ToggleButton
+          activeClassName="mode-button is-active"
+          inactiveClassName="mode-button"
+          isActive={leadershipOnly}
+          onClick={() => dispatch({ type: "toggleLeadershipOnly" })}
+        >
+          <UsersRound size={18} aria-hidden="true" />
+          Leadership
+        </ToggleButton>
+        <ToggleButton
+          activeClassName="mode-button is-active"
+          inactiveClassName="mode-button"
+          isActive={salaryOnly}
+          onClick={() => dispatch({ type: "toggleSalaryOnly" })}
+        >
+          <DollarSign size={18} aria-hidden="true" />
+          Salary shown
+        </ToggleButton>
+      </div>
     </div>
   );
 }
