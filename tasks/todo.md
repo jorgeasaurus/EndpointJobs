@@ -532,3 +532,17 @@ Raised the default and scheduled feed cap from 750 to 1,000. Typecheck, lint, an
 ## Review
 
 Added per-market SerpAPI query pools with round-robin scheduling and shared-query fallback. The workflow now spends 26 searches on US coverage and 2 on Sydney/Melbourne while retaining the 28-search cap; 31 tests, 60 data audits, typecheck, lint, and build pass.
+
+# Endpoint Jobs Remotion ad
+
+- [x] Define the 20-second storyboard and visual system.
+- [x] Add an isolated Remotion composition and render configuration.
+- [x] Build the animated product workflow and closing CTA.
+- [x] Verify type safety, representative frames, and the final MP4 render.
+- [x] Record final output details and review notes.
+
+## Review
+
+Added a 20-second, 1080p Remotion ad with stack-focused search, live-style metrics, role cards, map discovery, and an endpointjobs.dev CTA. Typecheck, lint, production build, representative frame review, full render, and FFprobe validation pass; the H.264 output is 3.1 MB at 30 fps.
+Replaced the fluctuating exact total with the evergreen "Hundreds of open roles" label throughout the ad.
+Updated the animated search example to use "endpoint engineer" verbatim.
