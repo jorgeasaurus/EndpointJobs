@@ -546,3 +546,16 @@ Added per-market SerpAPI query pools with round-robin scheduling and shared-quer
 Added a 20-second, 1080p Remotion ad with stack-focused search, live-style metrics, role cards, map discovery, and an endpointjobs.dev CTA. Typecheck, lint, production build, representative frame review, full render, and FFprobe validation pass; the H.264 output is 3.1 MB at 30 fps.
 Replaced the fluctuating exact total with the evergreen "Hundreds of open roles" label throughout the ad.
 Updated the animated search example to use "endpoint engineer" verbatim.
+
+# Job detail SEO
+
+- [x] Add crawlable, canonical detail pages for active jobs.
+- [x] Emit Google-compatible `JobPosting` and breadcrumb JSON-LD.
+- [x] Link homepage job titles to their detail pages.
+- [x] Include active job URLs in the sitemap.
+- [x] Add focused SEO regression coverage.
+- [x] Run typecheck, lint, audits, and a production build.
+
+## Review
+
+Added 781 canonical job pages, a paginated internal directory, unique metadata, conservative `JobPosting` markup, direct-ATS duplicate redirects, and active sitemap coverage. Typecheck, lint, 60 data checks, 36 browser checks, production build, desktop/mobile visual review, live metadata/redirect checks, and React Doctor 100/100 changed-scope review pass.

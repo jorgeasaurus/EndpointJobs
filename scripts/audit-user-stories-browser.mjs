@@ -257,6 +257,49 @@ await run("FEAT-031", "Topbar and footer project links are visible", async () =>
   await page.close();
 });
 
+await run("QA-017", "Job titles open canonical detail pages without mobile overflow", async () => {
+  const page = await newPage(browser, mobileViewport);
+  const jobLink = page.locator("a.job-title-link").first();
+  const title = (await jobLink.textContent())?.trim();
+  const href = await jobLink.getAttribute("href");
+  expect(title).toBeTruthy();
+  expect(href).toMatch(/^\/jobs\//);
+
+  await jobLink.click();
+  await page.waitForURL(/\/jobs\//, { waitUntil: "networkidle" });
+  await expect(page.locator("h1")).toHaveText(title);
+  await expect(page.getByRole("link", { name: "Apply for this role" })).toBeVisible();
+  const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
+  expect(canonical).toBe(`https://endpointjobs.dev${new URL(page.url()).pathname}`);
+  const viewport = await page.evaluate(() => ({
+    clientWidth: document.documentElement.clientWidth,
+    scrollWidth: document.documentElement.scrollWidth
+  }));
+  expect(viewport.scrollWidth).toBeLessThanOrEqual(viewport.clientWidth);
+  await page.close();
+});
+
+await run("QA-018", "Job directory pagination exposes crawlable detail links", async () => {
+  const page = await newPage(browser, desktopViewport);
+  await page.locator("footer").scrollIntoViewIfNeeded();
+  const directoryLink = page.getByRole("link", { name: "All jobs" });
+  await expect(directoryLink).toHaveAttribute("href", "/jobs");
+  await directoryLink.click();
+  await page.waitForURL(/\/jobs$/, { waitUntil: "networkidle" });
+  await expect(page.locator(".job-directory-list a")).toHaveCount(50);
+  await expect(page.locator(".job-directory-list a").first()).toHaveAttribute("href", /^\/jobs\//);
+  const pageTwo = page.locator('.job-directory-pagination a[href="/jobs?page=2"]');
+  await expect(pageTwo).toBeVisible();
+  await pageTwo.click();
+  await page.waitForURL(/\/jobs\?page=2$/, { waitUntil: "networkidle" });
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://endpointjobs.dev/jobs?page=2"
+  );
+  await expect(page.locator(".job-directory-list")).toHaveAttribute("start", "51");
+  await page.close();
+});
+
 await run("FEAT-032", "Parallax background layers render behind content", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
   await page.waitForSelector('[data-endpoint-signal-canvas="true"]', { timeout: 10000 });

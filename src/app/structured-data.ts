@@ -1,6 +1,15 @@
-import type { JobsFeed } from "@/types/job";
+import type { Job, JobsFeed } from "@/types/job";
 
 import {
+  formatDescriptionAsHtml
+} from "@/lib/html";
+import {
+  inferAddressCountry,
+  isRichResultEligible,
+  normalizeEmploymentType
+} from "@/lib/job-seo";
+import {
+  getJobUrl,
   repositoryUrl,
   siteDescription,
   siteKeywords,
@@ -12,13 +21,13 @@ export function getHomeJsonLd(feed: JobsFeed) {
   const topListings = feed.jobs.slice(0, 20).map((job, index) => ({
     "@type": "ListItem",
     position: index + 1,
-    url: `${siteUrl}/#job-${job.id}`,
+    url: getJobUrl(job.id),
     name: `${job.title} at ${job.company}`,
     item: {
       "@type": "Thing",
       name: `${job.title} at ${job.company}`,
       description: job.summary,
-      url: `${siteUrl}/#job-${job.id}`,
+      url: getJobUrl(job.id),
       sameAs: job.applyUrl ?? job.sourceUrl
     }
   }));
@@ -102,6 +111,70 @@ export function getHomeJsonLd(feed: JobsFeed) {
         ]
       }
     ]
+  };
+}
+
+export function getJobJsonLd(job: Job) {
+  const jobUrl = getJobUrl(job.id);
+  const addressCountry = inferAddressCountry(job);
+  const jobPosting = addressCountry && isRichResultEligible(job)
+    ? getJobPostingJsonLd(job, jobUrl, addressCountry)
+    : undefined;
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      ...(jobPosting ? [jobPosting] : []),
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${jobUrl}#breadcrumbs`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: siteName,
+            item: siteUrl
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: `${job.title} at ${job.company}`,
+            item: jobUrl
+          }
+        ]
+      }
+    ]
+  };
+}
+
+function getJobPostingJsonLd(job: Job, jobUrl: string, addressCountry: string) {
+  return {
+    "@type": "JobPosting",
+    "@id": `${jobUrl}#job-posting`,
+    url: jobUrl,
+    title: job.title,
+    description: formatDescriptionAsHtml(job.description ?? job.summary),
+    identifier: {
+      "@type": "PropertyValue",
+      name: job.company,
+      value: job.id
+    },
+    datePosted: job.postedAt,
+    ...(job.expiresAt ? { validThrough: job.expiresAt } : {}),
+    employmentType: normalizeEmploymentType(job.employmentType),
+    directApply: false,
+    hiringOrganization: {
+      "@type": "Organization",
+      name: job.company
+    },
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: job.location,
+        addressCountry
+      }
+    }
   };
 }
 

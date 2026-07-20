@@ -19,6 +19,7 @@ import "./job-board-location.css";
 import "./job-board-pagination.css";
 import "./job-board-map.css";
 import "./job-board-responsive.css";
+import "./job-detail.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

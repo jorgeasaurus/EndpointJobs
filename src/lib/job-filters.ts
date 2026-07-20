@@ -1,5 +1,6 @@
 import { getSalarySortValue, getSearchText, isPostedWithinDays } from "@/lib/jobs";
 import { isLeadershipTitle } from "@/lib/job-taxonomy";
+import { normalizeTokens } from "@/lib/text";
 import type { EndpointTool, Job, Platform, RoleFamily, Seniority, Workplace } from "@/types/job";
 
 export type SortKey = "newest" | "salary" | "company";
@@ -34,12 +35,12 @@ export function isLeadershipJob(job: Pick<Job, "title">) {
 
 export function filterJobs(jobs: Job[], filters: JobFilters, now = new Date()) {
   const query = filters.query.trim().toLowerCase();
-  const location = normalize(`${filters.locationQuery}`);
+  const location = normalizeTokens(filters.locationQuery);
   const minimumSalary = filters.minimumSalary === "Any" ? null : Number(filters.minimumSalary);
   const maximumAgeDays = filters.freshness === "Any" ? null : Number(filters.freshness);
   return jobs.filter((job) => {
     if (query && !getSearchText(job).includes(query)) return false;
-    if (location && !normalize(`${job.location} ${job.mapLocation?.label ?? ""} ${job.workplace}`).includes(location)) return false;
+    if (location && !normalizeTokens(`${job.location} ${job.mapLocation?.label ?? ""} ${job.workplace}`).includes(location)) return false;
     if (filters.selectedPlatforms.length && !filters.selectedPlatforms.some((value) => job.platforms.includes(value))) return false;
     if (filters.selectedTools.length && !filters.selectedTools.some((value) => job.tools.includes(value))) return false;
     if (filters.workplace !== "Any" && job.workplace !== filters.workplace) return false;
@@ -54,8 +55,4 @@ export function filterJobs(jobs: Job[], filters: JobFilters, now = new Date()) {
     : filters.sort === "company"
       ? a.company.localeCompare(b.company)
       : new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime());
-}
-
-function normalize(value: string) {
-  return value.normalize("NFC").replace(/[^\p{L}\p{M}\p{N}]+/gu, " ").trim().toLowerCase();
 }

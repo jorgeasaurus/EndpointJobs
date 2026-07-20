@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { Fragment } from "react";
 
+import { getJobPath } from "@/app/site-metadata";
 import {
   BriefcaseBusiness,
   CheckCircle2,
@@ -46,7 +48,9 @@ export function JobCard({
       <div className="job-main">
         <div>
           <h3>
-            <HighlightedText query={query} text={job.title} />
+            <Link className="job-title-link" href={getJobPath(job.id)}>
+              <HighlightedText query={query} text={job.title} />
+            </Link>
           </h3>
           <p className="company-line">
             <BriefcaseBusiness size={16} aria-hidden="true" />
