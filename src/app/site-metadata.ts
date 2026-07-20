@@ -1,3 +1,5 @@
+import type { Route } from "next";
+
 export const siteUrl = "https://endpointjobs.dev";
 export const siteName = "Endpoint Jobs";
 export const siteTitle =
@@ -25,3 +27,20 @@ export const ogImage = {
   alt: "Endpoint Jobs social card with endpoint engineering job board details"
 };
 export const repositoryUrl = "https://github.com/jorgeasaurus/EndpointJobs";
+
+// These helpers build internal app routes consumed by <Link> and
+// permanentRedirect, both of which are typed against Next's `Route` brand. The
+// brand only admits statically-known relative segments, so dynamic paths have to
+// be asserted into `Route`. The values are valid runtime routes; the assertion is
+// purely a type-system accommodation, not a behavioral contract.
+export function getJobPath(jobId: string): Route {
+  return `/jobs/${encodeURIComponent(jobId)}` as Route;
+}
+
+export function getJobUrl(jobId: string) {
+  return new URL(getJobPath(jobId), siteUrl).toString();
+}
+
+export function getJobsDirectoryPath(page = 1): Route {
+  return (page > 1 ? `/jobs?page=${page}` : "/jobs") as Route;
+}

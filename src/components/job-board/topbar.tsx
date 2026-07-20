@@ -3,12 +3,14 @@ import {
   FileJson,
   MessageSquarePlus,
   MonitorSmartphone,
+  Rows3,
   RefreshCw,
   SquareTerminal
 } from "lucide-react";
 import Link from "next/link";
 
 import { formatUpdatedAt } from "@/lib/jobs";
+import { getJobsDirectoryPath } from "@/app/site-metadata";
 
 export function Topbar({ updatedAt }: { updatedAt: string }) {
   return (
@@ -73,6 +75,10 @@ export function SiteFooter({ updatedAt }: { updatedAt: string }) {
         </div>
 
         <nav className="footer-links" aria-label="Project links">
+          <Link className="feedback-link footer-link" href={getJobsDirectoryPath()}>
+            <Rows3 size={15} aria-hidden="true" />
+            <span>All jobs</span>
+          </Link>
           <a
             aria-label="Report an issue or request a feature on GitHub"
             className="feedback-link footer-link"

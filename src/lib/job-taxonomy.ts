@@ -1,3 +1,5 @@
+import { normalizeTokens } from "@/lib/text";
+
 export const endpointToolDefinitions = [
   { tool: "Jamf", aliases: ["jamf", "jamf pro", "jamf school"], strong: true },
   {
@@ -90,7 +92,7 @@ const executiveLeadershipTitleTerms = [
 ] as const;
 
 export function isLeadershipTitle(title: string) {
-  const normalizedTitle = normalizeTitle(title);
+  const normalizedTitle = normalizeTokens(title);
 
   if (executiveLeadershipTitleTerms.some((term) => hasTitleTerm(normalizedTitle, term))) {
     return true;
@@ -105,14 +107,6 @@ export function isLeadershipTitle(title: string) {
   }
 
   return hasTitleTerm(normalizedTitle, "lead");
-}
-
-function normalizeTitle(value: string) {
-  return value
-    .normalize("NFC")
-    .replace(/[^\p{L}\p{M}\p{N}]+/gu, " ")
-    .trim()
-    .toLowerCase();
 }
 
 function hasTitleTerm(value: string, term: string) {
