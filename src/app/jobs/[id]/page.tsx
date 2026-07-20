@@ -36,7 +36,9 @@ const canonicalJobIndex = getCanonicalSeoIndex(
 );
 
 export function generateStaticParams() {
-  return [...canonicalJobIndex.values()].map((id) => ({ id }));
+  // canonicalJobIndex maps every job id to its canonical id, so values()
+  // contains duplicates whenever multiple jobs share a representative.
+  return [...new Set(canonicalJobIndex.values())].map((id) => ({ id }));
 }
 
 export async function generateMetadata({ params }: JobPageProps): Promise<Metadata> {

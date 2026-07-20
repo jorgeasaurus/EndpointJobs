@@ -33,7 +33,14 @@ function buildCanonicalIndex(jobs: readonly Job[]): CanonicalIndex {
     directIds.add(job.id);
 
     const key = clusterKey(job.company, job.description);
-    if (key && !representatives.has(key)) {
+    if (!key) {
+      continue;
+    }
+
+    // Deterministic representative: keep the lexicographically smallest id so
+    // canonical resolution does not depend on feed ordering.
+    const current = representatives.get(key);
+    if (!current || job.id < current.id) {
       representatives.set(key, job);
     }
   }
@@ -42,21 +49,23 @@ function buildCanonicalIndex(jobs: readonly Job[]): CanonicalIndex {
 }
 
 function clusterKey(company: string, description: string | undefined) {
-  const normalizedDescription = normalizeText(description ?? "");
+  // Case-folding is explicit here: normalizeText is whitespace-only, and
+  // clustering must stay case-insensitive so cross-source twins match.
+  const normalizedDescription = normalizeText(description ?? "").toLowerCase();
 
   if (normalizedDescription.length < clusterDescriptionFloor) {
     return undefined;
   }
 
-  return `${normalizeText(company)} ${normalizedDescription}`;
+  return `${normalizeText(company).toLowerCase()} ${normalizedDescription}`;
 }
 
 /**
  * Maps every job id in `jobs` to the id of its canonical, crawlable
  * representative. A job is canonical when it comes from a direct ATS source;
- * otherwise it defers to the first direct-source twin sharing its company and
- * description. The decision is order-independent: a direct job is always its
- * own canonical, so no real listing is ever collapsed into the wrong one.
+ * otherwise it defers to a direct-source twin sharing its company and
+ * description. The representative per cluster is deterministic (smallest id),
+ * so resolution is order-independent and stable across feed reordering.
  *
  * This is the single primitive for canonical resolution. Both the per-job and
  * per-set helpers below are derived from it, so the index is built once.

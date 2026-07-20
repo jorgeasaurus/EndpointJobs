@@ -23,7 +23,7 @@ import {
   serializeJsonLd
 } from "../src/app/structured-data";
 import { buildJobMapPoints } from "../src/lib/job-map";
-import { getCanonicalSeoJobs } from "../src/lib/job-seo";
+import { getCanonicalSeoIndex, getCanonicalSeoJobs } from "../src/lib/job-seo";
 import {
   formatUpdatedAt,
   getExpandedDescriptionParagraphs,
@@ -919,6 +919,22 @@ await run("FEAT-048", "Descriptions are cleaned, capped, and not duplicated as s
     })
   );
   assertTruthy(paragraphs.length > 0, "expanded paragraphs missing");
+
+  // Case-sensitive regression: the summary-prefix trim must match original
+  // casing, so a description starting with an uppercase summary still strips.
+  const uppercaseSummary = "Endpoint Summary With Capitals.";
+  const tail = "Additional detail about endpoint management work. ".repeat(8);
+  const prefixedParagraphs = getExpandedDescriptionParagraphs(
+    makeJob({
+      summary: uppercaseSummary,
+      description: `${uppercaseSummary} ${tail}`
+    })
+  );
+  assertTruthy(prefixedParagraphs.length > 0, "case-sensitive prefix trim failed");
+  assertTruthy(
+    !prefixedParagraphs[0]?.startsWith(uppercaseSummary),
+    "summary prefix was not trimmed"
+  );
 });
 
 await run("FEAT-049", "Dedupe and stable IDs use source URLs and React job IDs", () => {
@@ -1127,6 +1143,62 @@ await run("FEAT-053", "Sitemap and robots point at the canonical site", () => {
     })
   ]);
   assertIds(canonicalJobs, ["direct-copy"]);
+
+  // Direct jobs are always their own canonical, so every direct twin stays
+  // crawlable; aggregated copies defer to the deterministic representative
+  // (lexicographically smallest direct id), regardless of feed order.
+  const assertAggregatedDefersTo = (jobs: Job[], expectedId: string) => {
+    const index = getCanonicalSeoIndex(jobs);
+    assertEqual(index.get("aggregated-copy"), expectedId, "aggregated canonical target");
+  };
+
+  assertAggregatedDefersTo(
+    [
+      makeJob({
+        id: "direct-zeta",
+        company: "example company",
+        description: fullDescription,
+        source: "Greenhouse"
+      }),
+      makeJob({
+        id: "direct-alpha",
+        company: "example company",
+        description: fullDescription,
+        source: "Lever"
+      }),
+      makeJob({
+        id: "aggregated-copy",
+        company: "Example Company",
+        description: fullDescription,
+        source: "The Muse"
+      })
+    ],
+    "direct-alpha"
+  );
+
+  assertAggregatedDefersTo(
+    [
+      makeJob({
+        id: "direct-alpha",
+        company: "example company",
+        description: fullDescription,
+        source: "Lever"
+      }),
+      makeJob({
+        id: "direct-zeta",
+        company: "example company",
+        description: fullDescription,
+        source: "Greenhouse"
+      }),
+      makeJob({
+        id: "aggregated-copy",
+        company: "Example Company",
+        description: fullDescription,
+        source: "The Muse"
+      })
+    ],
+    "direct-alpha"
+  );
 });
 
 await run("FEAT-054", "Vercel Analytics is installed globally", () => {
