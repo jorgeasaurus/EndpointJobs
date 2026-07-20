@@ -144,8 +144,8 @@ export default async function JobPage({ params }: JobPageProps) {
               <section aria-labelledby="job-description-heading" className="job-detail-description">
                 <span className="section-kicker">Role overview</span>
                 <h2 id="job-description-heading">Job description</h2>
-                {descriptionParagraphs.map((paragraph, index) => (
-                  <p key={`${paragraph.slice(0, 64)}-${index}`}>{paragraph}</p>
+                {descriptionParagraphs.map((paragraph) => (
+                  <p key={paragraph.slice(0, 64)}>{paragraph}</p>
                 ))}
               </section>
             ) : null}
