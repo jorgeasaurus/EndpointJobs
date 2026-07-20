@@ -1,6 +1,6 @@
 import type { Job } from "@/types/job";
 
-import { normalizeText } from "@/lib/text";
+import { compactWhitespace } from "@/lib/text";
 import {
   endpointToolOptions,
   platformOptions,
@@ -147,13 +147,13 @@ function getAdditionalDescription(job: Job) {
     return undefined;
   }
 
-  const compactDescription = normalizeText(description);
+  const compactDescription = compactWhitespace(description);
   const summaryPrefix = getCompleteSummaryPrefix(job.summary, compactDescription);
 
   if (summaryPrefix && compactDescription.startsWith(summaryPrefix)) {
     const remainder = trimFormattedPrefix(description, summaryPrefix);
 
-    return remainder && normalizeText(remainder).length >= 160
+    return remainder && compactWhitespace(remainder).length >= 160
       ? remainder
       : undefined;
   }

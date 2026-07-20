@@ -12,6 +12,13 @@ export function normalizeText(value: string) {
   return value.replace(/\s+/g, " ").trim().toLowerCase();
 }
 
+// Whitespace-only compaction that preserves case. Used where the literal
+// characters (including casing) still matter for exact string comparison,
+// e.g. trimming a case-sensitive summary prefix off a description.
+export function compactWhitespace(value: string) {
+  return value.replace(/\s+/g, " ").trim();
+}
+
 export function normalizeTokens(value: string) {
   return value
     .normalize("NFC")
