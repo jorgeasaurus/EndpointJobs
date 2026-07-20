@@ -147,7 +147,9 @@ export default async function JobPage({ params }: JobPageProps) {
                 <span className="section-kicker">Role overview</span>
                 <h2 id="job-description-heading">Job description</h2>
                 {descriptionParagraphs.map((paragraph) => (
-                  <p key={paragraph.slice(0, 64)}>{paragraph}</p>
+                  // Paragraphs are plain text with no natural id; key on a full-
+                  // content hash so duplicates share no key and indices stay out.
+                  <p key={hashParagraph(paragraph)}>{paragraph}</p>
                 ))}
               </section>
             ) : null}
@@ -211,6 +213,18 @@ export default async function JobPage({ params }: JobPageProps) {
 function getActiveJob(id: string) {
   const job = feed.jobs.find((candidate) => candidate.id === id);
   return job && isActiveJob(job) ? job : undefined;
+}
+
+// FNV-1a: tiny deterministic hash, stable across renders for identical input.
+function hashParagraph(value: string) {
+  let hash = 0x811c9dc5;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+
+  return (hash >>> 0).toString(36);
 }
 
 function getCanonicalJobId(jobId: string): string {

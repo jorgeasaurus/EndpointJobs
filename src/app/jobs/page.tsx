@@ -49,7 +49,9 @@ export default async function JobsDirectory({ searchParams }: DirectoryPageProps
   const page = parsePage((await searchParams).page);
   const totalPages = Math.ceil(activeJobs.length / jobsPerPage);
 
-  if (page > totalPages) {
+  // An empty feed yields totalPages 0; page 1 is still valid (renders an empty
+  // directory) rather than 404ing the whole route.
+  if (page > Math.max(totalPages, 1)) {
     notFound();
   }
 

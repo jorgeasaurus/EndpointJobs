@@ -995,6 +995,17 @@ await run("FEAT-051", "Metadata, Open Graph, and Twitter cards are configured", 
   assertIncludes(sources.jobPage, "generateMetadata", "unique job metadata");
   assertIncludes(sources.jobPage, "alternates: { canonical: url }", "job self-canonical");
   assertIncludes(sources.jobDirectory, "getJobsDirectoryPath(item)", "crawlable directory pages");
+  assertIncludes(
+    sources.jobDirectory,
+    "page > Math.max(totalPages, 1)",
+    "empty feed keeps page 1 valid"
+  );
+  assertIncludes(
+    sources.jobPage,
+    "key={hashParagraph(paragraph)}",
+    "paragraph keys hash full content"
+  );
+  assertNotIncludes(sources.jobPage, "key={paragraph.slice(0, 64)}", "no prefix-collision keys");
   assertIncludes(sources.topbar, "getJobsDirectoryPath()", "directory discovery link");
   assertTruthy(existsSync("public/og-image.png"), "missing public/og-image.png");
 });
