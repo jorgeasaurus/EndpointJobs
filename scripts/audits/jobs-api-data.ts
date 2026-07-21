@@ -78,6 +78,33 @@ export async function auditJobsApiData(run: RunAudit) {
     assertEqual(leadership.ok && leadership.body.meta.total, 2, "leadership roles filtered");
     assertEqual(leadership.ok && leadership.body.filters.leadership, true, "leadership applied filter returned");
 
+    const metroFeed = makeFeed([
+      makeJob({ id: "london", location: "London, UK", workplace: "Hybrid" }),
+      makeJob({ id: "berlin", location: "Berlin, Germany", workplace: "On-site" }),
+      makeJob({ id: "seattle", location: "Seattle, WA", workplace: "Remote" })
+    ]);
+    const metro = queryJobs(
+      metroFeed,
+      new URLSearchParams("metroAreas=London%2C%20UK%7CBerlin%2C%20Germany"),
+      now
+    );
+    assertEqual(metro.ok, true, "pipe-separated metroAreas query accepted");
+    if (metro.ok) {
+      assertEqual(metro.body.meta.total, 2, "metro areas filtered");
+      // Applied filters follow metroAreaOptions order, not query-string order,
+      // matching the existing platforms/tools multi-filter behavior.
+      assertEqual(
+        metro.body.filters.metroAreas.join(" / "),
+        "Berlin, Germany / London, UK",
+        "metro-area applied filters returned"
+      );
+    }
+    assertEqual(
+      queryJobs(metroFeed, new URLSearchParams("metroAreas=Not%20A%20Metro"), now).ok,
+      false,
+      "unsupported metro area rejected"
+    );
+
     for (const query of ["page=1e2", "limit=0x10"]) {
       assertEqual(
         queryJobs(feed, new URLSearchParams(query), now).ok,

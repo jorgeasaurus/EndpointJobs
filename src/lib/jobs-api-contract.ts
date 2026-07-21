@@ -11,6 +11,7 @@ import {
   seniorityOptions,
   toolOptions
 } from "@/lib/jobs";
+import { metroAreaOptions, type MetroAreaFilter } from "@/lib/metro-areas";
 import type {
   EndpointTool,
   Platform,
@@ -21,7 +22,7 @@ import type {
 
 export type JobsApiQueryDefinition =
   | { kind: "text"; openApiName: string; minimumLength: number; maximumLength: number }
-  | { kind: "multi"; openApiName: string; description: string; values: readonly string[] }
+  | { kind: "multi"; openApiName: string; description: string; values: readonly string[]; separator?: string }
   | { kind: "enum"; openApiName: string; description?: string; values: readonly string[]; default?: string }
   | { kind: "integer"; openApiName: string; minimum: number; maximum?: number; default: number };
 
@@ -42,6 +43,13 @@ export const jobsApiQueryContract = {
     openApiName: "Tools",
     description: "Comma-separated endpoint tool names.",
     values: toolOptions
+  },
+  metroAreas: {
+    kind: "multi",
+    openApiName: "MetroAreas",
+    description: "Pipe-separated metro area names (values contain commas, e.g. London, UK|Berlin, Germany).",
+    values: metroAreaOptions,
+    separator: "|"
   },
   location: { kind: "text", openApiName: "Location", minimumLength: 1, maximumLength: 200 },
   workplace: {
@@ -91,6 +99,7 @@ export type JobsApiAppliedFilters = {
   q: string | null;
   platforms: Platform[];
   tools: EndpointTool[];
+  metroAreas: MetroAreaFilter[];
   location: string | null;
   workplace: Exclude<Workplace, "Unknown"> | null;
   salaryShown: boolean;
@@ -104,7 +113,7 @@ export type JobsApiAppliedFilters = {
 
 type AppliedFilterDefinition =
   | { kind: "nullableText" }
-  | { kind: "multi"; query: "platforms" | "tools" }
+  | { kind: "multi"; query: "platforms" | "tools" | "metroAreas" }
   | { kind: "boolean" }
   | {
       kind: "enum";
@@ -116,6 +125,7 @@ const appliedFilterDefinitions = {
   q: { kind: "nullableText" },
   platforms: { kind: "multi", query: "platforms" },
   tools: { kind: "multi", query: "tools" },
+  metroAreas: { kind: "multi", query: "metroAreas" },
   location: { kind: "nullableText" },
   workplace: { kind: "enum", query: "workplace", nullable: true },
   salaryShown: { kind: "boolean" },
