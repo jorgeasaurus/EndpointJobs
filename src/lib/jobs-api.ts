@@ -128,6 +128,7 @@ function parseQuery(searchParams: URLSearchParams):
       locationQuery: readText(searchParams, "location"),
       selectedPlatforms: readMulti(searchParams, "platforms", platformOptions),
       selectedTools: readMulti(searchParams, "tools", toolOptions),
+      selectedMetroAreas: [],
       workplace: readEnum(searchParams, "workplace", ["Remote", "Hybrid", "On-site"] as const, "Any"),
       salaryOnly: readEnum(searchParams, "salary", ["1"] as const, "0") === "1",
       leadershipOnly: readEnum(searchParams, "leadership", ["1"] as const, "0") === "1",

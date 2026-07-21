@@ -2,11 +2,12 @@ import { minimumSalaryFilterValues } from "@/lib/job-filters";
 import type {
   FreshnessFilter,
   JobFilters,
+  MetroAreaFilter,
   MinimumSalaryFilter,
   SortKey
 } from "@/lib/job-filters";
 export { filterJobs } from "@/lib/job-filters";
-export type { FreshnessFilter, MinimumSalaryFilter, SortKey } from "@/lib/job-filters";
+export type { FreshnessFilter, MetroAreaFilter, MinimumSalaryFilter, SortKey } from "@/lib/job-filters";
 import type {
   EndpointTool,
   Platform,
@@ -18,7 +19,7 @@ import type {
 export type SeniorityFilter = "All" | Seniority;
 export type RoleFamilyFilter = "All" | RoleFamily;
 export type WorkplaceFilter = "Any" | Exclude<Workplace, "Unknown">;
-export { minimumSalaryFilterValues } from "@/lib/job-filters";
+export { metroAreaOptions, minimumSalaryFilterValues } from "@/lib/job-filters";
 
 export type FilterState = JobFilters;
 
@@ -27,6 +28,7 @@ export type FilterAction =
   | { type: "setLocationQuery"; value: string }
   | { type: "togglePlatform"; value: Platform }
   | { type: "toggleTool"; value: EndpointTool }
+  | { type: "toggleMetroArea"; value: MetroAreaFilter }
   | { type: "toggleSalaryOnly" }
   | { type: "toggleLeadershipOnly" }
   | { type: "setMinimumSalary"; value: MinimumSalaryFilter }
@@ -45,6 +47,7 @@ export const initialFilterState: FilterState = {
   locationQuery: "",
   selectedPlatforms: [],
   selectedTools: [],
+  selectedMetroAreas: [],
   workplace: "Any",
   salaryOnly: false,
   leadershipOnly: false,
@@ -119,6 +122,11 @@ export function filterReducer(
       return {
         ...state,
         selectedTools: toggleValue(state.selectedTools, action.value)
+      };
+    case "toggleMetroArea":
+      return {
+        ...state,
+        selectedMetroAreas: toggleValue(state.selectedMetroAreas, action.value)
       };
     case "toggleSalaryOnly":
       return { ...state, salaryOnly: !state.salaryOnly };

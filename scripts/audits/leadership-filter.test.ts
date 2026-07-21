@@ -97,6 +97,7 @@ test("leadership filtering returns leadership roles only", () => {
     locationQuery: "",
     selectedPlatforms: [],
     selectedTools: [],
+    selectedMetroAreas: [],
     workplace: "Any",
     salaryOnly: false,
     leadershipOnly: true,

@@ -68,6 +68,27 @@ async function withPage(browser, viewport, fn, options = {}) {
   return fn(page);
 }
 
+// Pre-flight: a stale dev/prod server on this port serves outdated chunk
+// hashes, so every static asset 500s and every interaction test fails for
+// reasons unrelated to the code. Detect that up front and fail fast.
+{
+  const home = await fetch(baseUrl);
+  if (!home.ok) {
+    throw new Error(`Pre-flight failed: ${baseUrl} returned ${home.status}`);
+  }
+  const html = await home.text();
+  const chunkPath = html.match(/\/_next\/static\/chunks\/[^"]+\.js/)?.[0];
+  if (chunkPath) {
+    const chunk = await fetch(new URL(chunkPath, baseUrl));
+    if (!chunk.ok) {
+      throw new Error(
+        `Pre-flight failed: static chunk ${chunkPath} returned ${chunk.status}. ` +
+          "The server on this port is likely stale — restart it against the current build."
+      );
+    }
+  }
+}
+
 const browser = await chromium.launch({ headless: true });
 
 await run("FEAT-006", "Slash keyboard shortcut focuses search input", async () => {

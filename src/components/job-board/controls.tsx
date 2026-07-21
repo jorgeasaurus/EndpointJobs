@@ -27,6 +27,7 @@ import { ToggleButton } from "./toggle-button";
 import { LocationFilters } from "./location-filters";
 import {
   freshnessFilterOptions,
+  metroAreaOptions,
   minimumSalaryFilterOptions,
   sortOptions
 } from "./filter-model";
@@ -34,6 +35,7 @@ import type {
   FilterDispatch,
   FilterState,
   FreshnessFilter,
+  MetroAreaFilter,
   MinimumSalaryFilter,
   RoleFamilyFilter,
   SeniorityFilter,
@@ -127,6 +129,7 @@ export function CommandPanel({
             clearFilters={clearFilters}
             dispatch={dispatch}
             selectedTools={filters.selectedTools}
+            selectedMetroAreas={filters.selectedMetroAreas}
             minimumSalary={filters.minimumSalary}
             seniority={filters.seniority}
             sort={filters.sort}
@@ -413,6 +416,7 @@ function FilterStack({
   activeFilterLabel,
   clearFilters,
   dispatch,
+  selectedMetroAreas,
   selectedTools,
   minimumSalary,
   seniority,
@@ -422,6 +426,7 @@ function FilterStack({
   activeFilterLabel: string;
   clearFilters: () => void;
   dispatch: FilterDispatch;
+  selectedMetroAreas: MetroAreaFilter[];
   selectedTools: EndpointTool[];
   minimumSalary: MinimumSalaryFilter;
   seniority: SeniorityFilter;
@@ -432,6 +437,7 @@ function FilterStack({
     activeFilterLabel,
     clearFilters,
     dispatch,
+    selectedMetroAreas,
     selectedTools,
     minimumSalary,
     seniority,
@@ -478,6 +484,7 @@ function FilterStackContent({
   activeFilterLabel,
   clearFilters,
   dispatch,
+  selectedMetroAreas,
   selectedTools,
   minimumSalary,
   seniority,
@@ -487,11 +494,14 @@ function FilterStackContent({
   activeFilterLabel: string;
   clearFilters: () => void;
   dispatch: FilterDispatch;
+  selectedMetroAreas: MetroAreaFilter[];
   selectedTools: EndpointTool[];
   minimumSalary: MinimumSalaryFilter;
   seniority: SeniorityFilter;
   sort: SortKey;
 }) {
+  const selectedMetroAreaSet = new Set(selectedMetroAreas);
+
   return (
     <>
       <div className="hero-filter-controls">
@@ -549,6 +559,26 @@ function FilterStackContent({
             ))}
           </select>
         </label>
+      </div>
+
+      <div className="facet-group hero-tool-group">
+        <div className="facet-title">
+          <MapPin size={17} aria-hidden="true" />
+          Metro Areas
+        </div>
+        <div className="facet-list">
+          {metroAreaOptions.map((metroArea) => (
+            <ToggleButton
+              key={metroArea}
+              activeClassName="facet-button is-active"
+              inactiveClassName="facet-button"
+              isActive={selectedMetroAreaSet.has(metroArea)}
+              onClick={() => dispatch({ type: "toggleMetroArea", value: metroArea })}
+            >
+              {metroArea}
+            </ToggleButton>
+          ))}
+        </div>
       </div>
 
       <div className="facet-group hero-tool-group">
