@@ -217,7 +217,7 @@
       "MetroAreas": {
         "name": "metroAreas",
         "in": "query",
-        "style": "form",
+        "style": "pipeDelimited",
         "explode": false,
         "description": "Pipe-separated metro area names (values contain commas, e.g. London, UK|Berlin, Germany).",
         "schema": {

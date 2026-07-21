@@ -157,7 +157,12 @@ export function getJobsApiOpenApiParameters() {
       {
         name,
         in: "query",
-        ...(definition.kind === "multi" ? { style: "form", explode: false } : {}),
+        ...(definition.kind === "multi"
+          ? {
+              style: definition.separator === "|" ? "pipeDelimited" : "form",
+              explode: false
+            }
+          : {}),
         ...("description" in definition
           ? { description: definition.description }
           : {}),

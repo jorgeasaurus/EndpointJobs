@@ -164,6 +164,11 @@ export async function auditJobsApiData(run: RunAudit) {
         .some((parameter) => parameter.$ref === "#/components/parameters/Leadership"),
       "collection leadership parameter"
     );
+    assertEqual(
+      (readPointer(specification, "#/components/parameters/MetroAreas") as { style?: string }).style,
+      "pipeDelimited",
+      "metroAreas documented as pipe-delimited"
+    );
     assertDeepEqual(
       readPointer(specification, "#/components/parameters"),
       getJobsApiOpenApiParameters(),

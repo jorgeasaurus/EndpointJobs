@@ -89,8 +89,8 @@ const metroAreaKeywordSets: Record<MetroAreaFilter, readonly string[]> = {
   "Madrid, Spain": ["madrid"],
   "Milan, Italy": ["milan", "milano"],
   "Munich, Germany": ["munich", "munchen", "muenchen", "münchen"],
-  "Paris, France": ["paris", "ile de france", "hauts de seine"],
-  "Zurich, Switzerland": ["zurich", "fehraltorf", "uitikon", "dietikon", "horgen"]
+  "Paris, France": ["paris", "ile de france", "île de france", "hauts de seine"],
+  "Zurich, Switzerland": ["zurich", "zürich", "fehraltorf", "uitikon", "dietikon", "horgen"]
 };
 
 type TokenAliasMatcher<T extends string> = {

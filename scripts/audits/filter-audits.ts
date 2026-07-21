@@ -244,7 +244,9 @@ export async function auditFilters({ filterFixtureJobs, run }: AuditContext) {
       makeJob({ id: "london-intune", location: "London, UK" }),
       makeJob({ id: "munich-jamf", location: "Munich, Germany" }),
       makeJob({ id: "munchen-alias", location: "München, Bavaria" }),
-      makeJob({ id: "zurich-mdm", location: "Zurich, Switzerland" }),
+      makeJob({ id: "paris-diacritic", location: "Île-de-France, France" }),
+      makeJob({ id: "zurich-umlaut", location: "Zürich, ZH", postedAt: "2026-07-18T00:00:00.000Z" }),
+      makeJob({ id: "zurich-mdm", location: "Zurich, Switzerland", postedAt: "2026-07-19T00:00:00.000Z" }),
       makeJob({ id: "seattle-kandji", location: "Seattle, WA" })
     ];
 
@@ -254,7 +256,11 @@ export async function auditFilters({ filterFixtureJobs, run }: AuditContext) {
     );
     assertIds(
       filterJobs(europeanJobs, { ...initialFilterState, selectedMetroAreas: ["Zurich, Switzerland"] }),
-      ["zurich-mdm"]
+      ["zurich-mdm", "zurich-umlaut"]
+    );
+    assertIds(
+      filterJobs(europeanJobs, { ...initialFilterState, selectedMetroAreas: ["Paris, France"] }),
+      ["paris-diacritic"]
     );
     // Umlaut/ASCII aliases resolve to the same metro.
     const munichMatches = filterJobs(europeanJobs, {
