@@ -27,6 +27,9 @@
             "$ref": "#/components/parameters/Tools"
           },
           {
+            "$ref": "#/components/parameters/MetroAreas"
+          },
+          {
             "$ref": "#/components/parameters/Location"
           },
           {
@@ -208,6 +211,64 @@
           "example": [
             "Jamf",
             "Intune"
+          ]
+        }
+      },
+      "MetroAreas": {
+        "name": "metroAreas",
+        "in": "query",
+        "style": "pipeDelimited",
+        "explode": false,
+        "description": "Pipe-separated metro area names (values contain commas, e.g. London, UK|Berlin, Germany).",
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Atlanta, GA",
+              "Austin, TX",
+              "Baltimore, MD",
+              "Barcelona, Spain",
+              "Berlin, Germany",
+              "Boston, MA",
+              "Charlotte, NC",
+              "Chicago, IL",
+              "Columbus, OH",
+              "Dallas, TX",
+              "Denver, CO",
+              "Detroit, MI",
+              "Frankfurt, Germany",
+              "Houston, TX",
+              "Indianapolis, IN",
+              "Jersey City, NJ",
+              "Kansas City, MO",
+              "London, UK",
+              "Los Angeles, CA",
+              "Madrid, Spain",
+              "Maryland",
+              "Miami, FL",
+              "Milan, Italy",
+              "Milwaukee, WI",
+              "Munich, Germany",
+              "Nashville, TN",
+              "New York, NY",
+              "Northern Virginia",
+              "Paris, France",
+              "Philadelphia, PA",
+              "Phoenix, AZ",
+              "Portland, OR",
+              "Raleigh-Durham, NC",
+              "San Diego, CA",
+              "San Francisco, CA",
+              "San Jose, CA",
+              "Seattle, WA",
+              "Washington, DC",
+              "Zurich, Switzerland"
+            ]
+          },
+          "example": [
+            "Atlanta, GA",
+            "Austin, TX"
           ]
         }
       },
@@ -492,6 +553,7 @@
           "q",
           "platforms",
           "tools",
+          "metroAreas",
           "location",
           "workplace",
           "salaryShown",
@@ -540,6 +602,53 @@
                 "Autopilot",
                 "PowerShell",
                 "Defender"
+              ]
+            }
+          },
+          "metroAreas": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "Atlanta, GA",
+                "Austin, TX",
+                "Baltimore, MD",
+                "Barcelona, Spain",
+                "Berlin, Germany",
+                "Boston, MA",
+                "Charlotte, NC",
+                "Chicago, IL",
+                "Columbus, OH",
+                "Dallas, TX",
+                "Denver, CO",
+                "Detroit, MI",
+                "Frankfurt, Germany",
+                "Houston, TX",
+                "Indianapolis, IN",
+                "Jersey City, NJ",
+                "Kansas City, MO",
+                "London, UK",
+                "Los Angeles, CA",
+                "Madrid, Spain",
+                "Maryland",
+                "Miami, FL",
+                "Milan, Italy",
+                "Milwaukee, WI",
+                "Munich, Germany",
+                "Nashville, TN",
+                "New York, NY",
+                "Northern Virginia",
+                "Paris, France",
+                "Philadelphia, PA",
+                "Phoenix, AZ",
+                "Portland, OR",
+                "Raleigh-Durham, NC",
+                "San Diego, CA",
+                "San Francisco, CA",
+                "San Jose, CA",
+                "Seattle, WA",
+                "Washington, DC",
+                "Zurich, Switzerland"
               ]
             }
           },

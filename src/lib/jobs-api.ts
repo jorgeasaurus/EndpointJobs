@@ -16,6 +16,7 @@ import {
   seniorityOptions,
   toolOptions
 } from "@/lib/jobs";
+import { metroAreaOptions } from "@/lib/metro-areas";
 import type { Job, JobsFeed } from "@/types/job";
 
 export const jobsApiHeaders = {
@@ -128,6 +129,7 @@ function parseQuery(searchParams: URLSearchParams):
       locationQuery: readText(searchParams, "location"),
       selectedPlatforms: readMulti(searchParams, "platforms", platformOptions),
       selectedTools: readMulti(searchParams, "tools", toolOptions),
+      selectedMetroAreas: readMulti(searchParams, "metroAreas", metroAreaOptions, "|"),
       workplace: readEnum(searchParams, "workplace", ["Remote", "Hybrid", "On-site"] as const, "Any"),
       salaryOnly: readEnum(searchParams, "salary", ["1"] as const, "0") === "1",
       leadershipOnly: readEnum(searchParams, "leadership", ["1"] as const, "0") === "1",
@@ -169,7 +171,8 @@ function validateValue(
     }
     return;
   }
-  const values = definition.kind === "multi" ? value.split(",").map((item) => item.trim()) : [normalizedValue];
+  const separator = definition.kind === "multi" ? definition.separator ?? "," : ",";
+  const values = definition.kind === "multi" ? value.split(separator).map((item) => item.trim()) : [normalizedValue];
   if (values.some((item) => !item || !definition.values.includes(item as never))) {
     errors.push(definition.kind === "multi"
       ? `${key} contains an unsupported value`
@@ -185,8 +188,13 @@ function readText(searchParams: URLSearchParams, key: "q" | "location") {
   return searchParams.get(key)?.trim() ?? "";
 }
 
-function readMulti<T extends string>(params: URLSearchParams, key: string, options: readonly T[]) {
-  const selected = new Set(params.get(key)?.split(",").map((value) => value.trim()) ?? []);
+function readMulti<T extends string>(
+  params: URLSearchParams,
+  key: string,
+  options: readonly T[],
+  separator = ","
+) {
+  const selected = new Set(params.get(key)?.split(separator).map((value) => value.trim()) ?? []);
   return options.filter((option) => selected.has(option));
 }
 
@@ -205,6 +213,7 @@ function toAppliedFilters(filters: JobFilters): JobsApiAppliedFilters {
     q: filters.query || null,
     platforms: filters.selectedPlatforms,
     tools: filters.selectedTools,
+    metroAreas: filters.selectedMetroAreas,
     location: filters.locationQuery || null,
     workplace: filters.workplace === "Any" ? null : filters.workplace,
     salaryShown: filters.salaryOnly,

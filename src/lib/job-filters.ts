@@ -1,5 +1,6 @@
 import { getSalarySortValue, getSearchText, isPostedWithinDays } from "@/lib/jobs";
 import { isLeadershipTitle } from "@/lib/job-taxonomy";
+import { metroAreaMatcher, type MetroAreaFilter } from "@/lib/metro-areas";
 import { normalizeTokens } from "@/lib/text";
 import type { EndpointTool, Job, Platform, RoleFamily, Seniority, Workplace } from "@/types/job";
 
@@ -10,11 +11,16 @@ export type FreshnessFilter = (typeof freshnessFilterValues)[number];
 const freshnessFilterValueSet: ReadonlySet<string> = new Set(freshnessFilterValues);
 export const minimumSalaryFilterValues = ["Any", "80000", "100000", "120000", "150000", "180000", "200000"] as const;
 export type MinimumSalaryFilter = (typeof minimumSalaryFilterValues)[number];
+
+export { isMetroAreaFilter, metroAreaOptions } from "@/lib/metro-areas";
+export type { MetroAreaFilter } from "@/lib/metro-areas";
+
 export type JobFilters = {
   query: string;
   locationQuery: string;
   selectedPlatforms: Platform[];
   selectedTools: EndpointTool[];
+  selectedMetroAreas: MetroAreaFilter[];
   workplace: "Any" | Exclude<Workplace, "Unknown">;
   salaryOnly: boolean;
   leadershipOnly: boolean;
@@ -43,6 +49,7 @@ export function filterJobs(jobs: Job[], filters: JobFilters, now = new Date()) {
     if (location && !normalizeTokens(`${job.location} ${job.mapLocation?.label ?? ""} ${job.workplace}`).includes(location)) return false;
     if (filters.selectedPlatforms.length && !filters.selectedPlatforms.some((value) => job.platforms.includes(value))) return false;
     if (filters.selectedTools.length && !filters.selectedTools.some((value) => job.tools.includes(value))) return false;
+    if (filters.selectedMetroAreas.length && !filters.selectedMetroAreas.some((metro) => metroAreaMatcher.matches(job, metro))) return false;
     if (filters.workplace !== "Any" && job.workplace !== filters.workplace) return false;
     if (filters.salaryOnly && typeof job.salary?.min !== "number" && typeof job.salary?.max !== "number") return false;
     if (filters.leadershipOnly && !isLeadershipJob(job)) return false;

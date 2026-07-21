@@ -15,22 +15,131 @@ import type {
   SortKey,
   WorkplaceFilter
 } from "./filter-model";
-import { isMinimumSalaryFilter } from "./filter-model";
+import { isMinimumSalaryFilter, metroAreaOptions } from "./filter-model";
 
-const currentFilterSearchParamKeys = [
-  "q",
-  "platforms",
-  "tools",
-  "location",
-  "workplace",
-  "salary",
-  "leadership",
-  "minSalary",
-  "seniority",
-  "family",
-  "freshness",
-  "sort"
+type FilterParamDescriptor<Key extends keyof FilterState = keyof FilterState> = {
+  [K in keyof FilterState]: {
+    key: K;
+    param: string;
+    parse: (value: string | null) => FilterState[K];
+    serialize: (value: FilterState[K]) => string;
+    isDefault: (value: FilterState[K]) => boolean;
+  };
+}[Key];
+
+function defineFilterParamDescriptor<Key extends keyof FilterState>(
+  descriptor: FilterParamDescriptor<Key>
+): FilterParamDescriptor<Key> {
+  return descriptor;
+}
+
+const parseTextFilter = (value: string | null) => value ?? "";
+
+const parseFlagFilter = (value: string | null) => value === "1";
+
+const serializeFlagFilter = (value: boolean) => (value ? "1" : "0");
+
+const isEmptyText = (value: string) => !hasFilterText(value);
+
+const isEmptyList = (value: readonly string[]) => value.length === 0;
+
+const filterParamDescriptors: FilterParamDescriptor[] = [
+  defineFilterParamDescriptor({
+    key: "query",
+    param: "q",
+    parse: parseTextFilter,
+    serialize: (value) => value,
+    isDefault: isEmptyText
+  }),
+  defineFilterParamDescriptor({
+    key: "locationQuery",
+    param: "location",
+    parse: parseTextFilter,
+    serialize: (value) => value,
+    isDefault: isEmptyText
+  }),
+  defineFilterParamDescriptor({
+    key: "selectedPlatforms",
+    param: "platforms",
+    parse: (value) => parseMultiFilter(value, platformOptions),
+    serialize: (value) => value.join(","),
+    isDefault: isEmptyList
+  }),
+  defineFilterParamDescriptor({
+    key: "selectedTools",
+    param: "tools",
+    parse: (value) => parseMultiFilter(value, toolOptions),
+    serialize: (value) => value.join(","),
+    isDefault: isEmptyList
+  }),
+  defineFilterParamDescriptor({
+    key: "selectedMetroAreas",
+    param: "metroAreas",
+    parse: (value) => parseMultiFilter(value, metroAreaOptions, "|"),
+    serialize: (value) => value.join("|"),
+    isDefault: isEmptyList
+  }),
+  defineFilterParamDescriptor({
+    key: "workplace",
+    param: "workplace",
+    parse: (value) => toWorkplaceFilter(value ?? "Any"),
+    serialize: (value) => value,
+    isDefault: (value) => value === "Any"
+  }),
+  defineFilterParamDescriptor({
+    key: "salaryOnly",
+    param: "salary",
+    parse: parseFlagFilter,
+    serialize: serializeFlagFilter,
+    isDefault: (value) => !value
+  }),
+  defineFilterParamDescriptor({
+    key: "leadershipOnly",
+    param: "leadership",
+    parse: parseFlagFilter,
+    serialize: serializeFlagFilter,
+    isDefault: (value) => !value
+  }),
+  defineFilterParamDescriptor({
+    key: "minimumSalary",
+    param: "minSalary",
+    parse: (value) => toMinimumSalaryFilter(value ?? "Any"),
+    serialize: (value) => value,
+    isDefault: (value) => value === "Any"
+  }),
+  defineFilterParamDescriptor({
+    key: "seniority",
+    param: "seniority",
+    parse: (value) => toSeniorityFilter(value ?? "All"),
+    serialize: (value) => value,
+    isDefault: (value) => value === "All"
+  }),
+  defineFilterParamDescriptor({
+    key: "roleFamily",
+    param: "family",
+    parse: (value) => toRoleFamilyFilter(value ?? "All"),
+    serialize: (value) => value,
+    isDefault: (value) => value === "All"
+  }),
+  defineFilterParamDescriptor({
+    key: "freshness",
+    param: "freshness",
+    parse: (value) => toFreshnessFilter(value ?? "Any"),
+    serialize: (value) => value,
+    isDefault: (value) => value === "Any"
+  }),
+  defineFilterParamDescriptor({
+    key: "sort",
+    param: "sort",
+    parse: (value) => toSortKey(value ?? "newest"),
+    serialize: (value) => value,
+    isDefault: (value) => value === "newest"
+  })
 ];
+
+const currentFilterSearchParamKeys = filterParamDescriptors.map(
+  ({ param }) => param
+);
 
 const legacyFilterSearchParamKeys = ["locations", "remote"];
 const filterSearchParamKeys = [
@@ -41,25 +150,17 @@ const filterSearchParamKeys = [
 export function filterStateFromSearchParams(
   searchParams: URLSearchParams
 ): FilterState {
-  const legacyWorkplace = searchParams.get("remote") === "1" ? "Remote" : "Any";
+  let filters = {} as FilterState;
 
-  return {
-    query: searchParams.get("q") ?? "",
-    locationQuery: searchParams.get("location") ?? "",
-    selectedPlatforms: parseMultiFilter(
-      searchParams.get("platforms"),
-      platformOptions
-    ),
-    selectedTools: parseMultiFilter(searchParams.get("tools"), toolOptions),
-    workplace: toWorkplaceFilter(searchParams.get("workplace") ?? legacyWorkplace),
-    salaryOnly: searchParams.get("salary") === "1",
-    leadershipOnly: searchParams.get("leadership") === "1",
-    minimumSalary: toMinimumSalaryFilter(searchParams.get("minSalary") ?? "Any"),
-    seniority: toSeniorityFilter(searchParams.get("seniority") ?? "All"),
-    roleFamily: toRoleFamilyFilter(searchParams.get("family") ?? "All"),
-    freshness: toFreshnessFilter(searchParams.get("freshness") ?? "Any"),
-    sort: toSortKey(searchParams.get("sort") ?? "newest")
-  };
+  for (const descriptor of filterParamDescriptors) {
+    filters = applyFilterParamDescriptor(filters, descriptor, searchParams);
+  }
+
+  if (searchParams.get("remote") === "1" && !searchParams.has("workplace")) {
+    filters.workplace = toWorkplaceFilter("Remote");
+  }
+
+  return filters;
 }
 
 export function mergeFilterStateIntoSearchParams(
@@ -120,29 +221,35 @@ export function toSortKey(value: string): SortKey {
   return "newest";
 }
 
+function applyFilterParamDescriptor<Key extends keyof FilterState>(
+  filters: FilterState,
+  descriptor: FilterParamDescriptor<Key>,
+  searchParams: URLSearchParams
+): FilterState {
+  return {
+    ...filters,
+    [descriptor.key]: descriptor.parse(searchParams.get(descriptor.param))
+  };
+}
+
+function applyFilterParamSerializer<Key extends keyof FilterState>(
+  searchParams: URLSearchParams,
+  filters: FilterState,
+  descriptor: FilterParamDescriptor<Key>
+) {
+  const value = filters[descriptor.key];
+
+  if (!descriptor.isDefault(value)) {
+    searchParams.set(descriptor.param, descriptor.serialize(value));
+  }
+}
+
 function filterStateToSearchParams(filters: FilterState) {
   const searchParams = new URLSearchParams();
 
-  if (hasFilterText(filters.query)) searchParams.set("q", filters.query);
-  if (hasFilterText(filters.locationQuery)) {
-    searchParams.set("location", filters.locationQuery);
+  for (const descriptor of filterParamDescriptors) {
+    applyFilterParamSerializer(searchParams, filters, descriptor);
   }
-  if (filters.selectedPlatforms.length > 0) {
-    searchParams.set("platforms", filters.selectedPlatforms.join(","));
-  }
-  if (filters.selectedTools.length > 0) {
-    searchParams.set("tools", filters.selectedTools.join(","));
-  }
-  if (filters.workplace !== "Any") searchParams.set("workplace", filters.workplace);
-  if (filters.salaryOnly) searchParams.set("salary", "1");
-  if (filters.leadershipOnly) searchParams.set("leadership", "1");
-  if (filters.minimumSalary !== "Any") {
-    searchParams.set("minSalary", filters.minimumSalary);
-  }
-  if (filters.seniority !== "All") searchParams.set("seniority", filters.seniority);
-  if (filters.roleFamily !== "All") searchParams.set("family", filters.roleFamily);
-  if (filters.freshness !== "Any") searchParams.set("freshness", filters.freshness);
-  if (filters.sort !== "newest") searchParams.set("sort", filters.sort);
 
   return searchParams;
 }
@@ -153,7 +260,8 @@ function hasFilterText(value: string) {
 
 function parseMultiFilter<T extends string>(
   value: string | null,
-  options: readonly T[]
+  options: readonly T[],
+  separator = ","
 ) {
   if (!value) {
     return [];
@@ -162,7 +270,7 @@ function parseMultiFilter<T extends string>(
   const allowedValues = new Set<string>(options);
 
   return value
-    .split(",")
+    .split(separator)
     .map((item) => item.trim())
     .filter((item): item is T => allowedValues.has(item));
 }

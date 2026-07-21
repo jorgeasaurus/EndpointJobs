@@ -41,11 +41,23 @@ export function generateStaticParams() {
   return [...new Set(canonicalJobIndex.values())].map((id) => ({ id }));
 }
 
+type ResolvedJobPage =
+  | { kind: "found"; job: Job; canonicalJobId: string }
+  | { kind: "not-found" };
+
+function resolveJobPageState(id: string): ResolvedJobPage {
+  const job = getActiveJob(id);
+  if (!job) return { kind: "not-found" };
+
+  const canonicalJobId = getCanonicalJobId(job.id);
+  return { kind: "found", job, canonicalJobId };
+}
+
 export async function generateMetadata({ params }: JobPageProps): Promise<Metadata> {
   const { id } = await params;
-  const job = getActiveJob(id);
+  const resolved = resolveJobPageState(id);
 
-  if (!job) {
+  if (resolved.kind === "not-found") {
     return {
       title: "Job not found",
       description: siteDescription,
@@ -53,7 +65,7 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
     };
   }
 
-  const canonicalJobId = getCanonicalJobId(job.id);
+  const { job, canonicalJobId } = resolved;
   const title = `${job.title} at ${job.company}`;
   const description = getMetaDescription(job);
   const url = getJobUrl(canonicalJobId);
@@ -81,13 +93,13 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
 
 export default async function JobPage({ params }: JobPageProps) {
   const { id } = await params;
-  const job = getActiveJob(id);
+  const resolved = resolveJobPageState(id);
 
-  if (!job) {
+  if (resolved.kind === "not-found") {
     notFound();
   }
 
-  const canonicalJobId = getCanonicalJobId(job.id);
+  const { job, canonicalJobId } = resolved;
 
   if (canonicalJobId !== job.id) {
     permanentRedirect(getJobPath(canonicalJobId));

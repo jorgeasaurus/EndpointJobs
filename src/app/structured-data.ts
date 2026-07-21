@@ -1,13 +1,11 @@
 import type { Job, JobsFeed } from "@/types/job";
 
 import {
-  formatDescriptionAsHtml
-} from "@/lib/html";
-import {
+  formatDescriptionAsHtml,
   inferAddressCountry,
   isRichResultEligible,
   normalizeEmploymentType
-} from "@/lib/job-seo";
+} from "@/lib/rich-result-schema";
 import {
   getJobUrl,
   repositoryUrl,
@@ -178,6 +176,10 @@ function getJobPostingJsonLd(job: Job, jobUrl: string, addressCountry: string) {
   };
 }
 
-export function serializeJsonLd(value: unknown) {
-  return JSON.stringify(value).replace(/</g, "\\u003c");
+type JsonLdValue = string | number | boolean | null | undefined | JsonLdValue[] | { [key: string]: JsonLdValue };
+
+export function serializeJsonLd(value: JsonLdValue) {
+  // JSON.stringify(undefined) returns undefined (not a string), so coalesce the
+  // top-level value to keep this function total for every JsonLdValue input.
+  return JSON.stringify(value ?? null).replace(/</g, "\\u003c");
 }
