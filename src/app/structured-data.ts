@@ -179,5 +179,7 @@ function getJobPostingJsonLd(job: Job, jobUrl: string, addressCountry: string) {
 type JsonLdValue = string | number | boolean | null | undefined | JsonLdValue[] | { [key: string]: JsonLdValue };
 
 export function serializeJsonLd(value: JsonLdValue) {
-  return JSON.stringify(value).replace(/</g, "\\u003c");
+  // JSON.stringify(undefined) returns undefined (not a string), so coalesce the
+  // top-level value to keep this function total for every JsonLdValue input.
+  return JSON.stringify(value ?? null).replace(/</g, "\\u003c");
 }

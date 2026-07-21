@@ -64,6 +64,7 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
       )
     });
     const serialized = serializeJsonLd(jsonLd);
+    assertEqual(serializeJsonLd(undefined), "null", "serializeJsonLd is total for undefined");
     assertEqual(jsonLd["@graph"].length, 5, "structured-data graph node count");
     assertIncludes(serialized, "CollectionPage");
     assertIncludes(serialized, "ItemList");

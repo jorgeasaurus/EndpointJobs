@@ -102,18 +102,22 @@ export function createTokenAliasMatcher<T extends string>(
   keywordSets: Record<T, readonly string[]>,
   buildHaystack: (job: Job) => string
 ): TokenAliasMatcher<T> {
-  const matchers = options.map((value) => ({
-    value,
-    keywords: keywordSets[value].map((key) => normalizeTokens(key))
-  }));
+  // Precompute value → keywords once; matches() runs per job × selected
+  // option during filtering, so lookups stay O(1).
+  const matchers = new Map(
+    options.map((value) => [
+      value,
+      keywordSets[value].map((key) => normalizeTokens(key))
+    ])
+  );
 
   return {
     matches(job, value) {
-      const matcher = matchers.find((candidate) => candidate.value === value);
-      if (!matcher) return false;
+      const keywords = matchers.get(value);
+      if (!keywords) return false;
 
       const haystack = ` ${normalizeTokens(buildHaystack(job))} `;
-      return matcher.keywords.some((keyword) => keyword && haystack.includes(` ${keyword} `));
+      return keywords.some((keyword) => keyword && haystack.includes(` ${keyword} `));
     }
   };
 }
