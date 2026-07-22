@@ -57,8 +57,8 @@
     border: 1px solid rgb(255 255 255 / 10%);
     border-radius: 8px;
     box-shadow: 0 14px 50px rgb(0 0 0 / 28%);
-    backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
   }
 
   .search-box {
