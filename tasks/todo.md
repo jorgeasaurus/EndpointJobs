@@ -1,3 +1,39 @@
+# Production job-total refresh flash
+
+- [x] Establish a production refresh/hydration reproduction loop.
+- [x] Trace server and client total-count inputs.
+- [x] Test ranked mismatch hypotheses and capture the root cause.
+- [x] Record verification results and recommended remediation.
+
+## Review
+
+Production SSR renders 935 roles while hydrated production DOM renders 859 on the same unfiltered URL. Static rendering filters the feed at prerender time, then the client filters it again against its current clock; 76 jobs have expired between those two evaluations. The remediation is to preserve the server-approved feed in the client, or make the route dynamically render/revalidate to keep the snapshot current.
+
+# Fix production job-total refresh flash
+
+- [x] Add a regression assertion that the client treats the server-approved feed as authoritative.
+- [x] Remove client-side time-dependent active-job filtering.
+- [x] Run data audit, typecheck, lint, build, and production-style browser verification.
+- [x] Record results.
+
+## Review
+
+`JobBoard` now uses the active feed supplied by the server without recalculating expiration during hydration, and the home page regenerates its active snapshot every five minutes. REG-001 proves a server-approved role remains visible when the client clock moves past its stale time. Typecheck, lint, build, focused SSR/hydration verification, and 36 browser checks pass. The data audit's only remaining failure is existing FEAT-061 map coverage (410 mapped of 858), unrelated to this change.
+
+# Publish job-total refresh fix
+
+- [x] Create a focused branch, commit, push, and open a draft PR.
+
+# Copilot review loop
+
+- [x] Capture the initial thread-aware Copilot review state.
+- [x] Address and verify actionable Copilot feedback (none received).
+- [x] Request and validate a clean review cycle on the final commit.
+
+## Review
+
+Copilot reviewed all six changed files on `e1083ca` and generated no comments or threads.
+
 # Job comparison view
 
 - [x] Create an isolated feature branch.
