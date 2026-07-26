@@ -219,6 +219,16 @@ Opened ready PR #12 and completed five Copilot review cycles. Addressed nine com
 - [x] Point the site API button to the rendered GitHub guide.
 - [x] Run typecheck, lint, and React Doctor.
 
+# Correct PowerShell Gallery download badge
+
+- [x] Identify the accurate PowerShell Gallery download metric.
+- [x] Update the repository README badge URL and label.
+- [x] Verify the resulting badge response.
+
+## Review
+
+The Gallery aggregate `DownloadCount` remains 0 while the latest package version reports 15 downloads through its `VersionDownloadCount`. The README now uses a Shields dynamic XML badge against the Gallery's live OData feed, selects the latest version, and labels the metric accurately. The badge returns `latest version downloads: 15`.
+
 ## Review
 
 Added copy-ready PowerShell examples for collection, filtered pagination, and item requests. The header API button now opens the rendered branch guide on GitHub in a new tab. Typecheck, lint, React Doctor, and diff checks pass.

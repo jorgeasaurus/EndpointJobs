@@ -4,7 +4,7 @@
 [![PowerShell Module CI/CD](https://github.com/jorgeasaurus/EndpointJobs/actions/workflows/powershell-module.yml/badge.svg?branch=main)](https://github.com/jorgeasaurus/EndpointJobs/actions/workflows/powershell-module.yml)
 [![React Doctor](https://github.com/jorgeasaurus/EndpointJobs/actions/workflows/react-doctor.yml/badge.svg?branch=main)](https://github.com/jorgeasaurus/EndpointJobs/actions/workflows/react-doctor.yml)
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/EndpointJobs?label=PowerShell%20Gallery)](https://www.powershellgallery.com/packages/EndpointJobs)
-[![PowerShell Gallery downloads](https://img.shields.io/powershellgallery/dt/EndpointJobs?label=downloads)](https://www.powershellgallery.com/packages/EndpointJobs)
+[![PowerShell Gallery latest version downloads](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Fwww.powershellgallery.com%2Fapi%2Fv2%2FFindPackagesById%28%29%3Fid%3D%27EndpointJobs%27&query=%2F%2F*%5Blocal-name%28%29%3D%27entry%27%5D%5B.%2F%2F*%5Blocal-name%28%29%3D%27IsLatestVersion%27%5D%3D%27true%27%5D%2F%2F*%5Blocal-name%28%29%3D%27VersionDownloadCount%27%5D&label=latest%20version%20downloads)](https://www.powershellgallery.com/packages/EndpointJobs)
 
 Focused job board for Endpoint Engineering, macOS, Windows, MDM, UEM, client platform, and endpoint security roles.
 
