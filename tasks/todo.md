@@ -605,3 +605,23 @@ Updated the animated search example to use "endpoint engineer" verbatim.
 ## Review
 
 Added 781 canonical job pages, a paginated internal directory, unique metadata, conservative `JobPosting` markup, direct-ATS duplicate redirects, and active sitemap coverage. Typecheck, lint, 60 data checks, 36 browser checks, production build, desktop/mobile visual review, live metadata/redirect checks, and React Doctor 100/100 changed-scope review pass.
+
+# Issue 29: Correct ambiguous job locations
+
+- [x] Reproduce the Lowes Mooresville, NC normalization path.
+- [x] Make location resolution preserve unambiguous state information.
+- [x] Add a regression audit and correct the affected data path.
+- [x] Run focused and project verification.
+
+## Review
+
+Corrected the persisted Lowe's record to Mooresville, NC and added a source-URL-scoped SerpAPI correction that retains its stable job URL on refresh. Added an exact Mooresville map point and provider/map regression coverage. The focused provider suite, typecheck, lint, and production build pass. The full data audit retains an unrelated FEAT-061 map-coverage failure (404 mapped of 881 active jobs).
+
+# Publish Issue 29 correction
+
+- [x] Create a focused branch and commit only the Issue 29 changes.
+- [x] Push the branch and open a ready-for-review PR.
+
+## Review
+
+Committed as `0e81117` on `agent/fix-issue-29-location`, pushed to origin, and opened ready PR #30.

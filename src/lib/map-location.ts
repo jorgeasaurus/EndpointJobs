@@ -152,6 +152,12 @@ const locationCoordinates: Coordinate[] = [
     keys: ["charlotte", "davidson mecklenburg"]
   },
   {
+    label: "Mooresville, NC",
+    latitude: 35.5849,
+    longitude: -80.8101,
+    keys: ["mooresville nc"]
+  },
+  {
     label: "Raleigh-Durham, NC",
     latitude: 35.7796,
     longitude: -78.6382,

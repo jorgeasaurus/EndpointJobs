@@ -2,6 +2,7 @@ import type { Job, Workplace } from "../../../src/types/job";
 import { serpApiJobSourceName } from "../../../src/lib/job-sources";
 
 import type { ProviderAdapter } from "../provider";
+import { correctVerifiedJobLocation } from "../location-corrections";
 import { defaultCompanyJobQueries, defaultEndpointSearchQueries } from "../search-config";
 import {
   buildStableJobId,
@@ -457,11 +458,13 @@ export function normalizeSerpApiGoogleJob(
   const title = cleanText(raw.title);
   const company = cleanText(raw.company_name);
   const sourceJobUrl = getSerpApiGoogleJobsApplyUrl(raw) ?? cleanUrl(raw.share_link);
-  const location = cleanText(raw.location);
+  const rawLocation = cleanText(raw.location);
 
   if (!title || !company || !sourceJobUrl) {
     return null;
   }
+
+  const location = correctVerifiedJobLocation(rawLocation, sourceJobUrl);
 
   const extensions = (raw.extensions ?? []).map(cleanText).filter(Boolean);
   const sourceTags = [query, raw.via, raw.detected_extensions?.schedule_type, ...extensions]
@@ -469,7 +472,7 @@ export function normalizeSerpApiGoogleJob(
     .filter(Boolean);
 
   return toEndpointJob({
-    id: buildStableJobId("serpapi", [company, location].filter(Boolean).join(" "), title, sourceJobUrl),
+    id: buildStableJobId("serpapi", [company, rawLocation].filter(Boolean).join(" "), title, sourceJobUrl),
     title,
     company,
     location,
