@@ -37211,7 +37211,12 @@
       "id": "serpapi-lowes-mooresville-in-technology-operations-engineer-9d8166ab84",
       "title": "Technology Operations Engineer",
       "company": "Lowes",
-      "location": "Mooresville, IN",
+      "location": "Mooresville, NC",
+      "mapLocation": {
+        "label": "Mooresville, NC",
+        "latitude": 35.5849,
+        "longitude": -80.8101
+      },
       "workplace": "On-site",
       "postedAt": "2026-07-28T11:58:27.732Z",
       "fetchedAt": "2026-07-28T11:58:27.732Z",

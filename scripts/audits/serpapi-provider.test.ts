@@ -16,6 +16,28 @@ function restoreProcessEnv(originalEnv: NodeJS.ProcessEnv) {
   Object.assign(process.env, originalEnv);
 }
 
+test("SerpAPI applies verified location corrections without changing stable job IDs", () => {
+  const job = normalizeSerpApiGoogleJob({
+    job_id: "lowes-technology-operations-engineer",
+    title: "Technology Operations Engineer",
+    company_name: "Lowes",
+    location: "Mooresville, IN",
+    description: "Manage Windows and macOS endpoint infrastructure for enterprise systems.",
+    apply_options: [{
+      title: "Talents By Vaia",
+      link: "https://talents.vaia.com/companies/lowes/technology-operations-engineer-37989628/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
+    }]
+  }, "technology operations engineer", new Date("2026-07-28T11:58:27.732Z"));
+
+  assert.ok(job);
+  assert.equal(job.location, "Mooresville, NC");
+  assert.equal(job.mapLocation?.label, "Mooresville, NC");
+  assert.equal(
+    job.id,
+    "serpapi-lowes-mooresville-in-technology-operations-engineer-9d8166ab84"
+  );
+});
+
 test("SerpAPI preserves successful query results when a later query fails", async () => {
   const originalFetch = globalThis.fetch;
   const originalEnv = { ...process.env };
