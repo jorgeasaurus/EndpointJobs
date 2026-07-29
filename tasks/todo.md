@@ -625,3 +625,13 @@ Corrected the persisted Lowe's record to Mooresville, NC and added a source-URL-
 ## Review
 
 Committed as `0e81117` on `agent/fix-issue-29-location`, pushed to origin, and opened ready PR #30.
+
+# Copilot review loop: Issue 29
+
+- [ ] Capture PR thread and Copilot review state.
+- [ ] Address and verify every actionable Copilot comment.
+- [ ] Request and verify a clean Copilot review cycle on the latest commit.
+
+## Review
+
+Pending.
