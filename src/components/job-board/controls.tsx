@@ -1,4 +1,4 @@
-import { useEffect, useState, type RefObject } from "react";
+import { useState, type RefObject } from "react";
 
 import {
   BriefcaseBusiness,
@@ -481,20 +481,18 @@ function AdvancedFilters({
     selectedTools
   });
   const hasAdvancedFilters = advancedCount > 0;
-  const [isOpen, setIsOpen] = useState(hasAdvancedFilters);
-
-  useEffect(() => {
-    if (hasAdvancedFilters) {
-      setIsOpen(true);
-    }
-  }, [hasAdvancedFilters]);
+  const [userOpen, setUserOpen] = useState(false);
+  const isOpen = hasAdvancedFilters || userOpen;
 
   return (
     <details
       className="advanced-filters hero-filter-stack"
       open={isOpen}
       onToggle={(event) => {
-        setIsOpen(event.currentTarget.open);
+        if (hasAdvancedFilters) {
+          return;
+        }
+        setUserOpen(event.currentTarget.open);
       }}
     >
       <summary className="advanced-filters-summary mobile-filter-summary">
