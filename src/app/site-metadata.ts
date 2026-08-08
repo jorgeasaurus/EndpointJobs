@@ -1,7 +1,9 @@
 import type { Route } from "next";
+import packageJson from "../../package.json";
 
 export const siteUrl = "https://endpointjobs.dev";
 export const siteName = "Endpoint Jobs";
+export const appVersion = packageJson.version;
 export const siteTitle =
   "Endpoint Engineering Jobs | Jamf, Intune, macOS & Windows Roles";
 export const siteDescription =

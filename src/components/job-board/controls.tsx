@@ -1,4 +1,4 @@
-import type { RefObject } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 
 import {
   BriefcaseBusiness,
@@ -51,7 +51,6 @@ import {
 
 export function CommandPanel({
   activeFilterCount,
-  activeFilterItems,
   activeFilterLabel,
   activeJobsCount,
   clearFilters,
@@ -64,7 +63,6 @@ export function CommandPanel({
   visibleJobsCount
 }: {
   activeFilterCount: number;
-  activeFilterItems: ActiveFilterItem[];
   activeFilterLabel: string;
   activeJobsCount: number;
   clearFilters: () => void;
@@ -114,16 +112,11 @@ export function CommandPanel({
               workplace={filters.workplace}
             />
           </div>
-          <ActiveFilterChips
-            activeFilterItems={activeFilterItems}
-            clearFilters={clearFilters}
-            dispatch={dispatch}
-          />
           <PlatformFilters
             dispatch={dispatch}
             selectedPlatforms={filters.selectedPlatforms}
           />
-          <FilterStack
+          <AdvancedFilters
             activeFilterCount={activeFilterCount}
             activeFilterLabel={activeFilterLabel}
             clearFilters={clearFilters}
@@ -144,6 +137,30 @@ export function CommandPanel({
           visibleJobsCount={visibleJobsCount}
         />
       </div>
+    </div>
+  );
+}
+
+export function StickyActiveFilters({
+  activeFilterItems,
+  clearFilters,
+  dispatch
+}: {
+  activeFilterItems: ActiveFilterItem[];
+  clearFilters: () => void;
+  dispatch: FilterDispatch;
+}) {
+  if (activeFilterItems.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="sticky-active-filters" role="region" aria-label="Active filters">
+      <ActiveFilterChips
+        activeFilterItems={activeFilterItems}
+        clearFilters={clearFilters}
+        dispatch={dispatch}
+      />
     </div>
   );
 }
@@ -411,7 +428,31 @@ function PlatformFilters({
   );
 }
 
-function FilterStack({
+function countAdvancedFilters({
+  minimumSalary,
+  seniority,
+  sort,
+  selectedMetroAreas,
+  selectedTools
+}: {
+  minimumSalary: MinimumSalaryFilter;
+  seniority: SeniorityFilter;
+  sort: SortKey;
+  selectedMetroAreas: MetroAreaFilter[];
+  selectedTools: EndpointTool[];
+}) {
+  let count = 0;
+
+  if (minimumSalary !== "Any") count += 1;
+  if (seniority !== "All") count += 1;
+  if (sort !== "newest") count += 1;
+  count += selectedMetroAreas.length;
+  count += selectedTools.length;
+
+  return count;
+}
+
+function AdvancedFilters({
   activeFilterCount,
   activeFilterLabel,
   clearFilters,
@@ -432,190 +473,158 @@ function FilterStack({
   seniority: SeniorityFilter;
   sort: SortKey;
 }) {
-  const contentProps = {
-    activeFilterCount,
-    activeFilterLabel,
-    clearFilters,
-    dispatch,
-    selectedMetroAreas,
-    selectedTools,
+  const advancedCount = countAdvancedFilters({
     minimumSalary,
     seniority,
-    sort
-  };
-
-  return (
-    <>
-      <section
-        className="hero-filter-stack hero-filter-stack--desktop"
-        aria-label="Filter stack"
-      >
-        <FilterStackHeading />
-        <FilterStackContent {...contentProps} />
-      </section>
-
-      <details className="hero-filter-stack hero-filter-stack--mobile">
-        <summary className="mobile-filter-summary">
-          <span>
-            <SlidersHorizontal size={17} aria-hidden="true" />
-            More filters
-          </span>
-          <span className="mobile-filter-summary-count">
-            {activeFilterCount > 0 ? activeFilterLabel : "Optional"}
-          </span>
-        </summary>
-        <FilterStackContent {...contentProps} />
-      </details>
-    </>
-  );
-}
-
-function FilterStackHeading() {
-  return (
-    <div className="rail-heading">
-      <SlidersHorizontal size={18} aria-hidden="true" />
-      <span>Filter Stack</span>
-    </div>
-  );
-}
-
-function FilterStackContent({
-  activeFilterCount,
-  activeFilterLabel,
-  clearFilters,
-  dispatch,
-  selectedMetroAreas,
-  selectedTools,
-  minimumSalary,
-  seniority,
-  sort
-}: {
-  activeFilterCount: number;
-  activeFilterLabel: string;
-  clearFilters: () => void;
-  dispatch: FilterDispatch;
-  selectedMetroAreas: MetroAreaFilter[];
-  selectedTools: EndpointTool[];
-  minimumSalary: MinimumSalaryFilter;
-  seniority: SeniorityFilter;
-  sort: SortKey;
-}) {
+    sort,
+    selectedMetroAreas,
+    selectedTools
+  });
+  const hasAdvancedFilters = advancedCount > 0;
   const selectedMetroAreaSet = new Set(selectedMetroAreas);
+  const selectedToolSet = new Set(selectedTools);
+  const advancedFiltersRef = useRef<HTMLDetailsElement>(null);
+
+  useEffect(() => {
+    if (hasAdvancedFilters) {
+      advancedFiltersRef.current?.setAttribute("open", "");
+    }
+  }, [hasAdvancedFilters]);
 
   return (
-    <>
-      <div className="hero-filter-controls">
-        <label className="field">
-          <span>Minimum salary</span>
-          <select
-            value={minimumSalary}
-            onChange={(event) =>
-              dispatch({
-                type: "setMinimumSalary",
-                value: toMinimumSalaryFilter(event.currentTarget.value)
-              })
-            }
-          >
-            {minimumSalaryFilterOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+    <details
+      ref={advancedFiltersRef}
+      className="advanced-filters hero-filter-stack"
+    >
+      <summary className="advanced-filters-summary mobile-filter-summary">
+        <span>
+          <SlidersHorizontal size={17} aria-hidden="true" />
+          Advanced filters
+        </span>
+        <span className="advanced-filters-summary-count mobile-filter-summary-count">
+          {advancedCount > 0
+            ? `${advancedCount} active`
+            : "Optional"}
+        </span>
+      </summary>
 
-        <label className="field">
-          <span>Seniority</span>
-          <select
-            value={seniority}
-            onChange={(event) =>
-              dispatch({
-                type: "setSeniority",
-                value: toSeniorityFilter(event.currentTarget.value)
-              })
-            }
-          >
-            <option value="All">All</option>
-            {seniorityOptions.map((level) => (
-              <option key={level} value={level}>
-                {level}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className="field">
-          <span>Sort</span>
-          <select
-            value={sort}
-            onChange={(event) =>
-              dispatch({ type: "setSort", value: toSortKey(event.currentTarget.value) })
-            }
-          >
-            {sortOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-
-      <div className="facet-group hero-tool-group">
-        <div className="facet-title">
-          <MapPin size={17} aria-hidden="true" />
-          Metro Areas
-        </div>
-        <div className="facet-list">
-          {metroAreaOptions.map((metroArea) => (
-            <ToggleButton
-              key={metroArea}
-              activeClassName="facet-button is-active"
-              inactiveClassName="facet-button"
-              isActive={selectedMetroAreaSet.has(metroArea)}
-              onClick={() => dispatch({ type: "toggleMetroArea", value: metroArea })}
+      <div className="advanced-filters-body">
+        <div className="hero-filter-controls">
+          <label className="field">
+            <span>Minimum salary</span>
+            <select
+              value={minimumSalary}
+              aria-label="Minimum salary"
+              onChange={(event) =>
+                dispatch({
+                  type: "setMinimumSalary",
+                  value: toMinimumSalaryFilter(event.currentTarget.value)
+                })
+              }
             >
-              {metroArea}
-            </ToggleButton>
-          ))}
-        </div>
-      </div>
+              {minimumSalaryFilterOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
 
-      <div className="facet-group hero-tool-group">
-        <div className="facet-title">
-          <Cpu size={17} aria-hidden="true" />
-          Tools
-        </div>
-        <div className="facet-list">
-          {toolOptions.map((tool) => (
-            <ToggleButton
-              key={tool}
-              activeClassName="facet-button is-active"
-              inactiveClassName="facet-button"
-              isActive={selectedTools.includes(tool)}
-              onClick={() => dispatch({ type: "toggleTool", value: tool })}
+          <label className="field">
+            <span>Seniority</span>
+            <select
+              value={seniority}
+              aria-label="Seniority"
+              onChange={(event) =>
+                dispatch({
+                  type: "setSeniority",
+                  value: toSeniorityFilter(event.currentTarget.value)
+                })
+              }
             >
-              {tool}
-            </ToggleButton>
-          ))}
-        </div>
-      </div>
+              <option value="All">All</option>
+              {seniorityOptions.map((level) => (
+                <option key={level} value={level}>
+                  {level}
+                </option>
+              ))}
+            </select>
+          </label>
 
-      {activeFilterCount > 0 ? (
-        <button
-          aria-label={"Clear " + activeFilterLabel}
-          className="clear-button"
-          type="button"
-          onClick={clearFilters}
-        >
-          <X size={17} aria-hidden="true" />
-          <span>Clear</span>
-          <AnimatedNumber
-            className="slot-number slot-number--button"
-            value={activeFilterCount}
-          />
-        </button>
-      ) : null}
-    </>
+          <label className="field">
+            <span>Sort</span>
+            <select
+              value={sort}
+              aria-label="Sort"
+              onChange={(event) =>
+                dispatch({ type: "setSort", value: toSortKey(event.currentTarget.value) })
+              }
+            >
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <div className="facet-group hero-tool-group">
+          <div className="facet-title">
+            <MapPin size={17} aria-hidden="true" />
+            Metro Areas
+          </div>
+          <div className="facet-list">
+            {metroAreaOptions.map((metroArea) => (
+              <ToggleButton
+                key={metroArea}
+                activeClassName="facet-button is-active"
+                inactiveClassName="facet-button"
+                isActive={selectedMetroAreaSet.has(metroArea)}
+                onClick={() => dispatch({ type: "toggleMetroArea", value: metroArea })}
+              >
+                {metroArea}
+              </ToggleButton>
+            ))}
+          </div>
+        </div>
+
+        <div className="facet-group hero-tool-group">
+          <div className="facet-title">
+            <Cpu size={17} aria-hidden="true" />
+            Tools
+          </div>
+          <div className="facet-list">
+            {toolOptions.map((tool) => (
+              <ToggleButton
+                key={tool}
+                activeClassName="facet-button is-active"
+                inactiveClassName="facet-button"
+                isActive={selectedToolSet.has(tool)}
+                onClick={() => dispatch({ type: "toggleTool", value: tool })}
+              >
+                {tool}
+              </ToggleButton>
+            ))}
+          </div>
+        </div>
+
+        {activeFilterCount > 0 ? (
+          <button
+            aria-label={"Clear " + activeFilterLabel}
+            className="clear-button"
+            type="button"
+            onClick={clearFilters}
+          >
+            <X size={17} aria-hidden="true" />
+            <span>Clear</span>
+            <AnimatedNumber
+              className="slot-number slot-number--button"
+              value={activeFilterCount}
+            />
+          </button>
+        ) : null}
+      </div>
+    </details>
   );
 }

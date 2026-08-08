@@ -6,7 +6,7 @@ import type { JobsFeed } from "@/types/job";
 
 import { getActiveFilterItems } from "./job-board/active-filters";
 import { updateComparisonSelection } from "./job-board/comparison-selection";
-import { CommandPanel } from "./job-board/controls";
+import { CommandPanel, StickyActiveFilters } from "./job-board/controls";
 import { filterJobs } from "./job-board/filter-model";
 import { JobMap } from "./job-board/job-map";
 import { JobComparison } from "./job-board/job-comparison";
@@ -118,7 +118,6 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
         >
           <CommandPanel
             activeFilterCount={activeFilterCount}
-            activeFilterItems={activeFilterItems}
             activeFilterLabel={activeFilterLabel}
             activeJobsCount={activeJobs.length}
             clearFilters={clearFilters}
@@ -129,6 +128,12 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
             {...visibleJobMetrics}
           />
         </section>
+
+        <StickyActiveFilters
+          activeFilterItems={activeFilterItems}
+          clearFilters={clearFilters}
+          dispatch={dispatch}
+        />
 
         <JobMap id="map" jobs={visibleJobs} />
 

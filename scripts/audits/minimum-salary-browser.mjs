@@ -9,9 +9,9 @@ export async function auditMinimumSalaryBrowser({
 }) {
   await run("FEAT-074", "Minimum salary dropdown filters and persists in the URL", async () => {
     const page = await newPage(browser, mobileViewport);
-    await page.getByText("More filters").click();
-    const mobileFilterStack = page.locator(".hero-filter-stack--mobile");
-    await mobileFilterStack.getByLabel("Minimum salary").selectOption(
+    const advancedFilters = page.locator(".advanced-filters");
+    await advancedFilters.locator("summary").click();
+    await advancedFilters.getByLabel("Minimum salary").selectOption(
       minimumSalaryScenario.threshold
     );
 
@@ -32,7 +32,7 @@ export async function auditMinimumSalaryBrowser({
     await search.fill("");
 
     await page.getByRole("button", { name: `Remove filter: Minimum: ${expectedLabel}` }).click();
-    await expect(mobileFilterStack.getByLabel("Minimum salary")).toHaveValue("Any");
+    await expect(advancedFilters.getByLabel("Minimum salary")).toHaveValue("Any");
     expect(new URL(page.url()).searchParams.has("minSalary")).toBeFalsy();
     await page.close();
   });
