@@ -68,6 +68,15 @@ async function withPage(browser, viewport, fn, options = {}) {
   return fn(page);
 }
 
+async function openAdvancedFilters(page) {
+  const advancedFilters = page.locator(".advanced-filters:visible").first();
+  if (!(await advancedFilters.evaluate((element) => element.hasAttribute("open")))) {
+    await advancedFilters.locator(".advanced-filters-summary").click();
+  }
+  await expect(advancedFilters).toHaveAttribute("open", "");
+  return advancedFilters;
+}
+
 // Pre-flight: a stale dev/prod server on this port serves outdated chunk
 // hashes, so every static asset 500s and every interaction test fails for
 // reasons unrelated to the code. Detect that up front and fail fast.
@@ -107,31 +116,41 @@ await run("FEAT-007", "Search highlighting renders visible mark elements", async
   await page.close();
 });
 
-await run("FEAT-014", "Desktop filter stack is visible and mobile stack is hidden", async () => {
+await run("FEAT-014", "Desktop advanced filters are visible, closed by default, and reveal Seniority", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
   const state = await page.evaluate(() => ({
-    desktopDisplay: getComputedStyle(document.querySelector(".hero-filter-stack--desktop")).display,
-    mobileDisplay: getComputedStyle(document.querySelector(".hero-filter-stack--mobile")).display,
-    seniorityVisible: Boolean(document.querySelector(".hero-filter-stack--desktop select"))
+    visibleCount: [...document.querySelectorAll(".advanced-filters")].filter(
+      (element) => getComputedStyle(element).display !== "none"
+    ).length,
+    open: [...document.querySelectorAll(".advanced-filters")].some(
+      (element) =>
+        getComputedStyle(element).display !== "none" &&
+        element.hasAttribute("open")
+    )
   }));
-  expect(state.desktopDisplay).not.toBe("none");
-  expect(state.mobileDisplay).toBe("none");
-  expect(state.seniorityVisible).toBeTruthy();
+  expect(state.visibleCount).toBeGreaterThan(0);
+  expect(state.open).toBeFalsy();
+  const advancedFilters = await openAdvancedFilters(page);
+  await expect(advancedFilters.locator(".field", { hasText: "Seniority" })).toBeVisible();
   await page.close();
 });
 
-await run("FEAT-015", "Mobile filter stack expands from More filters", async () => {
+await run("FEAT-015", "Mobile advanced filters are closed by default and expand from Advanced filters", async () => {
   const page = await newPage(browser, { width: 390, height: 844 });
   const state = await page.evaluate(() => ({
-    desktopDisplay: getComputedStyle(document.querySelector(".hero-filter-stack--desktop")).display,
-    mobileDisplay: getComputedStyle(document.querySelector(".hero-filter-stack--mobile")).display,
-    open: document.querySelector(".hero-filter-stack--mobile")?.hasAttribute("open") ?? false
+    visibleCount: [...document.querySelectorAll(".advanced-filters")].filter(
+      (element) => getComputedStyle(element).display !== "none"
+    ).length,
+    open: [...document.querySelectorAll(".advanced-filters")].some(
+      (element) =>
+        getComputedStyle(element).display !== "none" &&
+        element.hasAttribute("open")
+    )
   }));
-  expect(state.desktopDisplay).toBe("none");
-  expect(state.mobileDisplay).not.toBe("none");
+  expect(state.visibleCount).toBeGreaterThan(0);
   expect(state.open).toBeFalsy();
-  await page.getByText("More filters").click();
-  await expect(page.locator(".hero-filter-stack--mobile[open]")).toHaveCount(1);
+  await page.getByText("Advanced filters").click();
+  await expect(page.locator(".advanced-filters:visible[open]")).toHaveCount(1);
   await page.close();
 });
 
@@ -546,7 +565,7 @@ await run("QA-003", "Mobile empty state reset restores results after a location 
 
 await run("QA-008", "UI filters hydrate from URL and chip removal recovers", () => withPage(browser, desktopViewport, async (page) => {
   const salaryToggle = page.getByRole("button", { name: "Salary shown", exact: true });
-  const desktopFilterStack = page.locator(".hero-filter-stack--desktop");
+  const desktopFilterStack = await openAdvancedFilters(page);
   const workplaceSelect = page.locator(".mini-field--workplace select");
 
   await salaryToggle.click();
@@ -581,7 +600,7 @@ await run("QA-008", "UI filters hydrate from URL and chip removal recovers", () 
 }));
 
 await run("FEAT-076", "Leadership filter composes with seniority and persists", () => withPage(browser, desktopViewport, async (page) => {
-  const desktopFilterStack = page.locator(".hero-filter-stack--desktop");
+  const desktopFilterStack = await openAdvancedFilters(page);
   const senioritySelect = desktopFilterStack.locator(".field", { hasText: "Seniority" }).locator("select");
   const leadershipToggle = page.getByRole("button", { name: "Leadership", exact: true });
 
@@ -608,7 +627,7 @@ await run("FEAT-076", "Leadership filter composes with seniority and persists", 
 
 await run("QA-015", "PowerShell tool filter renders and hydrates on desktop and mobile", async () => {
   const desktopPage = await newPage(browser, desktopViewport);
-  const desktopFilterStack = desktopPage.locator(".hero-filter-stack--desktop");
+  const desktopFilterStack = await openAdvancedFilters(desktopPage);
   const desktopPowerShell = desktopFilterStack.getByRole("button", {
     name: "PowerShell",
     exact: true
@@ -625,8 +644,8 @@ await run("QA-015", "PowerShell tool filter renders and hydrates on desktop and 
   await desktopPage.close();
 
   const mobilePage = await newPage(browser, mobileViewport);
-  await mobilePage.getByText("More filters").click();
-  const mobileFilterStack = mobilePage.locator(".hero-filter-stack--mobile");
+  await mobilePage.getByText("Advanced filters").click();
+  const mobileFilterStack = mobilePage.locator(".advanced-filters");
   const mobilePowerShell = mobileFilterStack.getByRole("button", {
     name: "PowerShell",
     exact: true
@@ -644,7 +663,7 @@ await run("QA-015", "PowerShell tool filter renders and hydrates on desktop and 
 await run("QA-014", "Advanced select filters serialize, hydrate, and sort visible results", () => withPage(browser, desktopViewport, async (page) => {
   const roleSelect = page.locator(".high-signal-filters .mini-field", { hasText: "Role" }).locator("select");
   const freshnessSelect = page.locator(".high-signal-filters .mini-field", { hasText: "Freshness" }).locator("select");
-  const desktopFilterStack = page.locator(".hero-filter-stack--desktop");
+  const desktopFilterStack = await openAdvancedFilters(page);
   const senioritySelect = desktopFilterStack.locator(".field", { hasText: "Seniority" }).locator("select");
   const sortSelect = desktopFilterStack.locator(".field", { hasText: "Sort" }).locator("select");
 
@@ -771,7 +790,7 @@ await auditJobsApiBrowser({ baseUrl, browser, desktopViewport, newPage, run });
 
 await run("FEAT-034", "Mobile viewport has no document overflow", async () => {
   const page = await newPage(browser, { width: 390, height: 844 });
-  await page.getByText("More filters").click();
+  await page.getByText("Advanced filters").click();
   const metrics = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
     clientWidth: document.documentElement.clientWidth,
