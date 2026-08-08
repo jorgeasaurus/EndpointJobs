@@ -10,7 +10,7 @@ import {
 import Link from "next/link";
 
 import { formatUpdatedAt } from "@/lib/jobs";
-import { getJobsDirectoryPath } from "@/app/site-metadata";
+import { appVersion, getJobsDirectoryPath } from "@/app/site-metadata";
 
 export function Topbar({ updatedAt }: { updatedAt: string }) {
   return (
@@ -71,6 +71,7 @@ export function SiteFooter({ updatedAt }: { updatedAt: string }) {
       <div className="footer-bottom">
         <div className="footer-meta">
           <span>Made by Jorgeasaurus</span>
+          <span>v{appVersion}</span>
           <span>{formatUpdatedAt(updatedAt)}</span>
         </div>
 
