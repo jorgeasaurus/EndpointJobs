@@ -492,6 +492,7 @@ function AdvancedFilters({
       open={isOpen}
       onToggle={(event) => {
         if (hasAdvancedFilters) {
+          event.currentTarget.open = true;
           return;
         }
         setUserOpen(event.currentTarget.open);
