@@ -9,8 +9,8 @@ export async function auditMinimumSalaryBrowser({
 }) {
   await run("FEAT-074", "Minimum salary dropdown filters and persists in the URL", async () => {
     const page = await newPage(browser, mobileViewport);
-    await page.getByText("Advanced filters").click();
     const advancedFilters = page.locator(".advanced-filters");
+    await advancedFilters.locator("summary").click();
     await advancedFilters.getByLabel("Minimum salary").selectOption(
       minimumSalaryScenario.threshold
     );

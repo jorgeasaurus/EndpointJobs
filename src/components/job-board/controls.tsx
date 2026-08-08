@@ -155,7 +155,7 @@ export function StickyActiveFilters({
   }
 
   return (
-    <div className="sticky-active-filters" aria-label="Active filters">
+    <div className="sticky-active-filters" role="region" aria-label="Active filters">
       <ActiveFilterChips
         activeFilterItems={activeFilterItems}
         clearFilters={clearFilters}
@@ -481,6 +481,8 @@ function AdvancedFilters({
     selectedTools
   });
   const hasAdvancedFilters = advancedCount > 0;
+  const selectedMetroAreaSet = new Set(selectedMetroAreas);
+  const selectedToolSet = new Set(selectedTools);
   const [userOpen, setUserOpen] = useState(false);
   const isOpen = hasAdvancedFilters || userOpen;
 
@@ -579,7 +581,7 @@ function AdvancedFilters({
                 key={metroArea}
                 activeClassName="facet-button is-active"
                 inactiveClassName="facet-button"
-                isActive={selectedMetroAreas.includes(metroArea)}
+                isActive={selectedMetroAreaSet.has(metroArea)}
                 onClick={() => dispatch({ type: "toggleMetroArea", value: metroArea })}
               >
                 {metroArea}
@@ -599,7 +601,7 @@ function AdvancedFilters({
                 key={tool}
                 activeClassName="facet-button is-active"
                 inactiveClassName="facet-button"
-                isActive={selectedTools.includes(tool)}
+                isActive={selectedToolSet.has(tool)}
                 onClick={() => dispatch({ type: "toggleTool", value: tool })}
               >
                 {tool}

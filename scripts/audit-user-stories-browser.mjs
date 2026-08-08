@@ -124,7 +124,7 @@ await run("FEAT-015", "Mobile advanced filters expand from Advanced filters", as
   const advanced = page.locator(".advanced-filters");
   await expect(advanced).toBeVisible();
   await expect(advanced).not.toHaveAttribute("open");
-  await page.getByText("Advanced filters").click();
+  await advanced.locator("summary").click();
   await expect(page.locator(".advanced-filters[open]")).toHaveCount(1);
   await expect(advanced.getByLabel("Seniority")).toBeVisible();
   await page.close();
@@ -626,8 +626,8 @@ await run("QA-015", "PowerShell tool filter renders and hydrates on desktop and 
   await desktopPage.close();
 
   const mobilePage = await newPage(browser, mobileViewport);
-  await mobilePage.getByText("Advanced filters").click();
   const mobileAdvanced = mobilePage.locator(".advanced-filters");
+  await mobileAdvanced.locator("summary").click();
   const mobilePowerShell = mobileAdvanced.getByRole("button", {
     name: "PowerShell",
     exact: true
@@ -773,7 +773,7 @@ await auditJobsApiBrowser({ baseUrl, browser, desktopViewport, newPage, run });
 
 await run("FEAT-034", "Mobile viewport has no document overflow", async () => {
   const page = await newPage(browser, { width: 390, height: 844 });
-  await page.getByText("Advanced filters").click();
+  await page.locator(".advanced-filters summary").click();
   const metrics = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
     clientWidth: document.documentElement.clientWidth,
