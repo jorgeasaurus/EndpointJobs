@@ -167,6 +167,9 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
     assertEqual((markup.match(/role="status"/g) ?? []).length, 1);
     assertIncludes(sources.jobMap, 'import { JobMapCanvasLoading } from "./job-map-loading"');
     assertIncludes(sources.jobMap, "loading: () => <JobMapCanvasLoading />");
+    assertIncludes(sources.jobBoardPrimitivesCss, "color: var(--white-60)");
+    assertIncludes(sources.jobBoardPrimitivesCss, "@supports ((-webkit-background-clip: text) or (background-clip: text))");
+    assertIncludes(sources.jobBoardPrimitivesCss, "-webkit-background-clip: text");
   });
 
   await run("FEAT-035", "Toggle buttons emit explicit pressed state", () => {

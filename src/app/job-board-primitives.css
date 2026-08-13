@@ -59,15 +59,22 @@
 }
 
 .beautiful-loading-label {
-  color: transparent;
-  background: linear-gradient(90deg, var(--white-45) 35%, var(--white) 50%, var(--white-45) 65%);
-  background-clip: text;
-  background-size: 200% 100%;
+  color: var(--white-60);
   font-family: var(--mono);
   font-size: 0.76rem;
   font-weight: 700;
   text-transform: uppercase;
-  animation: route-loading-shimmer 1.4s linear infinite;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .beautiful-loading-label {
+    color: transparent;
+    background: linear-gradient(90deg, var(--white-45) 35%, var(--white) 50%, var(--white-45) 65%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    background-size: 200% 100%;
+    animation: route-loading-shimmer 1.4s linear infinite;
+  }
 }
 
 .beautiful-loading-state--orbit .beautiful-loading-pixels {
