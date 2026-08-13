@@ -33,27 +33,64 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
   useSearchFocusShortcut(searchInputRef);
 
   const activeJobs = feed.jobs;
+  const workplaceEligibleJobs = useMemo(
+    () =>
+      filterJobs(activeJobs, {
+        query: filters.query,
+        locationQuery: filters.locationQuery,
+        selectedPlatforms: filters.selectedPlatforms,
+        selectedTools: filters.selectedTools,
+        selectedMetroAreas: filters.selectedMetroAreas,
+        workplace: "Any",
+        salaryOnly: filters.salaryOnly,
+        leadershipOnly: filters.leadershipOnly,
+        minimumSalary: filters.minimumSalary,
+        seniority: filters.seniority,
+        roleFamily: filters.roleFamily,
+        freshness: filters.freshness,
+        sort: filters.sort
+      }),
+    [
+      activeJobs,
+      filters.freshness,
+      filters.leadershipOnly,
+      filters.locationQuery,
+      filters.minimumSalary,
+      filters.query,
+      filters.roleFamily,
+      filters.salaryOnly,
+      filters.selectedMetroAreas,
+      filters.selectedPlatforms,
+      filters.selectedTools,
+      filters.seniority,
+      filters.sort
+    ]
+  );
   const workplaceCounts = useMemo(() => {
-    const eligibleJobs = filterJobs(activeJobs, { ...filters, workplace: "Any" });
     const counts: Record<WorkplaceFilter, number> = {
-      Any: eligibleJobs.length,
+      Any: workplaceEligibleJobs.length,
       Remote: 0,
       Hybrid: 0,
       "On-site": 0
     };
 
-    for (const job of eligibleJobs) {
+    for (const job of workplaceEligibleJobs) {
       if (job.workplace !== "Unknown") {
         counts[job.workplace] += 1;
       }
     }
 
     return counts;
-  }, [activeJobs, filters]);
+  }, [workplaceEligibleJobs]);
 
   const visibleJobs = useMemo(
-    () => filterJobs(activeJobs, filters),
-    [activeJobs, filters]
+    () =>
+      filters.workplace === "Any"
+        ? workplaceEligibleJobs
+        : workplaceEligibleJobs.filter(
+            (job) => job.workplace === filters.workplace
+          ),
+    [filters.workplace, workplaceEligibleJobs]
   );
   const visibleJobMetrics = useMemo(() => {
     let mappedJobsCount = 0;

@@ -19,6 +19,7 @@ export function ToolChips({
     const visiblePlatforms = platforms.slice(0, limit);
     const visibleTools = tools.slice(0, Math.max(0, limit - visiblePlatforms.length));
     const hiddenCount = platforms.length + tools.length - visiblePlatforms.length - visibleTools.length;
+    const hiddenTechnologyLabel = hiddenCount === 1 ? "technology" : "technologies";
 
     return (
       <div className="tag-row tool-chips" aria-label="Matched tools and platforms">
@@ -42,7 +43,7 @@ export function ToolChips({
         ))}
         {hiddenCount > 0 ? (
           <span
-            aria-label={`${hiddenCount} additional technologies; open job details to view`}
+            aria-label={`${hiddenCount} additional ${hiddenTechnologyLabel}; open job details to view`}
             className="tool-chip tool-chip--more"
           >
             +{hiddenCount} more

@@ -51,22 +51,25 @@ export function WorkplaceFilters({
         Workplace
       </span>
       <div className="workplace-filter" aria-label="Workplace" role="group">
-        {workplaceFilterOptions.map((option) => (
-          <ToggleButton
-            activeClassName="workplace-filter-button is-active"
-            inactiveClassName="workplace-filter-button"
-            isActive={workplace === option.value}
-            key={option.value}
-            onClick={() =>
-              dispatch({ type: "setWorkplace", value: option.value })
-            }
-          >
-            <span>{option.label}</span>
-            <strong aria-label={`${workplaceCounts[option.value]} roles`}>
-              {workplaceCounts[option.value]}
-            </strong>
-          </ToggleButton>
-        ))}
+        {workplaceFilterOptions.map((option) => {
+          const count = workplaceCounts[option.value];
+          return (
+            <ToggleButton
+              activeClassName="workplace-filter-button is-active"
+              inactiveClassName="workplace-filter-button"
+              isActive={workplace === option.value}
+              key={option.value}
+              onClick={() =>
+                dispatch({ type: "setWorkplace", value: option.value })
+              }
+            >
+              <span>{option.label}</span>
+              <strong aria-label={`${count} ${count === 1 ? "role" : "roles"}`}>
+                {count}
+              </strong>
+            </ToggleButton>
+          );
+        })}
       </div>
     </section>
   );

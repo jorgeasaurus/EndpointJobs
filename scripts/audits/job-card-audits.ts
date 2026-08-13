@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 import { formatUpdatedAt, isActiveJob } from "../../src/lib/jobs";
 import { JobContextCards } from "../../src/components/job-board/job-context-cards";
+import { WorkplaceFilters } from "../../src/components/job-board/location-filters";
 import { ToolChips } from "../../src/components/job-board/tool-chips";
 import { JobMapCanvasLoading } from "../../src/components/job-board/job-map-loading";
 
@@ -116,6 +117,28 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
     assertNotIncludes(unsafeSourceMarkup, 'href="javascript:');
   });
 
+  await run("QA-022", "Facet counts and technology overflow use grammatical labels", () => {
+    const workplaceMarkup = renderToStaticMarkup(
+      createElement(WorkplaceFilters, {
+        dispatch: () => undefined,
+        workplace: "Any",
+        workplaceCounts: { Any: 1, Remote: 0, Hybrid: 0, "On-site": 0 }
+      })
+    );
+    assertIncludes(workplaceMarkup, 'aria-label="1 role"');
+    assertNotIncludes(workplaceMarkup, 'aria-label="1 roles"');
+
+    const overflowMarkup = renderToStaticMarkup(
+      createElement(ToolChips, {
+        platforms: ["Windows"],
+        tools: ["Intune"],
+        limit: 1
+      })
+    );
+    assertIncludes(overflowMarkup, "1 additional technology; open job details to view");
+    assertNotIncludes(overflowMarkup, "1 additional technologies");
+  });
+
   await run("FEAT-077", "Technology chips stay compact and disclose overflow", () => {
     const denseJob = feed.jobs.find((job) => job.platforms.length + job.tools.length > 8);
     assertTruthy(denseJob, "feed needs a technology-dense listing fixture");
@@ -129,7 +152,10 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
     );
     const hiddenCount = denseJob.platforms.length + denseJob.tools.length - 8;
     assertIncludes(markup, `+${hiddenCount} more`);
-    assertIncludes(markup, `${hiddenCount} additional technologies`);
+    assertIncludes(
+      markup,
+      `${hiddenCount} additional ${hiddenCount === 1 ? "technology" : "technologies"}`
+    );
   });
 
   await run("FEAT-079", "Map fallback exposes one busy loading status", () => {
