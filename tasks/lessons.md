@@ -56,3 +56,4 @@
 - Marketing assets should use evergreen magnitude labels for volatile live totals unless the value is injected from current data at render time.
 - Ad search demonstrations should use the user's preferred representative query verbatim instead of inferring a more specialized example.
 - Multi-control facet rails need their own layout row; nesting one beneath a peer in a shared grid stretches adjacent controls and destroys hierarchy. Verify the exact reported viewport before committing the design.
+- Compact filter metadata still needs to be comfortably legible; validate label and count type sizes at the reported desktop and mobile widths, not only for overflow.
