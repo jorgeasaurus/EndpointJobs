@@ -235,6 +235,7 @@
   }
 
   .job-detail-sidebar {
+    order: -1;
     border-top: 1px solid var(--glass-border);
     border-left: 0;
   }

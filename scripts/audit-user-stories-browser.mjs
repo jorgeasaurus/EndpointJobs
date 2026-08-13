@@ -333,8 +333,46 @@ await run("QA-017", "Job titles open canonical detail pages without mobile overf
   await page.waitForURL(/\/jobs\//, { waitUntil: "networkidle" });
   await expect(page.locator("h1")).toHaveText(title);
   await expect(page.getByRole("link", { name: "Apply for this role" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Why this role is here" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Detected signals" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Source record" })).toBeVisible();
+  const sourceListing = page.getByRole("link", { name: "View source listing" });
+  await expect(sourceListing).toHaveAttribute("target", "_blank");
+  await expect(sourceListing).toHaveAttribute("rel", /noopener noreferrer/);
+  await expect(page.getByRole("heading", { name: "Detected stack" })).toBeVisible();
+  await expect(page.locator(".job-context-card--stack .tool-chip").first()).toBeVisible();
   const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
   expect(canonical).toBe(`https://endpointjobs.dev${new URL(page.url()).pathname}`);
+  const viewport = await page.evaluate(() => ({
+    clientWidth: document.documentElement.clientWidth,
+    scrollWidth: document.documentElement.scrollWidth
+  }));
+  expect(viewport.scrollWidth).toBeLessThanOrEqual(viewport.clientWidth);
+  await page.close();
+});
+
+await run("QA-021", "API docs expose contract-derived examples without mobile overflow", async () => {
+  const page = await newPage(browser, mobileViewport);
+  const apiDocsLink = page.getByRole("link", { name: "Open API documentation" });
+  await expect(apiDocsLink).toHaveAttribute("href", "/api-docs");
+  await expect(apiDocsLink).not.toHaveAttribute("target", "_blank");
+  await apiDocsLink.click();
+  await page.waitForURL(/\/api-docs$/, { waitUntil: "networkidle" });
+
+  await expect(page.getByRole("heading", { name: "Query endpoint roles from your own tools." })).toBeVisible();
+  await expect(page.getByText("GET /api/jobs", { exact: true })).toBeVisible();
+  await expect(page.getByText("GET /api/jobs/{id}", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "OpenAPI specification" })).toHaveAttribute("href", "/openapi.json");
+  for (const parameter of ["metroAreas", "leadership", "limit"]) {
+    await expect(page.getByRole("rowheader", { name: parameter })).toBeVisible();
+  }
+
+  const copyButton = page.getByRole("button", { name: "Copy curl request" });
+  await copyButton.focus();
+  await copyButton.press("Enter");
+  await expect(copyButton).toBeFocused();
+  await expect(page.locator(".api-code-block").first().getByText("Copied curl request to clipboard")).toBeAttached();
+
   const viewport = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
     scrollWidth: document.documentElement.scrollWidth

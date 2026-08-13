@@ -20,6 +20,7 @@ import {
 import type { Job } from "@/types/job";
 
 import { MatchRecommendation } from "./match-recommendation";
+import { ToolChips } from "./tool-chips";
 
 export function JobCard({
   compareDisabled,
@@ -104,11 +105,7 @@ export function JobCard({
         <span>{job.employmentType}</span>
       </div>
 
-      <div className="tag-row" aria-label="Matched tools and platforms">
-        {[...job.platforms, ...job.tools].slice(0, 8).map((tag) => (
-          <span key={tag}>{tag}</span>
-        ))}
-      </div>
+      <ToolChips platforms={job.platforms} tools={job.tools} />
 
       <div className="job-actions">
         <span className="attribution-label" title={job.attributionLabel}>

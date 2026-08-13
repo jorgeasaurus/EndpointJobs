@@ -6,7 +6,13 @@ const loadingPixels = ["nw", "n", "ne", "w", "c", "e", "sw", "s", "se"];
 
 // Adapted from Beautiful UI's Loading State primitive.
 // https://www.beautifului.dev/#loading-state
-export function LoadingState({ label }: { label: string }) {
+export function LoadingState({
+  label,
+  variant = "grid"
+}: {
+  label: string;
+  variant?: "grid" | "orbit";
+}) {
   const [deciseconds, setDeciseconds] = useState(0);
 
   useEffect(() => {
@@ -18,7 +24,11 @@ export function LoadingState({ label }: { label: string }) {
   }, []);
 
   return (
-    <span className="beautiful-loading-state" role="status" aria-live="polite">
+    <span
+      className={`beautiful-loading-state beautiful-loading-state--${variant}`}
+      role="status"
+      aria-live="polite"
+    >
       <span className="beautiful-loading-pixels" aria-hidden="true">
         {loadingPixels.map((pixel) => (
           <span key={pixel} />

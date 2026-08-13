@@ -72,7 +72,7 @@ function JobMapCanvasLoading() {
       className="job-map-canvas-wrap job-map-canvas-wrap--loading"
       id="job-map-canvas"
     >
-      <LoadingState label="Loading map" />
+      <LoadingState label="Loading map" variant="orbit" />
     </output>
   );
 }

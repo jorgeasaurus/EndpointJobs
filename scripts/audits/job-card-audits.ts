@@ -2,6 +2,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import { formatUpdatedAt, isActiveJob } from "../../src/lib/jobs";
+import { ToolChips } from "../../src/components/job-board/tool-chips";
 
 import {
   assertEqual,
@@ -98,6 +99,24 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
     assertIncludes(jobCardMarkup, "Matched tools and platforms");
     assertIncludes(jobCardMarkup, "Windows");
     assertIncludes(jobCardMarkup, "Autopilot");
+    assertIncludes(jobCardMarkup, "Platform: Windows");
+    assertIncludes(jobCardMarkup, "Tool: Autopilot");
+  });
+
+  await run("FEAT-077", "Technology chips stay compact and disclose overflow", () => {
+    const denseJob = feed.jobs.find((job) => job.platforms.length + job.tools.length > 8);
+    assertTruthy(denseJob, "feed needs a technology-dense listing fixture");
+    if (!denseJob) return;
+
+    const markup = renderToStaticMarkup(
+      createElement(ToolChips, {
+        platforms: denseJob.platforms,
+        tools: denseJob.tools
+      })
+    );
+    const hiddenCount = denseJob.platforms.length + denseJob.tools.length - 8;
+    assertIncludes(markup, `+${hiddenCount} more`);
+    assertIncludes(markup, `${hiddenCount} additional technologies`);
   });
 
   await run("FEAT-035", "Toggle buttons emit explicit pressed state", () => {

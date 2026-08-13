@@ -25,6 +25,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
       images: [new URL(ogImage.url, siteUrl).toString()]
     },
+    {
+      url: new URL("/api-docs", siteUrl).toString(),
+      lastModified: new Date(feed.updatedAt),
+      changeFrequency: "weekly",
+      priority: 0.6
+    },
     ...jobPages
   ];
 }

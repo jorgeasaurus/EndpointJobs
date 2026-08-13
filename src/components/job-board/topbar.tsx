@@ -10,7 +10,7 @@ import {
 import Link from "next/link";
 
 import { formatUpdatedAt } from "@/lib/jobs";
-import { appVersion, getJobsDirectoryPath } from "@/app/site-metadata";
+import { appVersion, getApiDocsPath, getJobsDirectoryPath } from "@/app/site-metadata";
 
 export function Topbar({ updatedAt }: { updatedAt: string }) {
   return (
@@ -27,17 +27,15 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
           <RefreshCw size={15} aria-hidden="true" />
           {formatUpdatedAt(updatedAt)}
         </span>
-        <a
-          aria-label="Open API documentation on GitHub"
+        <Link
+          aria-label="Open API documentation"
           className="feedback-link api-docs-link"
-          href="https://github.com/jorgeasaurus/EndpointJobs/blob/main/docs/api.md"
-          rel="noopener noreferrer"
-          target="_blank"
-          title="Open API documentation on GitHub"
+          href={getApiDocsPath()}
+          title="Open API documentation"
         >
           <FileJson size={15} aria-hidden="true" />
           <span>API docs</span>
-        </a>
+        </Link>
         <a
           aria-label="Open PowerShell module documentation on GitHub"
           className="feedback-link powershell-docs-link"

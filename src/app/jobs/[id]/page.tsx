@@ -13,6 +13,7 @@ import {
 import type { Job, JobsFeed } from "@/types/job";
 
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
+import { JobContextCards } from "@/components/job-board/job-context-cards";
 import { SiteFooter, Topbar } from "@/components/job-board/topbar";
 import {
   getJobPath,
@@ -199,15 +200,7 @@ export default async function JobPage({ params }: JobPageProps) {
                 ) : null}
               </dl>
 
-              {[...job.platforms, ...job.tools].length > 0 ? (
-                <div className="job-detail-tags" aria-label="Platforms and tools">
-                  {[...job.platforms, ...job.tools].map((tag) => (
-                    <span key={tag}>{tag}</span>
-                  ))}
-                </div>
-              ) : null}
-
-              <p className="job-detail-attribution">{job.attributionLabel}</p>
+              <JobContextCards job={job} />
             </aside>
           </div>
         </article>
