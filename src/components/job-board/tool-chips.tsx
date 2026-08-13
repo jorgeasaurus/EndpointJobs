@@ -22,7 +22,11 @@ export function ToolChips({
     const hiddenTechnologyLabel = hiddenCount === 1 ? "technology" : "technologies";
 
     return (
-      <div className="tag-row tool-chips" aria-label="Matched tools and platforms">
+      <div
+        className="tag-row tool-chips"
+        aria-label="Matched tools and platforms"
+        role="group"
+      >
         {visiblePlatforms.map((platform) => (
           <span
             aria-label={`Platform: ${platform}`}
@@ -57,7 +61,7 @@ export function ToolChips({
     <div className="tool-chip-groups">
       {platforms.length > 0 ? (
         <section>
-          <h3>Platforms</h3>
+          <h4>Platforms</h4>
           <div className="tool-chips">
             {platforms.map((platform) => (
               <span className="tool-chip tool-chip--platform" key={platform}>
@@ -69,7 +73,7 @@ export function ToolChips({
       ) : null}
       {tools.length > 0 ? (
         <section>
-          <h3>Tools</h3>
+          <h4>Tools</h4>
           <div className="tool-chips">
             {tools.map((tool) => (
               <span className="tool-chip tool-chip--tool" key={tool}>

@@ -111,6 +111,7 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
     assertIncludes(jobCardMarkup, "Autopilot");
     assertIncludes(jobCardMarkup, "Platform: Windows");
     assertIncludes(jobCardMarkup, "Tool: Autopilot");
+    assertIncludes(jobCardMarkup, 'role="group"');
 
     const sourceJob = feed.jobs[0];
     assertTruthy(sourceJob, "feed needs a source-link fixture");
@@ -130,6 +131,17 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
     );
     assertIncludes(normalizedSourceMarkup, 'href="https://example.com/jobs"');
     assertNotIncludes(normalizedSourceMarkup, "EXAMPLE.com:443");
+
+    const groupedChipsMarkup = renderToStaticMarkup(
+      createElement(ToolChips, {
+        platforms: ["Windows"],
+        tools: ["Intune"],
+        variant: "grouped"
+      })
+    );
+    assertIncludes(groupedChipsMarkup, "<h4>Platforms</h4>");
+    assertIncludes(groupedChipsMarkup, "<h4>Tools</h4>");
+    assertNotIncludes(groupedChipsMarkup, "<h3>");
   });
 
   await run("QA-022", "Facet counts and technology overflow use grammatical labels", () => {
