@@ -74,7 +74,9 @@ export function JobContextCards({ job }: { job: Job }) {
 function getSafeExternalUrl(value: string) {
   try {
     const url = new URL(value);
-    return url.protocol === "http:" || url.protocol === "https:" ? value : null;
+    return url.protocol === "http:" || url.protocol === "https:"
+      ? url.toString()
+      : null;
   } catch {
     return null;
   }

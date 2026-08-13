@@ -115,6 +115,14 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
     );
     assertNotIncludes(unsafeSourceMarkup, "View source listing");
     assertNotIncludes(unsafeSourceMarkup, 'href="javascript:');
+
+    const normalizedSourceMarkup = renderToStaticMarkup(
+      createElement(JobContextCards, {
+        job: { ...sourceJob, sourceUrl: "https://EXAMPLE.com:443/jobs" }
+      })
+    );
+    assertIncludes(normalizedSourceMarkup, 'href="https://example.com/jobs"');
+    assertNotIncludes(normalizedSourceMarkup, "EXAMPLE.com:443");
   });
 
   await run("QA-022", "Facet counts and technology overflow use grammatical labels", () => {
