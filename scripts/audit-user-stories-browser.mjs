@@ -89,7 +89,12 @@ async function withPage(browser, viewport, fn, options = {}) {
   }
 }
 
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({
+  headless: true,
+  ...(process.env.PLAYWRIGHT_EXECUTABLE_PATH
+    ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH }
+    : {})
+});
 
 await run("FEAT-006", "Slash keyboard shortcut focuses search input", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
@@ -104,6 +109,49 @@ await run("FEAT-007", "Search highlighting renders visible mark elements", async
   await page.locator('input[data-job-search="true"]').fill("Intune");
   await expect(page.locator(".active-filter-chip", { hasText: "Search: Intune" })).toBeVisible();
   await expect(page.locator("mark.search-hit").first()).toBeVisible();
+  await page.close();
+});
+
+await run("FEAT-076", "Search reports results and clears without losing focus", async () => {
+  const page = await newPage(browser, desktopViewport);
+  const search = page.locator('input[data-job-search="true"]');
+  await search.fill("Intune");
+  await expect(page.locator("#job-search-status")).toContainText(/\d+ roles? found/);
+  await page.getByRole("button", { name: "Clear job search" }).click();
+  await expect(search).toHaveValue("");
+  await expect(search).toBeFocused();
+  await expect(page.locator(".active-filter-chip", { hasText: "Search:" })).toHaveCount(0);
+  await page.close();
+});
+
+await run("QA-019", "Workplace chips preview counts and preserve pressed state", async () => {
+  const page = await newPage(browser, desktopViewport);
+  const workplace = page.getByRole("group", { name: "Workplace" });
+  const any = workplace.getByRole("button", { name: /Any/ });
+  const remote = workplace.getByRole("button", { name: /Remote/ });
+  const anyCount = Number((await any.getByText(/\d+/).textContent()) ?? 0);
+  const remoteCount = Number((await remote.getByText(/\d+/).textContent()) ?? 0);
+
+  expect(anyCount).toBeGreaterThan(0);
+  expect(remoteCount).toBeGreaterThan(0);
+  expect(remoteCount).toBeLessThan(anyCount);
+  await remote.click();
+  await expect(remote).toHaveAttribute("aria-pressed", "true");
+  await expect(any).toHaveAttribute("aria-pressed", "false");
+  await expect(remote).toBeFocused();
+  await expect(page.locator(".active-filter-chip", { hasText: "Remote" })).toBeVisible();
+  await page.close();
+});
+
+await run("QA-020", "Match evidence discloses every detected signal", async () => {
+  const page = await newPage(browser, desktopViewport);
+  const disclosure = page.locator(".match-recommendation-more").first();
+  await expect(disclosure).toBeVisible();
+  const summary = disclosure.locator("summary");
+  await summary.focus();
+  await summary.press("Enter");
+  await expect(disclosure).toHaveAttribute("open", "");
+  await expect(disclosure.locator(".match-recommendation-drawer span").first()).toBeVisible();
   await page.close();
 });
 
@@ -285,8 +333,48 @@ await run("QA-017", "Job titles open canonical detail pages without mobile overf
   await page.waitForURL(/\/jobs\//, { waitUntil: "networkidle" });
   await expect(page.locator("h1")).toHaveText(title);
   await expect(page.getByRole("link", { name: "Apply for this role" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Why this role is here" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Detected signals" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Source record" })).toBeVisible();
+  const sourceListing = page.getByRole("link", { name: "View source listing" });
+  await expect(sourceListing).toHaveAttribute("target", "_blank");
+  await expect(sourceListing).toHaveAttribute("rel", /noopener noreferrer/);
+  await expect(page.getByRole("heading", { name: "Detected stack" })).toBeVisible();
+  await expect(page.locator(".job-context-card--stack .tool-chip").first()).toBeVisible();
   const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
   expect(canonical).toBe(`https://endpointjobs.dev${new URL(page.url()).pathname}`);
+  const viewport = await page.evaluate(() => ({
+    clientWidth: document.documentElement.clientWidth,
+    scrollWidth: document.documentElement.scrollWidth
+  }));
+  expect(viewport.scrollWidth).toBeLessThanOrEqual(viewport.clientWidth);
+  await page.close();
+});
+
+await run("QA-021", "API docs expose contract-derived examples without mobile overflow", async () => {
+  const page = await newPage(browser, mobileViewport, {
+    contextOptions: { permissions: ["clipboard-read", "clipboard-write"] }
+  });
+  const apiDocsLink = page.getByRole("link", { name: "Open API documentation" });
+  await expect(apiDocsLink).toHaveAttribute("href", "/api-docs");
+  await expect(apiDocsLink).not.toHaveAttribute("target", "_blank");
+  await apiDocsLink.click();
+  await page.waitForURL(/\/api-docs$/, { waitUntil: "networkidle" });
+
+  await expect(page.getByRole("heading", { name: "Query endpoint roles from your own tools." })).toBeVisible();
+  await expect(page.getByText("GET /api/jobs", { exact: true })).toBeVisible();
+  await expect(page.getByText("GET /api/jobs/{id}", { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "OpenAPI specification" })).toHaveAttribute("href", "/openapi.json");
+  for (const parameter of ["metroAreas", "leadership", "limit"]) {
+    await expect(page.getByRole("rowheader", { name: parameter })).toBeVisible();
+  }
+
+  const copyButton = page.getByRole("button", { name: "Copy curl request" });
+  await copyButton.focus();
+  await copyButton.press("Enter");
+  await expect(copyButton).toBeFocused();
+  await expect(page.locator(".api-code-block").first().getByText("Copied curl request to clipboard")).toBeAttached();
+
   const viewport = await page.evaluate(() => ({
     clientWidth: document.documentElement.clientWidth,
     scrollWidth: document.documentElement.scrollWidth
@@ -542,11 +630,12 @@ await run("QA-003", "Mobile empty state reset restores results after a location 
 await run("QA-008", "UI filters hydrate from URL and chip removal recovers", () => withPage(browser, desktopViewport, async (page) => {
   const salaryToggle = page.getByRole("button", { name: "Salary shown", exact: true });
   const advancedFilters = page.locator(".advanced-filters");
-  const workplaceSelect = page.locator(".mini-field--workplace select");
+  const workplaceRemote = page.getByRole("group", { name: "Workplace" })
+    .getByRole("button", { name: /Remote/ });
 
   await salaryToggle.click();
   await page.getByRole("button", { name: "Windows" }).click();
-  await workplaceSelect.selectOption("Remote");
+  await workplaceRemote.click();
   await advancedFilters.locator("summary").click();
   await advancedFilters.getByRole("button", { name: "Intune", exact: true }).click();
 
@@ -563,7 +652,7 @@ await run("QA-008", "UI filters hydrate from URL and chip removal recovers", () 
   await page.reload({ waitUntil: "networkidle" });
   await expect(salaryToggle).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator(".facet-button.is-active", { hasText: "Windows" })).toBeVisible();
-  await expect(workplaceSelect).toHaveValue("Remote");
+  await expect(workplaceRemote).toHaveAttribute("aria-pressed", "true");
   await expect(advancedFilters.locator(".facet-button.is-active", { hasText: "Intune" })).toBeVisible();
   await expect(page.locator(".job-card").first()).toBeVisible();
 
@@ -694,7 +783,9 @@ await run("QA-013", "Mobile horizontal filters and chips stay reachable", async 
   const page = await newPage(browser, { width: 390, height: 844 });
   await page.getByRole("button", { name: "Salary shown", exact: true }).click();
   await page.getByPlaceholder("City, state, or country").fill("Remote");
-  await page.locator(".mini-field--workplace select").selectOption("Remote");
+  await page.getByRole("group", { name: "Workplace" })
+    .getByRole("button", { name: /Remote/ })
+    .click();
 
   for (const platform of ["macOS", "Windows", "iOS", "Android", "Linux"]) {
     const button = page.getByRole("button", { name: platform, exact: true });

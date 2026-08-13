@@ -46,6 +46,7 @@ export const sourcePaths = {
   issueConfig: ".github/ISSUE_TEMPLATE/config.yml",
   issueTemplate: ".github/ISSUE_TEMPLATE/report-or-request.yml",
   jobBoard: "src/components/job-board.tsx",
+  jobBoardPrimitivesCss: "src/app/job-board-primitives.css",
   jobCard: "src/components/job-board/job-card.tsx",
   jobExclusions: "src/lib/job-exclusions.ts",
   jobMap: "src/components/job-board/job-map.tsx",

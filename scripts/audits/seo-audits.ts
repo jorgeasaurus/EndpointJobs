@@ -172,6 +172,7 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     assertIncludes(sources.sitemap, "siteUrl");
     assertIncludes(sources.sitemap, "images");
     assertIncludes(sources.sitemap, "getJobUrl(job.id)", "job detail URLs");
+    assertIncludes(sources.sitemap, "getApiDocsPath()", "API docs URL");
     assertIncludes(sources.sitemap, "isActiveJob(job)", "active jobs only");
     assertIncludes(sources.sitemap, "getCanonicalSeoJobs(activeJobs)", "canonical jobs only");
     assertNotIncludes(sources.sitemap, "job.fetchedAt", "fetch time as false last-modified");

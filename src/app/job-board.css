@@ -441,8 +441,7 @@ h1 {
 
 .quick-filters,
 .facet-list,
-.tag-row,
-.match-row {
+.tag-row {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -452,6 +451,9 @@ h1 {
   margin-top: 14px;
 }
 
+.workplace-filter-panel + .quick-filters {
+  margin-top: 10px;
+}
 .quick-filters + .advanced-filters {
   margin-top: 14px;
 }
@@ -547,9 +549,7 @@ h1 {
 .attribution-label,
 .site-footer,
 .source-pill,
-.posted-pill,
-.tag-row span,
-.match-row span {
+.posted-pill {
   font-family: var(--mono);
   text-transform: uppercase;
 }
@@ -832,7 +832,6 @@ h1 {
 .source-pill,
 .posted-pill,
 .workplace,
-.tag-row span,
 .metadata-row span {
   min-height: 30px;
   padding: 0 9px;
@@ -1004,25 +1003,6 @@ h1 {
   overflow-wrap: anywhere;
 }
 
-.match-row {
-  grid-column: 1;
-  margin-top: 14px;
-}
-
-.match-row span {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 30px;
-  padding: 0 9px;
-  color: var(--lime);
-  background: rgb(190 242 100 / 8%);
-  border: 1px solid rgb(190 242 100 / 22%);
-  border-radius: 8px;
-  font-size: 0.68rem;
-  font-weight: 700;
-}
-
 .metadata-row {
   grid-column: 1;
   flex-wrap: wrap;
@@ -1040,14 +1020,6 @@ h1 {
 .tag-row {
   grid-column: 1;
   margin-top: 14px;
-}
-
-.tag-row span {
-  display: inline-flex;
-  align-items: center;
-  color: var(--emerald);
-  background: rgb(45 212 191 / 10%);
-  border: 1px solid rgb(45 212 191 / 20%);
 }
 
 .job-actions {

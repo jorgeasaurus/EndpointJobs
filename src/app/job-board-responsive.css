@@ -425,15 +425,12 @@
     line-height: 1.55;
   }
 
-  .match-row,
   .metadata-row,
   .tag-row {
     margin-top: 12px;
   }
 
-  .match-row span,
-  .metadata-row span,
-  .tag-row span {
+  .metadata-row span {
     max-width: 100%;
     overflow-wrap: anywhere;
     white-space: normal;
@@ -495,9 +492,7 @@
   .source-pill,
   .posted-pill,
   .workplace,
-  .tag-row span,
-  .metadata-row span,
-  .match-row span {
+  .metadata-row span {
     font-size: 0.62rem;
   }
 }

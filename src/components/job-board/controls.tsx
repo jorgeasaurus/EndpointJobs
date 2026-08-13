@@ -6,7 +6,6 @@ import {
   Cpu,
   DollarSign,
   MapPin,
-  Search,
   ShieldCheck,
   SlidersHorizontal,
   UsersRound,
@@ -23,8 +22,9 @@ import type { EndpointTool, Platform } from "@/types/job";
 
 import { AnimatedNumber } from "./animated-number";
 import type { ActiveFilterItem } from "./active-filters";
+import { JobSearch } from "./job-search";
 import { ToggleButton } from "./toggle-button";
-import { LocationFilters } from "./location-filters";
+import { LocationFilters, WorkplaceFilters } from "./location-filters";
 import {
   freshnessFilterOptions,
   metroAreaOptions,
@@ -39,7 +39,8 @@ import type {
   MinimumSalaryFilter,
   RoleFamilyFilter,
   SeniorityFilter,
-  SortKey
+  SortKey,
+  WorkplaceFilter
 } from "./filter-model";
 import {
   toFreshnessFilter,
@@ -60,7 +61,8 @@ export function CommandPanel({
   remoteJobsCount,
   salaryJobsCount,
   searchInputRef,
-  visibleJobsCount
+  visibleJobsCount,
+  workplaceCounts
 }: {
   activeFilterCount: number;
   activeFilterLabel: string;
@@ -73,6 +75,7 @@ export function CommandPanel({
   salaryJobsCount: number;
   searchInputRef: RefObject<HTMLInputElement | null>;
   visibleJobsCount: number;
+  workplaceCounts: Record<WorkplaceFilter, number>;
 }) {
   return (
     <div className="command-panel">
@@ -99,6 +102,7 @@ export function CommandPanel({
             query={filters.query}
             salaryOnly={filters.salaryOnly}
             searchInputRef={searchInputRef}
+            visibleJobsCount={visibleJobsCount}
           />
           <div className="command-filter-grid">
             <HighSignalFilters
@@ -109,9 +113,13 @@ export function CommandPanel({
             <LocationFilters
               dispatch={dispatch}
               locationQuery={filters.locationQuery}
-              workplace={filters.workplace}
             />
           </div>
+          <WorkplaceFilters
+            dispatch={dispatch}
+            workplace={filters.workplace}
+            workplaceCounts={workplaceCounts}
+          />
           <PlatformFilters
             dispatch={dispatch}
             selectedPlatforms={filters.selectedPlatforms}
@@ -254,30 +262,24 @@ function SearchStrip({
   leadershipOnly,
   query,
   salaryOnly,
-  searchInputRef
+  searchInputRef,
+  visibleJobsCount
 }: {
   dispatch: FilterDispatch;
   leadershipOnly: boolean;
   query: string;
   salaryOnly: boolean;
   searchInputRef: RefObject<HTMLInputElement | null>;
+  visibleJobsCount: number;
 }) {
   return (
     <div className="search-strip">
-      <label className="search-box">
-        <Search size={20} aria-hidden="true" />
-        <span className="sr-only">Search jobs</span>
-        <input
-          ref={searchInputRef}
-          data-job-search="true"
-          type="search"
-          value={query}
-          onChange={(event) =>
-            dispatch({ type: "setQuery", value: event.currentTarget.value })
-          }
-          placeholder="Search Jamf, Intune, macOS, SCCM, Kandji..."
-        />
-      </label>
+      <JobSearch
+        inputRef={searchInputRef}
+        onQueryChange={(value) => dispatch({ type: "setQuery", value })}
+        query={query}
+        resultCount={visibleJobsCount}
+      />
 
       <div className="search-mode-buttons">
         <ToggleButton

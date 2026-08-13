@@ -62,8 +62,11 @@ export function JobComparison({
                   Categories
                 </span>
               </th>
-              {jobs.map((job) => (
+              {jobs.map((job, index) => (
                 <th className="comparison-job-heading" key={job.id} scope="col">
+                  <span className="comparison-record-index" aria-hidden="true">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
                   <button
                     aria-label={`Remove ${job.title} at ${job.company} from comparison`}
                     className="comparison-remove"
@@ -88,6 +91,11 @@ export function JobComparison({
               jobs={jobs}
               label="Tools"
               render={(job) => [...job.platforms, ...job.tools].join(", ") || "Not specified"}
+            />
+            <ComparisonRow
+              jobs={jobs}
+              label="Match signals"
+              render={(job) => job.matchReasons.join(", ")}
             />
             <ComparisonRow
               jobs={jobs}

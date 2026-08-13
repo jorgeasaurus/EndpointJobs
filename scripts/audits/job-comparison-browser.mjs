@@ -17,20 +17,29 @@ export async function auditJobComparisonBrowser({
     await expect(prompt.getByText("Select one more role to compare.")).toBeVisible();
     await prompt.getByRole("button", { name: "Clear" }).click();
     await expect(prompt).toHaveCount(0);
-    await desktopPage.getByRole("button", { name: "Compare", exact: true }).first().click();
+    const cards = desktopPage.locator(".job-card");
+    const selectionOrder = [2, 0, 3, 1];
+    const selectedTitles = [];
 
-    for (let selectedCount = 1; selectedCount < 4; selectedCount += 1) {
-      await desktopPage.getByRole("button", { name: "Compare", exact: true }).first().click();
+    for (const cardIndex of selectionOrder) {
+      const card = cards.nth(cardIndex);
+      selectedTitles.push((await card.locator(".job-title-link").textContent() ?? "").trim());
+      await card.getByRole("button", { name: "Compare", exact: true }).click();
     }
 
     await expect(desktopPage.getByRole("heading", { name: "Compare 4 roles" })).toBeVisible();
     const table = desktopPage.getByRole("table", { name: "Job comparison" });
     await expect(table).toBeVisible();
     await expectCategoriesInFirstHeaderCell(table);
-    for (const label of ["Employer", "Salary", "Location", "Workplace", "Seniority", "Tools", "Freshness", "Apply"]) {
+    await expectComparisonOrder(table, selectedTitles);
+    for (const label of ["Employer", "Salary", "Location", "Workplace", "Seniority", "Tools", "Match signals", "Freshness", "Apply"]) {
       await expect(table.getByRole("rowheader", { name: label })).toBeVisible();
     }
     await expect(desktopPage.getByRole("button", { name: "Compare", exact: true }).first()).toBeDisabled();
+
+    await desktopPage.locator(".comparison-remove").first().click();
+    await cards.nth(selectionOrder[0]).getByRole("button", { name: "Compare", exact: true }).click();
+    await expectComparisonOrder(table, [...selectedTitles.slice(1), selectedTitles[0]]);
 
     const search = desktopPage.getByRole("searchbox", { name: "Search jobs" });
     await search.fill("no matching comparison card");
@@ -84,4 +93,11 @@ async function expectCategoriesInFirstHeaderCell(table) {
   }));
 
   expect(position).toEqual({ cellIndex: 0, rowIndex: 0 });
+}
+
+async function expectComparisonOrder(table, titles) {
+  await expect(table.locator(".comparison-job-heading strong")).toHaveText(titles);
+  await expect(table.locator(".comparison-record-index")).toHaveText(
+    titles.map((_, index) => String(index + 1).padStart(2, "0"))
+  );
 }

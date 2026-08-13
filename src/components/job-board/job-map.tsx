@@ -8,6 +8,8 @@ import { ChevronDown, MapPin } from "lucide-react";
 import { buildJobMapPoints, type JobMapPoint } from "@/lib/job-map";
 import type { Job } from "@/types/job";
 
+import { JobMapCanvasLoading } from "./job-map-loading";
+
 const LazyJobMapCanvas = dynamic<{ points: JobMapPoint[] }>(
   () => import("./job-map-canvas").then((module) => module.JobMapCanvas),
   {
@@ -60,17 +62,5 @@ export function JobMap({ id, jobs }: { id?: string; jobs: Job[] }) {
 
       {isExpanded ? <LazyJobMapCanvas points={points} /> : null}
     </section>
-  );
-}
-
-function JobMapCanvasLoading() {
-  return (
-    <output
-      aria-label="Loading map"
-      className="job-map-canvas-wrap job-map-canvas-wrap--loading"
-      id="job-map-canvas"
-    >
-      <span className="job-map-loading">Loading map</span>
-    </output>
   );
 }

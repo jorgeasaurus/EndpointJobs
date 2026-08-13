@@ -1,0 +1,241 @@
+.api-docs-frame {
+  width: min(1220px, 100%);
+}
+
+.api-docs-page {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.api-docs-hero,
+.api-endpoints,
+.api-docs-examples,
+.api-parameter-section,
+.api-response-section {
+  padding: clamp(22px, 4vw, 44px);
+  background: rgb(13 17 20 / 88%);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.api-docs-hero h1 {
+  max-width: 800px;
+  margin: 9px 0 14px;
+  font-size: clamp(2rem, 5vw, 4.35rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.api-docs-hero > p,
+.api-section-heading p,
+.api-docs-examples > div > p,
+.api-endpoints article p {
+  color: var(--white-60);
+  line-height: 1.6;
+}
+
+.api-docs-hero > p {
+  max-width: 680px;
+  margin: 0;
+}
+
+.api-docs-hero nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 24px;
+}
+
+.api-docs-hero nav a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 0 14px;
+  color: var(--white-60);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.api-docs-hero nav a:first-child {
+  color: var(--black);
+  background: var(--lime);
+  border-color: var(--lime);
+}
+
+.api-docs-hero nav a:focus-visible,
+.api-code-block button:focus-visible,
+.api-code-block pre:focus-visible,
+.api-table-scroll:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+}
+
+.api-endpoints {
+  display: grid;
+  grid-template-columns: minmax(190px, 0.8fr) repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.api-section-heading h2,
+.api-docs-examples h2 {
+  margin: 7px 0 8px;
+  font-size: 1.45rem;
+}
+
+.api-section-heading p,
+.api-docs-examples > div > p {
+  margin: 0;
+}
+
+.api-endpoints article {
+  padding: 17px;
+  background: rgb(0 0 0 / 22%);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+}
+
+.api-endpoints article code {
+  color: var(--white);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+
+.api-endpoints article code strong {
+  margin-right: 7px;
+  color: var(--lime);
+}
+
+.api-endpoints article p {
+  margin: 10px 0 0;
+  font-size: 0.9rem;
+}
+
+.api-docs-examples,
+.api-response-section {
+  display: grid;
+  gap: 12px;
+}
+
+.api-code-block {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  background: rgb(0 0 0 / 40%);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+}
+
+.api-code-block figcaption {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 10px;
+  padding-left: 14px;
+  color: var(--white);
+  border-bottom: 1px solid var(--glass-border);
+  font-family: var(--mono);
+  font-size: 0.69rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.api-code-language {
+  color: var(--white-45);
+}
+
+.api-code-block button {
+  display: inline-flex;
+  min-width: 92px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
+  margin-left: auto;
+  color: var(--white-60);
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--glass-border);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.api-code-block pre {
+  padding: 17px;
+  margin: 0;
+  overflow-x: auto;
+  color: var(--emerald);
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  line-height: 1.7;
+  tab-size: 2;
+  white-space: pre;
+}
+
+.api-parameter-section {
+  display: grid;
+  gap: 18px;
+}
+
+.api-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+}
+
+.api-table-scroll table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+}
+
+.api-table-scroll th,
+.api-table-scroll td {
+  padding: 12px 14px;
+  color: var(--white-60);
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  text-align: left;
+  vertical-align: top;
+}
+
+.api-table-scroll thead th,
+.api-table-scroll tbody th {
+  color: var(--white);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+}
+
+.api-table-scroll tbody th code {
+  color: var(--lime);
+}
+
+@media (max-width: 760px) {
+  .api-endpoints {
+    grid-template-columns: 1fr;
+  }
+
+  .api-docs-hero nav a {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .api-code-block figcaption {
+    padding-left: 11px;
+  }
+
+  .api-code-language {
+    display: none;
+  }
+}

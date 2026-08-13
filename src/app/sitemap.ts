@@ -5,7 +5,7 @@ import { getCanonicalSeoJobs } from "@/lib/job-seo";
 import { isActiveJob } from "@/lib/jobs";
 import type { JobsFeed } from "@/types/job";
 
-import { getJobUrl, ogImage, siteUrl } from "./site-metadata";
+import { getApiDocsPath, getJobUrl, ogImage, siteUrl } from "./site-metadata";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const feed = feedData as JobsFeed;
@@ -24,6 +24,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "daily",
       priority: 1,
       images: [new URL(ogImage.url, siteUrl).toString()]
+    },
+    {
+      url: new URL(getApiDocsPath(), siteUrl).toString(),
+      lastModified: new Date(feed.updatedAt),
+      changeFrequency: "weekly",
+      priority: 0.6
     },
     ...jobPages
   ];

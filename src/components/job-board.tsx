@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 
 import type { JobsFeed } from "@/types/job";
+import type { WorkplaceFilter } from "./job-board/filter-model";
 
 import { getActiveFilterItems } from "./job-board/active-filters";
 import { updateComparisonSelection } from "./job-board/comparison-selection";
@@ -32,10 +33,64 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
   useSearchFocusShortcut(searchInputRef);
 
   const activeJobs = feed.jobs;
+  const workplaceEligibleJobs = useMemo(
+    () =>
+      filterJobs(activeJobs, {
+        query: filters.query,
+        locationQuery: filters.locationQuery,
+        selectedPlatforms: filters.selectedPlatforms,
+        selectedTools: filters.selectedTools,
+        selectedMetroAreas: filters.selectedMetroAreas,
+        workplace: "Any",
+        salaryOnly: filters.salaryOnly,
+        leadershipOnly: filters.leadershipOnly,
+        minimumSalary: filters.minimumSalary,
+        seniority: filters.seniority,
+        roleFamily: filters.roleFamily,
+        freshness: filters.freshness,
+        sort: filters.sort
+      }),
+    [
+      activeJobs,
+      filters.freshness,
+      filters.leadershipOnly,
+      filters.locationQuery,
+      filters.minimumSalary,
+      filters.query,
+      filters.roleFamily,
+      filters.salaryOnly,
+      filters.selectedMetroAreas,
+      filters.selectedPlatforms,
+      filters.selectedTools,
+      filters.seniority,
+      filters.sort
+    ]
+  );
+  const workplaceCounts = useMemo(() => {
+    const counts: Record<WorkplaceFilter, number> = {
+      Any: workplaceEligibleJobs.length,
+      Remote: 0,
+      Hybrid: 0,
+      "On-site": 0
+    };
+
+    for (const job of workplaceEligibleJobs) {
+      if (job.workplace !== "Unknown") {
+        counts[job.workplace] += 1;
+      }
+    }
+
+    return counts;
+  }, [workplaceEligibleJobs]);
 
   const visibleJobs = useMemo(
-    () => filterJobs(activeJobs, filters),
-    [activeJobs, filters]
+    () =>
+      filters.workplace === "Any"
+        ? workplaceEligibleJobs
+        : workplaceEligibleJobs.filter(
+            (job) => job.workplace === filters.workplace
+          ),
+    [filters.workplace, workplaceEligibleJobs]
   );
   const visibleJobMetrics = useMemo(() => {
     let mappedJobsCount = 0;
@@ -58,10 +113,15 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
 
     return { mappedJobsCount, remoteJobsCount, salaryJobsCount };
   }, [visibleJobs]);
-  const comparedJobs = useMemo(
-    () => activeJobs.filter((job) => selectedJobIds.has(job.id)),
-    [activeJobs, selectedJobIds]
+  const jobsById = useMemo(
+    () => new Map(activeJobs.map((job) => [job.id, job])),
+    [activeJobs]
   );
+  const comparedJobs = useMemo(() => {
+    return [...selectedJobIds]
+      .map((jobId) => jobsById.get(jobId))
+      .filter((job): job is JobsFeed["jobs"][number] => Boolean(job));
+  }, [jobsById, selectedJobIds]);
 
   const totalPages = Math.max(1, Math.ceil(visibleJobs.length / jobsPerPage));
   const currentPage = pagination.filterKey === filterKey ? pagination.page : 1;
@@ -123,6 +183,7 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
             clearFilters={clearFilters}
             dispatch={dispatch}
             filters={filters}
+            workplaceCounts={workplaceCounts}
             searchInputRef={searchInputRef}
             visibleJobsCount={visibleJobs.length}
             {...visibleJobMetrics}

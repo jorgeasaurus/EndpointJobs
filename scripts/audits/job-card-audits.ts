@@ -2,6 +2,11 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import { formatUpdatedAt, isActiveJob } from "../../src/lib/jobs";
+import { JobContextCards } from "../../src/components/job-board/job-context-cards";
+import { WorkplaceFilters } from "../../src/components/job-board/location-filters";
+import { MatchRecommendation } from "../../src/components/job-board/match-recommendation";
+import { ToolChips } from "../../src/components/job-board/tool-chips";
+import { JobMapCanvasLoading } from "../../src/components/job-board/job-map-loading";
 
 import {
   assertEqual,
@@ -85,14 +90,113 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
   });
 
   await run("FEAT-028", "Match reasons render on job cards", () => {
-    assertIncludes(jobCardMarkup, "Endpoint match reasons");
+    assertIncludes(jobCardMarkup, "match-recommendation");
+    assertIncludes(jobCardMarkup, "Why this role is included");
+    assertIncludes(jobCardMarkup, "4 signals");
+    assertIncludes(jobCardMarkup, "View 1 more");
     assertIncludes(jobCardMarkup, "Intune + Autopilot");
+    assertIncludes(jobCardMarkup, "Device management");
+    assertNotIncludes(jobCardMarkup, "confidence");
+
+    const singleSignalMarkup = renderToStaticMarkup(
+      createElement(MatchRecommendation, { reasons: ["Endpoint engineering"] })
+    );
+    assertIncludes(singleSignalMarkup, "1 signal");
+    assertNotIncludes(singleSignalMarkup, "1 signals");
   });
 
   await run("FEAT-029", "Platform and tool tags render on job cards", () => {
     assertIncludes(jobCardMarkup, "Matched tools and platforms");
     assertIncludes(jobCardMarkup, "Windows");
     assertIncludes(jobCardMarkup, "Autopilot");
+    assertIncludes(jobCardMarkup, "Platform: Windows");
+    assertIncludes(jobCardMarkup, "Tool: Autopilot");
+    assertIncludes(jobCardMarkup, 'role="group"');
+
+    const sourceJob = feed.jobs[0];
+    assertTruthy(sourceJob, "feed needs a source-link fixture");
+    if (!sourceJob) return;
+    const unsafeSourceMarkup = renderToStaticMarkup(
+      createElement(JobContextCards, {
+        job: { ...sourceJob, sourceUrl: "javascript:alert(1)" }
+      })
+    );
+    assertNotIncludes(unsafeSourceMarkup, "View source listing");
+    assertNotIncludes(unsafeSourceMarkup, 'href="javascript:');
+
+    const normalizedSourceMarkup = renderToStaticMarkup(
+      createElement(JobContextCards, {
+        job: { ...sourceJob, sourceUrl: "https://EXAMPLE.com:443/jobs" }
+      })
+    );
+    assertIncludes(normalizedSourceMarkup, 'href="https://example.com/jobs"');
+    assertNotIncludes(normalizedSourceMarkup, "EXAMPLE.com:443");
+
+    const groupedChipsMarkup = renderToStaticMarkup(
+      createElement(ToolChips, {
+        platforms: ["Windows"],
+        tools: ["Intune"],
+        variant: "grouped"
+      })
+    );
+    assertIncludes(groupedChipsMarkup, "<h4>Platforms</h4>");
+    assertIncludes(groupedChipsMarkup, "<h4>Tools</h4>");
+    assertNotIncludes(groupedChipsMarkup, "<h3>");
+  });
+
+  await run("QA-022", "Facet counts and technology overflow use grammatical labels", () => {
+    const workplaceMarkup = renderToStaticMarkup(
+      createElement(WorkplaceFilters, {
+        dispatch: () => undefined,
+        workplace: "Any",
+        workplaceCounts: { Any: 1, Remote: 0, Hybrid: 0, "On-site": 0 }
+      })
+    );
+    assertIncludes(workplaceMarkup, 'aria-label="1 role"');
+    assertNotIncludes(workplaceMarkup, 'aria-label="1 roles"');
+
+    const overflowMarkup = renderToStaticMarkup(
+      createElement(ToolChips, {
+        platforms: ["Windows"],
+        tools: ["Intune"],
+        limit: 1
+      })
+    );
+    assertIncludes(overflowMarkup, "1 additional technology; open job details to view");
+    assertNotIncludes(overflowMarkup, "1 additional technologies");
+  });
+
+  await run("FEAT-077", "Technology chips stay compact and disclose overflow", () => {
+    const denseJob = feed.jobs.find((job) => job.platforms.length + job.tools.length > 8);
+    assertTruthy(denseJob, "feed needs a technology-dense listing fixture");
+    if (!denseJob) return;
+
+    const markup = renderToStaticMarkup(
+      createElement(ToolChips, {
+        platforms: denseJob.platforms,
+        tools: denseJob.tools
+      })
+    );
+    const hiddenCount = denseJob.platforms.length + denseJob.tools.length - 8;
+    assertIncludes(markup, `+${hiddenCount} more`);
+    assertIncludes(
+      markup,
+      `${hiddenCount} additional ${hiddenCount === 1 ? "technology" : "technologies"}`
+    );
+  });
+
+  await run("FEAT-079", "Map fallback exposes one busy loading status", () => {
+    const markup = renderToStaticMarkup(createElement(JobMapCanvasLoading));
+    assertIncludes(markup, 'aria-busy="true"');
+    assertIncludes(markup, 'role="status"');
+    assertIncludes(markup, "Loading map");
+    assertIncludes(markup, "beautiful-loading-state--orbit");
+    assertEqual((markup.match(/role="status"/g) ?? []).length, 1);
+    assertIncludes(sources.jobMap, 'import { JobMapCanvasLoading } from "./job-map-loading"');
+    assertIncludes(sources.jobMap, "loading: () => <JobMapCanvasLoading />");
+    assertIncludes(sources.jobBoardPrimitivesCss, "color: var(--white-60)");
+    assertIncludes(sources.jobBoardPrimitivesCss, "@supports ((-webkit-background-clip: text) or (background-clip: text))");
+    assertIncludes(sources.jobBoardPrimitivesCss, "-webkit-background-clip: text");
   });
 
   await run("FEAT-035", "Toggle buttons emit explicit pressed state", () => {
