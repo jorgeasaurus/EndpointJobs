@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { formatUpdatedAt, isActiveJob } from "../../src/lib/jobs";
 import { JobContextCards } from "../../src/components/job-board/job-context-cards";
 import { WorkplaceFilters } from "../../src/components/job-board/location-filters";
+import { MatchRecommendation } from "../../src/components/job-board/match-recommendation";
 import { ToolChips } from "../../src/components/job-board/tool-chips";
 import { JobMapCanvasLoading } from "../../src/components/job-board/job-map-loading";
 
@@ -96,6 +97,12 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
     assertIncludes(jobCardMarkup, "Intune + Autopilot");
     assertIncludes(jobCardMarkup, "Device management");
     assertNotIncludes(jobCardMarkup, "confidence");
+
+    const singleSignalMarkup = renderToStaticMarkup(
+      createElement(MatchRecommendation, { reasons: ["Endpoint engineering"] })
+    );
+    assertIncludes(singleSignalMarkup, "1 signal");
+    assertNotIncludes(singleSignalMarkup, "1 signals");
   });
 
   await run("FEAT-029", "Platform and tool tags render on job cards", () => {

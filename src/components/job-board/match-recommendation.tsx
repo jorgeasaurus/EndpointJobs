@@ -13,7 +13,9 @@ export function MatchRecommendation({ reasons }: { reasons: string[] }) {
           <Sparkles size={15} aria-hidden="true" />
           Why this role is included
         </span>
-        <strong>{reasons.length} signals</strong>
+        <strong>
+          {reasons.length} {reasons.length === 1 ? "signal" : "signals"}
+        </strong>
       </div>
 
       <div className="match-row">
