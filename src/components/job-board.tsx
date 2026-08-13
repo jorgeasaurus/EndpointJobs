@@ -76,12 +76,15 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
 
     return { mappedJobsCount, remoteJobsCount, salaryJobsCount };
   }, [visibleJobs]);
+  const jobsById = useMemo(
+    () => new Map(activeJobs.map((job) => [job.id, job])),
+    [activeJobs]
+  );
   const comparedJobs = useMemo(() => {
-    const jobsById = new Map(activeJobs.map((job) => [job.id, job]));
     return [...selectedJobIds]
       .map((jobId) => jobsById.get(jobId))
       .filter((job): job is JobsFeed["jobs"][number] => Boolean(job));
-  }, [activeJobs, selectedJobIds]);
+  }, [jobsById, selectedJobIds]);
 
   const totalPages = Math.max(1, Math.ceil(visibleJobs.length / jobsPerPage));
   const currentPage = pagination.filterKey === filterKey ? pagination.page : 1;

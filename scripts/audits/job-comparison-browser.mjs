@@ -23,7 +23,7 @@ export async function auditJobComparisonBrowser({
 
     for (const cardIndex of selectionOrder) {
       const card = cards.nth(cardIndex);
-      selectedTitles.push((await card.locator(".job-title-link").textContent()).trim());
+      selectedTitles.push((await card.locator(".job-title-link").textContent() ?? "").trim());
       await card.getByRole("button", { name: "Compare", exact: true }).click();
     }
 

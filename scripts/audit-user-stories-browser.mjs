@@ -352,7 +352,9 @@ await run("QA-017", "Job titles open canonical detail pages without mobile overf
 });
 
 await run("QA-021", "API docs expose contract-derived examples without mobile overflow", async () => {
-  const page = await newPage(browser, mobileViewport);
+  const page = await newPage(browser, mobileViewport, {
+    contextOptions: { permissions: ["clipboard-read", "clipboard-write"] }
+  });
   const apiDocsLink = page.getByRole("link", { name: "Open API documentation" });
   await expect(apiDocsLink).toHaveAttribute("href", "/api-docs");
   await expect(apiDocsLink).not.toHaveAttribute("target", "_blank");
