@@ -107,6 +107,18 @@ await run("FEAT-007", "Search highlighting renders visible mark elements", async
   await page.close();
 });
 
+await run("FEAT-076", "Search reports results and clears without losing focus", async () => {
+  const page = await newPage(browser, desktopViewport);
+  const search = page.locator('input[data-job-search="true"]');
+  await search.fill("Intune");
+  await expect(page.locator("#job-search-status")).toContainText(/\d+ roles? found/);
+  await page.getByRole("button", { name: "Clear job search" }).click();
+  await expect(search).toHaveValue("");
+  await expect(search).toBeFocused();
+  await expect(page.locator(".active-filter-chip", { hasText: "Search:" })).toHaveCount(0);
+  await page.close();
+});
+
 await run("FEAT-014", "Advanced filters stay collapsed until requested on desktop", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
   const advanced = page.locator(".advanced-filters");

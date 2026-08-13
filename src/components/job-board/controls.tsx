@@ -6,7 +6,6 @@ import {
   Cpu,
   DollarSign,
   MapPin,
-  Search,
   ShieldCheck,
   SlidersHorizontal,
   UsersRound,
@@ -23,6 +22,7 @@ import type { EndpointTool, Platform } from "@/types/job";
 
 import { AnimatedNumber } from "./animated-number";
 import type { ActiveFilterItem } from "./active-filters";
+import { JobSearch } from "./job-search";
 import { ToggleButton } from "./toggle-button";
 import { LocationFilters } from "./location-filters";
 import {
@@ -99,6 +99,7 @@ export function CommandPanel({
             query={filters.query}
             salaryOnly={filters.salaryOnly}
             searchInputRef={searchInputRef}
+            visibleJobsCount={visibleJobsCount}
           />
           <div className="command-filter-grid">
             <HighSignalFilters
@@ -254,30 +255,24 @@ function SearchStrip({
   leadershipOnly,
   query,
   salaryOnly,
-  searchInputRef
+  searchInputRef,
+  visibleJobsCount
 }: {
   dispatch: FilterDispatch;
   leadershipOnly: boolean;
   query: string;
   salaryOnly: boolean;
   searchInputRef: RefObject<HTMLInputElement | null>;
+  visibleJobsCount: number;
 }) {
   return (
     <div className="search-strip">
-      <label className="search-box">
-        <Search size={20} aria-hidden="true" />
-        <span className="sr-only">Search jobs</span>
-        <input
-          ref={searchInputRef}
-          data-job-search="true"
-          type="search"
-          value={query}
-          onChange={(event) =>
-            dispatch({ type: "setQuery", value: event.currentTarget.value })
-          }
-          placeholder="Search Jamf, Intune, macOS, SCCM, Kandji..."
-        />
-      </label>
+      <JobSearch
+        inputRef={searchInputRef}
+        onQueryChange={(value) => dispatch({ type: "setQuery", value })}
+        query={query}
+        resultCount={visibleJobsCount}
+      />
 
       <div className="search-mode-buttons">
         <ToggleButton
