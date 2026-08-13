@@ -51,7 +51,12 @@ const jobCardMarkup = renderToStaticMarkup(
       description: `Manage Intune endpoint policy.\n\n${"Long endpoint operations details. ".repeat(40)}`,
       salary: { min: 120000, max: 150000, currency: "USD", label: "$120k-$150k" },
       tags: ["Windows", "Intune"],
-      matchReasons: ["Intune + Autopilot", "Endpoint engineering"],
+      matchReasons: [
+        "Intune + Autopilot",
+        "Endpoint engineering",
+        "Windows platform",
+        "Device management"
+      ],
       tools: ["Intune", "Autopilot"],
       platforms: ["Windows"],
       roleFamily: "Endpoint Engineering",

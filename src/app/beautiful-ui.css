@@ -1,0 +1,92 @@
+.route-loading {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  padding: 24px;
+  color: var(--white);
+}
+
+.route-loading-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  background: rgb(13 17 20 / 88%);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.beautiful-loading-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.beautiful-loading-pixels {
+  display: grid;
+  grid-template-columns: repeat(3, 4px);
+  gap: 2px;
+}
+
+.beautiful-loading-pixels span {
+  width: 4px;
+  height: 4px;
+  background: var(--lime);
+  border-radius: 1px;
+  opacity: 0.15;
+  animation: route-loading-pixel 650ms ease-in-out infinite;
+}
+
+.beautiful-loading-pixels span:nth-child(2),
+.beautiful-loading-pixels span:nth-child(6),
+.beautiful-loading-pixels span:nth-child(8) {
+  animation-delay: 90ms;
+}
+
+.beautiful-loading-pixels span:nth-child(3),
+.beautiful-loading-pixels span:nth-child(5),
+.beautiful-loading-pixels span:nth-child(7) {
+  animation-delay: 180ms;
+}
+
+.beautiful-loading-pixels span:nth-child(1),
+.beautiful-loading-pixels span:nth-child(4),
+.beautiful-loading-pixels span:nth-child(9) {
+  animation-delay: 270ms;
+}
+
+.beautiful-loading-label {
+  color: transparent;
+  background: linear-gradient(90deg, var(--white-45) 35%, var(--white) 50%, var(--white-45) 65%);
+  background-clip: text;
+  background-size: 200% 100%;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  animation: route-loading-shimmer 1.4s linear infinite;
+}
+
+.beautiful-loading-elapsed {
+  min-width: 3.2em;
+  color: var(--white-45);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes route-loading-pixel {
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes route-loading-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}

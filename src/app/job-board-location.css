@@ -22,8 +22,69 @@
 
 .location-filter-row {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(180px, 220px);
+  grid-template-columns: minmax(0, 1fr);
   gap: 9px;
+  min-width: 0;
+}
+
+.workplace-filter {
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+  width: 100%;
+  padding: 4px;
+  overflow-x: auto;
+  background: rgb(0 0 0 / 42%);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  scrollbar-width: none;
+}
+
+.workplace-filter::-webkit-scrollbar {
+  display: none;
+}
+
+.workplace-filter-button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 8px;
+  color: var(--white-60);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  transition: background 150ms var(--curve), color 150ms var(--curve), transform 150ms var(--curve);
+}
+
+.workplace-filter-button:hover {
+  color: var(--white);
+  background: var(--glass-strong);
+}
+
+.workplace-filter-button:active {
+  transform: scale(0.96);
+}
+
+.workplace-filter-button:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: -2px;
+}
+
+.workplace-filter-button.is-active {
+  color: var(--black);
+  background: var(--lime);
+}
+
+.workplace-filter-button strong {
+  min-width: 20px;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .location-search-box {
@@ -73,6 +134,10 @@
   .location-filter-row {
     grid-template-columns: 1fr;
     gap: 7px;
+  }
+
+  .workplace-filter-button {
+    min-height: 40px;
   }
 
   .location-search-box {

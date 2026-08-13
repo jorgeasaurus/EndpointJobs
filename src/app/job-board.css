@@ -1004,9 +1004,48 @@ h1 {
   overflow-wrap: anywhere;
 }
 
-.match-row {
+.match-recommendation {
   grid-column: 1;
   margin-top: 14px;
+  overflow: hidden;
+  background: rgb(190 242 100 / 4%);
+  border: 1px solid rgb(190 242 100 / 18%);
+  border-radius: 8px;
+}
+
+.match-recommendation-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 38px;
+  padding: 0 10px;
+  border-bottom: 1px solid rgb(190 242 100 / 14%);
+}
+
+.match-recommendation-heading span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--white);
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.match-recommendation-heading svg,
+.match-recommendation-heading strong {
+  color: var(--lime);
+}
+
+.match-recommendation-heading strong,
+.match-recommendation-more summary {
+  font-family: var(--mono);
+  font-size: 0.64rem;
+  text-transform: uppercase;
+}
+
+.match-row {
+  padding: 10px;
 }
 
 .match-row span {
@@ -1021,6 +1060,55 @@ h1 {
   border-radius: 8px;
   font-size: 0.68rem;
   font-weight: 700;
+}
+
+.match-recommendation-more {
+  border-top: 1px solid rgb(190 242 100 / 14%);
+}
+
+.match-recommendation-more summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 36px;
+  padding: 0 10px;
+  color: var(--white-60);
+  cursor: pointer;
+  list-style: none;
+}
+
+.match-recommendation-more summary::-webkit-details-marker {
+  display: none;
+}
+
+.match-recommendation-more summary svg {
+  color: var(--lime);
+  transition: transform 180ms var(--curve);
+}
+
+.match-recommendation-more[open] summary svg {
+  transform: rotate(180deg);
+}
+
+.match-recommendation-drawer {
+  display: grid;
+  gap: 7px;
+  padding: 10px;
+  background: rgb(0 0 0 / 18%);
+  border-top: 1px solid rgb(255 255 255 / 6%);
+}
+
+.match-recommendation-drawer span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--white-60);
+  font-size: 0.78rem;
+}
+
+.match-recommendation-drawer svg {
+  flex: 0 0 auto;
+  color: var(--lime);
 }
 
 .metadata-row {

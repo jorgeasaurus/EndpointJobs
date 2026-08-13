@@ -27,7 +27,7 @@ export async function auditJobComparisonBrowser({
     const table = desktopPage.getByRole("table", { name: "Job comparison" });
     await expect(table).toBeVisible();
     await expectCategoriesInFirstHeaderCell(table);
-    for (const label of ["Employer", "Salary", "Location", "Workplace", "Seniority", "Tools", "Freshness", "Apply"]) {
+    for (const label of ["Employer", "Salary", "Location", "Workplace", "Seniority", "Tools", "Match signals", "Freshness", "Apply"]) {
       await expect(table.getByRole("rowheader", { name: label })).toBeVisible();
     }
     await expect(desktopPage.getByRole("button", { name: "Compare", exact: true }).first()).toBeDisabled();

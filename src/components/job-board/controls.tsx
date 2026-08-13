@@ -39,7 +39,8 @@ import type {
   MinimumSalaryFilter,
   RoleFamilyFilter,
   SeniorityFilter,
-  SortKey
+  SortKey,
+  WorkplaceFilter
 } from "./filter-model";
 import {
   toFreshnessFilter,
@@ -60,7 +61,8 @@ export function CommandPanel({
   remoteJobsCount,
   salaryJobsCount,
   searchInputRef,
-  visibleJobsCount
+  visibleJobsCount,
+  workplaceCounts
 }: {
   activeFilterCount: number;
   activeFilterLabel: string;
@@ -73,6 +75,7 @@ export function CommandPanel({
   salaryJobsCount: number;
   searchInputRef: RefObject<HTMLInputElement | null>;
   visibleJobsCount: number;
+  workplaceCounts: Record<WorkplaceFilter, number>;
 }) {
   return (
     <div className="command-panel">
@@ -111,6 +114,7 @@ export function CommandPanel({
               dispatch={dispatch}
               locationQuery={filters.locationQuery}
               workplace={filters.workplace}
+              workplaceCounts={workplaceCounts}
             />
           </div>
           <PlatformFilters

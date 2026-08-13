@@ -86,7 +86,12 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
 
   await run("FEAT-028", "Match reasons render on job cards", () => {
     assertIncludes(jobCardMarkup, "Endpoint match reasons");
+    assertIncludes(jobCardMarkup, "Why this role is included");
+    assertIncludes(jobCardMarkup, "4 signals");
+    assertIncludes(jobCardMarkup, "View 1 more");
     assertIncludes(jobCardMarkup, "Intune + Autopilot");
+    assertIncludes(jobCardMarkup, "Device management");
+    assertNotIncludes(jobCardMarkup, "confidence");
   });
 
   await run("FEAT-029", "Platform and tool tags render on job cards", () => {

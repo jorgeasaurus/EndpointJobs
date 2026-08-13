@@ -5,16 +5,18 @@ import type {
   FilterDispatch,
   WorkplaceFilter
 } from "./filter-model";
-import { toWorkplaceFilter } from "./filter-url";
+import { ToggleButton } from "./toggle-button";
 
 export function LocationFilters({
   dispatch,
   locationQuery,
-  workplace
+  workplace,
+  workplaceCounts
 }: {
   dispatch: FilterDispatch;
   locationQuery: string;
   workplace: WorkplaceFilter;
+  workplaceCounts: Record<WorkplaceFilter, number>;
 }) {
   return (
     <section className="location-filter-panel" aria-label="Location filters">
@@ -35,25 +37,24 @@ export function LocationFilters({
           />
         </label>
 
-        <label className="mini-field mini-field--workplace">
-          <MapPin size={17} aria-hidden="true" />
-          <span>Workplace</span>
-          <select
-            value={workplace}
-            onChange={(event) =>
-              dispatch({
-                type: "setWorkplace",
-                value: toWorkplaceFilter(event.currentTarget.value)
-              })
-            }
-          >
-            {workplaceFilterOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="workplace-filter" aria-label="Workplace" role="group">
+          {workplaceFilterOptions.map((option) => (
+            <ToggleButton
+              activeClassName="workplace-filter-button is-active"
+              inactiveClassName="workplace-filter-button"
+              isActive={workplace === option.value}
+              key={option.value}
+              onClick={() =>
+                dispatch({ type: "setWorkplace", value: option.value })
+              }
+            >
+              <span>{option.label}</span>
+              <strong aria-label={`${workplaceCounts[option.value]} roles`}>
+                {workplaceCounts[option.value]}
+              </strong>
+            </ToggleButton>
+          ))}
+        </div>
       </div>
     </section>
   );

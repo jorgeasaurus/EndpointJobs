@@ -4,7 +4,6 @@ import { Fragment } from "react";
 import { getJobPath } from "@/app/site-metadata";
 import {
   BriefcaseBusiness,
-  CheckCircle2,
   ChevronDown,
   Clock3,
   DollarSign,
@@ -19,6 +18,8 @@ import {
   getFreshnessLabel
 } from "@/lib/jobs";
 import type { Job } from "@/types/job";
+
+import { MatchRecommendation } from "./match-recommendation";
 
 export function JobCard({
   compareDisabled,
@@ -90,14 +91,7 @@ export function JobCard({
         </details>
       ) : null}
 
-      <div className="match-row" aria-label="Endpoint match reasons">
-        {job.matchReasons.slice(0, 3).map((reason) => (
-          <span key={reason}>
-            <CheckCircle2 size={14} aria-hidden="true" />
-            {reason}
-          </span>
-        ))}
-      </div>
+      <MatchRecommendation reasons={job.matchReasons} />
 
       <div className="metadata-row">
         <span>
@@ -143,7 +137,7 @@ export function JobCard({
         ) : (
           <span className="apply-link is-disabled">
             Seed listing
-            <CheckCircle2 size={16} aria-hidden="true" />
+            <BriefcaseBusiness size={16} aria-hidden="true" />
           </span>
         )}
       </div>
