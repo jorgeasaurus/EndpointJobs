@@ -452,6 +452,10 @@ h1 {
   margin-top: 14px;
 }
 
+.workplace-filter-panel + .quick-filters {
+  margin-top: 10px;
+}
+
 .quick-filters + .advanced-filters {
   margin-top: 14px;
 }
