@@ -30,6 +30,7 @@ export async function auditJobComparisonData(run: RunAudit) {
       "Workplace",
       "Seniority",
       "Tools",
+      "Match signals",
       "Freshness",
       "$120k-$150k",
       "Not shown"

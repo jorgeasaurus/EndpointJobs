@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 
 import type { JobsFeed } from "@/types/job";
+import type { WorkplaceFilter } from "./job-board/filter-model";
 
 import { getActiveFilterItems } from "./job-board/active-filters";
 import { updateComparisonSelection } from "./job-board/comparison-selection";
@@ -32,6 +33,23 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
   useSearchFocusShortcut(searchInputRef);
 
   const activeJobs = feed.jobs;
+  const workplaceCounts = useMemo(() => {
+    const eligibleJobs = filterJobs(activeJobs, { ...filters, workplace: "Any" });
+    const counts: Record<WorkplaceFilter, number> = {
+      Any: eligibleJobs.length,
+      Remote: 0,
+      Hybrid: 0,
+      "On-site": 0
+    };
+
+    for (const job of eligibleJobs) {
+      if (job.workplace !== "Unknown") {
+        counts[job.workplace] += 1;
+      }
+    }
+
+    return counts;
+  }, [activeJobs, filters]);
 
   const visibleJobs = useMemo(
     () => filterJobs(activeJobs, filters),
@@ -58,10 +76,12 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
 
     return { mappedJobsCount, remoteJobsCount, salaryJobsCount };
   }, [visibleJobs]);
-  const comparedJobs = useMemo(
-    () => activeJobs.filter((job) => selectedJobIds.has(job.id)),
-    [activeJobs, selectedJobIds]
-  );
+  const comparedJobs = useMemo(() => {
+    const jobsById = new Map(activeJobs.map((job) => [job.id, job]));
+    return [...selectedJobIds]
+      .map((jobId) => jobsById.get(jobId))
+      .filter((job): job is JobsFeed["jobs"][number] => Boolean(job));
+  }, [activeJobs, selectedJobIds]);
 
   const totalPages = Math.max(1, Math.ceil(visibleJobs.length / jobsPerPage));
   const currentPage = pagination.filterKey === filterKey ? pagination.page : 1;
@@ -123,6 +143,7 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
             clearFilters={clearFilters}
             dispatch={dispatch}
             filters={filters}
+            workplaceCounts={workplaceCounts}
             searchInputRef={searchInputRef}
             visibleJobsCount={visibleJobs.length}
             {...visibleJobMetrics}

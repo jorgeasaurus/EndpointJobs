@@ -127,11 +127,10 @@
   place-items: center;
 }
 
-.job-map-loading {
+.job-map-canvas-wrap--loading .beautiful-loading-state {
   position: relative;
   z-index: 2;
   display: inline-flex;
-  align-items: center;
   min-height: 34px;
   padding: 0 12px;
   color: var(--lime);

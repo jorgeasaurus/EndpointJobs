@@ -2,6 +2,8 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import { formatUpdatedAt, isActiveJob } from "../../src/lib/jobs";
+import { ToolChips } from "../../src/components/job-board/tool-chips";
+import { JobMapCanvasLoading } from "../../src/components/job-board/job-map-loading";
 
 import {
   assertEqual,
@@ -85,14 +87,48 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
   });
 
   await run("FEAT-028", "Match reasons render on job cards", () => {
-    assertIncludes(jobCardMarkup, "Endpoint match reasons");
+    assertIncludes(jobCardMarkup, "match-recommendation");
+    assertIncludes(jobCardMarkup, "Why this role is included");
+    assertIncludes(jobCardMarkup, "4 signals");
+    assertIncludes(jobCardMarkup, "View 1 more");
     assertIncludes(jobCardMarkup, "Intune + Autopilot");
+    assertIncludes(jobCardMarkup, "Device management");
+    assertNotIncludes(jobCardMarkup, "confidence");
   });
 
   await run("FEAT-029", "Platform and tool tags render on job cards", () => {
     assertIncludes(jobCardMarkup, "Matched tools and platforms");
     assertIncludes(jobCardMarkup, "Windows");
     assertIncludes(jobCardMarkup, "Autopilot");
+    assertIncludes(jobCardMarkup, "Platform: Windows");
+    assertIncludes(jobCardMarkup, "Tool: Autopilot");
+  });
+
+  await run("FEAT-077", "Technology chips stay compact and disclose overflow", () => {
+    const denseJob = feed.jobs.find((job) => job.platforms.length + job.tools.length > 8);
+    assertTruthy(denseJob, "feed needs a technology-dense listing fixture");
+    if (!denseJob) return;
+
+    const markup = renderToStaticMarkup(
+      createElement(ToolChips, {
+        platforms: denseJob.platforms,
+        tools: denseJob.tools
+      })
+    );
+    const hiddenCount = denseJob.platforms.length + denseJob.tools.length - 8;
+    assertIncludes(markup, `+${hiddenCount} more`);
+    assertIncludes(markup, `${hiddenCount} additional technologies`);
+  });
+
+  await run("FEAT-079", "Map fallback exposes one busy loading status", () => {
+    const markup = renderToStaticMarkup(createElement(JobMapCanvasLoading));
+    assertIncludes(markup, 'aria-busy="true"');
+    assertIncludes(markup, 'role="status"');
+    assertIncludes(markup, "Loading map");
+    assertIncludes(markup, "beautiful-loading-state--orbit");
+    assertEqual((markup.match(/role="status"/g) ?? []).length, 1);
+    assertIncludes(sources.jobMap, 'import { JobMapCanvasLoading } from "./job-map-loading"');
+    assertIncludes(sources.jobMap, "loading: () => <JobMapCanvasLoading />");
   });
 
   await run("FEAT-035", "Toggle buttons emit explicit pressed state", () => {

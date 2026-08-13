@@ -93,6 +93,7 @@
 }
 
 .comparison-scroll {
+  position: relative;
   overflow-x: auto;
   outline: 0;
 }
@@ -123,7 +124,11 @@
 }
 
 .comparison-label {
+  position: sticky;
+  left: 0;
+  z-index: 2;
   color: var(--white-60);
+  background: #0a0d0f;
   font-family: var(--mono);
   font-size: 0.68rem;
   font-weight: 700;
@@ -131,6 +136,7 @@
 }
 
 .comparison-categories {
+  z-index: 4;
   color: var(--lime);
   letter-spacing: 0.04em;
   text-align: center;
@@ -148,6 +154,14 @@
   min-height: 112px;
   padding-right: 44px;
   background: rgb(255 255 255 / 4%);
+}
+
+.comparison-record-index {
+  margin-bottom: 8px;
+  color: var(--lime);
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
 }
 
 .comparison-job-heading strong,
