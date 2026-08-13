@@ -31,6 +31,7 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
           aria-label="Open API documentation"
           className="feedback-link api-docs-link"
           href={getApiDocsPath()}
+          prefetch={false}
           title="Open API documentation"
         >
           <FileJson size={15} aria-hidden="true" />

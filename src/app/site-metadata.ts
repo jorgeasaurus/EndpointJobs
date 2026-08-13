@@ -50,3 +50,7 @@ export function getJobsDirectoryPath(page = 1): Route {
 export function getApiDocsPath(): Route {
   return "/api-docs" as Route;
 }
+
+export function getOpenApiPath(): Route {
+  return "/openapi.json" as Route;
+}

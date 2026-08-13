@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ApiCodeBlock } from "@/components/api-code-block";
+import { getOpenApiPath, siteUrl } from "@/app/site-metadata";
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
 import { SiteFooter, Topbar } from "@/components/job-board/topbar";
 import feedData from "@/data/jobs.json";
@@ -9,7 +10,10 @@ import {
   jobsApiQueryContract,
   type JobsApiQueryDefinition
 } from "@/lib/jobs-api-contract";
-import type { JobsFeed } from "@/types/job";
+import type { JobsApiCollection } from "@/lib/jobs-api";
+import type { Job, JobsFeed } from "@/types/job";
+
+import "./api-docs.css";
 
 const feed = feedData as JobsFeed;
 
@@ -19,20 +23,45 @@ export const metadata: Metadata = {
   alternates: { canonical: "/api-docs" }
 };
 
-const curlExample = `curl 'https://endpointjobs.dev/api/jobs?tools=Jamf&platforms=macOS&limit=5'`;
-const powershellExample = `$uri = 'https://endpointjobs.dev/api/jobs?workplace=Remote&minSalary=150000&limit=5'
+const curlExample = `curl '${siteUrl}/api/jobs?tools=Jamf&platforms=macOS&limit=5'`;
+const powershellExample = `$uri = '${siteUrl}/api/jobs?workplace=Remote&minSalary=150000&limit=5'
 $response = Invoke-RestMethod -Uri $uri
 $response.data | Select-Object title, company, location, applyUrl`;
 const javascriptExample = `const response = await fetch(
-  'https://endpointjobs.dev/api/jobs?platforms=Windows&freshness=7&limit=5'
+  '${siteUrl}/api/jobs?platforms=Windows&freshness=7&limit=5'
 );
 const { data, meta } = await response.json();
 console.log(meta.total, data);`;
-const responseExample = `{
-  "data": [{ "id": "…", "title": "Endpoint Engineer", "company": "…" }],
-  "filters": { "platforms": ["Windows"], "limit": 5 },
-  "meta": { "page": 1, "limit": 5, "total": 42, "totalPages": 9 }
-}`;
+
+type JobsApiCollectionExample = Omit<JobsApiCollection, "data"> & {
+  data: Pick<Job, "id" | "title" | "company">[];
+};
+
+const responseExample = JSON.stringify({
+  data: [{ id: "…", title: "Endpoint Engineer", company: "…" }],
+  filters: {
+    q: null,
+    platforms: ["Windows"],
+    tools: [],
+    metroAreas: [],
+    location: null,
+    workplace: null,
+    salaryShown: false,
+    leadership: false,
+    minSalary: null,
+    seniority: null,
+    family: null,
+    freshness: null,
+    sort: "newest"
+  },
+  meta: {
+    page: 1,
+    limit: 5,
+    total: 42,
+    totalPages: 9,
+    updatedAt: feed.updatedAt
+  }
+} satisfies JobsApiCollectionExample, null, 2);
 
 const queryParameters = Object.entries(jobsApiQueryContract) as [
   string,
@@ -54,7 +83,7 @@ export default function ApiDocsPage() {
               No authentication is required.
             </p>
             <nav aria-label="API resources">
-              <a href="/openapi.json">OpenAPI specification</a>
+              <Link href={getOpenApiPath()}>OpenAPI specification</Link>
               <a href="https://github.com/jorgeasaurus/EndpointJobs/blob/main/docs/api.md" rel="noopener noreferrer" target="_blank">
                 Full reference
               </a>

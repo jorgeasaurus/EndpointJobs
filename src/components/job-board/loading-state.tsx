@@ -1,7 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
-
 const loadingPixels = ["nw", "n", "ne", "w", "c", "e", "sw", "s", "se"];
 
 // Adapted from Beautiful UI's Loading State primitive.
@@ -13,16 +9,6 @@ export function LoadingState({
   label: string;
   variant?: "grid" | "orbit";
 }) {
-  const [deciseconds, setDeciseconds] = useState(0);
-
-  useEffect(() => {
-    const timer = window.setInterval(
-      () => setDeciseconds((current) => current + 1),
-      100
-    );
-    return () => window.clearInterval(timer);
-  }, []);
-
   return (
     <span
       className={`beautiful-loading-state beautiful-loading-state--${variant}`}
@@ -35,9 +21,6 @@ export function LoadingState({
         ))}
       </span>
       <span className="beautiful-loading-label">{label}</span>
-      <span className="beautiful-loading-elapsed" aria-hidden="true">
-        {(deciseconds / 10).toFixed(1)}s
-      </span>
     </span>
   );
 }

@@ -7,7 +7,7 @@ export function MatchRecommendation({ reasons }: { reasons: string[] }) {
   const additionalReasons = reasons.slice(3);
 
   return (
-    <section className="match-recommendation" aria-label="Endpoint match reasons">
+    <div className="match-recommendation">
       <div className="match-recommendation-heading">
         <span>
           <Sparkles size={15} aria-hidden="true" />
@@ -41,6 +41,6 @@ export function MatchRecommendation({ reasons }: { reasons: string[] }) {
           </div>
         </details>
       ) : null}
-    </section>
+    </div>
   );
 }
