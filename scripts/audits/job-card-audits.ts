@@ -2,6 +2,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import { formatUpdatedAt, isActiveJob } from "../../src/lib/jobs";
+import { JobContextCards } from "../../src/components/job-board/job-context-cards";
 import { ToolChips } from "../../src/components/job-board/tool-chips";
 import { JobMapCanvasLoading } from "../../src/components/job-board/job-map-loading";
 
@@ -102,6 +103,17 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
     assertIncludes(jobCardMarkup, "Autopilot");
     assertIncludes(jobCardMarkup, "Platform: Windows");
     assertIncludes(jobCardMarkup, "Tool: Autopilot");
+
+    const sourceJob = feed.jobs[0];
+    assertTruthy(sourceJob, "feed needs a source-link fixture");
+    if (!sourceJob) return;
+    const unsafeSourceMarkup = renderToStaticMarkup(
+      createElement(JobContextCards, {
+        job: { ...sourceJob, sourceUrl: "javascript:alert(1)" }
+      })
+    );
+    assertNotIncludes(unsafeSourceMarkup, "View source listing");
+    assertNotIncludes(unsafeSourceMarkup, 'href="javascript:');
   });
 
   await run("FEAT-077", "Technology chips stay compact and disclose overflow", () => {
