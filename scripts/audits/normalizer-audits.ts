@@ -5,6 +5,7 @@ import {
 } from "../../src/lib/jobs";
 import {
   endpointToolDefinitions,
+  getEndpointToolLabel,
   roleFamilyInferenceRules
 } from "../../src/lib/job-taxonomy";
 import { selectFeedJobs } from "../job-refresh/job-selection";
@@ -61,6 +62,15 @@ export async function auditNormalizers({ run, sources }: AuditContext) {
     );
     const corporateFinanceDataHaystack = normalizeSearchText(
       "Staff Data Engineer Corporate Engineering financial systems ERP treasury accounting tax warehouse"
+    );
+    const itAutomationHaystack = normalizeSearchText(
+      "Senior IT Automation Engineer IT tooling onboarding offboarding access reviews Okta Google Workspace"
+    );
+    const serviceDeskHaystack = normalizeSearchText(
+      "IT Service Desk Engineer tier 2 device support Jamf Okta Google Workspace"
+    );
+    const genericAutomationHaystack = normalizeSearchText(
+      "Senior Automation Engineer builds business workflow automation with Google Workspace APIs"
     );
     assertEqual(isEndpointRelevant(endpointHaystack, "Endpoint Engineer", deriveTools(endpointHaystack)), true);
     assertEqual(
@@ -120,10 +130,32 @@ export async function auditNormalizers({ run, sources }: AuditContext) {
       ),
       false
     );
+    assertEqual(
+      isEndpointRelevant(
+        itAutomationHaystack,
+        "Senior IT Automation Engineer",
+        deriveTools(itAutomationHaystack)
+      ),
+      true
+    );
+    assertEqual(
+      isEndpointRelevant(serviceDeskHaystack, "IT Service Desk Engineer", deriveTools(serviceDeskHaystack)),
+      false
+    );
+    assertEqual(
+      isEndpointRelevant(
+        genericAutomationHaystack,
+        "Senior Automation Engineer",
+        deriveTools(genericAutomationHaystack)
+      ),
+      false
+    );
   });
 
   await run("FEAT-045", "Normalizer derives tools, platforms, tags, and match reasons", () => {
     const haystack = normalizeSearchText("Jamf macOS Intune Autopilot PowerShell endpoint security");
+    const iruTools = deriveTools(normalizeSearchText("Iru device management"));
+    const collaborationTools = deriveTools(normalizeSearchText("Google Workspace and G Suite administration"));
     const tools = deriveTools(haystack);
     const platforms = derivePlatforms(haystack);
     const reasons = deriveMatchReasons(haystack, tools, platforms);
@@ -133,7 +165,11 @@ export async function auditNormalizers({ run, sources }: AuditContext) {
     );
     assertEqual(toolOptions.join(","), canonicalTools.join(","));
     assertArrayIncludes(tools, ["Jamf", "Intune", "Autopilot", "PowerShell"]);
+    assertArrayIncludes(iruTools, ["Kandji"]);
+    assertArrayIncludes(collaborationTools, ["Google Workspace"]);
+    assertEqual(getEndpointToolLabel("Kandji"), "Kandji/Iru");
     assertArrayIncludes(toolOptions, ["PowerShell"]);
+    assertArrayIncludes(toolOptions, ["Google Workspace"]);
     assertArrayIncludes(platforms, ["macOS"]);
     assertArrayIncludes(reasons, ["Jamf + macOS", "PowerShell automation"]);
     assertIncludes(sources.jobTaxonomy, "endpointToolDefinitions");

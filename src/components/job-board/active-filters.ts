@@ -14,6 +14,7 @@ import {
   workplaceFilterOptions
 } from "./filter-model";
 import type { EndpointTool, Platform } from "@/types/job";
+import { getEndpointToolLabel } from "@/lib/job-taxonomy";
 
 export type ActiveFilterItem = {
   clearAction: FilterAction;
@@ -113,7 +114,7 @@ const platformFilterDescriptor: ArrayFilterDescriptor<Platform> = {
 const toolFilterDescriptor: ArrayFilterDescriptor<EndpointTool> = {
   idPrefix: "tool",
   getItems: (filters) => filters.selectedTools,
-  getItemLabel: (tool) => tool,
+  getItemLabel: getEndpointToolLabel,
   getItemClearAction: (tool) => ({ type: "toggleTool", value: tool })
 };
 

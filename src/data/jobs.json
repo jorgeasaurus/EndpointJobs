@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-08-16T11:26:59.114Z",
+  "updatedAt": "2026-08-16T15:15:20.635Z",
   "source": {
     "name": "Remotive + Arbeitnow + Jobicy + Remote OK + Greenhouse + Lever + The Muse + Ashby + Amazon Jobs + Workday + Jibe + Activate + SmartRecruiters + Recruitee + SchoolJobs + Curated Jobs + Adzuna + TheirStack + SerpAPI Google Jobs + RapidAPI Daily International Jobs + RapidAPI LinkedIn Job Search + AI Dev Board",
     "url": "https://github.com/jorgeasaurus/EndpointJobs"
@@ -4654,7 +4654,9 @@
         "Windows platform",
         "macOS platform"
       ],
-      "tools": [],
+      "tools": [
+        "Google Workspace"
+      ],
       "platforms": [
         "Windows",
         "macOS"
@@ -7984,7 +7986,9 @@
         "Compliance evidence",
         "Windows platform"
       ],
-      "tools": [],
+      "tools": [
+        "Kandji"
+      ],
       "platforms": [
         "Windows",
         "macOS"
@@ -10564,7 +10568,8 @@
       ],
       "tools": [
         "Intune",
-        "Entra ID"
+        "Entra ID",
+        "Kandji"
       ],
       "platforms": [
         "macOS",
@@ -10925,7 +10930,8 @@
       "tools": [
         "Jamf",
         "Intune",
-        "PowerShell"
+        "PowerShell",
+        "Google Workspace"
       ],
       "platforms": [
         "macOS",
@@ -13853,7 +13859,8 @@
         "Intune",
         "Workspace ONE",
         "Okta",
-        "PowerShell"
+        "PowerShell",
+        "Google Workspace"
       ],
       "platforms": [
         "macOS",
@@ -16463,7 +16470,9 @@
         "Endpoint engineering",
         "Windows platform"
       ],
-      "tools": [],
+      "tools": [
+        "Kandji"
+      ],
       "platforms": [
         "Windows"
       ],
@@ -16515,7 +16524,8 @@
         "Kandji",
         "Okta",
         "Entra ID",
-        "PowerShell"
+        "PowerShell",
+        "Google Workspace"
       ],
       "platforms": [
         "macOS",
@@ -16621,7 +16631,8 @@
         "Jamf",
         "Intune",
         "Okta",
-        "PowerShell"
+        "PowerShell",
+        "Google Workspace"
       ],
       "platforms": [
         "macOS",
@@ -20391,7 +20402,8 @@
       "tools": [
         "Jamf",
         "Intune",
-        "Okta"
+        "Okta",
+        "Google Workspace"
       ],
       "platforms": [
         "macOS",
@@ -20581,7 +20593,8 @@
       "tools": [
         "Jamf",
         "Workspace ONE",
-        "Okta"
+        "Okta",
+        "Google Workspace"
       ],
       "platforms": [
         "macOS",
@@ -22689,7 +22702,8 @@
         "macOS platform"
       ],
       "tools": [
-        "Okta"
+        "Okta",
+        "Google Workspace"
       ],
       "platforms": [
         "Windows",
@@ -28887,7 +28901,8 @@
       "tools": [
         "Entra ID",
         "PowerShell",
-        "Defender"
+        "Defender",
+        "Google Workspace"
       ],
       "platforms": [
         "Windows"
@@ -30340,7 +30355,8 @@
       "tools": [
         "Jamf",
         "Kandji",
-        "Okta"
+        "Okta",
+        "Google Workspace"
       ],
       "platforms": [
         "Windows",
@@ -30678,7 +30694,8 @@
         "Okta",
         "Entra ID",
         "PowerShell",
-        "Defender"
+        "Defender",
+        "Google Workspace"
       ],
       "platforms": [
         "Windows",
@@ -30990,7 +31007,8 @@
       ],
       "tools": [
         "Intune",
-        "PowerShell"
+        "PowerShell",
+        "Kandji"
       ],
       "platforms": [
         "Windows",
@@ -31122,7 +31140,8 @@
       ],
       "tools": [
         "Intune",
-        "PowerShell"
+        "PowerShell",
+        "Kandji"
       ],
       "platforms": [
         "Windows",
@@ -32749,7 +32768,8 @@
         "Jamf",
         "Intune",
         "Okta",
-        "Entra ID"
+        "Entra ID",
+        "Google Workspace"
       ],
       "platforms": [
         "macOS",
@@ -34196,7 +34216,9 @@
         "App packaging",
         "Endpoint security"
       ],
-      "tools": [],
+      "tools": [
+        "Kandji"
+      ],
       "platforms": [
         "macOS"
       ],
@@ -34856,7 +34878,8 @@
       "tools": [
         "Jamf",
         "NinjaOne",
-        "Okta"
+        "Okta",
+        "Google Workspace"
       ],
       "platforms": [
         "Windows",
@@ -36984,7 +37007,8 @@
       "tools": [
         "Jamf",
         "Intune",
-        "Okta"
+        "Okta",
+        "Google Workspace"
       ],
       "platforms": [
         "Windows",
@@ -37042,7 +37066,8 @@
       "tools": [
         "Jamf",
         "Intune",
-        "Okta"
+        "Okta",
+        "Google Workspace"
       ],
       "platforms": [
         "Windows",
@@ -40062,7 +40087,9 @@
       "tools": [
         "Jamf",
         "Intune",
-        "Okta"
+        "Okta",
+        "Kandji",
+        "Google Workspace"
       ],
       "platforms": [
         "Windows",
@@ -40229,7 +40256,8 @@
         "Jamf",
         "Intune",
         "Entra ID",
-        "PowerShell"
+        "PowerShell",
+        "Google Workspace"
       ],
       "platforms": [
         "macOS",
@@ -40276,7 +40304,8 @@
         "macOS platform"
       ],
       "tools": [
-        "Okta"
+        "Okta",
+        "Google Workspace"
       ],
       "platforms": [
         "macOS"
@@ -40395,7 +40424,8 @@
         "Intune",
         "Kandji",
         "Okta",
-        "Entra ID"
+        "Entra ID",
+        "Google Workspace"
       ],
       "platforms": [
         "macOS",
@@ -40632,7 +40662,8 @@
         "Okta",
         "Entra ID",
         "PowerShell",
-        "Defender"
+        "Defender",
+        "Google Workspace"
       ],
       "platforms": [
         "Windows"
@@ -42204,7 +42235,8 @@
       ],
       "tools": [
         "Jamf",
-        "Okta"
+        "Okta",
+        "Google Workspace"
       ],
       "platforms": [
         "macOS",
@@ -44251,6 +44283,105 @@
       "roleFamily": "Systems Administration",
       "seniority": "Mid",
       "employmentType": "Full-time"
+    },
+    {
+      "id": "greenhouse-coinbase-8095207",
+      "title": "Senior IT Automation Engineer",
+      "company": "Coinbase",
+      "location": "Remote - USA",
+      "workplace": "Remote",
+      "postedAt": "2026-07-29T20:57:08.000Z",
+      "fetchedAt": "2026-08-16T15:15:20.635Z",
+      "staleAfter": "2026-09-30T15:15:20.635Z",
+      "expiresAt": "2026-09-30T15:15:20.635Z",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.coinbase.com/careers/positions/8095207?gh_jid=8095207",
+      "applyUrl": "https://www.coinbase.com/careers/positions/8095207?gh_jid=8095207",
+      "attributionLabel": "Greenhouse / Coinbase",
+      "termsProfile": "public-api",
+      "summary": "Ready to do the most impactful work of your career? At Coinbase , we are uncompromising on our mission to increase economic freedom. The bar is high, the environment is intense, and we like it that way. This isn't a place for complacency, it’s a place to...",
+      "description": "Ready to do the most impactful work of your career? At Coinbase , we are uncompromising on our mission to increase economic freedom. The bar is high, the environment is intense, and we like it that way. This isn't a place for complacency, it’s a place to be pushed past your perceived limits. If you're ready to build the future of finance alongside people who refuse to settle for \"good enough,\" you belong here. Coinbase is a remote-first, but not remote-only company. Expect to get together quarterly for intense in-person working sessions called “surges.” learn more about working at Coinbase .\n\nAs a Senior IT Support Engineer on the IT Tooling team within IT Support & Services (ITSS), you'll own the technical architecture behind the automations that power IT operations at Coinbase. This team builds the self-service workflows, bots, and integrations that employees interact with daily, from ticket triage and access reviews to onboarding and offboarding. You'll drive architecture decisions across platforms like n8n, Airflow, Temporal, Jira, and Okta, partnering with regional IT teams across APAC, EMEA, and AMER to deliver high-impact automation at scale.\n\nWhat you’ll do:\n\n- Own the technical architecture of IT Tooling automations, driving design decisions on system structure, integration patterns, and platform standards across n8n, Airflow, Temporal, and Jira\n\n- Lead the most complex automation projects end-to-end as technical DRI, from discovery and design through production delivery\n\n- Partner with Security, Corporate Engineering, and IAM teams to resolve technical blockers and represent IT Tooling in cross-functional architecture discussions\n\n- Build shared frameworks, reusable components, and architecture documentation that reduce single points of failure and raise the team's engineering bar\n\n- Establish code review practices and engineering standards that elevate quality across the IT Tooling platform\n\nRequired skills and experience:\n\n- 5+ years in IT engineering, automation, or systems engineering, with demonstrated ownership of architecture decisions and platform-level systems others build on top of\n\n- Deep expertise building and maintaining complex automations with n8n, Airflow, Temporal, Jira Automation, or Workato, plus strong Git-based development workflows (branching, CI/CD, code review)\n\n- Working knowledge of Okta, Slack API, and Google Workspace administration sufficient to design secure, scalable automation architecture\n\n- Proven ability to operate independently in ambiguous environments, translating loosely scoped problems into production-ready technical specs and clear architecture decision records\n\n- Experience mentoring peers and writing technical design documentation for both technical and non-technical audiences\n\n- Utilizes generative AI responsibly, maintaining human oversight to deliver business-ready outputs and drive measurable improvements in workflow efficiency, cost, and quality.\n\nPay Transparency Notice: Base salary varies by location (see range below). Total compensation may also include equity and bonus eligibility, and benefits (medical, dental, vision, 401(k)).\n\nAnnual base salary range (excluding equity and bonus):\n\n$113,815 - $133,900 USD\n\n- Application Limit: Candidates may submit a maximum of 3 applications within a 6-month period.\n\n- Equal Opportunity Employer: Coinbase is an Equal Opportunity Employer. All qualified applicants will receive consideration for employment without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, disability, protected veteran status, or genetic information. Applicants with criminal histories will be considered consistent with applicable federal, state, and local laws.\n\n- US Applicants: View Employee Rights , Know Your Rights , and E-Verify Notice of Participation.\n\n- Accommodations: If you are an individual with a disability who needs a reasonable accommodation, email us your request and contact info at accommodations[at]coinbase.com. Need screen reading technology? Click here to download a free compatible screen reader and view the tutorial .\n\n- Data Privacy & Arbitration: By submitting your application, you agree to our Candidate Privacy Notice . US applicants: By submitting your application, you agree to Arbitration of Disputes .",
+      "tags": [
+        "Windows",
+        "macOS",
+        "Okta",
+        "Google Workspace",
+        "IT",
+        "US - Remote Zone 1 (Job Requisitions Only)"
+      ],
+      "matchReasons": [
+        "Windows platform",
+        "macOS platform"
+      ],
+      "tools": [
+        "Okta",
+        "Google Workspace"
+      ],
+      "platforms": [
+        "Windows",
+        "macOS"
+      ],
+      "roleFamily": "Automation",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 113815,
+        "max": 133900,
+        "currency": "USD",
+        "label": "$114k-$134k"
+      },
+      "mapLocation": {
+        "label": "United States",
+        "latitude": 39.8283,
+        "longitude": -98.5795
+      }
+    },
+    {
+      "id": "greenhouse-coinbase-8054055",
+      "title": "Senior IT Automation Engineer",
+      "company": "Coinbase",
+      "location": "Remote - India",
+      "workplace": "Remote",
+      "postedAt": "2026-07-29T16:47:45.000Z",
+      "fetchedAt": "2026-08-16T15:15:20.635Z",
+      "staleAfter": "2026-09-30T15:15:20.635Z",
+      "expiresAt": "2026-09-30T15:15:20.635Z",
+      "source": "Greenhouse",
+      "sourceUrl": "https://www.coinbase.com/careers/positions/8054055?gh_jid=8054055",
+      "applyUrl": "https://www.coinbase.com/careers/positions/8054055?gh_jid=8054055",
+      "attributionLabel": "Greenhouse / Coinbase",
+      "termsProfile": "public-api",
+      "summary": "Ready to do the most impactful work of your career? At Coinbase , we are uncompromising on our mission to increase economic freedom. The bar is high, the environment is intense, and we like it that way. This isn't a place for complacency, it’s a place to...",
+      "description": "Ready to do the most impactful work of your career? At Coinbase , we are uncompromising on our mission to increase economic freedom. The bar is high, the environment is intense, and we like it that way. This isn't a place for complacency, it’s a place to be pushed past your perceived limits. If you're ready to build the future of finance alongside people who refuse to settle for \"good enough,\" you belong here. Coinbase is a remote-first, but not remote-only company. Expect to get together quarterly for intense in-person working sessions called “surges.” learn more about working at Coinbase .\n\nThe IT Tooling team sits within IT Support & Services (ITSS) and builds the automations that power ITSS's own operations. Our in-house bot, Ask IT, deflects the majority of company-wide IT requests before they reach a human. Beyond that, we automate ITSS's core day-to-day workflows — ticket triage, access reviews, onboarding and offboarding — which employees experience as self-service. You'll own technical domains within the IT Tooling platform and partner with regional IT teams across APAC, EMEA, and AMER through platforms including n8n, Jira, Okta, Airflow, and Temporal.\n\nWhat You'll Do\n\n- Own the technical architecture of IT Tooling automations, driving design decisions on system structure, integration patterns, and tooling across n8n, Airflow, Temporal, and Jira\n\n- Establish architecture standards and code review practices that raise the team's overall engineering bar\n\n- Lead as technical DRI on the most complex, highest-impact automation projects, from discovery and design through production delivery\n\n- Partner with Security, Corporate Engineering, and IAM to resolve technical blockers and represent the team in cross-functional architecture discussions\n\n- Build shared frameworks and reusable components that reduce single points of failure across the platform\n\n- Produce architecture documentation and decision records that enable the team to scale with minimal dependency on any single individual\n\n- Manage your own workload with a high degree of independence, translating loosely scoped problems into production-ready technical specifications\n\nRequired Skills and Experience\n\n- 5+ years of experience in IT engineering, automation, or systems engineering, with demonstrated ownership of architecture decisions, engineering standards, or platform-level systems that others build on top of\n\n- Deep expertise building and maintaining complex automations using n8n, Airflow, Temporal, Jira Automation, or Workato, paired with strong Git-based development workflows including branching, CI/CD, and code review\n\n- Working knowledge of Okta, Slack API, and Google Workspace administration sufficient to design secure, scalable automation architecture\n\n- Ability to operate in ambiguous environments and translate loosely scoped problems into production-ready technical specifications\n\n- Utilizes generative AI responsibly, maintaining human oversight to deliver business-ready outputs and drive measurable improvements in workflow efficiency, cost, and quality.\n\nPay Transparency Notice: The target annual base salary for this position can range as detailed below. Total compensation may also include equity and bonus eligibility and benefits (including medical, dental, and vision).\n\nAnnual base salary range (excluding equity and bonus):\n\n₹3,419,600 - ₹3,419,600 INR\n\n- Application Limit: Candidates may submit a maximum of 3 applications within a 6-month period.\n\n- Equal Opportunity Employer: Coinbase is an Equal Opportunity Employer. All qualified applicants will receive consideration for employment without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, disability, protected veteran status, or genetic information. Applicants with criminal histories will be considered consistent with applicable federal, state, and local laws.\n\n- US Applicants: View Employee Rights , Know Your Rights , and E-Verify Notice of Participation.\n\n- Accommodations: If you are an individual with a disability who needs a reasonable accommodation, email us your request and contact info at accommodations[at]coinbase.com. Need screen reading technology? Click here to download a free compatible screen reader and view the tutorial .\n\n- Data Privacy & Arbitration: By submitting your application, you agree to our Candidate Privacy Notice . US applicants: By submitting your application, you agree to Arbitration of Disputes .",
+      "tags": [
+        "Windows",
+        "macOS",
+        "Okta",
+        "Google Workspace",
+        "IT",
+        "Remote - India",
+        "Mumbai, Maharashtra, India"
+      ],
+      "matchReasons": [
+        "Windows platform",
+        "macOS platform"
+      ],
+      "tools": [
+        "Okta",
+        "Google Workspace"
+      ],
+      "platforms": [
+        "Windows",
+        "macOS"
+      ],
+      "roleFamily": "Automation",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "India",
+        "latitude": 20.5937,
+        "longitude": 78.9629
+      }
     }
   ]
 }

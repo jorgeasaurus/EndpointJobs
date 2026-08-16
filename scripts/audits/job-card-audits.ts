@@ -135,12 +135,13 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
     const groupedChipsMarkup = renderToStaticMarkup(
       createElement(ToolChips, {
         platforms: ["Windows"],
-        tools: ["Intune"],
+        tools: ["Intune", "Kandji"],
         variant: "grouped"
       })
     );
     assertIncludes(groupedChipsMarkup, "<h4>Platforms</h4>");
     assertIncludes(groupedChipsMarkup, "<h4>Tools</h4>");
+    assertIncludes(groupedChipsMarkup, "Kandji/Iru");
     assertNotIncludes(groupedChipsMarkup, "<h3>");
   });
 

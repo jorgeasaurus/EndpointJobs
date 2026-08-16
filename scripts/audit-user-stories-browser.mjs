@@ -813,6 +813,23 @@ await run("QA-013", "Mobile horizontal filters and chips stay reachable", async 
   await page.close();
 });
 
+await run("FEAT-018", "Renamed and new endpoint tools remain filterable", async () => {
+  const page = await newPage(browser, desktopViewport);
+  await page.locator(".advanced-filters summary").click();
+
+  await page.getByRole("button", { name: "Kandji/Iru", exact: true }).click();
+  expectUrlParams(page, { tools: "Kandji" });
+  await expect(page.getByRole("button", { name: "Remove filter: Kandji/Iru" })).toBeVisible();
+  await expect(page.locator(".job-card").first()).toBeVisible();
+  await page.getByRole("button", { name: "Remove filter: Kandji/Iru" }).click();
+
+  await page.getByRole("button", { name: "Google Workspace", exact: true }).click();
+  expectUrlParams(page, { tools: "Google Workspace" });
+  await expect(page.getByRole("button", { name: "Remove filter: Google Workspace" })).toBeVisible();
+  await expect(page.locator(".job-card").first()).toBeVisible();
+  await page.close();
+});
+
 await run("QA-004", "Same-origin links resolve without dead routes", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
   const internalHrefs = await page.locator("a[href]").evaluateAll((links) =>

@@ -17,7 +17,7 @@ export const endpointToolDefinitions = [
     aliases: ["fleet mdm", "fleetdm", "fleet device management"],
     strong: true
   },
-  { tool: "Kandji", aliases: ["kandji", "kanji"], strong: true },
+  { tool: "Kandji", aliases: ["kandji", "kanji", "iru"], strong: true },
   { tool: "NinjaOne", aliases: ["ninjaone", "ninja one"], strong: true },
   {
     tool: "Workspace ONE",
@@ -26,6 +26,11 @@ export const endpointToolDefinitions = [
   },
   { tool: "Tanium", aliases: ["tanium"], strong: true },
   { tool: "Okta", aliases: ["okta"], strong: false },
+  {
+    tool: "Google Workspace",
+    aliases: ["google workspace", "g suite", "gsuite"],
+    strong: false
+  },
   { tool: "Entra ID", aliases: ["entra id", "entra", "azure ad"], strong: false },
   { tool: "Autopilot", aliases: ["autopilot", "windows autopilot"], strong: true },
   { tool: "PowerShell", aliases: ["powershell", "power shell", "pwsh"], strong: true },
@@ -33,6 +38,14 @@ export const endpointToolDefinitions = [
 ] as const;
 
 export type EndpointTool = (typeof endpointToolDefinitions)[number]["tool"];
+
+const endpointToolLabels: Partial<Record<EndpointTool, string>> = {
+  Kandji: "Kandji/Iru"
+};
+
+export function getEndpointToolLabel(tool: EndpointTool) {
+  return endpointToolLabels[tool] ?? tool;
+}
 
 export const endpointToolOptions: EndpointTool[] = endpointToolDefinitions.map(
   ({ tool }) => tool
@@ -174,6 +187,7 @@ export const endpointRoleTerms = [
   "end-user engineering",
   "digital workplace",
   "it client services",
+  "it automation engineer",
   "studio it",
   "workplace engineer",
   "workplace systems",

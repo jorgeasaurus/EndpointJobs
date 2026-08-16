@@ -151,6 +151,15 @@ export async function auditFilters({ filterFixtureJobs, run }: AuditContext) {
       }),
       ["recent-intune"]
     );
+
+    const workspaceJob = makeJob({ id: "workspace-admin", tools: ["Google Workspace"] });
+    assertIds(
+      filterJobs([workspaceJob, ...filterFixtureJobs], {
+        ...initialFilterState,
+        selectedTools: ["Google Workspace"]
+      }),
+      ["workspace-admin"]
+    );
   });
 
   await run("FEAT-019", "Active filter chips expose removable labels and clear actions", () => {
@@ -159,7 +168,7 @@ export async function auditFilters({ filterFixtureJobs, run }: AuditContext) {
       query: " Jamf ",
       locationQuery: " Remote ",
       selectedPlatforms: ["macOS"],
-      selectedTools: ["Jamf"],
+      selectedTools: ["Kandji"],
       workplace: "Remote",
       salaryOnly: true,
       seniority: "Senior",
@@ -177,7 +186,7 @@ export async function auditFilters({ filterFixtureJobs, run }: AuditContext) {
       "Senior",
       "Sort: Compensation",
       "macOS",
-      "Jamf"
+      "Kandji/Iru"
     ]);
     items.forEach((item) => assertTruthy(item.clearAction, `${item.id} missing clear action`));
   });
@@ -204,6 +213,11 @@ export async function auditFilters({ filterFixtureJobs, run }: AuditContext) {
     );
     assertEqual(systemsAdministration.roleFamily, "Systems Administration");
     assertArrayIncludes(roleFamilyOptions, ["Systems Administration"]);
+
+    const renamedAndNewTools = filterStateFromSearchParams(
+      new URLSearchParams("tools=Kandji,Google%20Workspace")
+    );
+    assertEqual(renamedAndNewTools.selectedTools.join(","), "Kandji,Google Workspace");
 
     const merged = mergeFilterStateIntoSearchParams(
       new URLSearchParams("keep=1&locations=legacy&remote=1"),

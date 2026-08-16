@@ -36,7 +36,7 @@ export function JobSearch({
           type="search"
           value={query}
           onChange={(event) => onQueryChange(event.currentTarget.value)}
-          placeholder="Search Jamf, Intune, macOS, SCCM, Kandji..."
+          placeholder="Search Jamf, Intune, macOS, Kandji/Iru..."
         />
         <span className="search-result-count" aria-hidden="true">
           {resultLabel}
