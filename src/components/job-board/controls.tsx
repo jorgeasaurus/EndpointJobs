@@ -18,6 +18,7 @@ import {
   seniorityOptions,
   toolOptions
 } from "@/lib/jobs";
+import { getEndpointToolLabel } from "@/lib/job-taxonomy";
 import type { EndpointTool, Platform } from "@/types/job";
 
 import { AnimatedNumber } from "./animated-number";
@@ -605,7 +606,7 @@ function AdvancedFilters({
                 isActive={selectedToolSet.has(tool)}
                 onClick={() => dispatch({ type: "toggleTool", value: tool })}
               >
-                {tool}
+                {getEndpointToolLabel(tool)}
               </ToggleButton>
             ))}
           </div>

@@ -1,4 +1,5 @@
 import type { EndpointTool, Platform } from "@/types/job";
+import { getEndpointToolLabel } from "@/lib/job-taxonomy";
 
 // Adapted from Beautiful UI's Tool Chips primitive.
 // https://www.beautifului.dev/#tool-chips
@@ -38,11 +39,11 @@ export function ToolChips({
         ))}
         {visibleTools.map((tool) => (
           <span
-            aria-label={`Tool: ${tool}`}
+            aria-label={`Tool: ${getEndpointToolLabel(tool)}`}
             className="tool-chip tool-chip--tool"
             key={`tool-${tool}`}
           >
-            {tool}
+            {getEndpointToolLabel(tool)}
           </span>
         ))}
         {hiddenCount > 0 ? (
@@ -77,7 +78,7 @@ export function ToolChips({
           <div className="tool-chips">
             {tools.map((tool) => (
               <span className="tool-chip tool-chip--tool" key={tool}>
-                {tool}
+                {getEndpointToolLabel(tool)}
               </span>
             ))}
           </div>
