@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 
 import type { JobsFeed } from "@/types/job";
+import { getJobWorkplace } from "@/lib/workplace";
 import type { WorkplaceFilter } from "./job-board/filter-model";
 
 import { getActiveFilterItems } from "./job-board/active-filters";
@@ -75,8 +76,9 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
     };
 
     for (const job of workplaceEligibleJobs) {
-      if (job.workplace !== "Unknown") {
-        counts[job.workplace] += 1;
+      const workplace = getJobWorkplace(job);
+      if (workplace !== "Unknown") {
+        counts[workplace] += 1;
       }
     }
 
@@ -88,7 +90,7 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
       filters.workplace === "Any"
         ? workplaceEligibleJobs
         : workplaceEligibleJobs.filter(
-            (job) => job.workplace === filters.workplace
+            (job) => getJobWorkplace(job) === filters.workplace
           ),
     [filters.workplace, workplaceEligibleJobs]
   );
@@ -98,11 +100,13 @@ export function JobBoard({ feed }: { feed: JobsFeed }) {
     let salaryJobsCount = 0;
 
     for (const job of visibleJobs) {
+      const workplace = getJobWorkplace(job);
+
       if (job.mapLocation) {
         mappedJobsCount += 1;
       }
 
-      if (job.workplace === "Remote" || job.workplace === "Hybrid") {
+      if (workplace === "Remote" || workplace === "Hybrid") {
         remoteJobsCount += 1;
       }
 

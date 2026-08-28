@@ -78,6 +78,30 @@ export async function auditProviders({ run, sources }: AuditContext) {
     assertEqual(formatProviderError({ message: "quota exceeded", code: 429 }), "quota exceeded");
     assertEqual(formatProviderError({ code: 429, title: "Too Many Requests" }), "{\"code\":429,\"title\":\"Too Many Requests\"}");
 
+    const florenceOnsiteJob = normalizeSerpApiGoogleJob(
+      {
+        job_id: "gohpt-florence-ky-senior-windows-endpoint-engineer",
+        title: "Senior Windows Endpoint Engineer – MECM/SCCM & Test Lab",
+        company_name: "GoHPT",
+        location: "Florence, KY",
+        description: [
+          "We are seeking an experienced Senior Windows Endpoint Engineer to support enterprise Windows endpoint testing, validation, and MECM/SCCM test lab operations.",
+          "This position requires full-time onsite support in Florence, KY. This is not a remote or hybrid position.",
+          "Ability to Commute: Florence, KY 41042 (Required)",
+          "Work Location: In person"
+        ].join("\n\n"),
+        extensions: ["Work from home", "Full-time"],
+        detected_extensions: {
+          work_from_home: true,
+          schedule_type: "Full-time"
+        },
+        apply_options: [{ link: "https://www.indeed.com/viewjob?jk=27de25e3f30f2c6f" }]
+      },
+      "endpoint engineer",
+      fixedAuditNow
+    );
+    assertEqual(florenceOnsiteJob?.workplace, "On-site", "SerpAPI work_from_home must not beat explicit onsite text");
+
     const serpApiJob = normalizeSerpApiGoogleJob(
       {
         job_id: "serpapi-line-break-audit",

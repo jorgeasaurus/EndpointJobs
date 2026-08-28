@@ -1,4 +1,5 @@
 import { normalizeTokens } from "@/lib/text";
+import { getJobWorkplace } from "@/lib/workplace";
 import type { Job } from "@/types/job";
 
 export const metroAreaOptions = [
@@ -123,7 +124,7 @@ export function createTokenAliasMatcher<T extends string>(
 }
 
 function buildLocationHaystack(job: Job) {
-  return `${job.location} ${job.mapLocation?.label ?? ""} ${job.workplace}`;
+  return `${job.location} ${job.mapLocation?.label ?? ""} ${getJobWorkplace(job)}`;
 }
 
 export const metroAreaMatcher = createTokenAliasMatcher(

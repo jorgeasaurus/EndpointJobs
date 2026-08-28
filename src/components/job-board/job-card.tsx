@@ -17,6 +17,7 @@ import {
   getExpandedDescriptionParagraphs,
   getFreshnessLabel
 } from "@/lib/jobs";
+import { getJobWorkplace } from "@/lib/workplace";
 import type { Job } from "@/types/job";
 
 import { MatchRecommendation } from "./match-recommendation";
@@ -59,7 +60,7 @@ export function JobCard({
             <HighlightedText query={query} text={job.company} />
           </p>
         </div>
-        <span className="workplace">{job.workplace}</span>
+        <span className="workplace">{getJobWorkplace(job)}</span>
       </div>
 
       {job.salary ? (

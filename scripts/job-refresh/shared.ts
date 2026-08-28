@@ -17,6 +17,7 @@ import {
   technicalRoleTitleTerms,
   type RoleFamilyInferenceRule
 } from "../../src/lib/job-taxonomy";
+import { hasExplicitOnsiteWorkplace } from "../../src/lib/workplace";
 import { resolveJobMapLocation } from "./map-location";
 
 const toolAliases = endpointToolDefinitions;
@@ -98,7 +99,9 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
     company,
     location,
     ...(mapLocation ? { mapLocation } : {}),
-    workplace: candidate.workplace ?? inferWorkplace(rawLocation, haystack),
+    workplace: hasExplicitOnsiteWorkplace(haystack)
+      ? "On-site"
+      : (candidate.workplace ?? inferWorkplace(rawLocation, haystack)),
     postedAt,
     fetchedAt: candidate.fetchedAt.toISOString(),
     staleAfter,
@@ -381,6 +384,7 @@ export function inferEmploymentType(haystack: string) {
 export function inferWorkplace(location: string | undefined, haystack: string): Workplace {
   const text = normalizeSearchText(`${location ?? ""} ${haystack}`);
 
+  if (hasExplicitOnsiteWorkplace(text)) return "On-site";
   if (containsAlias(text, "remote")) return "Remote";
   if (containsAlias(text, "hybrid")) return "Hybrid";
   if (location) return "On-site";

@@ -2,6 +2,7 @@ import { getSalarySortValue, getSearchText, isPostedWithinDays } from "@/lib/job
 import { isLeadershipTitle } from "@/lib/job-taxonomy";
 import { metroAreaMatcher, type MetroAreaFilter } from "@/lib/metro-areas";
 import { normalizeTokens } from "@/lib/text";
+import { getJobWorkplace } from "@/lib/workplace";
 import type { EndpointTool, Job, Platform, RoleFamily, Seniority, Workplace } from "@/types/job";
 
 export type SortKey = "newest" | "salary" | "company";
@@ -45,12 +46,13 @@ export function filterJobs(jobs: Job[], filters: JobFilters, now = new Date()) {
   const minimumSalary = filters.minimumSalary === "Any" ? null : Number(filters.minimumSalary);
   const maximumAgeDays = filters.freshness === "Any" ? null : Number(filters.freshness);
   return jobs.filter((job) => {
+    const workplace = getJobWorkplace(job);
     if (query && !getSearchText(job).includes(query)) return false;
-    if (location && !normalizeTokens(`${job.location} ${job.mapLocation?.label ?? ""} ${job.workplace}`).includes(location)) return false;
+    if (location && !normalizeTokens(`${job.location} ${job.mapLocation?.label ?? ""} ${workplace}`).includes(location)) return false;
     if (filters.selectedPlatforms.length && !filters.selectedPlatforms.some((value) => job.platforms.includes(value))) return false;
     if (filters.selectedTools.length && !filters.selectedTools.some((value) => job.tools.includes(value))) return false;
     if (filters.selectedMetroAreas.length && !filters.selectedMetroAreas.some((metro) => metroAreaMatcher.matches(job, metro))) return false;
-    if (filters.workplace !== "Any" && job.workplace !== filters.workplace) return false;
+    if (filters.workplace !== "Any" && workplace !== filters.workplace) return false;
     if (filters.salaryOnly && typeof job.salary?.min !== "number" && typeof job.salary?.max !== "number") return false;
     if (filters.leadershipOnly && !isLeadershipJob(job)) return false;
     if (minimumSalary !== null && (job.salary?.currency !== "USD" || (job.salary.max ?? job.salary.min ?? 0) < minimumSalary)) return false;
