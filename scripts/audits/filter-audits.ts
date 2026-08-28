@@ -66,6 +66,27 @@ export async function auditFilters({ filterFixtureJobs, run }: AuditContext) {
     assertIds(filterJobs(filterFixtureJobs, { ...initialFilterState, workplace: "Hybrid" }), [
       "recent-intune"
     ]);
+    const florenceOnsiteJob = makeJob({
+      id: "florence-onsite-false-remote",
+      title: "Senior Windows Endpoint Engineer – MECM/SCCM & Test Lab",
+      location: "Florence, KY",
+      workplace: "Remote",
+      summary:
+        "Support enterprise Windows endpoint testing in Florence, Kentucky. This is not a remote or hybrid position.",
+      description:
+        "This position requires full-time onsite support in Florence, KY. This is not a remote or hybrid position.\nAbility to Commute: Florence, KY 41042 (Required)\nWork Location: In person"
+    });
+    assertIds(
+      filterJobs([florenceOnsiteJob, ...filterFixtureJobs], {
+        ...initialFilterState,
+        workplace: "Remote"
+      }),
+      ["mac-jamf"]
+    );
+    assertIds(
+      filterJobs([florenceOnsiteJob], { ...initialFilterState, workplace: "On-site" }),
+      ["florence-onsite-false-remote"]
+    );
   });
 
   await run("FEAT-010", "Salary-only filter keeps only transparent pay listings", () => {

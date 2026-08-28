@@ -185,6 +185,22 @@ export async function auditNormalizers({ run, sources }: AuditContext) {
       "senior systems administrator powershell automation active directory windows server security hardening"
     );
     assertEqual(inferWorkplace("Remote", securityText), "Remote");
+    const florenceOnsiteText = normalizeSearchText(
+      "This position requires full-time onsite support in Florence, KY. This is not a remote or hybrid position. Ability to Commute: Florence, KY 41042 (Required). Work Location: In person."
+    );
+    assertEqual(
+      inferWorkplace("Florence, KY", florenceOnsiteText),
+      "On-site",
+      "explicit not-remote onsite listings must not infer Remote"
+    );
+    assertEqual(
+      inferWorkplace(
+        "Remote",
+        normalizeSearchText("Coinbase is a remote-first, but not remote-only company.")
+      ),
+      "Remote",
+      "remote-only negation must not force On-site"
+    );
     assertEqual(inferRoleFamily(securityText, ["Defender"], ["Windows"]), "Endpoint Security");
     assertEqual(inferRoleFamily(securityText, [], ["Windows"]), "Endpoint Security");
     assertEqual(inferRoleFamily(sysadminText, ["PowerShell"], ["Windows"]), "Systems Administration");
@@ -192,6 +208,8 @@ export async function auditNormalizers({ run, sources }: AuditContext) {
     assertEqual(inferSeniority("senior manager of it", "Senior IT Engineer"), "Senior");
     assertEqual(inferSeniority("senior manager role", "Senior IT Manager"), "Manager");
     assertEqual(inferEmploymentType(securityText), "Contract");
+    assertIncludes(sources.workplace, "hasExplicitOnsiteWorkplace");
+    assertIncludes(sources.shared, "hasExplicitOnsiteWorkplace");
   });
 
   await run("FEAT-047", "Salary ranges are preserved or extracted from descriptions", () => {

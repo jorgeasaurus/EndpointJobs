@@ -10,6 +10,7 @@ import {
   getFreshnessLabel,
   isActiveJob
 } from "@/lib/jobs";
+import { getJobWorkplace } from "@/lib/workplace";
 import type { Job, JobsFeed } from "@/types/job";
 
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
@@ -176,7 +177,7 @@ export default async function JobPage({ params }: JobPageProps) {
                 </div>
                 <div>
                   <dt>Workplace</dt>
-                  <dd>{job.workplace}</dd>
+                  <dd>{getJobWorkplace(job)}</dd>
                 </div>
                 <div>
                   <dt>Employment</dt>

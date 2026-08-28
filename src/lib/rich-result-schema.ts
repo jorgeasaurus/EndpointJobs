@@ -1,5 +1,6 @@
 import type { Job } from "@/types/job";
 import { normalizeText } from "@/lib/text";
+import { getJobWorkplace } from "@/lib/workplace";
 
 // Google requires ~1000+ characters of complete description text before a
 // JobPosting rich result is eligible.
@@ -18,7 +19,7 @@ export function isRichResultEligible(job: Job) {
       job.termsProfile === "public-api"
   );
   const hasSinglePhysicalLocation =
-    job.workplace !== "Remote" && !job.location.includes(";");
+    getJobWorkplace(job) !== "Remote" && !job.location.includes(";");
 
   return hasCompleteDescription && hasSinglePhysicalLocation;
 }

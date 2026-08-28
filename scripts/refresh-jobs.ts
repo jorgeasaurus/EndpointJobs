@@ -33,6 +33,7 @@ import {
   isSourceFreshnessExpired,
   normalizeJobSourceUrl
 } from "../src/lib/job-exclusions";
+import { withResolvedWorkplace } from "../src/lib/workplace";
 import type { Job, JobsFeed } from "../src/types/job";
 
 const outputPath = resolve(process.env.JOB_OUTPUT_PATH ?? "src/data/jobs.json");
@@ -59,6 +60,7 @@ async function main() {
       candidateJobs
         .map(addExtractedSalary)
         .map(addResolvedMapLocation)
+        .map(withResolvedWorkplace)
         .filter((job) => !isExcludedJobSourceUrl(job.sourceUrl, excludedSourceUrls))
         .filter((job) => !isSourceFreshnessExpired(job, fetchedAt))
         .filter((job) => new Date(job.staleAfter).getTime() >= fetchedAt.getTime()),

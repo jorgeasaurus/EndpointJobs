@@ -1,5 +1,6 @@
 import type { Job, Workplace } from "../../../src/types/job";
 import { serpApiJobSourceName } from "../../../src/lib/job-sources";
+import { hasExplicitOnsiteWorkplace } from "../../../src/lib/workplace";
 
 import type { ProviderAdapter } from "../provider";
 import { correctVerifiedJobLocation } from "../location-corrections";
@@ -11,6 +12,7 @@ import {
   extractSalaryFromText,
   getCsvConfig,
   getString,
+  normalizeSearchText,
   normalizeEmploymentTypeLabel,
   parseRelativeAgeDate,
   summarize,
@@ -661,6 +663,14 @@ function getSerpApiSalaryCurrency(label: string, marketCurrency: string) {
 }
 
 function inferSerpApiGoogleJobsWorkplace(raw: SerpApiGoogleJob): Workplace | undefined {
+  const text = normalizeSearchText(
+    [raw.location, raw.description, ...(raw.extensions ?? [])].filter(Boolean).join(" ")
+  );
+
+  if (hasExplicitOnsiteWorkplace(text)) {
+    return "On-site";
+  }
+
   return raw.detected_extensions?.work_from_home ? "Remote" : undefined;
 }
 

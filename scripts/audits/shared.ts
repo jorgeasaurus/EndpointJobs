@@ -36,6 +36,7 @@ export const sourcePaths = {
   comparisonDataAudit: "scripts/audits/job-comparison-data.ts",
   companyAts: "scripts/job-refresh/providers/company-ats.ts",
   workdaySites: "scripts/job-refresh/providers/workday-sites.ts",
+  workplace: "src/lib/workplace.ts",
   controls: "src/components/job-board/controls.tsx",
   curated: "scripts/job-refresh/providers/curated-jobs.ts",
   feedAudit: "scripts/audits/feed-audits.ts",

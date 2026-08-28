@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { ExternalLink, ListTree, Scale, X } from "lucide-react";
 
 import { formatPostedDate, getFreshnessLabel } from "@/lib/jobs";
+import { getJobWorkplace } from "@/lib/workplace";
 import type { Job } from "@/types/job";
 
 const minimumComparedJobs = 2;
@@ -85,7 +86,7 @@ export function JobComparison({
             <ComparisonRow jobs={jobs} label="Employer" render={(job) => job.company} />
             <ComparisonRow jobs={jobs} label="Salary" render={(job) => job.salary?.label ?? "Not shown"} />
             <ComparisonRow jobs={jobs} label="Location" render={(job) => job.location} />
-            <ComparisonRow jobs={jobs} label="Workplace" render={(job) => job.workplace} />
+            <ComparisonRow jobs={jobs} label="Workplace" render={(job) => getJobWorkplace(job)} />
             <ComparisonRow jobs={jobs} label="Seniority" render={(job) => job.seniority} />
             <ComparisonRow
               jobs={jobs}

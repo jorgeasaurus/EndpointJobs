@@ -16,6 +16,34 @@ function restoreProcessEnv(originalEnv: NodeJS.ProcessEnv) {
   Object.assign(process.env, originalEnv);
 }
 
+test("SerpAPI does not classify explicit onsite Florence KY listings as Remote", () => {
+  const job = normalizeSerpApiGoogleJob({
+    job_id: "gohpt-florence-ky-senior-windows-endpoint-engineer",
+    title: "Senior Windows Endpoint Engineer – MECM/SCCM & Test Lab",
+    company_name: "GoHPT",
+    location: "Florence, KY",
+    description: [
+      "We are seeking an experienced Senior Windows Endpoint Engineer to support enterprise Windows endpoint testing, validation, and MECM/SCCM test lab operations.",
+      "This position requires full-time onsite support in Florence, KY. This is not a remote or hybrid position.",
+      "Ability to Commute: Florence, KY 41042 (Required)",
+      "Work Location: In person"
+    ].join("\n\n"),
+    extensions: ["Work from home", "Full-time"],
+    detected_extensions: {
+      work_from_home: true,
+      schedule_type: "Full-time"
+    },
+    apply_options: [{
+      title: "Indeed",
+      link: "https://www.indeed.com/viewjob?jk=27de25e3f30f2c6f"
+    }]
+  }, "endpoint engineer", new Date("2026-08-27T14:58:25.134Z"));
+
+  assert.ok(job);
+  assert.equal(job.workplace, "On-site");
+  assert.equal(job.location, "Florence, KY");
+});
+
 test("SerpAPI applies verified location corrections without changing stable job IDs", () => {
   const job = normalizeSerpApiGoogleJob({
     job_id: "lowes-technology-operations-engineer",
