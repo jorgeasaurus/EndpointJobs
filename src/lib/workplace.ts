@@ -1,10 +1,10 @@
 import type { Job, Workplace } from "../types/job";
 
 const explicitOnsiteWorkplacePattern =
-  /\b(?:not a remote or hybrid|not a hybrid or remote|not a remote(?: or hybrid)? (?:position|role|job)|this (?:position|role|job) is not (?:a )?(?:remote|hybrid)|this is not a remote|work location:\s*in[ -]?person)\b/i;
+  /\b(?:not a remote or hybrid|not a hybrid or remote|not a remote(?: or hybrid)? (?:position|role|job)|this (?:position|role|job) is not (?:a )?(?:remote|hybrid)(?: or (?:hybrid|remote))?(?: (?:position|role|job))?|work location:\s*in[ -]?person)\b(?!-(?:only|first))/i;
 
 export function hasExplicitOnsiteWorkplace(text: string): boolean {
-  return explicitOnsiteWorkplacePattern.test(text);
+  return explicitOnsiteWorkplacePattern.test(text.replace(/\s+/g, " ").trim());
 }
 
 export function getJobWorkplaceText(

@@ -74,7 +74,7 @@ export async function auditFilters({ filterFixtureJobs, run }: AuditContext) {
       summary:
         "Support enterprise Windows endpoint testing in Florence, Kentucky. This is not a remote or hybrid position.",
       description:
-        "This position requires full-time onsite support in Florence, KY. This is not a remote or hybrid position.\nAbility to Commute: Florence, KY 41042 (Required)\nWork Location: In person"
+        "This position requires full-time onsite support in Florence, KY.\nThis is not a remote\nor hybrid position.\nAbility to Commute: Florence, KY 41042 (Required)\nWork Location:\nIn person"
     });
     assertIds(
       filterJobs([florenceOnsiteJob, ...filterFixtureJobs], {

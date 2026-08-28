@@ -8,6 +8,7 @@ import {
   getEndpointToolLabel,
   roleFamilyInferenceRules
 } from "../../src/lib/job-taxonomy";
+import { hasExplicitOnsiteWorkplace } from "../../src/lib/workplace";
 import { selectFeedJobs } from "../job-refresh/job-selection";
 import {
   buildStableJobId,
@@ -200,6 +201,23 @@ export async function auditNormalizers({ run, sources }: AuditContext) {
       ),
       "Remote",
       "remote-only negation must not force On-site"
+    );
+    assertEqual(
+      hasExplicitOnsiteWorkplace(
+        "This position requires full-time onsite support in Florence, KY.\nThis is not a remote\nor hybrid position.\nWork Location:\nIn person"
+      ),
+      true,
+      "newline-separated Florence KY onsite copy must still match"
+    );
+    assertEqual(
+      hasExplicitOnsiteWorkplace("This is not a remote-only company."),
+      false,
+      "remote-only company copy must not force On-site"
+    );
+    assertEqual(
+      hasExplicitOnsiteWorkplace("This is not a remote-first workplace."),
+      false,
+      "remote-first company copy must not force On-site"
     );
     assertEqual(inferRoleFamily(securityText, ["Defender"], ["Windows"]), "Endpoint Security");
     assertEqual(inferRoleFamily(securityText, [], ["Windows"]), "Endpoint Security");
