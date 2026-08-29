@@ -47,7 +47,7 @@ const countryMatchers: Array<[RegExp, string]> = [
   [/\bperu\b/i, "PE"]
 ];
 
-const collidingCountryCodes = new Set(["BR", "PE"]);
+const collidingCountryCodes = new Set(["BR", "PE", "CL", "CO"]);
 
 export function inferAddressCountry(job: Job) {
   const location = `${job.location} ${job.mapLocation?.label ?? ""}`;

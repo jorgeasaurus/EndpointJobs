@@ -96,6 +96,8 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     assertEqual(inferAddressCountry(makeJob({ location: "Peru, IN" })), "US");
     assertEqual(inferAddressCountry(makeJob({ location: "Lima, OH" })), "US");
     assertEqual(inferAddressCountry(makeJob({ location: "Santiago, CA" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Chile, NY" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Chile" })), "CL");
     assertEqual(
       inferAddressCountry(
         makeJob({
