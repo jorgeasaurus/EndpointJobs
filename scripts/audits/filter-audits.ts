@@ -57,6 +57,37 @@ export async function auditFilters({ filterFixtureJobs, run }: AuditContext) {
         ["zurich-country-search"]
       );
     }
+    const saoPauloJob = makeJob({
+      id: "sao-paulo-country-search",
+      location: "São Paulo, Brasil",
+      mapLocation: {
+        label: "São Paulo, Brazil",
+        latitude: -23.5505,
+        longitude: -46.6333
+      }
+    });
+    const latamRemoteJob = makeJob({
+      id: "latam-remote-country-search",
+      location: "LATAM, Remote",
+      workplace: "Remote",
+      mapLocation: {
+        label: "Latin America",
+        latitude: -15.7801,
+        longitude: -47.9292
+      }
+    });
+    for (const locationQuery of ["Brazil", "Brasil", "São Paulo", "Sao Paulo"]) {
+      assertIds(
+        filterJobs([saoPauloJob], { ...initialFilterState, locationQuery }),
+        ["sao-paulo-country-search"]
+      );
+    }
+    for (const locationQuery of ["LATAM", "Latin America", "Remote"]) {
+      assertIds(
+        filterJobs([latamRemoteJob], { ...initialFilterState, locationQuery }),
+        ["latam-remote-country-search"]
+      );
+    }
   });
 
   await run("FEAT-009", "Workplace filter requires exact workplace type", () => {
@@ -313,5 +344,91 @@ export async function auditFilters({ filterFixtureJobs, run }: AuditContext) {
       new URLSearchParams("metroAreas=Berlin%2C%20Germany%7CParis%2C%20France")
     );
     assertEqual(parsed.selectedMetroAreas.join(" / "), "Berlin, Germany / Paris, France");
+  });
+
+  await run("FEAT-077", "South American metro area filters match Portuguese and Spanish aliases", () => {
+    const southAmericanMetros = [
+      "São Paulo, Brazil",
+      "Rio de Janeiro, Brazil",
+      "Buenos Aires, Argentina",
+      "Bogotá, Colombia",
+      "Santiago, Chile",
+      "Lima, Peru",
+      "Medellín, Colombia"
+    ] as const;
+    assertArrayIncludes([...metroAreaOptions], [...southAmericanMetros]);
+
+    const southAmericanJobs = [
+      makeJob({ id: "sao-paulo-intune", location: "São Paulo, Brasil" }),
+      makeJob({ id: "sao-paulo-ascii", location: "Sao Paulo, SP, Brazil" }),
+      makeJob({ id: "rio-jamf", location: "Rio de Janeiro, Brazil" }),
+      makeJob({ id: "bogota-mdm", location: "Bogotá, Colombia" }),
+      makeJob({ id: "santiago-chile", location: "Santiago, Chile" }),
+      makeJob({ id: "lima-peru", location: "Lima, Perú" }),
+      makeJob({ id: "buenos-aires-uem", location: "CABA, Argentina" }),
+      makeJob({ id: "seattle-kandji", location: "Seattle, WA" }),
+      makeJob({
+        id: "austin-onsite",
+        location: "Austin, TX",
+        workplace: "On-site",
+        summary: "On-site endpoint engineer in Austin with occasional LATAM customer travel."
+      })
+    ];
+
+    assertIds(
+      filterJobs(southAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["São Paulo, Brazil"]
+      }),
+      ["sao-paulo-intune", "sao-paulo-ascii"]
+    );
+    assertIds(
+      filterJobs(southAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Rio de Janeiro, Brazil"]
+      }),
+      ["rio-jamf"]
+    );
+    assertIds(
+      filterJobs(southAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Bogotá, Colombia"]
+      }),
+      ["bogota-mdm"]
+    );
+    assertIds(
+      filterJobs(southAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Santiago, Chile"]
+      }),
+      ["santiago-chile"]
+    );
+    assertIds(
+      filterJobs(southAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Lima, Peru"]
+      }),
+      ["lima-peru"]
+    );
+    assertIds(
+      filterJobs(southAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Buenos Aires, Argentina"]
+      }),
+      ["buenos-aires-uem"]
+    );
+    assertIds(
+      filterJobs(southAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["São Paulo, Brazil"]
+      }).filter((job) => job.id === "austin-onsite"),
+      []
+    );
+
+    const merged = mergeFilterStateIntoSearchParams(new URLSearchParams(), {
+      ...initialFilterState,
+      selectedMetroAreas: ["São Paulo, Brazil"]
+    });
+    assertEqual(merged.get("metroAreas"), "São Paulo, Brazil");
   });
 }

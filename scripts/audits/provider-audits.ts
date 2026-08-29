@@ -244,9 +244,12 @@ export async function auditProviders({ run, sources }: AuditContext) {
     );
     assertIncludes(sources.readme, "SpaceX", "README source documentation");
     assertIncludes(sources.readme, "GitLab", "README expanded source documentation");
-    assertIncludes(sources.workflow, "us,ch,it,es,fr,de", "scheduled Adzuna Germany coverage");
-    assertIncludes(sources.workflow, "US,CH,IT,ES,FR,DE", "scheduled TheirStack Germany coverage");
-    assertIncludes(sources.workflow, '"Germany" OR "Remote"', "scheduled LinkedIn Germany coverage");
+    assertIncludes(sources.workflow, "us,ch,it,es,fr,de,br", "scheduled Adzuna Brazil coverage");
+    assertIncludes(sources.workflow, "US,CH,IT,ES,FR,DE,BR,AR,CL,CO,PE", "scheduled TheirStack South America coverage");
+    assertIncludes(sources.workflow, "us,ch,it,es,fr,de,br,ar,cl,co,pe", "scheduled RapidAPI South America coverage");
+    assertIncludes(sources.workflow, '"Brazil" OR "Argentina"', "scheduled LinkedIn South America coverage");
+    assertIncludes(sources.workflow, '"Germany" OR "Brazil"', "scheduled LinkedIn Germany coverage");
+    assertIncludes(sources.readme, "South America is not added to SerpAPI");
   });
 
   await run("FEAT-067", "Provider adapter contract is shared by refresh orchestration", () => {

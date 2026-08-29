@@ -186,6 +186,24 @@ export async function auditNormalizers({ run, sources }: AuditContext) {
       "senior systems administrator powershell automation active directory windows server security hardening"
     );
     assertEqual(inferWorkplace("Remote", securityText), "Remote");
+    assertEqual(
+      inferWorkplace(
+        "LATAM, Remote",
+        normalizeSearchText("Remote Intune engineer open to Brazil, LATAM, and South America.")
+      ),
+      "Remote",
+      "explicit remote-to-LATAM listings must stay Remote"
+    );
+    assertEqual(
+      inferWorkplace(
+        "Austin, TX",
+        normalizeSearchText(
+          "On-site endpoint engineer in Austin, TX. Occasional travel to support LATAM customers. This is not a remote or hybrid position."
+        )
+      ),
+      "On-site",
+      "US onsite roles that mention LATAM must not infer Remote"
+    );
     const florenceOnsiteText = normalizeSearchText(
       "This position requires full-time onsite support in Florence, KY. This is not a remote or hybrid position. Ability to Commute: Florence, KY 41042 (Required). Work Location: In person."
     );

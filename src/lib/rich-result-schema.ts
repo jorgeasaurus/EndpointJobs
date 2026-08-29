@@ -39,7 +39,12 @@ const countryMatchers: Array<[RegExp, string]> = [
   [/\bindia\b/i, "IN"],
   [/\bitaly\b/i, "IT"],
   [/\bphilippines\b/i, "PH"],
-  [/\bsouth korea\b/i, "KR"]
+  [/\bsouth korea\b/i, "KR"],
+  [/\b(?:brazil|brasil)\b/i, "BR"],
+  [/\bargentina\b/i, "AR"],
+  [/\bchile\b/i, "CL"],
+  [/\bcolombia\b/i, "CO"],
+  [/\bperu\b/i, "PE"]
 ];
 
 export function inferAddressCountry(job: Job) {

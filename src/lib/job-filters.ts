@@ -1,7 +1,7 @@
 import { getSalarySortValue, getSearchText, isPostedWithinDays } from "@/lib/jobs";
 import { isLeadershipTitle } from "@/lib/job-taxonomy";
 import { metroAreaMatcher, type MetroAreaFilter } from "@/lib/metro-areas";
-import { normalizeTokens } from "@/lib/text";
+import { foldTokens } from "@/lib/text";
 import { getJobWorkplace } from "@/lib/workplace";
 import type { EndpointTool, Job, Platform, RoleFamily, Seniority, Workplace } from "@/types/job";
 
@@ -42,13 +42,13 @@ export function isLeadershipJob(job: Pick<Job, "title">) {
 
 export function filterJobs(jobs: Job[], filters: JobFilters, now = new Date()) {
   const query = filters.query.trim().toLowerCase();
-  const location = normalizeTokens(filters.locationQuery);
+  const location = foldTokens(filters.locationQuery);
   const minimumSalary = filters.minimumSalary === "Any" ? null : Number(filters.minimumSalary);
   const maximumAgeDays = filters.freshness === "Any" ? null : Number(filters.freshness);
   return jobs.filter((job) => {
     const workplace = getJobWorkplace(job);
     if (query && !getSearchText(job).includes(query)) return false;
-    if (location && !normalizeTokens(`${job.location} ${job.mapLocation?.label ?? ""} ${workplace}`).includes(location)) return false;
+    if (location && !foldTokens(`${job.location} ${job.mapLocation?.label ?? ""} ${workplace}`).includes(location)) return false;
     if (filters.selectedPlatforms.length && !filters.selectedPlatforms.some((value) => job.platforms.includes(value))) return false;
     if (filters.selectedTools.length && !filters.selectedTools.some((value) => job.tools.includes(value))) return false;
     if (filters.selectedMetroAreas.length && !filters.selectedMetroAreas.some((metro) => metroAreaMatcher.matches(job, metro))) return false;
