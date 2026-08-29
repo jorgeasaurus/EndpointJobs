@@ -296,7 +296,62 @@ const locationCoordinates: Coordinate[] = [
   { label: "Toronto, Canada", latitude: 43.6532, longitude: -79.3832, keys: ["toronto"] },
   { label: "Canada", latitude: 56.1304, longitude: -106.3468, keys: ["canada"] },
   { label: "Mexico City, Mexico", latitude: 19.4326, longitude: -99.1332, keys: ["mexico city"] },
-  { label: "Medellin, Colombia", latitude: 6.2476, longitude: -75.5658, keys: ["medellin"] },
+  {
+    label: "São Paulo, Brazil",
+    latitude: -23.5505,
+    longitude: -46.6333,
+    keys: ["sao paulo", "sao paulo sp", "sao paulo brasil"]
+  },
+  {
+    label: "Rio de Janeiro, Brazil",
+    latitude: -22.9068,
+    longitude: -43.1729,
+    keys: ["rio de janeiro"]
+  },
+  { label: "Brasília, Brazil", latitude: -15.7975, longitude: -47.8919, keys: ["brasilia", "brasilia df"] },
+  { label: "Brazil", latitude: -14.235, longitude: -51.9253, keys: ["brazil", "brasil"] },
+  {
+    label: "Buenos Aires, Argentina",
+    latitude: -34.6037,
+    longitude: -58.3816,
+    keys: ["buenos aires argentina", "caba", "capital federal"]
+  },
+  { label: "Argentina", latitude: -38.4161, longitude: -63.6167, keys: ["argentina"] },
+  {
+    label: "Santiago, Chile",
+    latitude: -33.4489,
+    longitude: -70.6693,
+    keys: ["santiago chile", "santiago de chile"]
+  },
+  { label: "Chile", latitude: -35.6751, longitude: -71.543, keys: ["chile"] },
+  {
+    label: "Bogotá, Colombia",
+    latitude: 4.711,
+    longitude: -74.0721,
+    keys: ["bogota", "bogota dc", "bogota colombia"]
+  },
+  { label: "Medellín, Colombia", latitude: 6.2476, longitude: -75.5658, keys: ["medellin"] },
+  { label: "Colombia", latitude: 4.5709, longitude: -74.2973, keys: ["colombia"] },
+  {
+    label: "Lima, Peru",
+    latitude: -12.0464,
+    longitude: -77.0428,
+    keys: ["lima peru", "lima pe"]
+  },
+  { label: "Peru", latitude: -9.19, longitude: -75.0152, keys: ["peru"] },
+  {
+    label: "Latin America",
+    latitude: -15.7801,
+    longitude: -47.9292,
+    keys: [
+      "latam",
+      "latin america",
+      "south america",
+      "america latina",
+      "america do sul",
+      "latinoamerica"
+    ]
+  },
   { label: "London, UK", latitude: 51.5072, longitude: -0.1276, keys: ["london", "england united kingdom"] },
   { label: "Berlin, Germany", latitude: 52.52, longitude: 13.405, keys: ["berlin"] },
   { label: "Hamburg, Germany", latitude: 53.5511, longitude: 9.9937, keys: ["hamburg"] },
@@ -424,7 +479,18 @@ export function resolveJobMapLocation(location: string): JobMapLocation | undefi
 }
 
 function isInternationalCityWithExplicitUsState(label: string, normalizedLocation: string) {
-  if (!label.endsWith(", Germany") && !label.endsWith(", Australia")) {
+  if (
+    !label.endsWith(", Germany") &&
+    !label.endsWith(", Australia") &&
+    label !== "Brazil" &&
+    !label.endsWith(", Brazil") &&
+    label !== "Peru" &&
+    !label.endsWith(", Peru") &&
+    label !== "Chile" &&
+    !label.endsWith(", Chile") &&
+    label !== "Colombia" &&
+    !label.endsWith(", Colombia")
+  ) {
     return false;
   }
 

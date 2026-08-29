@@ -39,16 +39,31 @@ const countryMatchers: Array<[RegExp, string]> = [
   [/\bindia\b/i, "IN"],
   [/\bitaly\b/i, "IT"],
   [/\bphilippines\b/i, "PH"],
-  [/\bsouth korea\b/i, "KR"]
+  [/\bsouth korea\b/i, "KR"],
+  [/\b(?:brazil|brasil)\b/i, "BR"],
+  [/\bargentina\b/i, "AR"],
+  [/\bchile\b/i, "CL"],
+  [/\bcolombia\b/i, "CO"],
+  [/\bperu\b/i, "PE"]
 ];
+
+const collidingCountryCodes = new Set(["BR", "PE", "CL", "CO"]);
 
 export function inferAddressCountry(job: Job) {
   const location = `${job.location} ${job.mapLocation?.label ?? ""}`;
+  const foldedLocation = foldDiacritics(location);
+  const usStateSuffixed = hasExplicitUsStateSuffix(location);
 
   for (const [pattern, countryCode] of countryMatchers) {
-    if (pattern.test(location)) {
-      return countryCode;
+    if (!pattern.test(foldedLocation)) {
+      continue;
     }
+
+    if (usStateSuffixed && collidingCountryCodes.has(countryCode)) {
+      return "US";
+    }
+
+    return countryCode;
   }
 
   if (usStatePattern.test(location)) {
@@ -56,6 +71,24 @@ export function inferAddressCountry(job: Job) {
   }
 
   return undefined;
+}
+
+function foldDiacritics(value: string) {
+  return value.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function hasExplicitUsStateSuffix(location: string) {
+  const normalized = foldDiacritics(location)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/ (?:us|usa|united states(?: of america)?)$/, "")
+    .replace(/ \d{5}(?: \d{4})?$/, "");
+
+  return /(?:^| )(?:al|ak|az|ar|ca|co|ct|de|fl|ga|hi|id|il|in|ia|ks|ky|la|me|md|ma|mi|mn|ms|mo|mt|ne|nv|nh|nj|nm|ny|nc|nd|oh|ok|or|pa|ri|sc|sd|tn|tx|ut|vt|va|wa|wv|wi|wy|dc)$/.test(
+    normalized
+  );
 }
 
 export function normalizeEmploymentType(value: string) {
