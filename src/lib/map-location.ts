@@ -485,7 +485,11 @@ function isInternationalCityWithExplicitUsState(label: string, normalizedLocatio
     label !== "Brazil" &&
     !label.endsWith(", Brazil") &&
     label !== "Peru" &&
-    !label.endsWith(", Peru")
+    !label.endsWith(", Peru") &&
+    label !== "Chile" &&
+    !label.endsWith(", Chile") &&
+    label !== "Colombia" &&
+    !label.endsWith(", Colombia")
   ) {
     return false;
   }

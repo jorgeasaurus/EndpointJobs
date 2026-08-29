@@ -207,8 +207,11 @@ export async function auditMaps({ feed, run, sources }: AuditContext) {
     assertEqual(resolveJobMapLocation("CABA")?.label, "Buenos Aires, Argentina");
     assertEqual(resolveJobMapLocation("Urbanización Buenos Aires, Santa Isabel"), undefined);
     assertEqual(resolveJobMapLocation("Bogotá, Colombia")?.label, "Bogotá, Colombia");
+    assertEqual(resolveJobMapLocation("Bogota, NJ"), undefined);
     assertEqual(resolveJobMapLocation("Medellín, Colombia")?.label, "Medellín, Colombia");
     assertEqual(resolveJobMapLocation("Santiago, Chile")?.label, "Santiago, Chile");
+    assertEqual(resolveJobMapLocation("Chile")?.label, "Chile");
+    assertEqual(resolveJobMapLocation("Chile, NY"), undefined);
     assertEqual(resolveJobMapLocation("Santiago, CA"), undefined);
     assertEqual(resolveJobMapLocation("Lima, Perú")?.label, "Lima, Peru");
     assertEqual(resolveJobMapLocation("Lima, OH"), undefined);
