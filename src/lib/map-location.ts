@@ -314,7 +314,7 @@ const locationCoordinates: Coordinate[] = [
     label: "Buenos Aires, Argentina",
     latitude: -34.6037,
     longitude: -58.3816,
-    keys: ["buenos aires", "caba", "capital federal"]
+    keys: ["buenos aires argentina", "caba", "capital federal"]
   },
   { label: "Argentina", latitude: -38.4161, longitude: -63.6167, keys: ["argentina"] },
   {

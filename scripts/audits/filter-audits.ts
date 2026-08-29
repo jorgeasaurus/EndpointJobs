@@ -365,7 +365,12 @@ export async function auditFilters({ filterFixtureJobs, run }: AuditContext) {
       makeJob({ id: "bogota-mdm", location: "Bogotá, Colombia" }),
       makeJob({ id: "santiago-chile", location: "Santiago, Chile" }),
       makeJob({ id: "lima-peru", location: "Lima, Perú" }),
-      makeJob({ id: "buenos-aires-uem", location: "CABA, Argentina" }),
+      makeJob({ id: "buenos-aires-uem", location: "Buenos Aires, Argentina" }),
+      makeJob({ id: "caba-uem", location: "CABA, Argentina" }),
+      makeJob({
+        id: "puerto-rico-buenos-aires",
+        location: "Urbanización Buenos Aires, Santa Isabel"
+      }),
       makeJob({ id: "seattle-kandji", location: "Seattle, WA" }),
       makeJob({
         id: "austin-onsite",
@@ -415,7 +420,7 @@ export async function auditFilters({ filterFixtureJobs, run }: AuditContext) {
         ...initialFilterState,
         selectedMetroAreas: ["Buenos Aires, Argentina"]
       }),
-      ["buenos-aires-uem"]
+      ["buenos-aires-uem", "caba-uem"]
     );
     assertIds(
       filterJobs(southAmericanJobs, {

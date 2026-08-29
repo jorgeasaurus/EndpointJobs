@@ -93,7 +93,7 @@ const metroAreaKeywordSets: Record<MetroAreaFilter, readonly string[]> = {
   "Barcelona, Spain": ["barcelona"],
   "Berlin, Germany": ["berlin"],
   "Bogotá, Colombia": ["bogota", "bogotá", "bogota dc", "bogotá dc", "bogota colombia", "bogotá colombia"],
-  "Buenos Aires, Argentina": ["buenos aires", "caba", "capital federal"],
+  "Buenos Aires, Argentina": ["buenos aires argentina", "caba", "capital federal"],
   "Frankfurt, Germany": ["frankfurt", "frankfurt am main"],
   "Lima, Peru": ["lima peru", "lima perú", "lima pe"],
   "London, UK": ["london", "england united kingdom"],
