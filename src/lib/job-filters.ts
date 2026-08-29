@@ -50,8 +50,10 @@ export function filterJobs(jobs: Job[], filters: JobFilters, now = new Date()) {
   return jobs.filter((job) => {
     const workplace = getJobWorkplace(job);
     if (query && !getSearchText(job).includes(query)) return false;
-    const locationHaystack = `${foldTokens(`${job.location} ${job.mapLocation?.label ?? ""} ${workplace}`)}`;
-    if (location && !locationHaystack.includes(location)) return false;
+    if (location) {
+      const locationHaystack = `${foldTokens(`${job.location} ${job.mapLocation?.label ?? ""} ${workplace}`)}`;
+      if (!locationHaystack.includes(location)) return false;
+    }
     if (selectedPlatforms.size && !job.platforms.some((value) => selectedPlatforms.has(value))) return false;
     if (selectedTools.size && !job.tools.some((value) => selectedTools.has(value))) return false;
     if (filters.selectedMetroAreas.length && !filters.selectedMetroAreas.some((metro) => metroAreaMatcher.matches(job, metro))) return false;

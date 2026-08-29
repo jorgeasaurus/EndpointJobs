@@ -51,10 +51,11 @@ const collidingCountryCodes = new Set(["BR", "PE"]);
 
 export function inferAddressCountry(job: Job) {
   const location = `${job.location} ${job.mapLocation?.label ?? ""}`;
+  const foldedLocation = foldDiacritics(location);
   const usStateSuffixed = hasExplicitUsStateSuffix(location);
 
   for (const [pattern, countryCode] of countryMatchers) {
-    if (!pattern.test(location)) {
+    if (!pattern.test(foldedLocation)) {
       continue;
     }
 
@@ -72,10 +73,12 @@ export function inferAddressCountry(job: Job) {
   return undefined;
 }
 
+function foldDiacritics(value: string) {
+  return value.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
+}
+
 function hasExplicitUsStateSuffix(location: string) {
-  const normalized = location
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
+  const normalized = foldDiacritics(location)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, " ")
     .trim()

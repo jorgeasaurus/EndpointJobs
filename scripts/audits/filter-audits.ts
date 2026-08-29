@@ -21,7 +21,7 @@ import {
   type AuditContext
 } from "./shared";
 
-export async function auditFilters({ filterFixtureJobs, run }: AuditContext) {
+export async function auditFilters({ filterFixtureJobs, run, sources }: AuditContext) {
   await run("FEAT-005", "Keyword search checks broad job text", () => {
     const matchesTool = filterJobs(filterFixtureJobs, {
       ...initialFilterState,
@@ -88,6 +88,16 @@ export async function auditFilters({ filterFixtureJobs, run }: AuditContext) {
         ["latam-remote-country-search"]
       );
     }
+    assertIds(
+      filterJobs(filterFixtureJobs, { ...initialFilterState, locationQuery: "" }),
+      ["recent-intune", "mac-jamf", "security-tanium"]
+    );
+    const locationGateIndex = sources.jobFilters.indexOf("if (location)");
+    const locationHaystackIndex = sources.jobFilters.indexOf("locationHaystack");
+    assertTruthy(
+      locationGateIndex >= 0 && locationGateIndex < locationHaystackIndex,
+      "location folding must stay gated on a non-empty locationQuery"
+    );
   });
 
   await run("FEAT-009", "Workplace filter requires exact workplace type", () => {

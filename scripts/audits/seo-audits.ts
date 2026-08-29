@@ -118,6 +118,18 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
       inferAddressCountry(makeJob({ location: "Santiago, Chile" })),
       "CL"
     );
+    assertEqual(
+      inferAddressCountry(makeJob({ location: "Perú", mapLocation: undefined })),
+      "PE"
+    );
+    assertEqual(
+      inferAddressCountry(makeJob({ location: "Lima, Perú", mapLocation: undefined })),
+      "PE"
+    );
+    assertEqual(
+      inferAddressCountry(makeJob({ location: "Brasil", mapLocation: undefined })),
+      "BR"
+    );
     const brazilInSerialized = serializeJsonLd(
       getJobJsonLd(
         makeJob({

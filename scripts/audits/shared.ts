@@ -50,6 +50,7 @@ export const sourcePaths = {
   jobBoardPrimitivesCss: "src/app/job-board-primitives.css",
   jobCard: "src/components/job-board/job-card.tsx",
   jobExclusions: "src/lib/job-exclusions.ts",
+  jobFilters: "src/lib/job-filters.ts",
   jobMap: "src/components/job-board/job-map.tsx",
   jobMapCanvas: "src/components/job-board/job-map-canvas.tsx",
   jobMapConfig: "src/components/job-board/job-map-config.ts",
