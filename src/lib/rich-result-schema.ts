@@ -47,13 +47,22 @@ const countryMatchers: Array<[RegExp, string]> = [
   [/\bperu\b/i, "PE"]
 ];
 
+const collidingCountryCodes = new Set(["BR", "PE"]);
+
 export function inferAddressCountry(job: Job) {
   const location = `${job.location} ${job.mapLocation?.label ?? ""}`;
+  const usStateSuffixed = hasExplicitUsStateSuffix(location);
 
   for (const [pattern, countryCode] of countryMatchers) {
-    if (pattern.test(location)) {
-      return countryCode;
+    if (!pattern.test(location)) {
+      continue;
     }
+
+    if (usStateSuffixed && collidingCountryCodes.has(countryCode)) {
+      return "US";
+    }
+
+    return countryCode;
   }
 
   if (usStatePattern.test(location)) {
@@ -61,6 +70,22 @@ export function inferAddressCountry(job: Job) {
   }
 
   return undefined;
+}
+
+function hasExplicitUsStateSuffix(location: string) {
+  const normalized = location
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/ (?:us|usa|united states(?: of america)?)$/, "")
+    .replace(/ \d{5}(?: \d{4})?$/, "");
+
+  return /(?:^| )(?:al|ak|az|ar|ca|co|ct|de|fl|ga|hi|id|il|in|ia|ks|ky|la|me|md|ma|mi|mn|ms|mo|mt|ne|nv|nh|nj|nm|ny|nc|nd|oh|ok|or|pa|ri|sc|sd|tn|tx|ut|vt|va|wa|wv|wi|wy|dc)$/.test(
+    normalized
+  );
 }
 
 export function normalizeEmploymentType(value: string) {

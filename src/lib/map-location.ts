@@ -330,7 +330,7 @@ const locationCoordinates: Coordinate[] = [
     longitude: -74.0721,
     keys: ["bogota", "bogota dc", "bogota colombia"]
   },
-  { label: "Medellin, Colombia", latitude: 6.2476, longitude: -75.5658, keys: ["medellin"] },
+  { label: "Medellín, Colombia", latitude: 6.2476, longitude: -75.5658, keys: ["medellin"] },
   { label: "Colombia", latitude: 4.5709, longitude: -74.2973, keys: ["colombia"] },
   {
     label: "Lima, Peru",

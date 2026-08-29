@@ -5,7 +5,7 @@ import {
   getJobJsonLd,
   serializeJsonLd
 } from "../../src/app/structured-data";
-import { getCanonicalSeoIndex, getCanonicalSeoJobs } from "../../src/lib/job-seo";
+import { getCanonicalSeoIndex, getCanonicalSeoJobs, inferAddressCountry } from "../../src/lib/job-seo";
 import type { Job } from "../../src/types/job";
 
 import {
@@ -92,6 +92,42 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     assertIncludes(jobSerialized, '"@type":"JobPosting"');
     assertIncludes(jobSerialized, '"employmentType":"FULL_TIME"');
     assertIncludes(jobSerialized, '"addressCountry":"US"');
+    assertEqual(inferAddressCountry(makeJob({ location: "Brazil, IN" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Peru, IN" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Lima, OH" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Santiago, CA" })), "US");
+    assertEqual(
+      inferAddressCountry(
+        makeJob({
+          location: "São Paulo, Brasil",
+          mapLocation: { label: "São Paulo, Brazil", latitude: -23.5505, longitude: -46.6333 }
+        })
+      ),
+      "BR"
+    );
+    assertEqual(
+      inferAddressCountry(
+        makeJob({
+          location: "Lima, Perú",
+          mapLocation: { label: "Lima, Peru", latitude: -12.0464, longitude: -77.0428 }
+        })
+      ),
+      "PE"
+    );
+    assertEqual(
+      inferAddressCountry(makeJob({ location: "Santiago, Chile" })),
+      "CL"
+    );
+    const brazilInSerialized = serializeJsonLd(
+      getJobJsonLd(
+        makeJob({
+          location: "Brazil, IN",
+          workplace: "On-site",
+          description: "Complete role details. ".repeat(60)
+        })
+      )
+    );
+    assertIncludes(brazilInSerialized, '"addressCountry":"US"', "Brazil, IN stays US in JobPosting");
     assertIncludes(jobSerialized, "Endpoint &lt;Engineer&gt;", "escaped job description");
     assertIncludes(jobSerialized, '"@type":"BreadcrumbList"');
 
