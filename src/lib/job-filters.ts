@@ -51,7 +51,7 @@ export function filterJobs(jobs: Job[], filters: JobFilters, now = new Date()) {
     const workplace = getJobWorkplace(job);
     if (query && !getSearchText(job).includes(query)) return false;
     if (location) {
-      const locationHaystack = `${foldTokens(`${job.location} ${job.mapLocation?.label ?? ""} ${workplace}`)}`;
+      const locationHaystack = foldTokens(`${job.location} ${job.mapLocation?.label ?? ""} ${workplace}`);
       if (!locationHaystack.includes(location)) return false;
     }
     if (selectedPlatforms.size && !job.platforms.some((value) => selectedPlatforms.has(value))) return false;
