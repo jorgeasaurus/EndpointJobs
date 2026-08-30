@@ -110,6 +110,363 @@ const curatedJobs = [
       "Compensation",
       "- Published base salary is 60.000 EUR gross/year, paid in 14 salaries."
     ].join("\n")
+  },
+  {
+    title: "10418 - Sr. Workstation Engineer",
+    company: "Hyundai AutoEver America",
+    location: "Irvine, CA",
+    workplace: "On-site",
+    postedAt: "2026-08-29",
+    sourceUrl: "https://www.linkedin.com/jobs/view/4404262585",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "Workstation", "Windows", "EUC"],
+    availability: {
+      requiredText: [
+        "Sr. Workstation Engineer",
+        "Hyundai AutoEver America"
+      ]
+    },
+    description: [
+      "On-site Senior Workstation Engineer listing at Hyundai AutoEver America in Irvine, CA.",
+      "The title places this role in the workstation and Windows device-engineering family.",
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
+  },
+  {
+    title: "UEM Engineers",
+    company: "Leidos",
+    location: "Odenton, MD",
+    workplace: "Hybrid",
+    postedAt: "2026-08-29",
+    sourceUrl: "https://www.linkedin.com/jobs/view/4442138849",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "UEM", "Endpoint Management"],
+    availability: {
+      requiredText: [
+        "UEM Engineers",
+        "Leidos"
+      ]
+    },
+    description: [
+      "Hybrid UEM Engineers listing at Leidos in Odenton, MD.",
+      "The title places this role in the unified endpoint management (UEM) engineering family.",
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
+  },
+  {
+    title: "Sr IT Engineer - Tanium Administrator",
+    company: "Honeywell Aerospace",
+    location: "Phoenix, AZ",
+    workplace: "On-site",
+    postedAt: "2026-08-30",
+    sourceUrl: "https://www.linkedin.com/jobs/view/4433886927",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "Tanium", "Endpoint Management"],
+    availability: {
+      requiredText: [
+        "Tanium Administrator",
+        "Honeywell Aerospace"
+      ]
+    },
+    description: [
+      "On-site Senior IT Engineer — Tanium Administrator listing at Honeywell Aerospace in Phoenix, AZ.",
+      "The title places this role in the Tanium / endpoint-administration family.",
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
+  },
+  {
+    title: "Team Lead: Digital Workplace Engineer",
+    company: "K&L Gates",
+    location: "Chicago, IL",
+    workplace: "On-site",
+    postedAt: "2026-08-29",
+    sourceUrl: "https://www.linkedin.com/jobs/view/4429209297",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "Digital Workplace", "EUC"],
+    availability: {
+      requiredText: [
+        "Digital Workplace Engineer",
+        "K&L Gates"
+      ]
+    },
+    description: [
+      "On-site Team Lead: Digital Workplace Engineer listing at K&L Gates in Chicago, IL.",
+      "The title places this role in the digital workplace engineering family.",
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
+  },
+  {
+    title: "Windows Device Engineering Lead",
+    company: "Takeda",
+    location: "Cambridge, MA",
+    workplace: "On-site",
+    postedAt: "2026-08-29",
+    sourceUrl: "https://www.linkedin.com/jobs/view/4439257350",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "Windows", "Device Engineering", "EUC"],
+    availability: {
+      requiredText: [
+        "Windows Device Engineering Lead",
+        "Takeda"
+      ]
+    },
+    description: [
+      "On-site Windows Device Engineering Lead listing at Takeda in Cambridge, MA.",
+      "The title places this role in the Windows device-engineering family.",
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
+  },
+  {
+    title: "Endpoint Administrator",
+    company: "Targa Resources",
+    location: "Tulsa, OK",
+    workplace: "On-site",
+    postedAt: "2026-08-29",
+    sourceUrl: "https://www.linkedin.com/jobs/view/4432692480",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "Endpoint", "Windows", "EUC"],
+    availability: {
+      requiredText: [
+        "Endpoint Administrator",
+        "Targa Resources"
+      ]
+    },
+    description: [
+      "On-site Endpoint Administrator listing at Targa Resources in Tulsa, OK.",
+      "The title places this role in the endpoint administration family.",
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
+  },
+  {
+    title: "Senior Windows MECM Engineer",
+    company: "StratasCorp Technologies",
+    location: "Pensacola, FL",
+    workplace: "On-site",
+    postedAt: "2026-08-29",
+    sourceUrl: "https://www.linkedin.com/jobs/view/4459700859",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "MECM", "SCCM", "Windows"],
+    availability: {
+      requiredText: [
+        "Senior Windows MECM Engineer",
+        "StratasCorp Technologies"
+      ]
+    },
+    description: [
+      "On-site Senior Windows MECM Engineer listing at StratasCorp Technologies in Pensacola, FL.",
+      "The title places this role in the Windows MECM/SCCM engineering family.",
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
+  },
+  {
+    title: "System Administrator III - Windows/SCCM/MECM",
+    company: "Hyundai AutoEver America",
+    location: "Montgomery, AL",
+    workplace: "On-site",
+    postedAt: "2026-08-29",
+    sourceUrl: "https://www.linkedin.com/jobs/view/4391802222",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "SCCM", "MECM", "Windows"],
+    availability: {
+      requiredText: [
+        "Windows/SCCM/MECM",
+        "Hyundai AutoEver America"
+      ]
+    },
+    description: [
+      "On-site System Administrator III — Windows/SCCM/MECM listing at Hyundai AutoEver America in Montgomery, AL.",
+      "The title places this role in the Windows SCCM/MECM systems-administration family.",
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
+  },
+  {
+    title: "Endpoint Administrator",
+    company: "Targa Resources",
+    location: "Houston, TX",
+    workplace: "On-site",
+    postedAt: "2026-08-29",
+    sourceUrl: "https://www.linkedin.com/jobs/view/4432904109",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "Endpoint", "Windows", "EUC"],
+    availability: {
+      requiredText: [
+        "Endpoint Administrator",
+        "Targa Resources"
+      ]
+    },
+    description: [
+      "On-site Endpoint Administrator listing at Targa Resources in Houston, TX.",
+      "The title places this role in the endpoint administration family.",
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
+  },
+  {
+    title: "Senior Apple Platform Engineer",
+    company: "SAIC",
+    location: "Quantico, VA",
+    workplace: "On-site",
+    postedAt: "2026-08-29",
+    sourceUrl: "https://www.linkedin.com/jobs/view/4460833211",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "Apple", "macOS", "Platform"],
+    availability: {
+      requiredText: [
+        "Senior Apple Platform Engineer",
+        "SAIC"
+      ]
+    },
+    description: [
+      "On-site Senior Apple Platform Engineer listing at SAIC in Quantico, VA.",
+      "The title places this role in the Apple / macOS platform engineering family.",
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
+  },
+  {
+    title: "Systems Engineer – UEM",
+    company: "TJDEED Technology",
+    location: "Jordan, PA",
+    workplace: "On-site",
+    postedAt: "2026-08-29",
+    sourceUrl: "https://www.linkedin.com/jobs/view/4460855462",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "UEM", "Endpoint Management"],
+    availability: {
+      requiredText: [
+        "Systems Engineer",
+        "TJDEED Technology"
+      ]
+    },
+    description: [
+      "On-site Systems Engineer – UEM listing at TJDEED Technology in Jordan, PA.",
+      "The title places this role in the unified endpoint management (UEM) systems-engineering family.",
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
+  },
+  {
+    title: "EUC Administrator",
+    company: "Tata Consultancy Services",
+    location: "Blue Bell, PA",
+    workplace: "On-site",
+    postedAt: "2026-08-30",
+    sourceUrl: "https://www.linkedin.com/jobs/view/4441365414",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "EUC", "End-User Computing"],
+    availability: {
+      requiredText: [
+        "EUC Administrator",
+        "Tata Consultancy Services"
+      ]
+    },
+    description: [
+      "On-site EUC Administrator listing at Tata Consultancy Services in Blue Bell, PA.",
+      "The title places this role in the end-user computing (EUC) administration family.",
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
+  },
+  {
+    title: "Sr. Endpoint Security Engineer I (6701)",
+    company: "MetroStar",
+    location: "Washington, DC",
+    workplace: "On-site",
+    postedAt: "2026-08-30",
+    sourceUrl: "https://www.linkedin.com/jobs/view/4458849110",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "Endpoint Security", "Endpoint"],
+    availability: {
+      requiredText: [
+        "Endpoint Security Engineer",
+        "MetroStar"
+      ]
+    },
+    description: [
+      "On-site Senior Endpoint Security Engineer I (6701) listing at MetroStar in Washington, DC.",
+      "The title places this role in the endpoint security engineering family.",
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
+  },
+  {
+    title: "Systems Engineer III - Software Packager",
+    company: "First Citizens Bank",
+    location: "Raleigh, NC",
+    workplace: "Remote",
+    postedAt: "2026-08-29",
+    sourceUrl: "https://www.linkedin.com/jobs/view/4450781468",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "Software Packaging", "Windows"],
+    availability: {
+      requiredText: [
+        "Software Packager",
+        "First Citizens Bank"
+      ]
+    },
+    description: [
+      "Remote Systems Engineer III — Software Packager listing at First Citizens Bank in Raleigh, NC.",
+      "The title places this role in the software-packaging / Windows systems-engineering family.",
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
+  },
+  {
+    title: "Microsoft Identity & Devices Security Architect",
+    company: "Cyclotron, Inc.",
+    location: "Chicago, IL",
+    workplace: "Remote",
+    postedAt: "2026-08-29",
+    sourceUrl: "https://www.linkedin.com/jobs/view/4441327900",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "Microsoft Identity", "Devices", "Endpoint Security"],
+    availability: {
+      requiredText: [
+        "Microsoft Identity & Devices Security Architect",
+        "Cyclotron, Inc."
+      ]
+    },
+    description: [
+      "Remote Microsoft Identity & Devices Security Architect listing at Cyclotron, Inc. in Chicago, IL.",
+      "The title places this role in the Microsoft identity and devices security family.",
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
+  },
+  {
+    title: "Endpoint Security Solutions (ESS) Engineer",
+    company: "StratasCorp Technologies",
+    location: "Pensacola, FL",
+    workplace: "On-site",
+    postedAt: "2026-08-29",
+    sourceUrl: "https://www.linkedin.com/jobs/view/4459492941",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "Endpoint Security", "ESS"],
+    availability: {
+      requiredText: [
+        "Endpoint Security Solutions",
+        "StratasCorp Technologies"
+      ]
+    },
+    description: [
+      "On-site Endpoint Security Solutions (ESS) Engineer listing at StratasCorp Technologies in Pensacola, FL.",
+      "The title places this role in the endpoint security solutions engineering family.",
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
+  },
+  {
+    title: "User Computing Administrator I",
+    company: "CNA Corporation",
+    location: "Arlington, VA",
+    workplace: "On-site",
+    postedAt: "2026-08-29",
+    sourceUrl: "https://www.linkedin.com/jobs/view/4450358905",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "EUC", "User Computing"],
+    availability: {
+      requiredText: [
+        "User Computing Administrator",
+        "CNA Corporation"
+      ]
+    },
+    description: [
+      "On-site User Computing Administrator I listing at CNA Corporation in Arlington, VA.",
+      "The title places this role in the user-computing / EUC administration family.",
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
   }
 ] satisfies [CuratedJob, ...CuratedJob[]];
 
