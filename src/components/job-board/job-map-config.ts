@@ -12,6 +12,9 @@ export const clusterMaxZoom = 15;
 export const defaultCenter: [number, number] = [-98.5795, 39.8283];
 export const interactiveLayerIds = [clusterLayerId, unclusteredLayerId];
 
+const cartoApiKey = process.env.NEXT_PUBLIC_CARTO_API_KEY?.trim() ?? "";
+const cartoKeyQuery = cartoApiKey ? `?key=${encodeURIComponent(cartoApiKey)}` : "";
+
 export const darkRasterStyle: StyleSpecification = {
   version: 8,
   glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
@@ -20,10 +23,10 @@ export const darkRasterStyle: StyleSpecification = {
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
       tiles: [
-        "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-        "https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-        "https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
-        "https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
+        `https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png${cartoKeyQuery}`,
+        `https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png${cartoKeyQuery}`,
+        `https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png${cartoKeyQuery}`,
+        `https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png${cartoKeyQuery}`
       ],
       tileSize: 256,
       type: "raster"
