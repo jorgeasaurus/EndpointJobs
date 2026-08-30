@@ -1,5 +1,5 @@
 import type { Job } from "@/types/job";
-import { isNewMexicoUsLocation, normalizeText } from "@/lib/text";
+import { foldTokens, isNewMexicoUsLocation, normalizeText } from "@/lib/text";
 import { getJobWorkplace } from "@/lib/workplace";
 
 // Google requires ~1000+ characters of complete description text before a
@@ -59,7 +59,7 @@ const countryMatchers: Array<[RegExp, string]> = [
 const collidingCountryCodes = new Set(["BR", "PE", "CL", "CO", "MX", "PA", "GT", "BZ", "SV", "HN", "NI", "CR"]);
 
 export function inferAddressCountry(job: Job) {
-  if (isNewMexicoUsLocation(normalizeFoldedLocation(job.location))) {
+  if (isNewMexicoUsLocation(foldTokens(job.location))) {
     return "US";
   }
 
@@ -120,14 +120,6 @@ function isAmbiguousPanamaCity(foldedLocation: string) {
   }
 
   return !/\b(?:panama city panama|ciudad de panama|republic of panama)\b/.test(normalized);
-}
-
-function normalizeFoldedLocation(location: string) {
-  return foldDiacritics(location)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim()
-    .replace(/\s+/g, " ");
 }
 
 export function normalizeEmploymentType(value: string) {
