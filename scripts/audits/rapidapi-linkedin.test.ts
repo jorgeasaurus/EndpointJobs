@@ -16,6 +16,26 @@ function restoreProcessEnv(originalEnv: NodeJS.ProcessEnv) {
   Object.assign(process.env, originalEnv);
 }
 
+test("LinkedIn primary location filter treats blank env as unset", () => {
+  const originalEnv = { ...process.env };
+
+  delete process.env.JOB_RAPIDAPI_LINKEDIN_LATAM_LOCATION_FILTER;
+
+  try {
+    process.env.JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER = "";
+    assert.deepEqual(getRapidApiLinkedInLocationFilters(), [
+      '"United States" OR "Remote"'
+    ]);
+
+    process.env.JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER = "   ";
+    assert.deepEqual(getRapidApiLinkedInLocationFilters(), [
+      '"United States" OR "Remote"'
+    ]);
+  } finally {
+    restoreProcessEnv(originalEnv);
+  }
+});
+
 test("LinkedIn location filters keep US/EU/Remote separate from the LATAM batch", () => {
   const originalEnv = { ...process.env };
 
