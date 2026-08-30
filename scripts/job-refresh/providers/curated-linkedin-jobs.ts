@@ -8,7 +8,7 @@ export type LinkedInCuratedListing = {
   postedAt: string;
   linkedInId: string;
   tags: readonly [string, string, ...string[]];
-  requiredText?: readonly [string, string];
+  requiredText?: readonly [string, ...string[]];
   family: string;
 };
 
