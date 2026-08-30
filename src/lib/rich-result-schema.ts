@@ -59,6 +59,10 @@ const countryMatchers: Array<[RegExp, string]> = [
 const collidingCountryCodes = new Set(["BR", "PE", "CL", "CO", "MX", "PA", "GT", "BZ", "SV", "HN", "NI", "CR"]);
 
 export function inferAddressCountry(job: Job) {
+  if (isNewMexicoUsLocation(job.location)) {
+    return "US";
+  }
+
   const location = `${job.location} ${job.mapLocation?.label ?? ""}`;
   const foldedLocation = foldDiacritics(location);
   const usStateSuffixed = hasExplicitUsStateSuffix(location);
@@ -98,6 +102,22 @@ function hasExplicitUsStateSuffix(location: string) {
   return /(?:^| )(?:al|ak|az|ar|ca|co|ct|de|fl|ga|hi|id|il|in|ia|ks|ky|la|me|md|ma|mi|mn|ms|mo|mt|ne|nv|nh|nj|nm|ny|nc|nd|oh|ok|or|pa|ri|sc|sd|tn|tx|ut|vt|va|wa|wv|wi|wy|dc)$/.test(
     normalized
   );
+}
+
+function isNewMexicoUsLocation(location: string) {
+  const normalized = foldDiacritics(location)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+
+  if (/\bnew mexico\b/.test(normalized)) {
+    return true;
+  }
+
+  const locationWithoutCountry = normalized.replace(/ (?:us|usa|united states(?: of america)?)$/, "");
+  const locationWithoutTrailingZip = locationWithoutCountry.replace(/ \d{5}(?: \d{4})?$/, "");
+  return /(?:^| )nm$/.test(locationWithoutTrailingZip);
 }
 
 export function normalizeEmploymentType(value: string) {

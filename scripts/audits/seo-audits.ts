@@ -101,6 +101,31 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     assertEqual(inferAddressCountry(makeJob({ location: "Mexico, NY" })), "US");
     assertEqual(inferAddressCountry(makeJob({ location: "New Mexico" })), "US");
     assertEqual(inferAddressCountry(makeJob({ location: "Albuquerque, New Mexico" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Albuquerque, NM" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Santa Fe, New Mexico" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Santa Fe, NM" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Las Cruces, NM" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Silver City, NM" })), "US");
+    assertEqual(
+      inferAddressCountry(
+        makeJob({
+          location: "Albuquerque, NM",
+          mapLocation: { label: "Mexico", latitude: 23.6345, longitude: -102.5528 }
+        })
+      ),
+      "US",
+      "New Mexico state suffix stays US even if a Mexico map pin is present"
+    );
+    assertEqual(
+      inferAddressCountry(
+        makeJob({
+          location: "Santa Fe, New Mexico",
+          mapLocation: { label: "Mexico City, Mexico", latitude: 19.4326, longitude: -99.1332 }
+        })
+      ),
+      "US",
+      "New Mexico stays US even if a Mexico City map pin is present"
+    );
     assertEqual(inferAddressCountry(makeJob({ location: "Panama City, FL" })), "US");
     assertEqual(inferAddressCountry(makeJob({ location: "San Jose, CA" })), "US");
     assertEqual(inferAddressCountry(makeJob({ location: "Mexico" })), "MX");
@@ -192,6 +217,26 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
       )
     );
     assertIncludes(mexicoNySerialized, '"addressCountry":"US"', "Mexico, NY stays US in JobPosting");
+    const albuquerqueNmSerialized = serializeJsonLd(
+      getJobJsonLd(
+        makeJob({
+          location: "Albuquerque, NM",
+          workplace: "On-site",
+          description: "Complete role details. ".repeat(60)
+        })
+      )
+    );
+    assertIncludes(albuquerqueNmSerialized, '"addressCountry":"US"', "Albuquerque, NM stays US in JobPosting");
+    const santaFeSerialized = serializeJsonLd(
+      getJobJsonLd(
+        makeJob({
+          location: "Santa Fe, New Mexico",
+          workplace: "On-site",
+          description: "Complete role details. ".repeat(60)
+        })
+      )
+    );
+    assertIncludes(santaFeSerialized, '"addressCountry":"US"', "Santa Fe, New Mexico stays US in JobPosting");
     const panamaCityFlSerialized = serializeJsonLd(
       getJobJsonLd(
         makeJob({

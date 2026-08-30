@@ -535,7 +535,7 @@ function isInternationalCityWithExplicitUsState(label: string, normalizedLocatio
     return true;
   }
 
-  if ((label === "Mexico" || label.endsWith(", Mexico")) && containsNormalizedLocationKey(normalizedLocation, "new mexico")) {
+  if ((label === "Mexico" || label.endsWith(", Mexico")) && isNewMexicoUsLocation(normalizedLocation)) {
     return true;
   }
 
@@ -592,6 +592,19 @@ function isUsStateGuardedInternationalLabel(label: string) {
     label.endsWith(", Costa Rica") ||
     label === "Central America"
   );
+}
+
+function isNewMexicoUsLocation(normalizedLocation: string) {
+  if (containsNormalizedLocationKey(normalizedLocation, "new mexico")) {
+    return true;
+  }
+
+  const locationWithoutCountry = normalizedLocation.replace(
+    / (?:us|usa|united states(?: of america)?)$/,
+    ""
+  );
+  const locationWithoutTrailingZip = locationWithoutCountry.replace(/ \d{5}(?: \d{4})?$/, "");
+  return /(?:^| )nm$/.test(locationWithoutTrailingZip);
 }
 
 function hasCostaRicaContext(normalizedLocation: string) {

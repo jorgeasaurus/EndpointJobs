@@ -227,6 +227,14 @@ export async function auditMaps({ feed, run, sources }: AuditContext) {
     assertEqual(resolveJobMapLocation("Mexico, NY"), undefined);
     assertEqual(resolveJobMapLocation("New Mexico"), undefined);
     assertEqual(resolveJobMapLocation("Albuquerque, New Mexico"), undefined);
+    assertEqual(resolveJobMapLocation("Albuquerque, NM"), undefined);
+    assertEqual(resolveJobMapLocation("Santa Fe, New Mexico"), undefined);
+    assertEqual(resolveJobMapLocation("Santa Fe, NM"), undefined);
+    assertEqual(resolveJobMapLocation("Las Cruces, NM"), undefined);
+    assertEqual(resolveJobMapLocation("Las Cruces, New Mexico"), undefined);
+    assertEqual(resolveJobMapLocation("Silver City, NM"), undefined);
+    assertEqual(resolveJobMapLocation("Silver City, New Mexico"), undefined);
+    assertEqual(resolveJobMapLocation("Rio Rancho, NM"), undefined);
     assertEqual(resolveJobMapLocation("Guadalajara, Jalisco, México")?.label, "Guadalajara, Mexico");
     assertEqual(resolveJobMapLocation("Monterrey, Nuevo León")?.label, "Monterrey, Mexico");
     assertEqual(resolveJobMapLocation("Monterey, CA"), undefined);

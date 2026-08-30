@@ -522,6 +522,10 @@ export async function auditFilters({ filterFixtureJobs, run, sources }: AuditCon
       makeJob({ id: "managua-uem", location: "Managua, Nicaragua" }),
       makeJob({ id: "mexico-ny", location: "Mexico, NY" }),
       makeJob({ id: "new-mexico", location: "Albuquerque, New Mexico" }),
+      makeJob({ id: "albuquerque-nm", location: "Albuquerque, NM" }),
+      makeJob({ id: "santa-fe-nm", location: "Santa Fe, New Mexico" }),
+      makeJob({ id: "las-cruces-nm", location: "Las Cruces, NM" }),
+      makeJob({ id: "silver-city-nm", location: "Silver City, NM" }),
       makeJob({
         id: "austin-onsite-mexico",
         location: "Austin, TX",
@@ -604,7 +608,17 @@ export async function auditFilters({ filterFixtureJobs, run, sources }: AuditCon
       filterJobs(mexicoCentralAmericanJobs, {
         ...initialFilterState,
         selectedMetroAreas: ["Mexico City, Mexico"]
-      }).filter((job) => job.id === "austin-onsite-mexico" || job.id === "mexico-ny" || job.id === "new-mexico"),
+      }).filter((job) =>
+        [
+          "austin-onsite-mexico",
+          "mexico-ny",
+          "new-mexico",
+          "albuquerque-nm",
+          "santa-fe-nm",
+          "las-cruces-nm",
+          "silver-city-nm"
+        ].includes(job.id)
+      ),
       []
     );
 
