@@ -1,4 +1,4 @@
-import { foldTokens } from "@/lib/text";
+import { foldTokens, normalizeTokens } from "@/lib/text";
 import { getJobWorkplace } from "@/lib/workplace";
 import type { Job } from "@/types/job";
 
@@ -180,9 +180,29 @@ function buildLocationHaystack(job: Job) {
   return `${job.location} ${job.mapLocation?.label ?? ""} ${getJobWorkplace(job)}`;
 }
 
-export const metroAreaMatcher = createTokenAliasMatcher(
+const tokenAliasMatcher = createTokenAliasMatcher(
   metroAreaOptions,
   metroAreaKeywordSets,
   buildLocationHaystack,
   metroAreaExcludeKeywordSets
 );
+
+export const metroAreaMatcher = {
+  matches(job: Job, value: MetroAreaFilter) {
+    if (value === "San Jose, CA" && hasAccentedSanJoseWithoutCaliforniaContext(job)) {
+      return false;
+    }
+
+    return tokenAliasMatcher.matches(job, value);
+  }
+};
+
+function hasAccentedSanJoseWithoutCaliforniaContext(job: Job) {
+  const unfoldedHaystack = ` ${normalizeTokens(buildLocationHaystack(job))} `;
+  if (!unfoldedHaystack.includes(" san josé ")) {
+    return false;
+  }
+
+  const foldedHaystack = ` ${foldTokens(buildLocationHaystack(job))} `;
+  return !foldedHaystack.includes(" ca ") && !foldedHaystack.includes(" california ");
+}

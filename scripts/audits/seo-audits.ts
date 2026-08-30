@@ -127,9 +127,13 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
       "New Mexico stays US even if a Mexico City map pin is present"
     );
     assertEqual(inferAddressCountry(makeJob({ location: "Panama City, FL" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Panama City" })), undefined);
+    assertEqual(inferAddressCountry(makeJob({ location: "Panama City, Panama" })), "PA");
+    assertEqual(inferAddressCountry(makeJob({ location: "Ciudad de Panamá" })), "PA");
     assertEqual(inferAddressCountry(makeJob({ location: "San Jose, CA" })), "US");
     assertEqual(inferAddressCountry(makeJob({ location: "Mexico" })), "MX");
     assertEqual(inferAddressCountry(makeJob({ location: "Panama" })), "PA");
+    assertEqual(inferAddressCountry(makeJob({ location: "Rio Rancho, NM" })), "US");
     assertEqual(inferAddressCountry(makeJob({ location: "Costa Rica" })), "CR");
     assertEqual(
       inferAddressCountry(

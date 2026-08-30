@@ -514,6 +514,8 @@ export async function auditFilters({ filterFixtureJobs, run, sources }: AuditCon
       makeJob({ id: "san-jose-cr-uem", location: "San José, Costa Rica" }),
       makeJob({ id: "san-jose-cr-code", location: "San Jose, CR" }),
       makeJob({ id: "san-jose-ca", location: "San Jose, CA" }),
+      makeJob({ id: "san-jose-accented", location: "San José" }),
+      makeJob({ id: "san-jose-unaccented", location: "San Jose" }),
       makeJob({ id: "panama-city-pa", location: "Panama City, Panama" }),
       makeJob({ id: "panama-city-fl", location: "Panama City, FL" }),
       makeJob({ id: "guatemala-city-uem", location: "Guatemala City, Guatemala" }),
@@ -567,7 +569,21 @@ export async function auditFilters({ filterFixtureJobs, run, sources }: AuditCon
         ...initialFilterState,
         selectedMetroAreas: ["San Jose, CA"]
       }),
-      ["san-jose-ca"]
+      ["san-jose-ca", "san-jose-unaccented"]
+    );
+    assertIds(
+      filterJobs(mexicoCentralAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["San Jose, CA"]
+      }).filter((job) => job.id === "san-jose-accented" || job.id === "san-jose-cr-uem" || job.id === "san-jose-cr-code"),
+      []
+    );
+    assertIds(
+      filterJobs(mexicoCentralAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["San José, Costa Rica"]
+      }).filter((job) => job.id === "san-jose-ca" || job.id === "san-jose-accented" || job.id === "san-jose-unaccented"),
+      []
     );
     assertIds(
       filterJobs(mexicoCentralAmericanJobs, {

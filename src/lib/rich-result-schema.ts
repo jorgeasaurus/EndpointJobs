@@ -76,6 +76,10 @@ export function inferAddressCountry(job: Job) {
       return "US";
     }
 
+    if (countryCode === "PA" && isAmbiguousPanamaCity(foldedLocation)) {
+      continue;
+    }
+
     return countryCode;
   }
 
@@ -102,6 +106,20 @@ function hasExplicitUsStateSuffix(location: string) {
   return /(?:^| )(?:al|ak|az|ar|ca|co|ct|de|fl|ga|hi|id|il|in|ia|ks|ky|la|me|md|ma|mi|mn|ms|mo|mt|ne|nv|nh|nj|nm|ny|nc|nd|oh|ok|or|pa|ri|sc|sd|tn|tx|ut|vt|va|wa|wv|wi|wy|dc)$/.test(
     normalized
   );
+}
+
+function isAmbiguousPanamaCity(foldedLocation: string) {
+  const normalized = foldDiacritics(foldedLocation)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+
+  if (!/\bpanama city\b/.test(normalized)) {
+    return false;
+  }
+
+  return !/\b(?:panama city panama|ciudad de panama|republic of panama)\b/.test(normalized);
 }
 
 function isNewMexicoUsLocation(location: string) {
