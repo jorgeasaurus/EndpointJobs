@@ -21,7 +21,7 @@ import {
   clusterLayer,
   clusterLayerId,
   clusterMaxZoom,
-  darkMatterGlStyle,
+  darkRasterStyle,
   defaultCenter,
   getSelectedPointLayer,
   interactiveLayerIds,
@@ -250,7 +250,7 @@ export function JobMapCanvas({ points }: { points: JobMapPoint[] }) {
           zoom: minZoom
         }}
         interactiveLayerIds={interactiveLayerIds}
-        mapStyle={darkMatterGlStyle}
+        mapStyle={darkRasterStyle}
         maxZoom={maxZoom}
         minZoom={minZoom}
         onClick={handleClick}

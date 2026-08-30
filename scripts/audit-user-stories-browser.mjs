@@ -936,7 +936,7 @@ function isIgnoredConsoleMessage(message) {
   return (
     message.text.includes("Download the React DevTools") ||
     message.text.includes("Failed to load resource") ||
-    /AJAXError: Failed to fetch \(0\): https:\/\/([a-d]\.|tiles\.)?basemaps\.cartocdn\.com\//.test(message.text) ||
+    /AJAXError: Failed to fetch \(0\): https:\/\/[a-d]\.basemaps\.cartocdn\.com\//.test(message.text) ||
     (message.type === "warning" &&
       message.text.includes("GL Driver Message") &&
       message.text.includes("ReadPixels"))
