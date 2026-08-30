@@ -40,7 +40,7 @@ jobs:
           THEIRSTACK_API_KEY: ${{ secrets.THEIRSTACK_API_KEY }}
           JOB_THEIRSTACK_MAX_AGE_DAYS: "30"
           JOB_THEIRSTACK_LIMIT: "25"
-          JOB_THEIRSTACK_COUNTRY_CODES: US,CH,IT,ES,FR,DE,BR,AR,CL,CO,PE,MX,GT,BZ,SV,HN,NI,CR,PA
+          JOB_THEIRSTACK_COUNTRY_CODES: US,CH,IT,ES,FR,DE,BR,AR,CL,CO,PE,MX,GT,BZ,SV,HN,NI,CR,PA,EC,UY,PY,BO,DO,JM,PR
           SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
           JOB_SERPAPI_COUNTRIES: us,au
           JOB_SERPAPI_US_QUERY_LIMIT: "26"
@@ -52,11 +52,12 @@ jobs:
           JOB_SERPAPI_MONTHLY_RESERVE: "100"
           JOB_SERPAPI_QUOTA_PREFLIGHT: "true"
           RAPIDAPI_DAILY_JOBS_KEY: ${{ secrets.RAPIDAPI_DAILY_JOBS_KEY }}
-          JOB_RAPIDAPI_COUNTRY_CODES: us,ch,it,es,fr,de,br,ar,cl,co,pe,mx,gt,bz,sv,hn,ni,cr,pa
+          JOB_RAPIDAPI_COUNTRY_CODES: us,ch,it,es,fr,de,br,ar,cl,co,pe,mx,gt,bz,sv,hn,ni,cr,pa,ec,uy,py,bo,do,jm,pr
           JOB_RAPIDAPI_HAS_SALARY: "true"
           JOB_RAPIDAPI_MAX_PAGES: "1"
           RAPIDAPI_LINKEDIN_JOBS_KEY: ${{ secrets.RAPIDAPI_LINKEDIN_JOBS_KEY }}
-          JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER: '"United States" OR "Switzerland" OR "Italy" OR "Spain" OR "France" OR "Germany" OR "Brazil" OR "Argentina" OR "Chile" OR "Colombia" OR "Peru" OR "Mexico" OR "Guatemala" OR "Belize" OR "El Salvador" OR "Honduras" OR "Nicaragua" OR "Costa Rica" OR "Panama" OR "Latin America" OR "South America" OR "Central America" OR "Remote"'
+          JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER: '"United States" OR "Switzerland" OR "Italy" OR "Spain" OR "France" OR "Germany" OR "Remote"'
+          JOB_RAPIDAPI_LINKEDIN_LATAM_LOCATION_FILTER: '"Brazil" OR "Argentina" OR "Chile" OR "Colombia" OR "Peru" OR "Mexico" OR "Guatemala" OR "Belize" OR "El Salvador" OR "Honduras" OR "Nicaragua" OR "Costa Rica" OR "Panama" OR "Ecuador" OR "Uruguay" OR "Paraguay" OR "Bolivia" OR "Dominican Republic" OR "Jamaica" OR "Puerto Rico" OR "Latin America" OR "South America" OR "Central America" OR "Caribbean"'
           JOB_RAPIDAPI_LINKEDIN_MAX_PAGES: "1"
           JOB_RAPIDAPI_LINKEDIN_LIMIT: "25"
           AIDEVBOARD_API_KEY: ${{ secrets.AIDEVBOARD_API_KEY }}

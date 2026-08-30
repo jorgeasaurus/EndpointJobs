@@ -644,4 +644,167 @@ export async function auditFilters({ filterFixtureJobs, run, sources }: AuditCon
     });
     assertEqual(merged.get("metroAreas"), "Mexico City, Mexico");
   });
+
+  await run("FEAT-077", "Andean and Caribbean metro area filters match Spanish aliases", () => {
+    const andeanCaribbeanMetros = [
+      "Quito, Ecuador",
+      "Guayaquil, Ecuador",
+      "Montevideo, Uruguay",
+      "Asunción, Paraguay",
+      "La Paz, Bolivia",
+      "Santa Cruz, Bolivia",
+      "Santo Domingo, Dominican Republic",
+      "Kingston, Jamaica",
+      "San Juan, Puerto Rico"
+    ] as const;
+    assertArrayIncludes([...metroAreaOptions], [...andeanCaribbeanMetros]);
+
+    const andeanCaribbeanJobs = [
+      makeJob({ id: "quito-intune", location: "Quito, Ecuador" }),
+      makeJob({ id: "guayaquil-jamf", location: "Guayaquil, Ecuador" }),
+      makeJob({ id: "montevideo-uem", location: "Montevideo, Uruguay" }),
+      makeJob({ id: "asuncion-mdm", location: "Asunción, Paraguay" }),
+      makeJob({ id: "la-paz-bo", location: "La Paz, Bolivia" }),
+      makeJob({ id: "santa-cruz-bo", location: "Santa Cruz de la Sierra, Bolivia" }),
+      makeJob({ id: "santa-cruz-ca", location: "Santa Cruz, CA" }),
+      makeJob({ id: "santo-domingo-dr", location: "Santo Domingo, Dominican Republic" }),
+      makeJob({ id: "santo-domingo-pueblo", location: "Santo Domingo Pueblo, NM" }),
+      makeJob({ id: "kingston-jm", location: "Kingston, Jamaica" }),
+      makeJob({ id: "kingston-ny", location: "Kingston, NY" }),
+      makeJob({ id: "jamaica-queens", location: "Jamaica, Queens" }),
+      makeJob({ id: "jamaica-ny", location: "Jamaica, NY" }),
+      makeJob({ id: "san-juan-pr", location: "San Juan, Puerto Rico" }),
+      makeJob({ id: "san-juan-pr-code", location: "San Juan, PR" }),
+      makeJob({ id: "san-juan-capistrano", location: "San Juan Capistrano, CA" }),
+      makeJob({
+        id: "austin-onsite-caribbean",
+        location: "Austin, TX",
+        workplace: "On-site",
+        summary: "On-site endpoint engineer in Austin with occasional Caribbean and Ecuador customer travel."
+      })
+    ];
+
+    assertIds(
+      filterJobs(andeanCaribbeanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Quito, Ecuador"]
+      }),
+      ["quito-intune"]
+    );
+    assertIds(
+      filterJobs(andeanCaribbeanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Guayaquil, Ecuador"]
+      }),
+      ["guayaquil-jamf"]
+    );
+    assertIds(
+      filterJobs(andeanCaribbeanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Montevideo, Uruguay"]
+      }),
+      ["montevideo-uem"]
+    );
+    assertIds(
+      filterJobs(andeanCaribbeanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Asunción, Paraguay"]
+      }),
+      ["asuncion-mdm"]
+    );
+    assertIds(
+      filterJobs(andeanCaribbeanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["La Paz, Bolivia"]
+      }),
+      ["la-paz-bo"]
+    );
+    assertIds(
+      filterJobs(andeanCaribbeanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Santa Cruz, Bolivia"]
+      }),
+      ["santa-cruz-bo"]
+    );
+    assertIds(
+      filterJobs(andeanCaribbeanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Santo Domingo, Dominican Republic"]
+      }),
+      ["santo-domingo-dr"]
+    );
+    assertIds(
+      filterJobs(andeanCaribbeanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Kingston, Jamaica"]
+      }),
+      ["kingston-jm"]
+    );
+    assertIds(
+      filterJobs(andeanCaribbeanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["San Juan, Puerto Rico"]
+      }),
+      ["san-juan-pr", "san-juan-pr-code"]
+    );
+    assertIds(
+      filterJobs(andeanCaribbeanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Santa Cruz, Bolivia"]
+      }).filter((job) => job.id === "santa-cruz-ca"),
+      []
+    );
+    assertIds(
+      filterJobs(andeanCaribbeanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Kingston, Jamaica"]
+      }).filter((job) => ["kingston-ny", "jamaica-queens", "jamaica-ny"].includes(job.id)),
+      []
+    );
+    assertIds(
+      filterJobs(andeanCaribbeanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["San Juan, Puerto Rico"]
+      }).filter((job) => job.id === "san-juan-capistrano" || job.id === "austin-onsite-caribbean"),
+      []
+    );
+
+    const quitoJob = makeJob({
+      id: "quito-country-search",
+      location: "Quito, Ecuador",
+      mapLocation: {
+        label: "Quito, Ecuador",
+        latitude: -0.1807,
+        longitude: -78.4678
+      }
+    });
+    const caribbeanRemoteJob = makeJob({
+      id: "caribbean-remote-country-search",
+      location: "Caribbean, Remote",
+      workplace: "Remote",
+      mapLocation: {
+        label: "Caribbean",
+        latitude: 15.0,
+        longitude: -73.0
+      }
+    });
+    for (const locationQuery of ["Ecuador", "Quito"]) {
+      assertIds(
+        filterJobs([quitoJob], { ...initialFilterState, locationQuery }),
+        ["quito-country-search"]
+      );
+    }
+    for (const locationQuery of ["Caribbean", "Remote"]) {
+      assertIds(
+        filterJobs([caribbeanRemoteJob], { ...initialFilterState, locationQuery }),
+        ["caribbean-remote-country-search"]
+      );
+    }
+
+    const merged = mergeFilterStateIntoSearchParams(new URLSearchParams(), {
+      ...initialFilterState,
+      selectedMetroAreas: ["San Juan, Puerto Rico"]
+    });
+    assertEqual(merged.get("metroAreas"), "San Juan, Puerto Rico");
+  });
 }

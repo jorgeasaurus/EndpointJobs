@@ -1,4 +1,4 @@
-import { isNewMexicoUsLocation } from "@/lib/text";
+import { isJamaicaUsNeighborhood, isNewMexicoUsLocation } from "@/lib/text";
 import type { JobMapLocation } from "@/types/job";
 
 type Coordinate = JobMapLocation & {
@@ -393,6 +393,83 @@ const locationCoordinates: Coordinate[] = [
   },
   { label: "Peru", latitude: -9.19, longitude: -75.0152, keys: ["peru"] },
   {
+    label: "Quito, Ecuador",
+    latitude: -0.1807,
+    longitude: -78.4678,
+    keys: ["quito", "quito ecuador"]
+  },
+  {
+    label: "Guayaquil, Ecuador",
+    latitude: -2.1894,
+    longitude: -79.8891,
+    keys: ["guayaquil", "guayaquil ecuador"]
+  },
+  { label: "Ecuador", latitude: -1.8312, longitude: -78.1834, keys: ["ecuador"] },
+  {
+    label: "Montevideo, Uruguay",
+    latitude: -34.9011,
+    longitude: -56.1645,
+    keys: ["montevideo", "montevideo uruguay"]
+  },
+  { label: "Uruguay", latitude: -32.5228, longitude: -55.7658, keys: ["uruguay"] },
+  {
+    label: "Asunción, Paraguay",
+    latitude: -25.2637,
+    longitude: -57.5759,
+    keys: ["asuncion", "asuncion paraguay"]
+  },
+  { label: "Paraguay", latitude: -23.4425, longitude: -58.4438, keys: ["paraguay"] },
+  {
+    label: "La Paz, Bolivia",
+    latitude: -16.5,
+    longitude: -68.15,
+    keys: ["la paz bolivia", "la paz bo"]
+  },
+  {
+    label: "Santa Cruz, Bolivia",
+    latitude: -17.8146,
+    longitude: -63.1561,
+    keys: ["santa cruz bolivia", "santa cruz de la sierra", "santa cruz bo"]
+  },
+  { label: "Bolivia", latitude: -16.2902, longitude: -63.5887, keys: ["bolivia"] },
+  {
+    label: "Santo Domingo, Dominican Republic",
+    latitude: 18.4861,
+    longitude: -69.9312,
+    keys: [
+      "santo domingo dominican republic",
+      "santo domingo do",
+      "santo domingo dr",
+      "santo domingo"
+    ]
+  },
+  {
+    label: "Dominican Republic",
+    latitude: 18.7357,
+    longitude: -70.1627,
+    keys: ["dominican republic", "republica dominicana"]
+  },
+  {
+    label: "Kingston, Jamaica",
+    latitude: 17.9714,
+    longitude: -76.7931,
+    keys: ["kingston jamaica", "kingston jm"]
+  },
+  { label: "Jamaica", latitude: 18.1096, longitude: -77.2975, keys: ["jamaica"] },
+  {
+    label: "San Juan, Puerto Rico",
+    latitude: 18.4655,
+    longitude: -66.1057,
+    keys: ["san juan puerto rico", "san juan pr"]
+  },
+  { label: "Puerto Rico", latitude: 18.2208, longitude: -66.5901, keys: ["puerto rico"] },
+  {
+    label: "Caribbean",
+    latitude: 15.0,
+    longitude: -73.0,
+    keys: ["caribbean", "caribe", "west indies"]
+  },
+  {
     label: "Latin America",
     latitude: -15.7801,
     longitude: -47.9292,
@@ -540,6 +617,10 @@ function isInternationalCityWithExplicitUsState(label: string, normalizedLocatio
     return true;
   }
 
+  if ((label === "Jamaica" || label.endsWith(", Jamaica")) && isJamaicaUsNeighborhood(normalizedLocation)) {
+    return true;
+  }
+
   if (
     (label === "Panama" || label.endsWith(", Panama")) &&
     containsNormalizedLocationKey(normalizedLocation, "panama city") &&
@@ -563,35 +644,40 @@ function isInternationalCityWithExplicitUsState(label: string, normalizedLocatio
   );
 }
 
+const usStateGuardedInternationalCountries = [
+  "Brazil",
+  "Peru",
+  "Chile",
+  "Colombia",
+  "Mexico",
+  "Panama",
+  "Guatemala",
+  "Belize",
+  "El Salvador",
+  "Honduras",
+  "Nicaragua",
+  "Costa Rica",
+  "Ecuador",
+  "Uruguay",
+  "Paraguay",
+  "Bolivia",
+  "Dominican Republic",
+  "Jamaica",
+  "Puerto Rico"
+] as const;
+
 function isUsStateGuardedInternationalLabel(label: string) {
-  return (
+  if (
+    label === "Caribbean" ||
+    label === "Central America" ||
     label.endsWith(", Germany") ||
-    label.endsWith(", Australia") ||
-    label === "Brazil" ||
-    label.endsWith(", Brazil") ||
-    label === "Peru" ||
-    label.endsWith(", Peru") ||
-    label === "Chile" ||
-    label.endsWith(", Chile") ||
-    label === "Colombia" ||
-    label.endsWith(", Colombia") ||
-    label === "Mexico" ||
-    label.endsWith(", Mexico") ||
-    label === "Panama" ||
-    label.endsWith(", Panama") ||
-    label === "Guatemala" ||
-    label.endsWith(", Guatemala") ||
-    label === "Belize" ||
-    label.endsWith(", Belize") ||
-    label === "El Salvador" ||
-    label.endsWith(", El Salvador") ||
-    label === "Honduras" ||
-    label.endsWith(", Honduras") ||
-    label === "Nicaragua" ||
-    label.endsWith(", Nicaragua") ||
-    label === "Costa Rica" ||
-    label.endsWith(", Costa Rica") ||
-    label === "Central America"
+    label.endsWith(", Australia")
+  ) {
+    return true;
+  }
+
+  return usStateGuardedInternationalCountries.some(
+    (country) => label === country || label.endsWith(`, ${country}`)
   );
 }
 
