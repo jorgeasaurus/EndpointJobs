@@ -1,3 +1,4 @@
+import { isNewMexicoUsLocation } from "@/lib/text";
 import type { JobMapLocation } from "@/types/job";
 
 type Coordinate = JobMapLocation & {
@@ -592,19 +593,6 @@ function isUsStateGuardedInternationalLabel(label: string) {
     label.endsWith(", Costa Rica") ||
     label === "Central America"
   );
-}
-
-function isNewMexicoUsLocation(normalizedLocation: string) {
-  if (containsNormalizedLocationKey(normalizedLocation, "new mexico")) {
-    return true;
-  }
-
-  const locationWithoutCountry = normalizedLocation.replace(
-    / (?:us|usa|united states(?: of america)?)$/,
-    ""
-  );
-  const locationWithoutTrailingZip = locationWithoutCountry.replace(/ \d{5}(?: \d{4})?$/, "");
-  return /(?:^| )nm$/.test(locationWithoutTrailingZip);
 }
 
 function hasCostaRicaContext(normalizedLocation: string) {

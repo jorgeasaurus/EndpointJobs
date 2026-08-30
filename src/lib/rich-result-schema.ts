@@ -1,5 +1,5 @@
 import type { Job } from "@/types/job";
-import { normalizeText } from "@/lib/text";
+import { isNewMexicoUsLocation, normalizeText } from "@/lib/text";
 import { getJobWorkplace } from "@/lib/workplace";
 
 // Google requires ~1000+ characters of complete description text before a
@@ -59,7 +59,7 @@ const countryMatchers: Array<[RegExp, string]> = [
 const collidingCountryCodes = new Set(["BR", "PE", "CL", "CO", "MX", "PA", "GT", "BZ", "SV", "HN", "NI", "CR"]);
 
 export function inferAddressCountry(job: Job) {
-  if (isNewMexicoUsLocation(job.location)) {
+  if (isNewMexicoUsLocation(normalizeFoldedLocation(job.location))) {
     return "US";
   }
 
@@ -109,7 +109,7 @@ function hasExplicitUsStateSuffix(location: string) {
 }
 
 function isAmbiguousPanamaCity(foldedLocation: string) {
-  const normalized = foldDiacritics(foldedLocation)
+  const normalized = foldedLocation
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, " ")
     .trim()
@@ -122,20 +122,12 @@ function isAmbiguousPanamaCity(foldedLocation: string) {
   return !/\b(?:panama city panama|ciudad de panama|republic of panama)\b/.test(normalized);
 }
 
-function isNewMexicoUsLocation(location: string) {
-  const normalized = foldDiacritics(location)
+function normalizeFoldedLocation(location: string) {
+  return foldDiacritics(location)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, " ")
     .trim()
     .replace(/\s+/g, " ");
-
-  if (/\bnew mexico\b/.test(normalized)) {
-    return true;
-  }
-
-  const locationWithoutCountry = normalized.replace(/ (?:us|usa|united states(?: of america)?)$/, "");
-  const locationWithoutTrailingZip = locationWithoutCountry.replace(/ \d{5}(?: \d{4})?$/, "");
-  return /(?:^| )nm$/.test(locationWithoutTrailingZip);
 }
 
 export function normalizeEmploymentType(value: string) {
