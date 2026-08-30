@@ -127,6 +127,7 @@ async function fetchRapidApiLinkedInJobs(url: string, fetchedAt: Date) {
     "JOB_RAPIDAPI_LINKEDIN_TITLE_FILTERS",
     defaultTitleFilters
   );
+  const locationFilters = getRapidApiLinkedInLocationFilters();
   const maxPages = Math.max(
     1,
     Number(process.env.JOB_RAPIDAPI_LINKEDIN_MAX_PAGES ?? 1)
@@ -138,20 +139,28 @@ async function fetchRapidApiLinkedInJobs(url: string, fetchedAt: Date) {
   const jobs: Array<Job | null> = [];
 
   for (const titleFilter of titleFilters) {
-    for (let page = 0; page < maxPages; page += 1) {
-      const queryUrl = buildRapidApiLinkedInUrl(url, titleFilter, limit, page);
-      const rawJobs = await fetchRapidApiLinkedInPage(queryUrl, apiKey);
-      const normalized = rawJobs.map((job) =>
-        normalizeRapidApiLinkedInJob(job, titleFilter, fetchedAt)
-      );
+    for (const locationFilter of locationFilters) {
+      for (let page = 0; page < maxPages; page += 1) {
+        const queryUrl = buildRapidApiLinkedInUrl(
+          url,
+          titleFilter,
+          locationFilter,
+          limit,
+          page
+        );
+        const rawJobs = await fetchRapidApiLinkedInPage(queryUrl, apiKey);
+        const normalized = rawJobs.map((job) =>
+          normalizeRapidApiLinkedInJob(job, titleFilter, fetchedAt)
+        );
 
-      jobs.push(...normalized);
-      console.log(
-        `Fetched ${rawJobs.length} raw jobs from RapidAPI LinkedIn ${titleFilter} page ${page + 1}`
-      );
+        jobs.push(...normalized);
+        console.log(
+          `Fetched ${rawJobs.length} raw jobs from RapidAPI LinkedIn ${titleFilter} [${locationFilter}] page ${page + 1}`
+        );
 
-      if (rawJobs.length < limit) {
-        break;
+        if (rawJobs.length < limit) {
+          break;
+        }
       }
     }
   }
@@ -159,15 +168,27 @@ async function fetchRapidApiLinkedInJobs(url: string, fetchedAt: Date) {
   return jobs;
 }
 
+export function getRapidApiLinkedInLocationFilters() {
+  const primary = process.env.JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER
+    ?? "\"United States\" OR \"Remote\"";
+  const latam = process.env.JOB_RAPIDAPI_LINKEDIN_LATAM_LOCATION_FILTER;
+  const filters = [primary];
+
+  if (latam?.trim()) {
+    filters.push(latam.trim());
+  }
+
+  return filters;
+}
+
 function buildRapidApiLinkedInUrl(
   baseUrl: string,
   titleFilter: string,
+  locationFilter: string,
   limit: number,
   page: number
 ) {
   const url = new URL(baseUrl);
-  const locationFilter = process.env.JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER
-    ?? "\"United States\" OR \"Remote\"";
 
   url.searchParams.set("limit", String(limit));
   url.searchParams.set("offset", String(page * limit));

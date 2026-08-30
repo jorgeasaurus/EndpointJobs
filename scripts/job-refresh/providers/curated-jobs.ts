@@ -1,6 +1,10 @@
 import type { Job, Workplace } from "../../../src/types/job";
 import type { ProviderAdapter } from "../provider";
 import { buildStableJobId, normalizeSearchText, stripHtml, toEndpointJob } from "../shared";
+import {
+  linkedinCuratedListings,
+  type LinkedInCuratedListing
+} from "./curated-linkedin-jobs";
 
 export type CuratedAvailabilityCheck = {
   requiredText: readonly [string, ...string[]];
@@ -110,8 +114,30 @@ const curatedJobs = [
       "Compensation",
       "- Published base salary is 60.000 EUR gross/year, paid in 14 salaries."
     ].join("\n")
-  }
+  },
+  ...linkedinCuratedListings.map(toLinkedInCuratedJob)
 ] satisfies [CuratedJob, ...CuratedJob[]];
+
+function toLinkedInCuratedJob(listing: LinkedInCuratedListing): CuratedJob {
+  return {
+    title: listing.title,
+    company: listing.company,
+    location: listing.location,
+    workplace: listing.workplace,
+    postedAt: listing.postedAt,
+    sourceUrl: `https://www.linkedin.com/jobs/view/${listing.linkedInId}`,
+    employmentType: "Full-time",
+    sourceTags: ["Curated", ...listing.tags],
+    availability: {
+      requiredText: listing.requiredText ?? [listing.title, listing.company]
+    },
+    description: [
+      `${listing.workplace} ${listing.title} listing at ${listing.company} in ${listing.location}.`,
+      `The title places this role in the ${listing.family} family.`,
+      "Full-time. Source: the LinkedIn posting."
+    ].join("\n")
+  };
+}
 
 export const curatedJobProvider = {
   id: "curated",

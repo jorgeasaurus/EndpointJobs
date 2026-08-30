@@ -1,5 +1,6 @@
 import type { Job, Seniority, Workplace } from "../../../src/types/job";
 
+import { partitionJobCountryCodes } from "../high-volume-countries";
 import type { ProviderAdapter } from "../provider";
 import { defaultEndpointSearchQueries, monitoredCompanyNames } from "../search-config";
 import {
@@ -102,16 +103,26 @@ type TheirStackPageFetchOptions = {
 
 async function fetchTheirStackPages(options: TheirStackPageFetchOptions) {
   const jobs: Array<Job | null> = [];
+  const countryBatches = partitionJobCountryCodes(
+    getCsvConfig("JOB_THEIRSTACK_COUNTRY_CODES", ["US"])
+  );
 
-  for (let page = 0; page < options.maxPages; page += 1) {
-    const payload = await fetchTheirStackSearch(options.url, page, {
-      companyNames: options.companyNames
-    });
-    jobs.push(...payload.map((job) => normalizeTheirStackJob(job, options.fetchedAt)));
-    console.log(`Fetched ${payload.length} raw jobs from TheirStack ${options.label} page ${page}`);
+  for (const countryCodes of countryBatches) {
+    const batchLabel = countryCodes.join(",");
 
-    if (payload.length === 0) {
-      break;
+    for (let page = 0; page < options.maxPages; page += 1) {
+      const payload = await fetchTheirStackSearch(options.url, page, {
+        companyNames: options.companyNames,
+        countryCodes
+      });
+      jobs.push(...payload.map((job) => normalizeTheirStackJob(job, options.fetchedAt)));
+      console.log(
+        `Fetched ${payload.length} raw jobs from TheirStack ${options.label} [${batchLabel}] page ${page}`
+      );
+
+      if (payload.length === 0) {
+        break;
+      }
     }
   }
 
@@ -142,7 +153,7 @@ async function fetchTheirStackCompanyPages(options: Omit<TheirStackPageFetchOpti
 async function fetchTheirStackSearch(
   url: string,
   page: number,
-  options: { companyNames?: string[] } = {}
+  options: { companyNames?: string[]; countryCodes?: string[] } = {}
 ) {
   const apiKey = process.env.THEIRSTACK_API_KEY ?? process.env.JOB_THEIRSTACK_API_KEY;
 
@@ -251,11 +262,12 @@ function normalizeTheirStackJob(raw: TheirStackJob, fetchedAt: Date) {
 
 function buildTheirStackSearchBody(
   page: number,
-  options: { companyNames?: string[] } = {}
+  options: { companyNames?: string[]; countryCodes?: string[] } = {}
 ) {
   const limit = Math.max(1, Number(process.env.JOB_THEIRSTACK_LIMIT ?? 25));
   const maxAgeDays = Number(process.env.JOB_THEIRSTACK_MAX_AGE_DAYS ?? 30);
-  const countryCodes = getCsvConfig("JOB_THEIRSTACK_COUNTRY_CODES", ["US"]);
+  const countryCodes = options.countryCodes
+    ?? getCsvConfig("JOB_THEIRSTACK_COUNTRY_CODES", ["US"]);
   const titleQueries = getCsvConfig("JOB_THEIRSTACK_TITLE_QUERIES", defaultEndpointSearchQueries);
   const descriptionPatterns = getCsvConfig("JOB_THEIRSTACK_DESCRIPTION_PATTERNS", []);
   const remote = parseOptionalBoolean(process.env.JOB_THEIRSTACK_REMOTE);

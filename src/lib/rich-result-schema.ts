@@ -1,5 +1,5 @@
 import type { Job } from "@/types/job";
-import { foldTokens, isNewMexicoUsLocation, normalizeText } from "@/lib/text";
+import { foldTokens, isJamaicaUsNeighborhood, isNewMexicoUsLocation, normalizeText } from "@/lib/text";
 import { getJobWorkplace } from "@/lib/workplace";
 
 // Google requires ~1000+ characters of complete description text before a
@@ -53,19 +53,35 @@ const countryMatchers: Array<[RegExp, string]> = [
   [/\bhonduras\b/i, "HN"],
   [/\bnicaragua\b/i, "NI"],
   [/\bcosta rica\b/i, "CR"],
-  [/\bpanama\b/i, "PA"]
+  [/\bpanama\b/i, "PA"],
+  [/\becuador\b/i, "EC"],
+  [/\buruguay\b/i, "UY"],
+  [/\bparaguay\b/i, "PY"],
+  [/\bbolivia\b/i, "BO"],
+  [/\b(?:dominican republic|republica dominicana)\b/i, "DO"],
+  [/\bjamaica\b/i, "JM"],
+  [/\b(?:puerto rico|pr)\b/i, "PR"]
 ];
 
-const collidingCountryCodes = new Set(["BR", "PE", "CL", "CO", "MX", "PA", "GT", "BZ", "SV", "HN", "NI", "CR"]);
+const collidingCountryCodes = new Set([
+  "BR", "PE", "CL", "CO", "MX", "PA", "GT", "BZ", "SV", "HN", "NI", "CR",
+  "EC", "UY", "PY", "BO", "DO", "JM", "PR"
+]);
 
 export function inferAddressCountry(job: Job) {
-  if (isNewMexicoUsLocation(foldTokens(job.location))) {
+  const foldedJobLocation = foldTokens(job.location);
+
+  if (isNewMexicoUsLocation(foldedJobLocation)) {
+    return "US";
+  }
+
+  if (isJamaicaUsNeighborhood(foldedJobLocation)) {
     return "US";
   }
 
   const location = `${job.location} ${job.mapLocation?.label ?? ""}`;
   const foldedLocation = foldDiacritics(location);
-  const usStateSuffixed = hasExplicitUsStateSuffix(location);
+  const usStateSuffixed = hasExplicitUsStateSuffix(job.location);
 
   for (const [pattern, countryCode] of countryMatchers) {
     if (!pattern.test(foldedLocation)) {
