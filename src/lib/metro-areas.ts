@@ -1,4 +1,4 @@
-import { normalizeTokens } from "@/lib/text";
+import { foldTokens, normalizeTokens } from "@/lib/text";
 import { getJobWorkplace } from "@/lib/workplace";
 import type { Job } from "@/types/job";
 
@@ -18,6 +18,8 @@ export const metroAreaOptions = [
   "Denver, CO",
   "Detroit, MI",
   "Frankfurt, Germany",
+  "Guadalajara, Mexico",
+  "Guatemala City, Guatemala",
   "Houston, TX",
   "Indianapolis, IN",
   "Jersey City, NJ",
@@ -26,15 +28,19 @@ export const metroAreaOptions = [
   "London, UK",
   "Los Angeles, CA",
   "Madrid, Spain",
+  "Managua, Nicaragua",
   "Maryland",
   "Medellín, Colombia",
+  "Mexico City, Mexico",
   "Miami, FL",
   "Milan, Italy",
   "Milwaukee, WI",
+  "Monterrey, Mexico",
   "Munich, Germany",
   "Nashville, TN",
   "New York, NY",
   "Northern Virginia",
+  "Panama City, Panama",
   "Paris, France",
   "Philadelphia, PA",
   "Phoenix, AZ",
@@ -44,9 +50,12 @@ export const metroAreaOptions = [
   "San Diego, CA",
   "San Francisco, CA",
   "San Jose, CA",
+  "San José, Costa Rica",
+  "San Salvador, El Salvador",
   "Santiago, Chile",
   "São Paulo, Brazil",
   "Seattle, WA",
+  "Tegucigalpa, Honduras",
   "Washington, DC",
   "Zurich, Switzerland"
 ] as const;
@@ -95,17 +104,36 @@ const metroAreaKeywordSets: Record<MetroAreaFilter, readonly string[]> = {
   "Bogotá, Colombia": ["bogota", "bogotá", "bogota dc", "bogotá dc", "bogota colombia", "bogotá colombia"],
   "Buenos Aires, Argentina": ["buenos aires argentina", "caba", "capital federal"],
   "Frankfurt, Germany": ["frankfurt", "frankfurt am main"],
+  "Guadalajara, Mexico": ["guadalajara"],
+  "Guatemala City, Guatemala": ["guatemala city", "ciudad de guatemala"],
   "Lima, Peru": ["lima peru", "lima perú", "lima pe"],
   "London, UK": ["london", "england united kingdom"],
   "Madrid, Spain": ["madrid"],
+  "Managua, Nicaragua": ["managua"],
   "Medellín, Colombia": ["medellin", "medellín"],
+  "Mexico City, Mexico": [
+    "mexico city",
+    "cdmx",
+    "ciudad de mexico",
+    "ciudad de méxico",
+    "mexico df"
+  ],
   "Milan, Italy": ["milan", "milano"],
+  "Monterrey, Mexico": ["monterrey"],
   "Munich, Germany": ["munich", "munchen", "muenchen", "münchen"],
+  "Panama City, Panama": ["panama city panama", "ciudad de panama", "ciudad de panamá"],
   "Paris, France": ["paris", "ile de france", "île de france", "hauts de seine"],
   "Rio de Janeiro, Brazil": ["rio de janeiro"],
+  "San José, Costa Rica": ["san jose costa rica", "san josé costa rica", "san jose cr"],
+  "San Salvador, El Salvador": ["san salvador"],
   "Santiago, Chile": ["santiago chile", "santiago de chile"],
   "São Paulo, Brazil": ["sao paulo", "são paulo"],
+  "Tegucigalpa, Honduras": ["tegucigalpa"],
   "Zurich, Switzerland": ["zurich", "zürich", "fehraltorf", "uitikon", "dietikon", "horgen"]
+};
+
+const metroAreaExcludeKeywordSets: Partial<Record<MetroAreaFilter, readonly string[]>> = {
+  "San Jose, CA": ["costa rica", "san jose cr"]
 };
 
 type TokenAliasMatcher<T extends string> = {
@@ -115,14 +143,21 @@ type TokenAliasMatcher<T extends string> = {
 export function createTokenAliasMatcher<T extends string>(
   options: readonly T[],
   keywordSets: Record<T, readonly string[]>,
-  buildHaystack: (job: Job) => string
+  buildHaystack: (job: Job) => string,
+  excludeKeywordSets: Partial<Record<T, readonly string[]>> = {}
 ): TokenAliasMatcher<T> {
   // Precompute value → keywords once; matches() runs per job × selected
   // option during filtering, so lookups stay O(1).
   const matchers = new Map(
     options.map((value) => [
       value,
-      keywordSets[value].map((key) => normalizeTokens(key))
+      keywordSets[value].map((key) => foldTokens(key))
+    ])
+  );
+  const excludeMatchers = new Map(
+    options.map((value) => [
+      value,
+      (excludeKeywordSets[value] ?? []).map((key) => foldTokens(key))
     ])
   );
 
@@ -131,7 +166,11 @@ export function createTokenAliasMatcher<T extends string>(
       const keywords = matchers.get(value);
       if (!keywords) return false;
 
-      const haystack = ` ${normalizeTokens(buildHaystack(job))} `;
+      const haystack = ` ${foldTokens(buildHaystack(job))} `;
+      const excludes = excludeMatchers.get(value) ?? [];
+      if (excludes.some((keyword) => keyword && haystack.includes(` ${keyword} `))) {
+        return false;
+      }
       return keywords.some((keyword) => keyword && haystack.includes(` ${keyword} `));
     }
   };
@@ -141,8 +180,29 @@ function buildLocationHaystack(job: Job) {
   return `${job.location} ${job.mapLocation?.label ?? ""} ${getJobWorkplace(job)}`;
 }
 
-export const metroAreaMatcher = createTokenAliasMatcher(
+const tokenAliasMatcher = createTokenAliasMatcher(
   metroAreaOptions,
   metroAreaKeywordSets,
-  buildLocationHaystack
+  buildLocationHaystack,
+  metroAreaExcludeKeywordSets
 );
+
+export const metroAreaMatcher = {
+  matches(job: Job, value: MetroAreaFilter) {
+    if (value === "San Jose, CA" && hasAccentedSanJoseWithoutCaliforniaContext(job)) {
+      return false;
+    }
+
+    return tokenAliasMatcher.matches(job, value);
+  }
+};
+
+function hasAccentedSanJoseWithoutCaliforniaContext(job: Job) {
+  const unfoldedHaystack = ` ${normalizeTokens(buildLocationHaystack(job))} `;
+  if (!unfoldedHaystack.includes(" san josé ")) {
+    return false;
+  }
+
+  const foldedHaystack = ` ${foldTokens(buildLocationHaystack(job))} `;
+  return !foldedHaystack.includes(" ca ") && !foldedHaystack.includes(" california ");
+}

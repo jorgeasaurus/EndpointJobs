@@ -88,6 +88,50 @@ export async function auditFilters({ filterFixtureJobs, run, sources }: AuditCon
         ["latam-remote-country-search"]
       );
     }
+    const mexicoCityJob = makeJob({
+      id: "mexico-city-country-search",
+      location: "Ciudad de México, México",
+      mapLocation: {
+        label: "Mexico City, Mexico",
+        latitude: 19.4326,
+        longitude: -99.1332
+      }
+    });
+    const cdmxJob = makeJob({
+      id: "cdmx-country-search",
+      location: "CDMX, Mexico",
+      mapLocation: {
+        label: "Mexico City, Mexico",
+        latitude: 19.4326,
+        longitude: -99.1332
+      }
+    });
+    const centralAmericaRemoteJob = makeJob({
+      id: "central-america-remote-country-search",
+      location: "Central America, Remote",
+      workplace: "Remote",
+      mapLocation: {
+        label: "Central America",
+        latitude: 12.769,
+        longitude: -85.6024
+      }
+    });
+    for (const locationQuery of ["Mexico", "México", "Mexico City", "Ciudad de México"]) {
+      assertIds(
+        filterJobs([mexicoCityJob], { ...initialFilterState, locationQuery }),
+        ["mexico-city-country-search"]
+      );
+    }
+    assertIds(
+      filterJobs([cdmxJob], { ...initialFilterState, locationQuery: "CDMX" }),
+      ["cdmx-country-search"]
+    );
+    for (const locationQuery of ["Central America", "Remote"]) {
+      assertIds(
+        filterJobs([centralAmericaRemoteJob], { ...initialFilterState, locationQuery }),
+        ["central-america-remote-country-search"]
+      );
+    }
     assertIds(
       filterJobs(filterFixtureJobs, { ...initialFilterState, locationQuery: "" }),
       ["recent-intune", "mac-jamf", "security-tanium"]
@@ -445,5 +489,159 @@ export async function auditFilters({ filterFixtureJobs, run, sources }: AuditCon
       selectedMetroAreas: ["São Paulo, Brazil"]
     });
     assertEqual(merged.get("metroAreas"), "São Paulo, Brazil");
+  });
+
+  await run("FEAT-077", "Mexico and Central American metro area filters match Spanish aliases", () => {
+    const mexicoCentralAmericanMetros = [
+      "Mexico City, Mexico",
+      "Guadalajara, Mexico",
+      "Monterrey, Mexico",
+      "San José, Costa Rica",
+      "Panama City, Panama",
+      "Guatemala City, Guatemala",
+      "San Salvador, El Salvador",
+      "Tegucigalpa, Honduras",
+      "Managua, Nicaragua"
+    ] as const;
+    assertArrayIncludes([...metroAreaOptions], [...mexicoCentralAmericanMetros]);
+
+    const mexicoCentralAmericanJobs = [
+      makeJob({ id: "mexico-city-intune", location: "Ciudad de México, México" }),
+      makeJob({ id: "mexico-city-cdmx", location: "CDMX, Mexico" }),
+      makeJob({ id: "mexico-city-ascii", location: "Mexico City, MX" }),
+      makeJob({ id: "guadalajara-jamf", location: "Guadalajara, Jalisco, México" }),
+      makeJob({ id: "monterrey-mdm", location: "Monterrey, Nuevo León, Mexico" }),
+      makeJob({ id: "san-jose-cr-uem", location: "San José, Costa Rica" }),
+      makeJob({ id: "san-jose-cr-code", location: "San Jose, CR" }),
+      makeJob({ id: "san-jose-ca", location: "San Jose, CA" }),
+      makeJob({ id: "san-jose-accented", location: "San José" }),
+      makeJob({ id: "san-jose-unaccented", location: "San Jose" }),
+      makeJob({ id: "panama-city-pa", location: "Panama City, Panama" }),
+      makeJob({ id: "panama-city-fl", location: "Panama City, FL" }),
+      makeJob({ id: "guatemala-city-uem", location: "Guatemala City, Guatemala" }),
+      makeJob({ id: "san-salvador-uem", location: "San Salvador, El Salvador" }),
+      makeJob({ id: "tegucigalpa-uem", location: "Tegucigalpa, Honduras" }),
+      makeJob({ id: "managua-uem", location: "Managua, Nicaragua" }),
+      makeJob({ id: "mexico-ny", location: "Mexico, NY" }),
+      makeJob({ id: "new-mexico", location: "Albuquerque, New Mexico" }),
+      makeJob({ id: "albuquerque-nm", location: "Albuquerque, NM" }),
+      makeJob({ id: "santa-fe-nm", location: "Santa Fe, New Mexico" }),
+      makeJob({ id: "las-cruces-nm", location: "Las Cruces, NM" }),
+      makeJob({ id: "silver-city-nm", location: "Silver City, NM" }),
+      makeJob({
+        id: "austin-onsite-mexico",
+        location: "Austin, TX",
+        workplace: "On-site",
+        summary: "On-site endpoint engineer in Austin with occasional Mexico and LATAM customer travel."
+      })
+    ];
+
+    assertIds(
+      filterJobs(mexicoCentralAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Mexico City, Mexico"]
+      }),
+      ["mexico-city-intune", "mexico-city-cdmx", "mexico-city-ascii"]
+    );
+    assertIds(
+      filterJobs(mexicoCentralAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Guadalajara, Mexico"]
+      }),
+      ["guadalajara-jamf"]
+    );
+    assertIds(
+      filterJobs(mexicoCentralAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Monterrey, Mexico"]
+      }),
+      ["monterrey-mdm"]
+    );
+    assertIds(
+      filterJobs(mexicoCentralAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["San José, Costa Rica"]
+      }),
+      ["san-jose-cr-uem", "san-jose-cr-code"]
+    );
+    assertIds(
+      filterJobs(mexicoCentralAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["San Jose, CA"]
+      }),
+      ["san-jose-ca", "san-jose-unaccented"]
+    );
+    assertIds(
+      filterJobs(mexicoCentralAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["San Jose, CA"]
+      }).filter((job) => job.id === "san-jose-accented" || job.id === "san-jose-cr-uem" || job.id === "san-jose-cr-code"),
+      []
+    );
+    assertIds(
+      filterJobs(mexicoCentralAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["San José, Costa Rica"]
+      }).filter((job) => job.id === "san-jose-ca" || job.id === "san-jose-accented" || job.id === "san-jose-unaccented"),
+      []
+    );
+    assertIds(
+      filterJobs(mexicoCentralAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Panama City, Panama"]
+      }),
+      ["panama-city-pa"]
+    );
+    assertIds(
+      filterJobs(mexicoCentralAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Guatemala City, Guatemala"]
+      }),
+      ["guatemala-city-uem"]
+    );
+    assertIds(
+      filterJobs(mexicoCentralAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["San Salvador, El Salvador"]
+      }),
+      ["san-salvador-uem"]
+    );
+    assertIds(
+      filterJobs(mexicoCentralAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Tegucigalpa, Honduras"]
+      }),
+      ["tegucigalpa-uem"]
+    );
+    assertIds(
+      filterJobs(mexicoCentralAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Managua, Nicaragua"]
+      }),
+      ["managua-uem"]
+    );
+    assertIds(
+      filterJobs(mexicoCentralAmericanJobs, {
+        ...initialFilterState,
+        selectedMetroAreas: ["Mexico City, Mexico"]
+      }).filter((job) =>
+        [
+          "austin-onsite-mexico",
+          "mexico-ny",
+          "new-mexico",
+          "albuquerque-nm",
+          "santa-fe-nm",
+          "las-cruces-nm",
+          "silver-city-nm"
+        ].includes(job.id)
+      ),
+      []
+    );
+
+    const merged = mergeFilterStateIntoSearchParams(new URLSearchParams(), {
+      ...initialFilterState,
+      selectedMetroAreas: ["Mexico City, Mexico"]
+    });
+    assertEqual(merged.get("metroAreas"), "Mexico City, Mexico");
   });
 }

@@ -1,3 +1,4 @@
+import { isNewMexicoUsLocation } from "@/lib/text";
 import type { JobMapLocation } from "@/types/job";
 
 type Coordinate = JobMapLocation & {
@@ -295,7 +296,59 @@ const locationCoordinates: Coordinate[] = [
   },
   { label: "Toronto, Canada", latitude: 43.6532, longitude: -79.3832, keys: ["toronto"] },
   { label: "Canada", latitude: 56.1304, longitude: -106.3468, keys: ["canada"] },
-  { label: "Mexico City, Mexico", latitude: 19.4326, longitude: -99.1332, keys: ["mexico city"] },
+  {
+    label: "Mexico City, Mexico",
+    latitude: 19.4326,
+    longitude: -99.1332,
+    keys: ["mexico city", "cdmx", "ciudad de mexico", "mexico df"]
+  },
+  { label: "Guadalajara, Mexico", latitude: 20.6597, longitude: -103.3496, keys: ["guadalajara"] },
+  { label: "Monterrey, Mexico", latitude: 25.6866, longitude: -100.3161, keys: ["monterrey"] },
+  { label: "Mexico", latitude: 23.6345, longitude: -102.5528, keys: ["mexico"] },
+  {
+    label: "Guatemala City, Guatemala",
+    latitude: 14.6349,
+    longitude: -90.5069,
+    keys: ["guatemala city", "ciudad de guatemala"]
+  },
+  { label: "Guatemala", latitude: 15.7835, longitude: -90.2308, keys: ["guatemala"] },
+  { label: "Belize", latitude: 17.1899, longitude: -88.4976, keys: ["belize"] },
+  {
+    label: "San Salvador, El Salvador",
+    latitude: 13.6929,
+    longitude: -89.2182,
+    keys: ["san salvador"]
+  },
+  { label: "El Salvador", latitude: 13.7942, longitude: -88.8965, keys: ["el salvador"] },
+  {
+    label: "Tegucigalpa, Honduras",
+    latitude: 14.0723,
+    longitude: -87.1921,
+    keys: ["tegucigalpa"]
+  },
+  { label: "Honduras", latitude: 15.2, longitude: -86.2419, keys: ["honduras"] },
+  { label: "Managua, Nicaragua", latitude: 12.115, longitude: -86.2362, keys: ["managua"] },
+  { label: "Nicaragua", latitude: 12.8654, longitude: -85.2072, keys: ["nicaragua"] },
+  {
+    label: "San José, Costa Rica",
+    latitude: 9.9281,
+    longitude: -84.0907,
+    keys: ["san jose costa rica", "san jose cr"]
+  },
+  { label: "Costa Rica", latitude: 9.7489, longitude: -83.7534, keys: ["costa rica"] },
+  {
+    label: "Panama City, Panama",
+    latitude: 8.9824,
+    longitude: -79.5199,
+    keys: ["panama city panama", "ciudad de panama"]
+  },
+  { label: "Panama", latitude: 8.538, longitude: -80.7821, keys: ["panama"] },
+  {
+    label: "Central America",
+    latitude: 12.769,
+    longitude: -85.6024,
+    keys: ["central america", "centroamerica", "america central", "centro america"]
+  },
   {
     label: "São Paulo, Brazil",
     latitude: -23.5505,
@@ -479,18 +532,23 @@ export function resolveJobMapLocation(location: string): JobMapLocation | undefi
 }
 
 function isInternationalCityWithExplicitUsState(label: string, normalizedLocation: string) {
+  if (label === "San Jose, CA" && hasCostaRicaContext(normalizedLocation)) {
+    return true;
+  }
+
+  if ((label === "Mexico" || label.endsWith(", Mexico")) && isNewMexicoUsLocation(normalizedLocation)) {
+    return true;
+  }
+
   if (
-    !label.endsWith(", Germany") &&
-    !label.endsWith(", Australia") &&
-    label !== "Brazil" &&
-    !label.endsWith(", Brazil") &&
-    label !== "Peru" &&
-    !label.endsWith(", Peru") &&
-    label !== "Chile" &&
-    !label.endsWith(", Chile") &&
-    label !== "Colombia" &&
-    !label.endsWith(", Colombia")
+    (label === "Panama" || label.endsWith(", Panama")) &&
+    containsNormalizedLocationKey(normalizedLocation, "panama city") &&
+    !hasPanamaCountryContext(normalizedLocation)
   ) {
+    return true;
+  }
+
+  if (!isUsStateGuardedInternationalLabel(label)) {
     return false;
   }
 
@@ -502,6 +560,53 @@ function isInternationalCityWithExplicitUsState(label: string, normalizedLocatio
 
   return /(?:^| )(?:al|ak|az|ar|ca|co|ct|dc|fl|ga|hi|id|il|in|ia|ks|ky|la|me|md|ma|mi|mn|ms|mo|mt|ne|nv|nh|nj|nm|ny|nc|nd|oh|ok|or|pa|ri|sc|sd|tn|tx|ut|vt|va|wa|wv|wi|wy)$/.test(
     locationWithoutTrailingZip
+  );
+}
+
+function isUsStateGuardedInternationalLabel(label: string) {
+  return (
+    label.endsWith(", Germany") ||
+    label.endsWith(", Australia") ||
+    label === "Brazil" ||
+    label.endsWith(", Brazil") ||
+    label === "Peru" ||
+    label.endsWith(", Peru") ||
+    label === "Chile" ||
+    label.endsWith(", Chile") ||
+    label === "Colombia" ||
+    label.endsWith(", Colombia") ||
+    label === "Mexico" ||
+    label.endsWith(", Mexico") ||
+    label === "Panama" ||
+    label.endsWith(", Panama") ||
+    label === "Guatemala" ||
+    label.endsWith(", Guatemala") ||
+    label === "Belize" ||
+    label.endsWith(", Belize") ||
+    label === "El Salvador" ||
+    label.endsWith(", El Salvador") ||
+    label === "Honduras" ||
+    label.endsWith(", Honduras") ||
+    label === "Nicaragua" ||
+    label.endsWith(", Nicaragua") ||
+    label === "Costa Rica" ||
+    label.endsWith(", Costa Rica") ||
+    label === "Central America"
+  );
+}
+
+function hasCostaRicaContext(normalizedLocation: string) {
+  return (
+    containsNormalizedLocationKey(normalizedLocation, "costa rica") ||
+    containsNormalizedLocationKey(normalizedLocation, "san jose cr")
+  );
+}
+
+function hasPanamaCountryContext(normalizedLocation: string) {
+  return (
+    containsNormalizedLocationKey(normalizedLocation, "panama city panama") ||
+    containsNormalizedLocationKey(normalizedLocation, "ciudad de panama") ||
+    containsNormalizedLocationKey(normalizedLocation, "republic of panama")
   );
 }
 
