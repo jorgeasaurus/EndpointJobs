@@ -135,6 +135,9 @@ export async function auditMaps({ feed, run, sources }: AuditContext) {
     assertIncludes(sources.jobMapCss, ".maplibregl-canvas-container", "scoped map canvas CSS");
     assertIncludes(sources.jobMapCss, ".maplibregl-popup-anchor-bottom", "scoped map popup CSS");
     assertIncludes(sources.jobMapCss, ".maplibregl-cooperative-gesture-screen", "scoped cooperative gesture CSS");
+    assertIncludes(sources.jobMapCss, "z-index: 0", "map canvas stacking context stays below chrome");
+    assertIncludes(sources.jobMapCss, ".job-map-attribution");
+    assertIncludes(sources.jobMapCss, ".job-map-controls");
     assertNotIncludes(sources.layout, "maplibre-gl/dist/maplibre-gl.css", "layout should not import global MapLibre CSS");
     assertIncludes(sources.jobMapConfig, "carto-dark");
     assertIncludes(sources.jobMapCanvas, "OpenStreetMap");
