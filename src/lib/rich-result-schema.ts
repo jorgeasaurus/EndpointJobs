@@ -96,10 +96,6 @@ export function inferAddressCountry(job: Job) {
       continue;
     }
 
-    if (countryCode === "JM" && isJamaicaUsNeighborhood(foldTokens(location))) {
-      return "US";
-    }
-
     return countryCode;
   }
 

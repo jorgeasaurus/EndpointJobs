@@ -259,7 +259,8 @@ export async function auditProviders({ run, sources }: AuditContext) {
     assertIncludes(sources.workflow, '"Central America" OR "Caribbean"', "scheduled LinkedIn Caribbean coverage");
     assertIncludes(sources.workflow, '"Germany" OR "Remote"', "scheduled LinkedIn US/EU batch keeps Remote");
     assertIncludes(sources.workflow, "JOB_RAPIDAPI_LINKEDIN_LATAM_LOCATION_FILTER", "LinkedIn LATAM batch is separate");
-    assertIncludes(sources.theirStack, "getTheirStackCountryBatches", "TheirStack splits US/EU from LATAM");
+    assertIncludes(sources.theirStack, "partitionJobCountryCodes", "TheirStack splits US/EU from LATAM");
+    assertIncludes(sources.rapidApiDaily, "isHighVolumeJobCountry", "RapidAPI Daily uses the shared US/EU country set");
     assertIncludes(sources.rapidApiDaily, "JOB_RAPIDAPI_LATAM_HAS_SALARY", "RapidAPI Daily does not require LATAM salary");
     assertIncludes(sources.rapidApiLinkedIn, "getRapidApiLinkedInLocationFilters", "LinkedIn location filters are batched");
     assertIncludes(sources.readme, "South America, Mexico, Central America, and the Caribbean are not added to SerpAPI");

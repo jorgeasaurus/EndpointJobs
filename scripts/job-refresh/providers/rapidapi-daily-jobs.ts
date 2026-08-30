@@ -1,5 +1,6 @@
 import type { Job, Workplace } from "../../../src/types/job";
 
+import { isHighVolumeJobCountry } from "../high-volume-countries";
 import type { ProviderAdapter } from "../provider";
 import {
   buildStableJobId,
@@ -140,12 +141,6 @@ async function fetchRapidApiDailyJobs(url: string, fetchedAt: Date) {
   return jobs;
 }
 
-const rapidApiHighVolumeCountryCodes = new Set(["us", "ch", "it", "es", "fr", "de"]);
-
-export function isRapidApiHighVolumeCountry(countryCode: string) {
-  return rapidApiHighVolumeCountryCodes.has(countryCode.trim().toLowerCase());
-}
-
 export function getRapidApiDailyJobsQueries(
   countryCode: string,
   configuredQueries: string[] = getCsvConfig("JOB_RAPIDAPI_QUERIES", [])
@@ -154,7 +149,7 @@ export function getRapidApiDailyJobsQueries(
     return configuredQueries;
   }
 
-  if (isRapidApiHighVolumeCountry(countryCode)) {
+  if (isHighVolumeJobCountry(countryCode)) {
     return [""];
   }
 
@@ -162,7 +157,7 @@ export function getRapidApiDailyJobsQueries(
 }
 
 export function getRapidApiDailyJobsHasSalary(countryCode: string) {
-  if (isRapidApiHighVolumeCountry(countryCode)) {
+  if (isHighVolumeJobCountry(countryCode)) {
     return process.env.JOB_RAPIDAPI_HAS_SALARY ?? "true";
   }
 

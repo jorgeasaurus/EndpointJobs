@@ -1,10 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import {
-  getTheirStackCountryBatches,
-  theirStackProvider
-} from "../job-refresh/providers/theirstack";
+import { partitionJobCountryCodes } from "../job-refresh/high-volume-countries";
+import { theirStackProvider } from "../job-refresh/providers/theirstack";
 
 function restoreProcessEnv(originalEnv: NodeJS.ProcessEnv) {
   for (const key of Object.keys(process.env)) {
@@ -18,14 +16,14 @@ function restoreProcessEnv(originalEnv: NodeJS.ProcessEnv) {
 
 test("TheirStack splits US/EU and LATAM country codes into separate limit batches", () => {
   assert.deepEqual(
-    getTheirStackCountryBatches(["US", "CH", "IT", "ES", "FR", "DE", "BR", "AR", "MX", "EC", "PR"]),
+    partitionJobCountryCodes(["US", "CH", "IT", "ES", "FR", "DE", "BR", "AR", "MX", "EC", "PR"]),
     [
       ["US", "CH", "IT", "ES", "FR", "DE"],
       ["BR", "AR", "MX", "EC", "PR"]
     ]
   );
-  assert.deepEqual(getTheirStackCountryBatches(["US", "DE"]), [["US", "DE"]]);
-  assert.deepEqual(getTheirStackCountryBatches(["AR", "EC", "DO"]), [["AR", "EC", "DO"]]);
+  assert.deepEqual(partitionJobCountryCodes(["US", "DE"]), [["US", "DE"]]);
+  assert.deepEqual(partitionJobCountryCodes(["AR", "EC", "DO"]), [["AR", "EC", "DO"]]);
 });
 
 test("TheirStack role search posts one request per country batch", async () => {

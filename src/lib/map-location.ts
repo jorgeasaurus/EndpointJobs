@@ -622,13 +622,6 @@ function isInternationalCityWithExplicitUsState(label: string, normalizedLocatio
   }
 
   if (
-    (label === "Dominican Republic" || label.endsWith(", Dominican Republic")) &&
-    containsNormalizedLocationKey(normalizedLocation, "santo domingo pueblo")
-  ) {
-    return true;
-  }
-
-  if (
     (label === "Panama" || label.endsWith(", Panama")) &&
     containsNormalizedLocationKey(normalizedLocation, "panama city") &&
     !hasPanamaCountryContext(normalizedLocation)
@@ -651,50 +644,40 @@ function isInternationalCityWithExplicitUsState(label: string, normalizedLocatio
   );
 }
 
+const usStateGuardedInternationalCountries = [
+  "Brazil",
+  "Peru",
+  "Chile",
+  "Colombia",
+  "Mexico",
+  "Panama",
+  "Guatemala",
+  "Belize",
+  "El Salvador",
+  "Honduras",
+  "Nicaragua",
+  "Costa Rica",
+  "Ecuador",
+  "Uruguay",
+  "Paraguay",
+  "Bolivia",
+  "Dominican Republic",
+  "Jamaica",
+  "Puerto Rico"
+] as const;
+
 function isUsStateGuardedInternationalLabel(label: string) {
-  return (
-    label.endsWith(", Germany") ||
-    label.endsWith(", Australia") ||
-    label === "Brazil" ||
-    label.endsWith(", Brazil") ||
-    label === "Peru" ||
-    label.endsWith(", Peru") ||
-    label === "Chile" ||
-    label.endsWith(", Chile") ||
-    label === "Colombia" ||
-    label.endsWith(", Colombia") ||
-    label === "Mexico" ||
-    label.endsWith(", Mexico") ||
-    label === "Panama" ||
-    label.endsWith(", Panama") ||
-    label === "Guatemala" ||
-    label.endsWith(", Guatemala") ||
-    label === "Belize" ||
-    label.endsWith(", Belize") ||
-    label === "El Salvador" ||
-    label.endsWith(", El Salvador") ||
-    label === "Honduras" ||
-    label.endsWith(", Honduras") ||
-    label === "Nicaragua" ||
-    label.endsWith(", Nicaragua") ||
-    label === "Costa Rica" ||
-    label.endsWith(", Costa Rica") ||
-    label === "Ecuador" ||
-    label.endsWith(", Ecuador") ||
-    label === "Uruguay" ||
-    label.endsWith(", Uruguay") ||
-    label === "Paraguay" ||
-    label.endsWith(", Paraguay") ||
-    label === "Bolivia" ||
-    label.endsWith(", Bolivia") ||
-    label === "Dominican Republic" ||
-    label.endsWith(", Dominican Republic") ||
-    label === "Jamaica" ||
-    label.endsWith(", Jamaica") ||
-    label === "Puerto Rico" ||
-    label.endsWith(", Puerto Rico") ||
+  if (
     label === "Caribbean" ||
-    label === "Central America"
+    label === "Central America" ||
+    label.endsWith(", Germany") ||
+    label.endsWith(", Australia")
+  ) {
+    return true;
+  }
+
+  return usStateGuardedInternationalCountries.some(
+    (country) => label === country || label.endsWith(`, ${country}`)
   );
 }
 

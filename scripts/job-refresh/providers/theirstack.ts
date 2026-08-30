@@ -1,5 +1,6 @@
 import type { Job, Seniority, Workplace } from "../../../src/types/job";
 
+import { partitionJobCountryCodes } from "../high-volume-countries";
 import type { ProviderAdapter } from "../provider";
 import { defaultEndpointSearchQueries, monitoredCompanyNames } from "../search-config";
 import {
@@ -102,7 +103,9 @@ type TheirStackPageFetchOptions = {
 
 async function fetchTheirStackPages(options: TheirStackPageFetchOptions) {
   const jobs: Array<Job | null> = [];
-  const countryBatches = getTheirStackCountryBatches();
+  const countryBatches = partitionJobCountryCodes(
+    getCsvConfig("JOB_THEIRSTACK_COUNTRY_CODES", ["US"])
+  );
 
   for (const countryCodes of countryBatches) {
     const batchLabel = countryCodes.join(",");
@@ -255,25 +258,6 @@ function normalizeTheirStackJob(raw: TheirStackJob, fetchedAt: Date) {
     seniority: normalizeTheirStackSeniority(raw.seniority),
     employmentType: normalizeTheirStackEmploymentType(raw.employment_statuses)
   });
-}
-
-const theirStackHighVolumeCountryCodes = new Set(["US", "CH", "IT", "ES", "FR", "DE"]);
-
-export function getTheirStackCountryBatches(
-  countryCodes = getCsvConfig("JOB_THEIRSTACK_COUNTRY_CODES", ["US"])
-) {
-  const primary: string[] = [];
-  const secondary: string[] = [];
-
-  for (const countryCode of countryCodes) {
-    if (theirStackHighVolumeCountryCodes.has(countryCode.toUpperCase())) {
-      primary.push(countryCode);
-    } else {
-      secondary.push(countryCode);
-    }
-  }
-
-  return [primary, secondary].filter((batch) => batch.length > 0);
 }
 
 function buildTheirStackSearchBody(
