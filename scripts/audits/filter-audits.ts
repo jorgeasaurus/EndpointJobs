@@ -97,6 +97,15 @@ export async function auditFilters({ filterFixtureJobs, run, sources }: AuditCon
         longitude: -99.1332
       }
     });
+    const cdmxJob = makeJob({
+      id: "cdmx-country-search",
+      location: "CDMX, Mexico",
+      mapLocation: {
+        label: "Mexico City, Mexico",
+        latitude: 19.4326,
+        longitude: -99.1332
+      }
+    });
     const centralAmericaRemoteJob = makeJob({
       id: "central-america-remote-country-search",
       location: "Central America, Remote",
@@ -107,12 +116,16 @@ export async function auditFilters({ filterFixtureJobs, run, sources }: AuditCon
         longitude: -85.6024
       }
     });
-    for (const locationQuery of ["Mexico", "México", "Mexico City", "CDMX", "Ciudad de México"]) {
+    for (const locationQuery of ["Mexico", "México", "Mexico City", "Ciudad de México"]) {
       assertIds(
         filterJobs([mexicoCityJob], { ...initialFilterState, locationQuery }),
         ["mexico-city-country-search"]
       );
     }
+    assertIds(
+      filterJobs([cdmxJob], { ...initialFilterState, locationQuery: "CDMX" }),
+      ["cdmx-country-search"]
+    );
     for (const locationQuery of ["Central America", "Remote"]) {
       assertIds(
         filterJobs([centralAmericaRemoteJob], { ...initialFilterState, locationQuery }),
