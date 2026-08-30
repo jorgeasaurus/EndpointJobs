@@ -12,6 +12,8 @@
  *   Sao Paulo match in free-text location search.
  * - `isNewMexicoUsLocation` is the shared New Mexico collision check for an
  *   already folded/normalized location string.
+ * - `isJamaicaUsNeighborhood` is the shared Jamaica, Queens / Jamaica, NY
+ *   collision check for an already folded/normalized location string.
  */
 
 export function normalizeText(value: string) {
@@ -45,4 +47,17 @@ export function isNewMexicoUsLocation(normalizedLocation: string) {
   );
   const locationWithoutTrailingZip = locationWithoutCountry.replace(/ \d{5}(?: \d{4})?$/, "");
   return /(?:^| )nm$/.test(locationWithoutTrailingZip);
+}
+
+export function isJamaicaUsNeighborhood(normalizedLocation: string) {
+  const haystack = ` ${normalizedLocation} `;
+  if (!haystack.includes(" jamaica ")) {
+    return false;
+  }
+
+  return (
+    haystack.includes(" queens ")
+    || haystack.includes(" jamaica ny ")
+    || haystack.includes(" jamaica new york ")
+  ) && !haystack.includes(" kingston ") && !haystack.includes(" jm ");
 }

@@ -3,6 +3,7 @@ import { getJobWorkplace } from "@/lib/workplace";
 import type { Job } from "@/types/job";
 
 export const metroAreaOptions = [
+  "Asunción, Paraguay",
   "Atlanta, GA",
   "Austin, TX",
   "Baltimore, MD",
@@ -20,10 +21,13 @@ export const metroAreaOptions = [
   "Frankfurt, Germany",
   "Guadalajara, Mexico",
   "Guatemala City, Guatemala",
+  "Guayaquil, Ecuador",
   "Houston, TX",
   "Indianapolis, IN",
   "Jersey City, NJ",
   "Kansas City, MO",
+  "Kingston, Jamaica",
+  "La Paz, Bolivia",
   "Lima, Peru",
   "London, UK",
   "Los Angeles, CA",
@@ -36,6 +40,7 @@ export const metroAreaOptions = [
   "Milan, Italy",
   "Milwaukee, WI",
   "Monterrey, Mexico",
+  "Montevideo, Uruguay",
   "Munich, Germany",
   "Nashville, TN",
   "New York, NY",
@@ -45,13 +50,17 @@ export const metroAreaOptions = [
   "Philadelphia, PA",
   "Phoenix, AZ",
   "Portland, OR",
+  "Quito, Ecuador",
   "Raleigh-Durham, NC",
   "Rio de Janeiro, Brazil",
   "San Diego, CA",
   "San Francisco, CA",
   "San Jose, CA",
   "San José, Costa Rica",
+  "San Juan, Puerto Rico",
   "San Salvador, El Salvador",
+  "Santa Cruz, Bolivia",
+  "Santo Domingo, Dominican Republic",
   "Santiago, Chile",
   "São Paulo, Brazil",
   "Seattle, WA",
@@ -106,6 +115,9 @@ const metroAreaKeywordSets: Record<MetroAreaFilter, readonly string[]> = {
   "Frankfurt, Germany": ["frankfurt", "frankfurt am main"],
   "Guadalajara, Mexico": ["guadalajara"],
   "Guatemala City, Guatemala": ["guatemala city", "ciudad de guatemala"],
+  "Guayaquil, Ecuador": ["guayaquil", "guayaquil ecuador"],
+  "Kingston, Jamaica": ["kingston jamaica", "kingston jm"],
+  "La Paz, Bolivia": ["la paz bolivia", "la paz bo", "nuestra senora de la paz"],
   "Lima, Peru": ["lima peru", "lima perú", "lima pe"],
   "London, UK": ["london", "england united kingdom"],
   "Madrid, Spain": ["madrid"],
@@ -120,20 +132,32 @@ const metroAreaKeywordSets: Record<MetroAreaFilter, readonly string[]> = {
   ],
   "Milan, Italy": ["milan", "milano"],
   "Monterrey, Mexico": ["monterrey"],
+  "Montevideo, Uruguay": ["montevideo", "montevideo uruguay"],
   "Munich, Germany": ["munich", "munchen", "muenchen", "münchen"],
   "Panama City, Panama": ["panama city panama", "ciudad de panama", "ciudad de panamá"],
+  "Quito, Ecuador": ["quito", "quito ecuador"],
   "Paris, France": ["paris", "ile de france", "île de france", "hauts de seine"],
   "Rio de Janeiro, Brazil": ["rio de janeiro"],
   "San José, Costa Rica": ["san jose costa rica", "san josé costa rica", "san jose cr"],
+  "San Juan, Puerto Rico": ["san juan puerto rico", "san juan pr"],
   "San Salvador, El Salvador": ["san salvador"],
+  "Santa Cruz, Bolivia": ["santa cruz bolivia", "santa cruz de la sierra", "santa cruz bo"],
+  "Santo Domingo, Dominican Republic": [
+    "santo domingo dominican republic",
+    "santo domingo do",
+    "santo domingo dr",
+    "santo domingo"
+  ],
   "Santiago, Chile": ["santiago chile", "santiago de chile"],
   "São Paulo, Brazil": ["sao paulo", "são paulo"],
+  "Asunción, Paraguay": ["asuncion", "asunción", "asuncion paraguay"],
   "Tegucigalpa, Honduras": ["tegucigalpa"],
   "Zurich, Switzerland": ["zurich", "zürich", "fehraltorf", "uitikon", "dietikon", "horgen"]
 };
 
 const metroAreaExcludeKeywordSets: Partial<Record<MetroAreaFilter, readonly string[]>> = {
-  "San Jose, CA": ["costa rica", "san jose cr"]
+  "San Jose, CA": ["costa rica", "san jose cr"],
+  "Santo Domingo, Dominican Republic": ["santo domingo pueblo"]
 };
 
 type TokenAliasMatcher<T extends string> = {

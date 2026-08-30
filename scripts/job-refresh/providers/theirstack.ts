@@ -102,16 +102,24 @@ type TheirStackPageFetchOptions = {
 
 async function fetchTheirStackPages(options: TheirStackPageFetchOptions) {
   const jobs: Array<Job | null> = [];
+  const countryBatches = getTheirStackCountryBatches();
 
-  for (let page = 0; page < options.maxPages; page += 1) {
-    const payload = await fetchTheirStackSearch(options.url, page, {
-      companyNames: options.companyNames
-    });
-    jobs.push(...payload.map((job) => normalizeTheirStackJob(job, options.fetchedAt)));
-    console.log(`Fetched ${payload.length} raw jobs from TheirStack ${options.label} page ${page}`);
+  for (const countryCodes of countryBatches) {
+    const batchLabel = countryCodes.join(",");
 
-    if (payload.length === 0) {
-      break;
+    for (let page = 0; page < options.maxPages; page += 1) {
+      const payload = await fetchTheirStackSearch(options.url, page, {
+        companyNames: options.companyNames,
+        countryCodes
+      });
+      jobs.push(...payload.map((job) => normalizeTheirStackJob(job, options.fetchedAt)));
+      console.log(
+        `Fetched ${payload.length} raw jobs from TheirStack ${options.label} [${batchLabel}] page ${page}`
+      );
+
+      if (payload.length === 0) {
+        break;
+      }
     }
   }
 
@@ -142,7 +150,7 @@ async function fetchTheirStackCompanyPages(options: Omit<TheirStackPageFetchOpti
 async function fetchTheirStackSearch(
   url: string,
   page: number,
-  options: { companyNames?: string[] } = {}
+  options: { companyNames?: string[]; countryCodes?: string[] } = {}
 ) {
   const apiKey = process.env.THEIRSTACK_API_KEY ?? process.env.JOB_THEIRSTACK_API_KEY;
 
@@ -249,13 +257,33 @@ function normalizeTheirStackJob(raw: TheirStackJob, fetchedAt: Date) {
   });
 }
 
+const theirStackHighVolumeCountryCodes = new Set(["US", "CH", "IT", "ES", "FR", "DE"]);
+
+export function getTheirStackCountryBatches(
+  countryCodes = getCsvConfig("JOB_THEIRSTACK_COUNTRY_CODES", ["US"])
+) {
+  const primary: string[] = [];
+  const secondary: string[] = [];
+
+  for (const countryCode of countryCodes) {
+    if (theirStackHighVolumeCountryCodes.has(countryCode.toUpperCase())) {
+      primary.push(countryCode);
+    } else {
+      secondary.push(countryCode);
+    }
+  }
+
+  return [primary, secondary].filter((batch) => batch.length > 0);
+}
+
 function buildTheirStackSearchBody(
   page: number,
-  options: { companyNames?: string[] } = {}
+  options: { companyNames?: string[]; countryCodes?: string[] } = {}
 ) {
   const limit = Math.max(1, Number(process.env.JOB_THEIRSTACK_LIMIT ?? 25));
   const maxAgeDays = Number(process.env.JOB_THEIRSTACK_MAX_AGE_DAYS ?? 30);
-  const countryCodes = getCsvConfig("JOB_THEIRSTACK_COUNTRY_CODES", ["US"]);
+  const countryCodes = options.countryCodes
+    ?? getCsvConfig("JOB_THEIRSTACK_COUNTRY_CODES", ["US"]);
   const titleQueries = getCsvConfig("JOB_THEIRSTACK_TITLE_QUERIES", defaultEndpointSearchQueries);
   const descriptionPatterns = getCsvConfig("JOB_THEIRSTACK_DESCRIPTION_PATTERNS", []);
   const remote = parseOptionalBoolean(process.env.JOB_THEIRSTACK_REMOTE);

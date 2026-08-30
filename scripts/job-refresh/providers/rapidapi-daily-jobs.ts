@@ -100,7 +100,6 @@ async function fetchRapidApiDailyJobs(url: string, fetchedAt: Date) {
   }
 
   const configuredQueries = getCsvConfig("JOB_RAPIDAPI_QUERIES", []);
-  const queries = configuredQueries.length > 0 ? configuredQueries : [""];
   const countryCodes = getCsvConfig("JOB_RAPIDAPI_COUNTRY_CODES", [
     process.env.JOB_RAPIDAPI_COUNTRY_CODE ?? "us"
   ]);
@@ -110,6 +109,7 @@ async function fetchRapidApiDailyJobs(url: string, fetchedAt: Date) {
   const failures: string[] = [];
 
   for (const countryCode of countryCodes) {
+    const queries = getRapidApiDailyJobsQueries(countryCode, configuredQueries);
     for (const query of queries) {
       for (let page = 1; page <= maxPages; page += 1) {
         const queryUrl = buildRapidApiDailyJobsUrl(url, query, page, countryCode);
@@ -140,6 +140,35 @@ async function fetchRapidApiDailyJobs(url: string, fetchedAt: Date) {
   return jobs;
 }
 
+const rapidApiHighVolumeCountryCodes = new Set(["us", "ch", "it", "es", "fr", "de"]);
+
+export function isRapidApiHighVolumeCountry(countryCode: string) {
+  return rapidApiHighVolumeCountryCodes.has(countryCode.trim().toLowerCase());
+}
+
+export function getRapidApiDailyJobsQueries(
+  countryCode: string,
+  configuredQueries: string[] = getCsvConfig("JOB_RAPIDAPI_QUERIES", [])
+) {
+  if (configuredQueries.length > 0) {
+    return configuredQueries;
+  }
+
+  if (isRapidApiHighVolumeCountry(countryCode)) {
+    return [""];
+  }
+
+  return getCsvConfig("JOB_RAPIDAPI_LATAM_QUERIES", ["endpoint"]);
+}
+
+export function getRapidApiDailyJobsHasSalary(countryCode: string) {
+  if (isRapidApiHighVolumeCountry(countryCode)) {
+    return process.env.JOB_RAPIDAPI_HAS_SALARY ?? "true";
+  }
+
+  return process.env.JOB_RAPIDAPI_LATAM_HAS_SALARY ?? "false";
+}
+
 function buildRapidApiDailyJobsUrl(
   baseUrl: string,
   query: string,
@@ -147,7 +176,7 @@ function buildRapidApiDailyJobsUrl(
   countryCode: string
 ) {
   const url = new URL(baseUrl);
-  const hasSalary = process.env.JOB_RAPIDAPI_HAS_SALARY ?? "true";
+  const hasSalary = getRapidApiDailyJobsHasSalary(countryCode);
   const queryParam = process.env.JOB_RAPIDAPI_QUERY_PARAM ?? "query";
 
   url.searchParams.set("format", "json");

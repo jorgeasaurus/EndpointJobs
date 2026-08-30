@@ -247,20 +247,24 @@ export async function auditProviders({ run, sources }: AuditContext) {
     assertIncludes(sources.workflow, "us,ch,it,es,fr,de,br,mx", "scheduled Adzuna Mexico coverage");
     assertIncludes(
       sources.workflow,
-      "US,CH,IT,ES,FR,DE,BR,AR,CL,CO,PE,MX,GT,BZ,SV,HN,NI,CR,PA",
-      "scheduled TheirStack Mexico and Central America coverage"
+      "US,CH,IT,ES,FR,DE,BR,AR,CL,CO,PE,MX,GT,BZ,SV,HN,NI,CR,PA,EC,UY,PY,BO,DO,JM,PR",
+      "scheduled TheirStack Andean and Caribbean coverage"
     );
     assertIncludes(
       sources.workflow,
-      "us,ch,it,es,fr,de,br,ar,cl,co,pe,mx,gt,bz,sv,hn,ni,cr,pa",
-      "scheduled RapidAPI Mexico and Central America coverage"
+      "us,ch,it,es,fr,de,br,ar,cl,co,pe,mx,gt,bz,sv,hn,ni,cr,pa,ec,uy,py,bo,do,jm,pr",
+      "scheduled RapidAPI Andean and Caribbean coverage"
     );
     assertIncludes(sources.workflow, '"Mexico" OR "Guatemala"', "scheduled LinkedIn Mexico coverage");
-    assertIncludes(sources.workflow, '"Central America" OR "Remote"', "scheduled LinkedIn Central America coverage");
-    assertIncludes(sources.workflow, '"Germany" OR "Brazil"', "scheduled LinkedIn Germany coverage");
-    assertIncludes(sources.readme, "South America, Mexico, and Central America are not added to SerpAPI");
-    assertIncludes(sources.readme, "Adzuna adds Brazil (`br`) and Mexico (`mx`)");
-    assertIncludes(sources.readme, "Central American codes");
+    assertIncludes(sources.workflow, '"Central America" OR "Caribbean"', "scheduled LinkedIn Caribbean coverage");
+    assertIncludes(sources.workflow, '"Germany" OR "Remote"', "scheduled LinkedIn US/EU batch keeps Remote");
+    assertIncludes(sources.workflow, "JOB_RAPIDAPI_LINKEDIN_LATAM_LOCATION_FILTER", "LinkedIn LATAM batch is separate");
+    assertIncludes(sources.theirStack, "getTheirStackCountryBatches", "TheirStack splits US/EU from LATAM");
+    assertIncludes(sources.rapidApiDaily, "JOB_RAPIDAPI_LATAM_HAS_SALARY", "RapidAPI Daily does not require LATAM salary");
+    assertIncludes(sources.rapidApiLinkedIn, "getRapidApiLinkedInLocationFilters", "LinkedIn location filters are batched");
+    assertIncludes(sources.readme, "South America, Mexico, Central America, and the Caribbean are not added to SerpAPI");
+    assertIncludes(sources.readme, "Adzuna still only has Brazil (`br`) and Mexico (`mx`)");
+    assertIncludes(sources.readme, "Caribbean countries are now queried");
     assertIncludes(sources.workflow, "JOB_SERPAPI_COUNTRIES: us,au", "SerpAPI quota stays US+AU");
   });
 
