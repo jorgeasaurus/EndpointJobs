@@ -81,7 +81,7 @@ export function inferAddressCountry(job: Job) {
 
   const location = `${job.location} ${job.mapLocation?.label ?? ""}`;
   const foldedLocation = foldDiacritics(location);
-  const usStateSuffixed = hasExplicitUsStateSuffix(location);
+  const usStateSuffixed = hasExplicitUsStateSuffix(job.location);
 
   for (const [pattern, countryCode] of countryMatchers) {
     if (!pattern.test(foldedLocation)) {
