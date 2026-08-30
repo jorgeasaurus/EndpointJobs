@@ -204,6 +204,32 @@ export async function auditNormalizers({ run, sources }: AuditContext) {
       "On-site",
       "US onsite roles that mention LATAM must not infer Remote"
     );
+    assertEqual(
+      inferWorkplace(
+        "Mexico, Remote",
+        normalizeSearchText("Remote Intune engineer open to Mexico, Central America, and LATAM.")
+      ),
+      "Remote",
+      "explicit remote-to-Mexico listings must stay Remote"
+    );
+    assertEqual(
+      inferWorkplace(
+        "Central America, Remote",
+        normalizeSearchText("Remote UEM engineer hiring across Central America.")
+      ),
+      "Remote",
+      "explicit remote-to-Central America listings must stay Remote"
+    );
+    assertEqual(
+      inferWorkplace(
+        "Austin, TX",
+        normalizeSearchText(
+          "On-site endpoint engineer in Austin, TX. Occasional travel to support Mexico and LATAM customers. This is not a remote or hybrid position."
+        )
+      ),
+      "On-site",
+      "US onsite roles that mention Mexico/LATAM must not infer Remote"
+    );
     const florenceOnsiteText = normalizeSearchText(
       "This position requires full-time onsite support in Florence, KY. This is not a remote or hybrid position. Ability to Commute: Florence, KY 41042 (Required). Work Location: In person."
     );

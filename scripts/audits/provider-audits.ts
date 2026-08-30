@@ -244,12 +244,24 @@ export async function auditProviders({ run, sources }: AuditContext) {
     );
     assertIncludes(sources.readme, "SpaceX", "README source documentation");
     assertIncludes(sources.readme, "GitLab", "README expanded source documentation");
-    assertIncludes(sources.workflow, "us,ch,it,es,fr,de,br", "scheduled Adzuna Brazil coverage");
-    assertIncludes(sources.workflow, "US,CH,IT,ES,FR,DE,BR,AR,CL,CO,PE", "scheduled TheirStack South America coverage");
-    assertIncludes(sources.workflow, "us,ch,it,es,fr,de,br,ar,cl,co,pe", "scheduled RapidAPI South America coverage");
-    assertIncludes(sources.workflow, '"Brazil" OR "Argentina"', "scheduled LinkedIn South America coverage");
+    assertIncludes(sources.workflow, "us,ch,it,es,fr,de,br,mx", "scheduled Adzuna Mexico coverage");
+    assertIncludes(
+      sources.workflow,
+      "US,CH,IT,ES,FR,DE,BR,AR,CL,CO,PE,MX,GT,BZ,SV,HN,NI,CR,PA",
+      "scheduled TheirStack Mexico and Central America coverage"
+    );
+    assertIncludes(
+      sources.workflow,
+      "us,ch,it,es,fr,de,br,ar,cl,co,pe,mx,gt,bz,sv,hn,ni,cr,pa",
+      "scheduled RapidAPI Mexico and Central America coverage"
+    );
+    assertIncludes(sources.workflow, '"Mexico" OR "Guatemala"', "scheduled LinkedIn Mexico coverage");
+    assertIncludes(sources.workflow, '"Central America" OR "Remote"', "scheduled LinkedIn Central America coverage");
     assertIncludes(sources.workflow, '"Germany" OR "Brazil"', "scheduled LinkedIn Germany coverage");
-    assertIncludes(sources.readme, "South America is not added to SerpAPI");
+    assertIncludes(sources.readme, "South America, Mexico, and Central America are not added to SerpAPI");
+    assertIncludes(sources.readme, "Adzuna adds Brazil (`br`) and Mexico (`mx`)");
+    assertIncludes(sources.readme, "Central American codes");
+    assertIncludes(sources.workflow, "JOB_SERPAPI_COUNTRIES: us,au", "SerpAPI quota stays US+AU");
   });
 
   await run("FEAT-067", "Provider adapter contract is shared by refresh orchestration", () => {

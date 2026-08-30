@@ -44,10 +44,19 @@ const countryMatchers: Array<[RegExp, string]> = [
   [/\bargentina\b/i, "AR"],
   [/\bchile\b/i, "CL"],
   [/\bcolombia\b/i, "CO"],
-  [/\bperu\b/i, "PE"]
+  [/\bperu\b/i, "PE"],
+  [/\bnew mexico\b/i, "US"],
+  [/\bmexico\b/i, "MX"],
+  [/\bguatemala\b/i, "GT"],
+  [/\bbelize\b/i, "BZ"],
+  [/\bel salvador\b/i, "SV"],
+  [/\bhonduras\b/i, "HN"],
+  [/\bnicaragua\b/i, "NI"],
+  [/\bcosta rica\b/i, "CR"],
+  [/\bpanama\b/i, "PA"]
 ];
 
-const collidingCountryCodes = new Set(["BR", "PE", "CL", "CO"]);
+const collidingCountryCodes = new Set(["BR", "PE", "CL", "CO", "MX", "PA", "GT", "BZ", "SV", "HN", "NI", "CR"]);
 
 export function inferAddressCountry(job: Job) {
   const location = `${job.location} ${job.mapLocation?.label ?? ""}`;

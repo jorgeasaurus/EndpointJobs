@@ -98,6 +98,14 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     assertEqual(inferAddressCountry(makeJob({ location: "Santiago, CA" })), "US");
     assertEqual(inferAddressCountry(makeJob({ location: "Chile, NY" })), "US");
     assertEqual(inferAddressCountry(makeJob({ location: "Chile" })), "CL");
+    assertEqual(inferAddressCountry(makeJob({ location: "Mexico, NY" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "New Mexico" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Albuquerque, New Mexico" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Panama City, FL" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "San Jose, CA" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Mexico" })), "MX");
+    assertEqual(inferAddressCountry(makeJob({ location: "Panama" })), "PA");
+    assertEqual(inferAddressCountry(makeJob({ location: "Costa Rica" })), "CR");
     assertEqual(
       inferAddressCountry(
         makeJob({
@@ -142,6 +150,58 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
       )
     );
     assertIncludes(brazilInSerialized, '"addressCountry":"US"', "Brazil, IN stays US in JobPosting");
+    assertEqual(
+      inferAddressCountry(
+        makeJob({
+          location: "Ciudad de México, México",
+          mapLocation: { label: "Mexico City, Mexico", latitude: 19.4326, longitude: -99.1332 }
+        })
+      ),
+      "MX"
+    );
+    assertEqual(
+      inferAddressCountry(
+        makeJob({
+          location: "San José, Costa Rica",
+          mapLocation: { label: "San José, Costa Rica", latitude: 9.9281, longitude: -84.0907 }
+        })
+      ),
+      "CR"
+    );
+    assertEqual(
+      inferAddressCountry(
+        makeJob({
+          location: "Panama City, Panama",
+          mapLocation: { label: "Panama City, Panama", latitude: 8.9824, longitude: -79.5199 }
+        })
+      ),
+      "PA"
+    );
+    assertEqual(inferAddressCountry(makeJob({ location: "Guatemala", mapLocation: undefined })), "GT");
+    assertEqual(inferAddressCountry(makeJob({ location: "Belize", mapLocation: undefined })), "BZ");
+    assertEqual(inferAddressCountry(makeJob({ location: "El Salvador", mapLocation: undefined })), "SV");
+    assertEqual(inferAddressCountry(makeJob({ location: "Honduras", mapLocation: undefined })), "HN");
+    assertEqual(inferAddressCountry(makeJob({ location: "Nicaragua", mapLocation: undefined })), "NI");
+    const mexicoNySerialized = serializeJsonLd(
+      getJobJsonLd(
+        makeJob({
+          location: "Mexico, NY",
+          workplace: "On-site",
+          description: "Complete role details. ".repeat(60)
+        })
+      )
+    );
+    assertIncludes(mexicoNySerialized, '"addressCountry":"US"', "Mexico, NY stays US in JobPosting");
+    const panamaCityFlSerialized = serializeJsonLd(
+      getJobJsonLd(
+        makeJob({
+          location: "Panama City, FL",
+          workplace: "On-site",
+          description: "Complete role details. ".repeat(60)
+        })
+      )
+    );
+    assertIncludes(panamaCityFlSerialized, '"addressCountry":"US"', "Panama City, FL stays US in JobPosting");
     assertIncludes(jobSerialized, "Endpoint &lt;Engineer&gt;", "escaped job description");
     assertIncludes(jobSerialized, '"@type":"BreadcrumbList"');
 
