@@ -28,7 +28,7 @@ test("RapidAPI Daily keeps salary-required empty queries for US/EU and relaxes L
   assert.equal(getRapidApiDailyJobsHasSalary("do"), "false");
 });
 
-test("RapidAPI Daily requests omit hasSalary for LATAM and send an endpoint query", async () => {
+test("RapidAPI Daily requests set hasSalary=false for LATAM and send an endpoint query", async () => {
   const originalFetch = globalThis.fetch;
   const originalEnv = { ...process.env };
   const urls: URL[] = [];
