@@ -642,11 +642,12 @@ await run("QA-008", "UI filters hydrate from URL and chip removal recovers", () 
   await expectActiveFilterChips(page, ["Salary shown", "Windows", "Remote", "Intune"]);
   await expect(page.locator(".job-card").first()).toBeVisible();
 
+  expect(new URL(page.url()).pathname).toBe("/intune");
   expectUrlParams(page, {
     salary: "1",
     platforms: "Windows",
     workplace: "Remote",
-    tools: "Intune"
+    tools: null
   });
 
   await page.reload({ waitUntil: "networkidle" });
@@ -704,7 +705,8 @@ await run("QA-015", "PowerShell tool filter renders and hydrates on desktop and 
   await expect(desktopPowerShell).toBeVisible();
   await desktopPowerShell.click();
   await expectActiveFilterChips(desktopPage, ["PowerShell"]);
-  expectUrlParams(desktopPage, { tools: "PowerShell" });
+  expect(new URL(desktopPage.url()).pathname).toBe("/powershell");
+  expectUrlParams(desktopPage, { tools: null });
 
   await desktopPage.goto(withQuery({ tools: "PowerShell" }), { waitUntil: "networkidle" });
   await expect(desktopAdvanced.getByRole("link", { name: "PowerShell", exact: true })).toHaveAttribute(
@@ -727,7 +729,8 @@ await run("QA-015", "PowerShell tool filter renders and hydrates on desktop and 
   await expectElementHorizontallyReachable(mobilePage, mobilePowerShell);
   await mobilePowerShell.click();
   await expectActiveFilterChips(mobilePage, ["PowerShell"]);
-  expectUrlParams(mobilePage, { tools: "PowerShell" });
+  expect(new URL(mobilePage.url()).pathname).toBe("/powershell");
+  expectUrlParams(mobilePage, { tools: null });
   await mobilePage.close();
 });
 
@@ -818,13 +821,15 @@ await run("FEAT-018", "Renamed and new endpoint tools remain filterable", async 
   await page.locator(".advanced-filters summary").click();
 
   await page.getByRole("link", { name: "Kandji/Iru", exact: true }).click();
-  expectUrlParams(page, { tools: "Kandji" });
+  expect(new URL(page.url()).pathname).toBe("/kandji");
+  expectUrlParams(page, { tools: null });
   await expect(page.getByRole("button", { name: "Remove filter: Kandji/Iru" })).toBeVisible();
   await expect(page.locator(".job-card").first()).toBeVisible();
   await page.getByRole("button", { name: "Remove filter: Kandji/Iru" }).click();
 
   await page.getByRole("link", { name: "Google Workspace", exact: true }).click();
-  expectUrlParams(page, { tools: "Google Workspace" });
+  expect(new URL(page.url()).pathname).toBe("/google-workspace");
+  expectUrlParams(page, { tools: null });
   await expect(page.getByRole("button", { name: "Remove filter: Google Workspace" })).toBeVisible();
   await expect(page.locator(".job-card").first()).toBeVisible();
   await page.close();

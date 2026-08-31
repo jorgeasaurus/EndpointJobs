@@ -365,6 +365,33 @@ export async function auditFilters({ filterFixtureJobs, run, sources }: AuditCon
       new URLSearchParams("tools=Jamf")
     );
     assertEqual(pathAndQuery.selectedTools.join(","), "Intune,Jamf");
+
+    const singleToolWritten = mergeFilterStateIntoSearchParams(new URLSearchParams(), {
+      ...initialFilterState,
+      selectedTools: ["Intune"]
+    });
+    assertEqual(singleToolWritten.get("tools"), null, "path-encoded tool omits tools param");
+    assertEqual(singleToolWritten.toString(), "");
+
+    const singleToolWithLocation = mergeFilterStateIntoSearchParams(
+      new URLSearchParams(),
+      { ...initialFilterState, selectedTools: ["Intune"], locationQuery: "Austin" }
+    );
+    assertEqual(singleToolWithLocation.get("tools"), null);
+    assertEqual(singleToolWithLocation.get("location"), "Austin");
+
+    const multiToolWritten = mergeFilterStateIntoSearchParams(new URLSearchParams(), {
+      ...initialFilterState,
+      selectedTools: ["Intune", "Jamf"]
+    });
+    assertEqual(multiToolWritten.get("tools"), "Intune,Jamf");
+    assertEqual(
+      getBoardPathnameForFilters({
+        ...initialFilterState,
+        selectedTools: ["Intune", "Jamf"]
+      }),
+      "/"
+    );
   });
 
   await run("FEAT-077", "European metro area filters match by name and aliases", () => {

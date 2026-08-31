@@ -278,8 +278,13 @@ function applyFilterParamSerializer<Key extends keyof FilterState>(
 
 function filterStateToSearchParams(filters: FilterState) {
   const searchParams = new URLSearchParams();
+  const pathEncodesTool = filters.selectedTools.length === 1;
 
   for (const descriptor of filterParamDescriptors) {
+    if (pathEncodesTool && descriptor.key === "selectedTools") {
+      continue;
+    }
+
     applyFilterParamSerializer(searchParams, filters, descriptor);
   }
 
