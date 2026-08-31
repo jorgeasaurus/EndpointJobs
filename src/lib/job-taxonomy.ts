@@ -52,11 +52,16 @@ export const endpointToolOptions: EndpointTool[] = endpointToolDefinitions.map(
 );
 
 export function getEndpointToolSlug(tool: EndpointTool) {
-  return tool.toLowerCase().replace(/ /g, "-");
+  return normalizeEndpointToolSlug(tool);
 }
 
 export function getEndpointToolBySlug(slug: string): EndpointTool | undefined {
-  return endpointToolOptions.find((tool) => getEndpointToolSlug(tool) === slug);
+  const normalizedSlug = normalizeEndpointToolSlug(slug);
+  return endpointToolOptions.find((tool) => getEndpointToolSlug(tool) === normalizedSlug);
+}
+
+function normalizeEndpointToolSlug(value: string) {
+  return value.trim().toLowerCase().replace(/\s+/g, "-");
 }
 
 export const platformDefinitions = [

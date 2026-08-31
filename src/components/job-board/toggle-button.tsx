@@ -18,14 +18,13 @@ export function ToggleButton({
   onClick: () => void;
 }) {
   const className = isActive ? activeClassName : inactiveClassName;
-  const ariaPressed = isActive ? "true" : "false";
 
   if (!href) {
     return (
       <button
         className={className}
         type="button"
-        aria-pressed={ariaPressed}
+        aria-pressed={isActive ? "true" : "false"}
         onClick={onClick}
       >
         {children}
@@ -35,7 +34,7 @@ export function ToggleButton({
 
   return (
     <Link
-      aria-pressed={ariaPressed}
+      aria-current={isActive ? "page" : undefined}
       className={className}
       href={href}
       onClick={(event) => {
@@ -46,15 +45,6 @@ export function ToggleButton({
         event.preventDefault();
         onClick();
       }}
-      onKeyDown={(event) => {
-        if (event.key !== " ") {
-          return;
-        }
-
-        event.preventDefault();
-        onClick();
-      }}
-      role="button"
     >
       {children}
     </Link>

@@ -578,6 +578,12 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     }
 
     assertEqual(getEndpointToolBySlug("not-a-tool"), undefined, "unknown slug is empty");
+    assertEqual(getEndpointToolBySlug("Intune"), "Intune", "case-insensitive slug lookup");
+    assertEqual(
+      getEndpointToolBySlug("  fleet  mdm "),
+      "Fleet MDM",
+      "whitespace-normalized slug lookup"
+    );
     assertEqual(getEndpointToolLabel("Kandji"), "Kandji/Iru");
     assertEqual(getEndpointToolSeo("Intune").title, "Intune Jobs");
     assertEqual(getEndpointToolSeo("Kandji").title, "Kandji/Iru Jobs");

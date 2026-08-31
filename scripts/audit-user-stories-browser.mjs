@@ -637,7 +637,7 @@ await run("QA-008", "UI filters hydrate from URL and chip removal recovers", () 
   await page.getByRole("button", { name: "Windows" }).click();
   await workplaceRemote.click();
   await advancedFilters.locator("summary").click();
-  await advancedFilters.getByRole("button", { name: "Intune", exact: true }).click();
+  await advancedFilters.getByRole("link", { name: "Intune", exact: true }).click();
 
   await expectActiveFilterChips(page, ["Salary shown", "Windows", "Remote", "Intune"]);
   await expect(page.locator(".job-card").first()).toBeVisible();
@@ -696,7 +696,7 @@ await run("QA-015", "PowerShell tool filter renders and hydrates on desktop and 
   const desktopPage = await newPage(browser, desktopViewport);
   const desktopAdvanced = desktopPage.locator(".advanced-filters");
   await desktopAdvanced.locator("summary").click();
-  const desktopPowerShell = desktopAdvanced.getByRole("button", {
+  const desktopPowerShell = desktopAdvanced.getByRole("link", {
     name: "PowerShell",
     exact: true
   });
@@ -707,9 +707,9 @@ await run("QA-015", "PowerShell tool filter renders and hydrates on desktop and 
   expectUrlParams(desktopPage, { tools: "PowerShell" });
 
   await desktopPage.goto(withQuery({ tools: "PowerShell" }), { waitUntil: "networkidle" });
-  await expect(desktopAdvanced.getByRole("button", { name: "PowerShell", exact: true })).toHaveAttribute(
-    "aria-pressed",
-    "true"
+  await expect(desktopAdvanced.getByRole("link", { name: "PowerShell", exact: true })).toHaveAttribute(
+    "aria-current",
+    "page"
   );
   await expect(desktopPage.locator(".job-card").first()).toBeVisible();
   await desktopPage.close();
@@ -717,7 +717,7 @@ await run("QA-015", "PowerShell tool filter renders and hydrates on desktop and 
   const mobilePage = await newPage(browser, mobileViewport);
   const mobileAdvanced = mobilePage.locator(".advanced-filters");
   await mobileAdvanced.locator("summary").click();
-  const mobilePowerShell = mobileAdvanced.getByRole("button", {
+  const mobilePowerShell = mobileAdvanced.getByRole("link", {
     name: "PowerShell",
     exact: true
   });
@@ -817,13 +817,13 @@ await run("FEAT-018", "Renamed and new endpoint tools remain filterable", async 
   const page = await newPage(browser, desktopViewport);
   await page.locator(".advanced-filters summary").click();
 
-  await page.getByRole("button", { name: "Kandji/Iru", exact: true }).click();
+  await page.getByRole("link", { name: "Kandji/Iru", exact: true }).click();
   expectUrlParams(page, { tools: "Kandji" });
   await expect(page.getByRole("button", { name: "Remove filter: Kandji/Iru" })).toBeVisible();
   await expect(page.locator(".job-card").first()).toBeVisible();
   await page.getByRole("button", { name: "Remove filter: Kandji/Iru" }).click();
 
-  await page.getByRole("button", { name: "Google Workspace", exact: true }).click();
+  await page.getByRole("link", { name: "Google Workspace", exact: true }).click();
   expectUrlParams(page, { tools: "Google Workspace" });
   await expect(page.getByRole("button", { name: "Remove filter: Google Workspace" })).toBeVisible();
   await expect(page.locator(".job-card").first()).toBeVisible();
