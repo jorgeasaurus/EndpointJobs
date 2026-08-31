@@ -92,6 +92,7 @@ export const sourcePaths = {
   sheet: "docs/feature-user-stories.csv",
   siteMetadata: "src/app/site-metadata.ts",
   sitemap: "src/app/sitemap.ts",
+  toolPage: "src/app/[tool]/page.tsx",
   structuredData: "src/app/structured-data.ts",
   techmapRss: "scripts/job-refresh/providers/techmap-rss.ts",
   theirStack: "scripts/job-refresh/providers/theirstack.ts",

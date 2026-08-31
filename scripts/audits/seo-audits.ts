@@ -1,11 +1,19 @@
 import { existsSync } from "node:fs";
 
+import sitemap from "../../src/app/sitemap";
+import { getEndpointToolUrl } from "../../src/app/site-metadata";
 import {
   getHomeJsonLd,
   getJobJsonLd,
   serializeJsonLd
 } from "../../src/app/structured-data";
-import { getCanonicalSeoIndex, getCanonicalSeoJobs, inferAddressCountry } from "../../src/lib/job-seo";
+import { getCanonicalSeoIndex, getCanonicalSeoJobs, getEndpointToolSeo, inferAddressCountry } from "../../src/lib/job-seo";
+import {
+  endpointToolOptions,
+  getEndpointToolBySlug,
+  getEndpointToolLabel,
+  getEndpointToolSlug
+} from "../../src/lib/job-taxonomy";
 import type { Job } from "../../src/types/job";
 
 import {
@@ -397,7 +405,16 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     assertIncludes(sources.sitemap, "getApiDocsPath()", "API docs URL");
     assertIncludes(sources.sitemap, "isActiveJob(job)", "active jobs only");
     assertIncludes(sources.sitemap, "getCanonicalSeoJobs(activeJobs)", "canonical jobs only");
+    assertIncludes(sources.sitemap, "getEndpointToolUrl(tool)", "endpoint tool page URLs");
     assertNotIncludes(sources.sitemap, "job.fetchedAt", "fetch time as false last-modified");
+
+    const sitemapUrls = sitemap().map((entry) => entry.url);
+    for (const tool of endpointToolOptions) {
+      assertTruthy(
+        sitemapUrls.includes(getEndpointToolUrl(tool)),
+        `sitemap missing ${getEndpointToolSlug(tool)} page`
+      );
+    }
     assertIncludes(sources.robots, "sitemap");
     assertIncludes(sources.robots, "Googlebot");
     assertIncludes(sources.robots, "host: siteUrl");
@@ -526,5 +543,53 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
 
     const canonicalIndex = getCanonicalSeoIndex([job]);
     assertEqual(canonicalIndex.get(job.id), job.id, "unique job is its own canonical id");
+  });
+
+  await run("FEAT-080", "Shareable endpoint tool pages prerender with unique SEO", () => {
+    assertIncludes(sources.toolPage, "generateStaticParams", "static prerendering per tool");
+    assertIncludes(sources.toolPage, "dynamicParams = false", "unknown slugs 404");
+    assertIncludes(sources.toolPage, "notFound()", "unknown slugs 404");
+    assertIncludes(sources.toolPage, "generateMetadata", "unique tool metadata");
+    assertIncludes(sources.toolPage, "alternates: { canonical: url }", "tool self-canonical");
+    assertIncludes(sources.toolPage, "initialSelectedTools={[tool]}", "reuses JobBoard with tool preselected");
+    assertIncludes(sources.jobBoard, "initialSelectedTools", "JobBoard accepts an initial tool filter");
+    assertIncludes(sources.controls, "getEndpointToolPath(tool)", "tool chips link to shareable URLs");
+
+    const expectedSlugs = {
+      Jamf: "jamf",
+      Intune: "intune",
+      SCCM: "sccm",
+      "Fleet MDM": "fleet-mdm",
+      Kandji: "kandji",
+      NinjaOne: "ninjaone",
+      "Workspace ONE": "workspace-one",
+      Tanium: "tanium",
+      Okta: "okta",
+      "Google Workspace": "google-workspace",
+      "Entra ID": "entra-id",
+      Autopilot: "autopilot",
+      PowerShell: "powershell",
+      Defender: "defender"
+    } as const;
+
+    for (const tool of endpointToolOptions) {
+      assertEqual(getEndpointToolSlug(tool), expectedSlugs[tool], `${tool} slug`);
+      assertEqual(getEndpointToolBySlug(expectedSlugs[tool]), tool, `${tool} slug lookup`);
+    }
+
+    assertEqual(getEndpointToolBySlug("not-a-tool"), undefined, "unknown slug is empty");
+    assertEqual(getEndpointToolLabel("Kandji"), "Kandji/Iru");
+    assertEqual(getEndpointToolSeo("Intune").title, "Intune Jobs");
+    assertEqual(getEndpointToolSeo("Kandji").title, "Kandji/Iru Jobs");
+    assertIncludes(getEndpointToolSeo("Intune").description, "Intune jobs");
+
+    const reservedSegments = ["jobs", "api", "api-docs"];
+    for (const segment of reservedSegments) {
+      assertEqual(
+        getEndpointToolBySlug(segment),
+        undefined,
+        `${segment} remains a reserved App Router segment`
+      );
+    }
   });
 }

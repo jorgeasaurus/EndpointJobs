@@ -5,6 +5,7 @@ import {
   toolOptions
 } from "@/lib/jobs";
 import { isFreshnessFilter } from "@/lib/job-filters";
+import { getEndpointToolBySlug, getEndpointToolSlug } from "@/lib/job-taxonomy";
 
 import type {
   FilterState,
@@ -146,6 +147,37 @@ const filterSearchParamKeys = [
   ...currentFilterSearchParamKeys,
   ...legacyFilterSearchParamKeys
 ];
+
+export function getBoardPathnameForFilters(filters: FilterState) {
+  if (filters.selectedTools.length === 1) {
+    return `/${getEndpointToolSlug(filters.selectedTools[0])}`;
+  }
+
+  return "/";
+}
+
+export function filterStateFromLocation(
+  pathname: string,
+  searchParams: URLSearchParams
+): FilterState {
+  const filters = filterStateFromSearchParams(searchParams);
+  const segment = pathname.replace(/^\/+|\/+$/g, "");
+
+  if (!segment || segment.includes("/")) {
+    return filters;
+  }
+
+  const pathTool = getEndpointToolBySlug(segment);
+
+  if (!pathTool || filters.selectedTools.includes(pathTool)) {
+    return filters;
+  }
+
+  return {
+    ...filters,
+    selectedTools: [pathTool, ...filters.selectedTools]
+  };
+}
 
 export function filterStateFromSearchParams(
   searchParams: URLSearchParams

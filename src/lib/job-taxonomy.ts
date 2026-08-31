@@ -51,6 +51,14 @@ export const endpointToolOptions: EndpointTool[] = endpointToolDefinitions.map(
   ({ tool }) => tool
 );
 
+export function getEndpointToolSlug(tool: EndpointTool) {
+  return tool.toLowerCase().replace(/ /g, "-");
+}
+
+export function getEndpointToolBySlug(slug: string): EndpointTool | undefined {
+  return endpointToolOptions.find((tool) => getEndpointToolSlug(tool) === slug);
+}
+
 export const platformDefinitions = [
   { platform: "macOS", aliases: ["macos", "mac os", "mac admin", "apple device"] },
   { platform: "Windows", aliases: ["windows", "windows 10", "windows 11"] },

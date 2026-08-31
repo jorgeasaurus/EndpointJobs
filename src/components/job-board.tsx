@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 
-import type { JobsFeed } from "@/types/job";
+import type { EndpointTool, JobsFeed } from "@/types/job";
 import { getJobWorkplace } from "@/lib/workplace";
 import type { WorkplaceFilter } from "./job-board/filter-model";
 
@@ -20,8 +20,14 @@ import { useUrlSyncedFilters } from "./job-board/use-url-synced-filters";
 
 const jobsPerPage = 20;
 
-export function JobBoard({ feed }: { feed: JobsFeed }) {
-  const [filters, dispatch] = useUrlSyncedFilters();
+export function JobBoard({
+  feed,
+  initialSelectedTools
+}: {
+  feed: JobsFeed;
+  initialSelectedTools?: readonly EndpointTool[];
+}) {
+  const [filters, dispatch] = useUrlSyncedFilters(initialSelectedTools);
   const filterKey = JSON.stringify(filters);
   const [pagination, setPagination] = useState({
     filterKey: "",

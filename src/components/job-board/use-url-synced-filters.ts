@@ -1,21 +1,29 @@
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useMemo, useSyncExternalStore } from "react";
+
+import type { EndpointTool } from "@/types/job";
 
 import { filterReducer, initialFilterState } from "./filter-model";
 import type { FilterAction, FilterState } from "./filter-model";
 import {
-  filterStateFromSearchParams,
+  filterStateFromLocation,
+  getBoardPathnameForFilters,
   mergeFilterStateIntoSearchParams
 } from "./filter-url";
 
 const filterUrlStoreEvent = "endpointjobs:filters-changed";
-let cachedSearch = "";
+let cachedLocation = "";
 let cachedFilters: FilterState = initialFilterState;
 
-export function useUrlSyncedFilters() {
+export function useUrlSyncedFilters(initialSelectedTools?: readonly EndpointTool[]) {
+  const serverSnapshot = useMemo(
+    () => getServerFilterSnapshot(initialSelectedTools ?? []),
+    [initialSelectedTools]
+  );
+
   const filters = useSyncExternalStore(
     subscribeToFilterUrlStore,
     getFilterSnapshot,
-    getServerFilterSnapshot
+    () => serverSnapshot
   );
 
   const dispatch = useCallback((action: FilterAction) => {
@@ -31,22 +39,30 @@ function getFilterSnapshot() {
     return initialFilterState;
   }
 
-  const currentSearch = window.location.search;
+  const currentLocation = `${window.location.pathname}${window.location.search}`;
 
-  if (currentSearch === cachedSearch) {
+  if (currentLocation === cachedLocation) {
     return cachedFilters;
   }
 
-  cachedSearch = currentSearch;
-  cachedFilters = filterStateFromSearchParams(
-    new URLSearchParams(currentSearch)
+  cachedLocation = currentLocation;
+  cachedFilters = filterStateFromLocation(
+    window.location.pathname,
+    new URLSearchParams(window.location.search)
   );
 
   return cachedFilters;
 }
 
-function getServerFilterSnapshot() {
-  return initialFilterState;
+function getServerFilterSnapshot(initialSelectedTools: readonly EndpointTool[]) {
+  if (initialSelectedTools.length === 0) {
+    return initialFilterState;
+  }
+
+  return {
+    ...initialFilterState,
+    selectedTools: [...initialSelectedTools]
+  };
 }
 
 function replaceFilterUrl(filters: FilterState) {
@@ -59,7 +75,7 @@ function replaceFilterUrl(filters: FilterState) {
     filters
   );
   const query = searchParams.toString();
-  const nextUrl = `${window.location.pathname}${query ? `?${query}` : ""}${
+  const nextUrl = `${getBoardPathnameForFilters(filters)}${query ? `?${query}` : ""}${
     window.location.hash
   }`;
   const currentUrl = `${window.location.pathname}${window.location.search}${

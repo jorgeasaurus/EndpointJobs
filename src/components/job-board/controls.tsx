@@ -12,6 +12,7 @@ import {
   X
 } from "lucide-react";
 
+import { getEndpointToolPath } from "@/app/site-metadata";
 import {
   platformOptions,
   roleFamilyOptions,
@@ -603,6 +604,7 @@ function AdvancedFilters({
                 key={tool}
                 activeClassName="facet-button is-active"
                 inactiveClassName="facet-button"
+                href={getEndpointToolPath(tool)}
                 isActive={selectedToolSet.has(tool)}
                 onClick={() => dispatch({ type: "toggleTool", value: tool })}
               >
