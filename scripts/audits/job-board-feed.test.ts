@@ -1,4 +1,5 @@
 import { mock } from "node:test";
+import { AppRouterContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -7,6 +8,15 @@ import { isActiveJob } from "../../src/lib/jobs";
 import type { JobsFeed } from "../../src/types/job";
 
 import { assertIncludes, assertTruthy, makeJob, type AuditContext } from "./shared";
+
+const auditAppRouter = {
+  back() {},
+  forward() {},
+  refresh() {},
+  push() {},
+  replace() {},
+  prefetch() {}
+};
 
 export async function auditJobBoardFeed(run: AuditContext["run"]) {
   await run("REG-001", "Server-approved job count remains stable through client hydration", () => {
@@ -23,7 +33,13 @@ export async function auditJobBoardFeed(run: AuditContext["run"]) {
     mock.timers.enable({ apis: ["Date"], now: clientNow });
 
     try {
-      const markup = renderToStaticMarkup(createElement(JobBoard, { feed }));
+      const markup = renderToStaticMarkup(
+        createElement(
+          AppRouterContext.Provider,
+          { value: auditAppRouter },
+          createElement(JobBoard, { feed })
+        )
+      );
 
       assertIncludes(markup, 'aria-label="1 tracked roles"');
     } finally {
