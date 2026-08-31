@@ -1,4 +1,7 @@
 import type { Route } from "next";
+
+import { getEndpointToolSlug, type EndpointTool } from "@/lib/job-taxonomy";
+
 import packageJson from "../../package.json";
 
 export const siteUrl = "https://endpointjobs.dev";
@@ -49,6 +52,14 @@ export function getJobsDirectoryPath(page = 1): Route {
 
 export function getApiDocsPath(): Route {
   return "/api-docs" as Route;
+}
+
+export function getEndpointToolPath(tool: EndpointTool): Route {
+  return `/${getEndpointToolSlug(tool)}` as Route;
+}
+
+export function getEndpointToolUrl(tool: EndpointTool) {
+  return new URL(getEndpointToolPath(tool), siteUrl).toString();
 }
 
 export function getOpenApiPath(): Route {

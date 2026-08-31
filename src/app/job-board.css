@@ -581,10 +581,14 @@ h1 {
 }
 
 .facet-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 78px;
   padding: 0 11px;
   font-size: 0.9rem;
   font-weight: 700;
+  text-align: center;
 }
 
 

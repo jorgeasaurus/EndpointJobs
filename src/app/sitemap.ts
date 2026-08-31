@@ -2,10 +2,17 @@ import type { MetadataRoute } from "next";
 
 import feedData from "@/data/jobs.json";
 import { getCanonicalSeoJobs } from "@/lib/job-seo";
+import { endpointToolOptions } from "@/lib/job-taxonomy";
 import { isActiveJob } from "@/lib/jobs";
 import type { JobsFeed } from "@/types/job";
 
-import { getApiDocsPath, getJobUrl, ogImage, siteUrl } from "./site-metadata";
+import {
+  getApiDocsPath,
+  getEndpointToolUrl,
+  getJobUrl,
+  ogImage,
+  siteUrl
+} from "./site-metadata";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const feed = feedData as JobsFeed;
@@ -31,6 +38,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.6
     },
+    ...endpointToolOptions.map((tool) => ({
+      url: getEndpointToolUrl(tool),
+      lastModified: new Date(feed.updatedAt),
+      changeFrequency: "daily" as const,
+      priority: 0.9
+    })),
     ...jobPages
   ];
 }
