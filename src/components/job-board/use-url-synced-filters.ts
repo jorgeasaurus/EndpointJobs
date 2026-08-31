@@ -17,7 +17,7 @@ let cachedLocation = "";
 let cachedFilters: FilterState = initialFilterState;
 
 export function useUrlSyncedFilters(initialSelectedTools?: readonly EndpointTool[]) {
-  const router = useRouter();
+  const router = useFilterUrlRouter();
   const serverSnapshot = useMemo(
     () => getServerFilterSnapshot(initialSelectedTools ?? []),
     [initialSelectedTools]
@@ -68,9 +68,21 @@ function getServerFilterSnapshot(initialSelectedTools: readonly EndpointTool[]) 
   };
 }
 
+type FilterUrlRouter = Pick<ReturnType<typeof useRouter>, "replace">;
+
+function useFilterUrlRouter(): FilterUrlRouter {
+  try {
+    return useRouter();
+  } catch {
+    // JobBoard is also renderToStaticMarkup'd in data audits (REG-001) outside
+    // App Router. Production pages always have the router.
+    return { replace: () => undefined };
+  }
+}
+
 function replaceFilterUrl(
   filters: FilterState,
-  router: Pick<ReturnType<typeof useRouter>, "replace">
+  router: FilterUrlRouter
 ) {
   if (typeof window === "undefined") {
     return;
