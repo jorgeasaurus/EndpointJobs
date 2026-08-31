@@ -1,3 +1,5 @@
+import type { Route } from "next";
+import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useSyncExternalStore } from "react";
 
 import type { EndpointTool } from "@/types/job";
@@ -15,6 +17,7 @@ let cachedLocation = "";
 let cachedFilters: FilterState = initialFilterState;
 
 export function useUrlSyncedFilters(initialSelectedTools?: readonly EndpointTool[]) {
+  const router = useRouter();
   const serverSnapshot = useMemo(
     () => getServerFilterSnapshot(initialSelectedTools ?? []),
     [initialSelectedTools]
@@ -28,8 +31,8 @@ export function useUrlSyncedFilters(initialSelectedTools?: readonly EndpointTool
 
   const dispatch = useCallback((action: FilterAction) => {
     const nextFilters = filterReducer(getFilterSnapshot(), action);
-    replaceFilterUrl(nextFilters);
-  }, []);
+    replaceFilterUrl(nextFilters, router);
+  }, [router]);
 
   return [filters, dispatch] as const;
 }
@@ -65,7 +68,10 @@ function getServerFilterSnapshot(initialSelectedTools: readonly EndpointTool[]) 
   };
 }
 
-function replaceFilterUrl(filters: FilterState) {
+function replaceFilterUrl(
+  filters: FilterState,
+  router: Pick<ReturnType<typeof useRouter>, "replace">
+) {
   if (typeof window === "undefined") {
     return;
   }
@@ -75,17 +81,27 @@ function replaceFilterUrl(filters: FilterState) {
     filters
   );
   const query = searchParams.toString();
-  const nextUrl = `${getBoardPathnameForFilters(filters)}${query ? `?${query}` : ""}${
-    window.location.hash
-  }`;
+  const nextPathname = getBoardPathnameForFilters(filters);
+  const nextUrl = `${nextPathname}${query ? `?${query}` : ""}${window.location.hash}`;
   const currentUrl = `${window.location.pathname}${window.location.search}${
     window.location.hash
   }`;
 
-  if (nextUrl !== currentUrl) {
-    window.history.replaceState(null, "", nextUrl);
-    window.dispatchEvent(new Event(filterUrlStoreEvent));
+  if (nextUrl === currentUrl) {
+    return;
   }
+
+  // Crossing `/` ↔ `/intune` is a real App Router segment change. replaceState
+  // alone updates the address bar without a navigation, so metadata/router
+  // state would desync. Same-path query/hash updates stay on replaceState so
+  // JobBoard does not remount. Do not location.replace — that full-reloads.
+  if (nextPathname !== window.location.pathname) {
+    router.replace(nextUrl as Route, { scroll: false });
+  } else {
+    window.history.replaceState(null, "", nextUrl);
+  }
+
+  window.dispatchEvent(new Event(filterUrlStoreEvent));
 }
 
 function subscribeToFilterUrlStore(onStoreChange: () => void) {

@@ -554,6 +554,21 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     assertIncludes(sources.toolPage, "initialSelectedTools={[tool]}", "reuses JobBoard with tool preselected");
     assertIncludes(sources.jobBoard, "initialSelectedTools", "JobBoard accepts an initial tool filter");
     assertIncludes(sources.controls, "getEndpointToolPath(tool)", "tool chips link to shareable URLs");
+    assertIncludes(
+      sources.urlSyncedFilters,
+      "router.replace",
+      "crossing / and /intune uses App Router replace so metadata stays in sync"
+    );
+    assertIncludes(
+      sources.urlSyncedFilters,
+      "history.replaceState",
+      "same-path query updates still use replaceState"
+    );
+    assertNotIncludes(
+      sources.urlSyncedFilters,
+      "window.location.replace",
+      "tool-chip toggles must not full-reload via location.replace"
+    );
 
     const expectedSlugs = {
       Jamf: "jamf",

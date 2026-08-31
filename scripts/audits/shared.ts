@@ -93,6 +93,7 @@ export const sourcePaths = {
   siteMetadata: "src/app/site-metadata.ts",
   sitemap: "src/app/sitemap.ts",
   toolPage: "src/app/[tool]/page.tsx",
+  urlSyncedFilters: "src/components/job-board/use-url-synced-filters.ts",
   structuredData: "src/app/structured-data.ts",
   techmapRss: "scripts/job-refresh/providers/techmap-rss.ts",
   theirStack: "scripts/job-refresh/providers/theirstack.ts",
