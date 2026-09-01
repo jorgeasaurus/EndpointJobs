@@ -314,15 +314,16 @@ await run("FEAT-031", "Topbar and footer project links are visible", async () =>
   );
   await expect(powerShellDocs).toHaveAttribute("target", "_blank");
   await expect(powerShellDocs).toHaveAttribute("rel", /noopener noreferrer/);
-  await page.locator("footer").scrollIntoViewIfNeeded();
-  await expect(page.getByText("Made by Jorgeasaurus")).toBeVisible();
-  await expect(page.getByRole("link", { name: /Report an issue/i })).toHaveAttribute("href", new RegExp("github\\.com/jorgeasaurus/EndpointJobs/issues/new"));
-  await expect(page.getByRole("link", { name: /Open the Endpoint Jobs GitHub repository/i })).toHaveAttribute("href", "https://github.com/jorgeasaurus/EndpointJobs");
-  const supportLink = page.getByRole("link", { name: "Support the board on Buy Me a Coffee" });
+  const supportLink = page.locator("header").getByRole("link", { name: "Support the board on Buy Me a Coffee" });
   await expect(supportLink).toBeVisible();
   await expect(supportLink).toHaveAttribute("href", "https://buymeacoffee.com/jorgeasaurus");
   await expect(supportLink).toHaveAttribute("target", "_blank");
   await expect(supportLink).toHaveAttribute("rel", /noopener noreferrer/);
+  await page.locator("footer").scrollIntoViewIfNeeded();
+  await expect(page.getByText("Made by Jorgeasaurus")).toBeVisible();
+  await expect(page.getByRole("link", { name: /Report an issue/i })).toHaveAttribute("href", new RegExp("github\\.com/jorgeasaurus/EndpointJobs/issues/new"));
+  await expect(page.getByRole("link", { name: /Open the Endpoint Jobs GitHub repository/i })).toHaveAttribute("href", "https://github.com/jorgeasaurus/EndpointJobs");
+  await expect(page.locator("footer").getByRole("link", { name: "Support the board on Buy Me a Coffee" })).toHaveCount(0);
   await page.close();
 });
 
