@@ -86,6 +86,8 @@ export const sourcePaths = {
   serpApi: "scripts/job-refresh/providers/serpapi.ts",
   smartRecruiters: "scripts/job-refresh/providers/smartrecruiters.ts",
   usaJobs: "scripts/job-refresh/providers/usajobs.ts",
+  himalayas: "scripts/job-refresh/providers/himalayas.ts",
+  fourdayweek: "scripts/job-refresh/providers/fourdayweek.ts",
   shared: "scripts/job-refresh/shared.ts",
   searchConfig: "scripts/job-refresh/search-config.ts",
   seoAudit: "scripts/audits/seo-audits.ts",

@@ -15,6 +15,8 @@ import { serpApiProvider } from "./job-refresh/providers/serpapi";
 import { smartRecruitersProvider } from "./job-refresh/providers/smartrecruiters";
 import { techmapRssProvider } from "./job-refresh/providers/techmap-rss";
 import { theirStackProvider } from "./job-refresh/providers/theirstack";
+import { fourdayweekProvider } from "./job-refresh/providers/fourdayweek";
+import { himalayasProvider } from "./job-refresh/providers/himalayas";
 import { usaJobsProvider } from "./job-refresh/providers/usajobs";
 import { resolveJobMapLocation } from "./job-refresh/map-location";
 import {
@@ -151,7 +153,9 @@ const providerAdapters = [
   smartRecruitersProvider,
   recruiteeProvider,
   usaJobsProvider,
-  aiDevBoardProvider
+  aiDevBoardProvider,
+  himalayasProvider,
+  fourdayweekProvider
 ] as const satisfies readonly ProviderAdapter[];
 type SupportedProvider = (typeof providerAdapters)[number]["id"];
 
@@ -171,7 +175,9 @@ const defaultProviders: SupportedProvider[] = [
   "smartrecruiters",
   "recruitee",
   "schooljobs",
-  "curated"
+  "curated",
+  "himalayas",
+  "fourdayweek"
 ];
 
 function getProviderAdapter(provider: SupportedProvider): ProviderAdapter {

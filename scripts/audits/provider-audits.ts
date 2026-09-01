@@ -279,9 +279,13 @@ export async function auditProviders({ run, sources }: AuditContext) {
     assertIncludes(sources.refresh, "smartRecruitersProvider");
     assertIncludes(sources.refresh, "recruiteeProvider");
     assertIncludes(sources.refresh, "usaJobsProvider");
+    assertIncludes(sources.refresh, "himalayasProvider");
+    assertIncludes(sources.refresh, "fourdayweekProvider");
     assertIncludes(sources.smartRecruiters, 'id: "smartrecruiters"');
     assertIncludes(sources.recruitee, 'id: "recruitee"');
     assertIncludes(sources.usaJobs, 'id: "usajobs"');
+    assertIncludes(sources.himalayas, 'id: "himalayas"');
+    assertIncludes(sources.fourdayweek, 'id: "fourdayweek"');
   });
 
   await run("FEAT-068", "Endpoint search defaults include role and company expansion", () => {
