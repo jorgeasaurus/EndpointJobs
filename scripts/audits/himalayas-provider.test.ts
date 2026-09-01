@@ -94,7 +94,7 @@ test("Himalayas keeps Intune listings and drops marketing rows without endpoint 
   assert.match(job.attributionLabel, /Himalayas/);
 });
 
-test("Himalayas skips 429 responses without crashing later queries", async () => {
+test("Himalayas stops after the first 429", async () => {
   const originalFetch = globalThis.fetch;
   const originalEnv = { ...process.env };
   const requests: string[] = [];
