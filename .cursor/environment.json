@@ -1,0 +1,11 @@
+{
+  "name": "Endpoint Jobs",
+  "install": "npm ci",
+  "terminals": [
+    {
+      "name": "next-dev",
+      "command": "npm run dev"
+    }
+  ],
+  "ports": [{ "name": "next-dev", "port": 3000 }]
+}
