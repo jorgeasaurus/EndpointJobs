@@ -1,4 +1,5 @@
 import {
+  Coffee,
   Github,
   FileJson,
   MessageSquarePlus,
@@ -58,6 +59,17 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
         >
           <MessageSquarePlus size={15} aria-hidden="true" />
           <span>Feedback</span>
+        </a>
+        <a
+          aria-label="Support the board on Buy Me a Coffee"
+          className="feedback-link support-link"
+          href="https://buymeacoffee.com/jorgeasaurus"
+          rel="noopener noreferrer"
+          target="_blank"
+          title="Support the board"
+        >
+          <Coffee size={15} aria-hidden="true" />
+          <span>Support the board</span>
         </a>
       </div>
     </header>
