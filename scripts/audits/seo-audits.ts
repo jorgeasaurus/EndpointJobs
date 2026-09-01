@@ -55,6 +55,7 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     );
     assertNotIncludes(sources.jobPage, "key={paragraph.slice(0, 64)}", "no prefix-collision keys");
     assertIncludes(sources.topbar, "getJobsDirectoryPath()", "directory discovery link");
+    assertIncludes(sources.topbar, "https://buymeacoffee.com/jorgeasaurus", "support link");
     assertTruthy(existsSync("public/og-image.png"), "missing public/og-image.png");
   });
 
