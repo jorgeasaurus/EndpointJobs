@@ -215,6 +215,7 @@ export async function auditMaps({ feed, run, sources }: AuditContext) {
     assertEqual(resolveJobMapLocation("Albacete")?.label, "Albacete, Spain");
     assertEqual(resolveJobMapLocation("Vitoria-Gasteiz, Alava")?.label, "Vitoria-Gasteiz, Spain");
     assertEqual(resolveJobMapLocation("España")?.label, "Spain");
+    assertEqual(resolveJobMapLocation("Spain, IN"), undefined);
     assertEqual(resolveJobMapLocation("Milano, Italia")?.label, "Milan, Italy");
     assertEqual(resolveJobMapLocation("Zürich")?.label, "Zurich, Switzerland");
     assertEqual(resolveJobMapLocation("Fehraltorf (Zurich), Switzerland")?.label, "Zurich, Switzerland");

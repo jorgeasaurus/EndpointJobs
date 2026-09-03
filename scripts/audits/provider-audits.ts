@@ -258,7 +258,20 @@ export async function auditProviders({ run, sources }: AuditContext) {
     assertIncludes(sources.workflow, '"Mexico" OR "Guatemala"', "scheduled LinkedIn Mexico coverage");
     assertIncludes(sources.workflow, '"Central America" OR "Caribbean"', "scheduled LinkedIn Caribbean coverage");
     assertIncludes(sources.workflow, '"Germany" OR "Remote"', "scheduled LinkedIn US/EU batch keeps Remote");
-    assertNotIncludes(sources.workflow, 'OR "Spain" OR "France"', "Spain is not in the primary LinkedIn US/EU OR");
+    const linkedInPrimaryLocationFilter = sources.workflow.match(
+      /^[ \t]*JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER:\s*(.+)$/m
+    )?.[1];
+    assertTruthy(linkedInPrimaryLocationFilter, "scheduled LinkedIn primary location filter is set");
+    assertNotIncludes(
+      linkedInPrimaryLocationFilter ?? "",
+      '"Spain"',
+      "Spain is not in the primary LinkedIn US/EU OR"
+    );
+    assertNotIncludes(
+      linkedInPrimaryLocationFilter ?? "",
+      '"España"',
+      "España is not in the primary LinkedIn US/EU OR"
+    );
     assertIncludes(sources.workflow, "JOB_RAPIDAPI_LINKEDIN_SPAIN_LOCATION_FILTER", "LinkedIn Spain batch is separate");
     assertIncludes(sources.workflow, '"Spain" OR "España"', "scheduled LinkedIn Spain batch covers Spain");
     assertIncludes(sources.workflow, "JOB_RAPIDAPI_LINKEDIN_LATAM_LOCATION_FILTER", "LinkedIn LATAM batch is separate");
