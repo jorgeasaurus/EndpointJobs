@@ -532,7 +532,7 @@ const locationCoordinates: Coordinate[] = [
   { label: "France", latitude: 46.2276, longitude: 2.2137, keys: ["france"] },
   { label: "Madrid, Spain", latitude: 40.4168, longitude: -3.7038, keys: ["madrid"] },
   { label: "Barcelona, Spain", latitude: 41.3874, longitude: 2.1686, keys: ["barcelona"] },
-  { label: "Valencia, Spain", latitude: 39.4699, longitude: -0.3763, keys: ["valencia"] },
+  { label: "Valencia, Spain", latitude: 39.4699, longitude: -0.3763, keys: ["valencia spain", "valencia es"] },
   { label: "Seville, Spain", latitude: 37.3891, longitude: -5.9845, keys: ["sevilla", "seville"] },
   { label: "Bilbao, Spain", latitude: 43.263, longitude: -2.935, keys: ["bilbao"] },
   { label: "Málaga, Spain", latitude: 36.7213, longitude: -4.4214, keys: ["malaga"] },
