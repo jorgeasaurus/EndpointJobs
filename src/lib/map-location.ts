@@ -532,6 +532,17 @@ const locationCoordinates: Coordinate[] = [
   { label: "France", latitude: 46.2276, longitude: 2.2137, keys: ["france"] },
   { label: "Madrid, Spain", latitude: 40.4168, longitude: -3.7038, keys: ["madrid"] },
   { label: "Barcelona, Spain", latitude: 41.3874, longitude: 2.1686, keys: ["barcelona"] },
+  { label: "Valencia, Spain", latitude: 39.4699, longitude: -0.3763, keys: ["valencia"] },
+  { label: "Seville, Spain", latitude: 37.3891, longitude: -5.9845, keys: ["sevilla", "seville"] },
+  { label: "Bilbao, Spain", latitude: 43.263, longitude: -2.935, keys: ["bilbao"] },
+  { label: "Málaga, Spain", latitude: 36.7213, longitude: -4.4214, keys: ["malaga"] },
+  { label: "Zaragoza, Spain", latitude: 41.6488, longitude: -0.8891, keys: ["zaragoza"] },
+  {
+    label: "Palma, Spain",
+    latitude: 39.5696,
+    longitude: 2.6502,
+    keys: ["palma de mallorca", "palma mallorca", "palma spain", "palma es"]
+  },
   { label: "Albacete, Spain", latitude: 38.9942, longitude: -1.8564, keys: ["albacete"] },
   {
     label: "Vitoria-Gasteiz, Spain",
@@ -663,7 +674,8 @@ const usStateGuardedInternationalCountries = [
   "Bolivia",
   "Dominican Republic",
   "Jamaica",
-  "Puerto Rico"
+  "Puerto Rico",
+  "Spain"
 ] as const;
 
 function isUsStateGuardedInternationalLabel(label: string) {

@@ -201,6 +201,17 @@ export async function auditMaps({ feed, run, sources }: AuditContext) {
     assertEqual(resolveJobMapLocation("Toulouse, Haute-Garonne")?.label, "Toulouse, France");
     assertEqual(resolveJobMapLocation("Hérault, Occitanie")?.label, "Montpellier, France");
     assertEqual(resolveJobMapLocation("Barcelona, Spain")?.label, "Barcelona, Spain");
+    assertEqual(resolveJobMapLocation("Valencia, Spain")?.label, "Valencia, Spain");
+    assertEqual(resolveJobMapLocation("Valencia, CA"), undefined);
+    assertEqual(resolveJobMapLocation("Sevilla, España")?.label, "Seville, Spain");
+    assertEqual(resolveJobMapLocation("Seville, Spain")?.label, "Seville, Spain");
+    assertEqual(resolveJobMapLocation("Bilbao, Spain")?.label, "Bilbao, Spain");
+    assertEqual(resolveJobMapLocation("Málaga, Spain")?.label, "Málaga, Spain");
+    assertEqual(resolveJobMapLocation("Malaga")?.label, "Málaga, Spain");
+    assertEqual(resolveJobMapLocation("Zaragoza, Spain")?.label, "Zaragoza, Spain");
+    assertEqual(resolveJobMapLocation("Palma de Mallorca, Spain")?.label, "Palma, Spain");
+    assertEqual(resolveJobMapLocation("Palma, Spain")?.label, "Palma, Spain");
+    assertEqual(resolveJobMapLocation("Palma"), undefined);
     assertEqual(resolveJobMapLocation("Albacete")?.label, "Albacete, Spain");
     assertEqual(resolveJobMapLocation("Vitoria-Gasteiz, Alava")?.label, "Vitoria-Gasteiz, Spain");
     assertEqual(resolveJobMapLocation("España")?.label, "Spain");

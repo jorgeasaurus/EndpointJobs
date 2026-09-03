@@ -403,6 +403,12 @@ export async function auditFilters({ filterFixtureJobs, run, sources }: AuditCon
       "Paris, France",
       "Madrid, Spain",
       "Barcelona, Spain",
+      "Valencia, Spain",
+      "Seville, Spain",
+      "Bilbao, Spain",
+      "Málaga, Spain",
+      "Zaragoza, Spain",
+      "Palma, Spain",
       "Milan, Italy",
       "Zurich, Switzerland"
     ] as const;
@@ -415,6 +421,15 @@ export async function auditFilters({ filterFixtureJobs, run, sources }: AuditCon
       makeJob({ id: "paris-diacritic", location: "Île-de-France, France" }),
       makeJob({ id: "zurich-umlaut", location: "Zürich, ZH", postedAt: "2026-07-18T00:00:00.000Z" }),
       makeJob({ id: "zurich-mdm", location: "Zurich, Switzerland", postedAt: "2026-07-19T00:00:00.000Z" }),
+      makeJob({ id: "valencia-spain", location: "Valencia, Spain" }),
+      makeJob({ id: "valencia-ca", location: "Valencia, CA" }),
+      makeJob({ id: "sevilla-spain", location: "Sevilla, España" }),
+      makeJob({ id: "seville-ascii", location: "Seville, Spain" }),
+      makeJob({ id: "bilbao-spain", location: "Bilbao, Spain" }),
+      makeJob({ id: "malaga-spain", location: "Málaga, Spain" }),
+      makeJob({ id: "malaga-ascii", location: "Malaga, Spain" }),
+      makeJob({ id: "zaragoza-spain", location: "Zaragoza, Spain" }),
+      makeJob({ id: "palma-mallorca", location: "Palma de Mallorca, Spain" }),
       makeJob({ id: "seattle-kandji", location: "Seattle, WA" })
     ];
 
@@ -436,6 +451,30 @@ export async function auditFilters({ filterFixtureJobs, run, sources }: AuditCon
       selectedMetroAreas: ["Munich, Germany"]
     });
     assertIds(munichMatches, ["munich-jamf", "munchen-alias"]);
+    assertIds(
+      filterJobs(europeanJobs, { ...initialFilterState, selectedMetroAreas: ["Valencia, Spain"] }),
+      ["valencia-spain"]
+    );
+    assertIds(
+      filterJobs(europeanJobs, { ...initialFilterState, selectedMetroAreas: ["Seville, Spain"] }),
+      ["sevilla-spain", "seville-ascii"]
+    );
+    assertIds(
+      filterJobs(europeanJobs, { ...initialFilterState, selectedMetroAreas: ["Bilbao, Spain"] }),
+      ["bilbao-spain"]
+    );
+    assertIds(
+      filterJobs(europeanJobs, { ...initialFilterState, selectedMetroAreas: ["Málaga, Spain"] }),
+      ["malaga-spain", "malaga-ascii"]
+    );
+    assertIds(
+      filterJobs(europeanJobs, { ...initialFilterState, selectedMetroAreas: ["Zaragoza, Spain"] }),
+      ["zaragoza-spain"]
+    );
+    assertIds(
+      filterJobs(europeanJobs, { ...initialFilterState, selectedMetroAreas: ["Palma, Spain"] }),
+      ["palma-mallorca"]
+    );
 
     const merged = mergeFilterStateIntoSearchParams(new URLSearchParams(), {
       ...initialFilterState,

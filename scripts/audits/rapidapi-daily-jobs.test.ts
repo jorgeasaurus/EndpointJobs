@@ -17,13 +17,18 @@ function restoreProcessEnv(originalEnv: NodeJS.ProcessEnv) {
   Object.assign(process.env, originalEnv);
 }
 
-test("RapidAPI Daily keeps salary-required empty queries for US/EU and relaxes LATAM", () => {
+test("RapidAPI Daily keeps salary-required empty queries for US/EU and relaxes Spain and LATAM", () => {
   assert.deepEqual(getRapidApiDailyJobsQueries("us"), [""]);
   assert.deepEqual(getRapidApiDailyJobsQueries("de"), [""]);
+  assert.deepEqual(getRapidApiDailyJobsQueries("ch"), [""]);
+  assert.deepEqual(getRapidApiDailyJobsQueries("es"), ["endpoint"]);
   assert.deepEqual(getRapidApiDailyJobsQueries("ar"), ["endpoint"]);
   assert.deepEqual(getRapidApiDailyJobsQueries("ec"), ["endpoint"]);
   assert.deepEqual(getRapidApiDailyJobsQueries("pr"), ["endpoint"]);
   assert.equal(getRapidApiDailyJobsHasSalary("us"), "true");
+  assert.equal(getRapidApiDailyJobsHasSalary("it"), "true");
+  assert.equal(getRapidApiDailyJobsHasSalary("fr"), "true");
+  assert.equal(getRapidApiDailyJobsHasSalary("es"), "false");
   assert.equal(getRapidApiDailyJobsHasSalary("mx"), "false");
   assert.equal(getRapidApiDailyJobsHasSalary("do"), "false");
 });
@@ -34,7 +39,7 @@ test("RapidAPI Daily requests set hasSalary=false for LATAM and send an endpoint
   const urls: URL[] = [];
 
   process.env.RAPIDAPI_DAILY_JOBS_KEY = "test-key";
-  process.env.JOB_RAPIDAPI_COUNTRY_CODES = "us,ar";
+  process.env.JOB_RAPIDAPI_COUNTRY_CODES = "us,es,ar";
   process.env.JOB_RAPIDAPI_HAS_SALARY = "true";
   process.env.JOB_RAPIDAPI_MAX_PAGES = "1";
   delete process.env.JOB_RAPIDAPI_QUERIES;
@@ -55,11 +60,14 @@ test("RapidAPI Daily requests set hasSalary=false for LATAM and send an endpoint
     restoreProcessEnv(originalEnv);
   }
 
-  assert.equal(urls.length, 2);
+  assert.equal(urls.length, 3);
   assert.equal(urls[0]?.searchParams.get("countryCode"), "us");
   assert.equal(urls[0]?.searchParams.get("hasSalary"), "true");
   assert.equal(urls[0]?.searchParams.get("query"), null);
-  assert.equal(urls[1]?.searchParams.get("countryCode"), "ar");
+  assert.equal(urls[1]?.searchParams.get("countryCode"), "es");
   assert.equal(urls[1]?.searchParams.get("hasSalary"), "false");
   assert.equal(urls[1]?.searchParams.get("query"), "endpoint");
+  assert.equal(urls[2]?.searchParams.get("countryCode"), "ar");
+  assert.equal(urls[2]?.searchParams.get("hasSalary"), "false");
+  assert.equal(urls[2]?.searchParams.get("query"), "endpoint");
 });

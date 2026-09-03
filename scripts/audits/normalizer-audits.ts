@@ -49,6 +49,15 @@ export async function auditNormalizers({ run, sources }: AuditContext) {
     const germanEndpointHaystack = normalizeSearchText(
       "Microsoft Intune Spezialist fuer Endpoint Management und Windows Clients"
     );
+    const spanishIntuneHaystack = normalizeSearchText(
+      "Ingeniero Intune gestion de dispositivos Windows y endpoints"
+    );
+    const spanishTecnicoHaystack = normalizeSearchText(
+      "Técnico Intune administracion de dispositivos y MDM"
+    );
+    const spanishEspecialistaHaystack = normalizeSearchText(
+      "Especialista Intune en digital workplace y endpoint"
+    );
     const sapDataHaystack = normalizeSearchText(
       "Functional Specialist SAP MDM MDG master data governance"
     );
@@ -88,6 +97,30 @@ export async function auditNormalizers({ run, sources }: AuditContext) {
         germanEndpointHaystack,
         "Microsoft Intune Spezialist",
         deriveTools(germanEndpointHaystack)
+      ),
+      true
+    );
+    assertEqual(
+      isEndpointRelevant(
+        spanishIntuneHaystack,
+        "Ingeniero Intune",
+        deriveTools(spanishIntuneHaystack)
+      ),
+      true
+    );
+    assertEqual(
+      isEndpointRelevant(
+        spanishTecnicoHaystack,
+        "Técnico Intune",
+        deriveTools(spanishTecnicoHaystack)
+      ),
+      true
+    );
+    assertEqual(
+      isEndpointRelevant(
+        spanishEspecialistaHaystack,
+        "Especialista Intune",
+        deriveTools(spanishEspecialistaHaystack)
       ),
       true
     );
