@@ -145,8 +145,12 @@ export function isEndpointRelevant(
   const titleLooksTechnical =
     hasTechnicalTitle ||
     containsAlias(normalizedTitle, "engineer") ||
+    containsAlias(normalizedTitle, "ingeniero") ||
     containsAlias(normalizedTitle, "administrator") ||
-    containsAlias(normalizedTitle, "admin");
+    containsAlias(normalizedTitle, "admin") ||
+    containsAlias(normalizedTitle, "tecnico") ||
+    containsAlias(normalizedTitle, "técnico") ||
+    containsAlias(normalizedTitle, "especialista");
   const titleHasStrongTool = toolAliases.some(
     ({ aliases, strong }) => strong && aliases.some((alias) => containsAlias(normalizedTitle, alias))
   );

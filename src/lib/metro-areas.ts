@@ -9,6 +9,7 @@ export const metroAreaOptions = [
   "Baltimore, MD",
   "Barcelona, Spain",
   "Berlin, Germany",
+  "Bilbao, Spain",
   "Bogotá, Colombia",
   "Boston, MA",
   "Buenos Aires, Argentina",
@@ -32,6 +33,7 @@ export const metroAreaOptions = [
   "London, UK",
   "Los Angeles, CA",
   "Madrid, Spain",
+  "Málaga, Spain",
   "Managua, Nicaragua",
   "Maryland",
   "Medellín, Colombia",
@@ -45,6 +47,7 @@ export const metroAreaOptions = [
   "Nashville, TN",
   "New York, NY",
   "Northern Virginia",
+  "Palma, Spain",
   "Panama City, Panama",
   "Paris, France",
   "Philadelphia, PA",
@@ -64,8 +67,11 @@ export const metroAreaOptions = [
   "Santiago, Chile",
   "São Paulo, Brazil",
   "Seattle, WA",
+  "Seville, Spain",
   "Tegucigalpa, Honduras",
+  "Valencia, Spain",
   "Washington, DC",
+  "Zaragoza, Spain",
   "Zurich, Switzerland"
 ] as const;
 
@@ -110,6 +116,7 @@ const metroAreaKeywordSets: Record<MetroAreaFilter, readonly string[]> = {
   "Washington, DC": ["washington d c", "washington dc", "usa dc washington", "mount rainier", "triangle prince william"],
   "Barcelona, Spain": ["barcelona"],
   "Berlin, Germany": ["berlin"],
+  "Bilbao, Spain": ["bilbao"],
   "Bogotá, Colombia": ["bogota", "bogotá", "bogota dc", "bogotá dc", "bogota colombia", "bogotá colombia"],
   "Buenos Aires, Argentina": ["buenos aires argentina", "caba", "capital federal"],
   "Frankfurt, Germany": ["frankfurt", "frankfurt am main"],
@@ -121,6 +128,7 @@ const metroAreaKeywordSets: Record<MetroAreaFilter, readonly string[]> = {
   "Lima, Peru": ["lima peru", "lima perú", "lima pe"],
   "London, UK": ["london", "england united kingdom"],
   "Madrid, Spain": ["madrid"],
+  "Málaga, Spain": ["malaga", "málaga"],
   "Managua, Nicaragua": ["managua"],
   "Medellín, Colombia": ["medellin", "medellín"],
   "Mexico City, Mexico": [
@@ -134,6 +142,7 @@ const metroAreaKeywordSets: Record<MetroAreaFilter, readonly string[]> = {
   "Monterrey, Mexico": ["monterrey"],
   "Montevideo, Uruguay": ["montevideo", "montevideo uruguay"],
   "Munich, Germany": ["munich", "munchen", "muenchen", "münchen"],
+  "Palma, Spain": ["palma de mallorca", "palma mallorca", "palma spain", "palma es"],
   "Panama City, Panama": ["panama city panama", "ciudad de panama", "ciudad de panamá"],
   "Quito, Ecuador": ["quito", "quito ecuador"],
   "Paris, France": ["paris", "ile de france", "île de france", "hauts de seine"],
@@ -151,13 +160,17 @@ const metroAreaKeywordSets: Record<MetroAreaFilter, readonly string[]> = {
   "Santiago, Chile": ["santiago chile", "santiago de chile"],
   "São Paulo, Brazil": ["sao paulo", "são paulo"],
   "Asunción, Paraguay": ["asuncion", "asunción", "asuncion paraguay"],
+  "Seville, Spain": ["sevilla", "seville"],
   "Tegucigalpa, Honduras": ["tegucigalpa"],
+  "Valencia, Spain": ["valencia", "comunitat valenciana", "comunidad valenciana"],
+  "Zaragoza, Spain": ["zaragoza"],
   "Zurich, Switzerland": ["zurich", "zürich", "fehraltorf", "uitikon", "dietikon", "horgen"]
 };
 
 const metroAreaExcludeKeywordSets: Partial<Record<MetroAreaFilter, readonly string[]>> = {
   "San Jose, CA": ["costa rica", "san jose cr"],
-  "Santo Domingo, Dominican Republic": ["santo domingo pueblo"]
+  "Santo Domingo, Dominican Republic": ["santo domingo pueblo"],
+  "Valencia, Spain": ["valencia ca", "valencia california"]
 };
 
 type TokenAliasMatcher<T extends string> = {

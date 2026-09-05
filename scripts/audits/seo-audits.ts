@@ -102,6 +102,7 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     assertIncludes(jobSerialized, '"employmentType":"FULL_TIME"');
     assertIncludes(jobSerialized, '"addressCountry":"US"');
     assertEqual(inferAddressCountry(makeJob({ location: "Brazil, IN" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Spain, IN" })), "US");
     assertEqual(inferAddressCountry(makeJob({ location: "Peru, IN" })), "US");
     assertEqual(inferAddressCountry(makeJob({ location: "Lima, OH" })), "US");
     assertEqual(inferAddressCountry(makeJob({ location: "Santiago, CA" })), "US");
@@ -143,6 +144,9 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     assertEqual(inferAddressCountry(makeJob({ location: "Mexico" })), "MX");
     assertEqual(inferAddressCountry(makeJob({ location: "Mexico City" })), "MX");
     assertEqual(inferAddressCountry(makeJob({ location: "CDMX, Mexico" })), "MX");
+    assertEqual(inferAddressCountry(makeJob({ location: "Valencia, Spain" })), "ES");
+    assertEqual(inferAddressCountry(makeJob({ location: "Málaga, España" })), "ES");
+    assertEqual(inferAddressCountry(makeJob({ location: "Valencia, CA" })), "US");
     assertEqual(inferAddressCountry(makeJob({ location: "Guadalajara, Mexico" })), "MX");
     assertEqual(inferAddressCountry(makeJob({ location: "Monterrey, Mexico" })), "MX");
     assertEqual(inferAddressCountry(makeJob({ location: "Panama" })), "PA");

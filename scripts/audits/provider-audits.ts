@@ -258,12 +258,32 @@ export async function auditProviders({ run, sources }: AuditContext) {
     assertIncludes(sources.workflow, '"Mexico" OR "Guatemala"', "scheduled LinkedIn Mexico coverage");
     assertIncludes(sources.workflow, '"Central America" OR "Caribbean"', "scheduled LinkedIn Caribbean coverage");
     assertIncludes(sources.workflow, '"Germany" OR "Remote"', "scheduled LinkedIn US/EU batch keeps Remote");
+    const linkedInPrimaryLocationFilter = sources.workflow.match(
+      /^[ \t]*JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER:\s*(.+)$/m
+    )?.[1];
+    assertTruthy(linkedInPrimaryLocationFilter, "scheduled LinkedIn primary location filter is set");
+    assertNotIncludes(
+      linkedInPrimaryLocationFilter ?? "",
+      '"Spain"',
+      "Spain is not in the primary LinkedIn US/EU OR"
+    );
+    assertNotIncludes(
+      linkedInPrimaryLocationFilter ?? "",
+      '"España"',
+      "España is not in the primary LinkedIn US/EU OR"
+    );
+    assertIncludes(sources.workflow, "JOB_RAPIDAPI_LINKEDIN_SPAIN_LOCATION_FILTER", "LinkedIn Spain batch is separate");
+    assertIncludes(sources.workflow, '"Spain" OR "España"', "scheduled LinkedIn Spain batch covers Spain");
     assertIncludes(sources.workflow, "JOB_RAPIDAPI_LINKEDIN_LATAM_LOCATION_FILTER", "LinkedIn LATAM batch is separate");
     assertIncludes(sources.theirStack, "partitionJobCountryCodes", "TheirStack splits US/EU from LATAM");
     assertIncludes(sources.rapidApiDaily, "isHighVolumeJobCountry", "RapidAPI Daily uses the shared US/EU country set");
     assertIncludes(sources.rapidApiDaily, "JOB_RAPIDAPI_LATAM_HAS_SALARY", "RapidAPI Daily does not require LATAM salary");
     assertIncludes(sources.rapidApiLinkedIn, "getRapidApiLinkedInLocationFilters", "LinkedIn location filters are batched");
-    assertIncludes(sources.readme, "South America, Mexico, Central America, and the Caribbean are not added to SerpAPI");
+    assertIncludes(sources.rapidApiLinkedIn, "JOB_RAPIDAPI_LINKEDIN_SPAIN_LOCATION_FILTER", "LinkedIn Spain filter is read from env");
+    assertIncludes(sources.readme, "dedicated Spain (`es`) batch");
+    assertIncludes(sources.readme, "Spain is no longer in the primary LinkedIn US/EU/Remote OR");
+    assertIncludes(sources.readme, "Spain and LATAM/Caribbean omit the salary requirement");
+    assertIncludes(sources.readme, "Spain, South America, Mexico, Central America, and the Caribbean are not added to SerpAPI");
     assertIncludes(sources.readme, "Adzuna still only has Brazil (`br`) and Mexico (`mx`)");
     assertIncludes(sources.readme, "Caribbean countries are now queried");
     assertIncludes(sources.workflow, "JOB_SERPAPI_COUNTRIES: us,au", "SerpAPI quota stays US+AU");
@@ -298,7 +318,12 @@ export async function auditProviders({ run, sources }: AuditContext) {
       "jamf engineer",
       "endpoint spezialist",
       "intune spezialist",
-      "it arbeitsplatz"
+      "it arbeitsplatz",
+      "ingeniero intune",
+      "ingeniero mdm",
+      "ingeniero endpoint",
+      "tecnico intune",
+      "especialista intune"
     ]);
     assertArrayIncludes(powerShellSysadminSearchQueries, [
       "powershell systems administrator",
@@ -318,7 +343,7 @@ export async function auditProviders({ run, sources }: AuditContext) {
     assertIncludes(sources.workflow, "JOB_SERPAPI_COUNTRIES: us,au");
     const serpApiAuQueries = sources.workflow.match(/JOB_SERPAPI_AU_QUERIES:\s*([^\n]+)/)?.[1];
     const serpApiAuLocations = sources.workflow.match(/JOB_SERPAPI_AU_LOCATIONS:\s*([^\n]+)/)?.[1];
-    assertEqual(new Set([...defaultEndpointSearchQueries, ...defaultCompanyJobQueries]).size, 66);
+    assertEqual(new Set([...defaultEndpointSearchQueries, ...defaultCompanyJobQueries]).size, 71);
     assertEqual(serpApiAuQueries, "endpoint engineer");
     assertEqual(serpApiAuLocations?.split("|").length, 2);
     assertIncludes(sources.workflow, 'JOB_SERPAPI_US_QUERY_LIMIT: "26"');

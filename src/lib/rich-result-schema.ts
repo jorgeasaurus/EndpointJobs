@@ -35,7 +35,7 @@ const countryMatchers: Array<[RegExp, string]> = [
   [/\b(?:germany|deutschland)\b/i, "DE"],
   [/\bswitzerland\b/i, "CH"],
   [/\bfrance\b/i, "FR"],
-  [/\bspain\b/i, "ES"],
+  [/\b(?:spain|espana)\b/i, "ES"],
   [/\bindia\b/i, "IN"],
   [/\bitaly\b/i, "IT"],
   [/\bphilippines\b/i, "PH"],
@@ -65,7 +65,7 @@ const countryMatchers: Array<[RegExp, string]> = [
 
 const collidingCountryCodes = new Set([
   "BR", "PE", "CL", "CO", "MX", "PA", "GT", "BZ", "SV", "HN", "NI", "CR",
-  "EC", "UY", "PY", "BO", "DO", "JM", "PR"
+  "EC", "UY", "PY", "BO", "DO", "JM", "PR", "ES"
 ]);
 
 export function inferAddressCountry(job: Job) {

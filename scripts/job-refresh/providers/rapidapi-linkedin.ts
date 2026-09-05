@@ -171,8 +171,13 @@ async function fetchRapidApiLinkedInJobs(url: string, fetchedAt: Date) {
 export function getRapidApiLinkedInLocationFilters() {
   const primary = process.env.JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER?.trim()
     || "\"United States\" OR \"Remote\"";
+  const spain = process.env.JOB_RAPIDAPI_LINKEDIN_SPAIN_LOCATION_FILTER?.trim();
   const latam = process.env.JOB_RAPIDAPI_LINKEDIN_LATAM_LOCATION_FILTER?.trim();
   const filters = [primary];
+
+  if (spain) {
+    filters.push(spain);
+  }
 
   if (latam) {
     filters.push(latam);

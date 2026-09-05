@@ -14,15 +14,17 @@ function restoreProcessEnv(originalEnv: NodeJS.ProcessEnv) {
   Object.assign(process.env, originalEnv);
 }
 
-test("TheirStack splits US/EU and LATAM country codes into separate limit batches", () => {
+test("TheirStack splits US/EU, Spain, and LATAM country codes into separate limit batches", () => {
   assert.deepEqual(
     partitionJobCountryCodes(["US", "CH", "IT", "ES", "FR", "DE", "BR", "AR", "MX", "EC", "PR"]),
     [
-      ["US", "CH", "IT", "ES", "FR", "DE"],
+      ["US", "CH", "IT", "FR", "DE"],
+      ["ES"],
       ["BR", "AR", "MX", "EC", "PR"]
     ]
   );
   assert.deepEqual(partitionJobCountryCodes(["US", "DE"]), [["US", "DE"]]);
+  assert.deepEqual(partitionJobCountryCodes(["ES"]), [["ES"]]);
   assert.deepEqual(partitionJobCountryCodes(["AR", "EC", "DO"]), [["AR", "EC", "DO"]]);
 });
 
@@ -34,7 +36,7 @@ test("TheirStack role search posts one request per country batch", async () => {
   process.env.THEIRSTACK_API_KEY = "test-key";
   process.env.JOB_THEIRSTACK_TITLE_QUERIES = "endpoint engineer";
   process.env.JOB_THEIRSTACK_COMPANY_NAMES = " ";
-  process.env.JOB_THEIRSTACK_COUNTRY_CODES = "US,DE,BR,AR,EC";
+  process.env.JOB_THEIRSTACK_COUNTRY_CODES = "US,DE,ES,BR,AR,EC";
   process.env.JOB_THEIRSTACK_LIMIT = "25";
   process.env.JOB_THEIRSTACK_MAX_PAGES = "1";
   globalThis.fetch = async (_input, init) => {
@@ -56,9 +58,11 @@ test("TheirStack role search posts one request per country batch", async () => {
     bodies.map((body) => body.job_country_code_or),
     [
       ["US", "DE"],
+      ["ES"],
       ["BR", "AR", "EC"]
     ]
   );
   assert.equal(bodies[0]?.limit, 25);
   assert.equal(bodies[1]?.limit, 25);
+  assert.equal(bodies[2]?.limit, 25);
 });

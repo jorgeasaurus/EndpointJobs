@@ -19,6 +19,7 @@ function restoreProcessEnv(originalEnv: NodeJS.ProcessEnv) {
 test("LinkedIn primary location filter treats blank env as unset", () => {
   const originalEnv = { ...process.env };
 
+  delete process.env.JOB_RAPIDAPI_LINKEDIN_SPAIN_LOCATION_FILTER;
   delete process.env.JOB_RAPIDAPI_LINKEDIN_LATAM_LOCATION_FILTER;
 
   try {
@@ -36,25 +37,54 @@ test("LinkedIn primary location filter treats blank env as unset", () => {
   }
 });
 
-test("LinkedIn location filters keep US/EU/Remote separate from the LATAM batch", () => {
+test("LinkedIn Spain location filter treats blank env as unset", () => {
   const originalEnv = { ...process.env };
 
   process.env.JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER =
     '"United States" OR "Germany" OR "Remote"';
-  process.env.JOB_RAPIDAPI_LINKEDIN_LATAM_LOCATION_FILTER =
-    '"Ecuador" OR "Puerto Rico" OR "Caribbean"';
+  delete process.env.JOB_RAPIDAPI_LINKEDIN_LATAM_LOCATION_FILTER;
 
   try {
+    process.env.JOB_RAPIDAPI_LINKEDIN_SPAIN_LOCATION_FILTER = "";
     assert.deepEqual(getRapidApiLinkedInLocationFilters(), [
-      '"United States" OR "Germany" OR "Remote"',
-      '"Ecuador" OR "Puerto Rico" OR "Caribbean"'
+      '"United States" OR "Germany" OR "Remote"'
+    ]);
+
+    process.env.JOB_RAPIDAPI_LINKEDIN_SPAIN_LOCATION_FILTER = "   ";
+    assert.deepEqual(getRapidApiLinkedInLocationFilters(), [
+      '"United States" OR "Germany" OR "Remote"'
     ]);
   } finally {
     restoreProcessEnv(originalEnv);
   }
 });
 
-test("LinkedIn searches each title against both location batches", async () => {
+test("LinkedIn location filters keep US/EU/Remote separate from Spain and LATAM batches", () => {
+  const originalEnv = { ...process.env };
+
+  process.env.JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER =
+    '"United States" OR "Germany" OR "Remote"';
+  process.env.JOB_RAPIDAPI_LINKEDIN_SPAIN_LOCATION_FILTER =
+    '"Spain" OR "Madrid" OR "Barcelona"';
+  process.env.JOB_RAPIDAPI_LINKEDIN_LATAM_LOCATION_FILTER =
+    '"Ecuador" OR "Puerto Rico" OR "Caribbean"';
+
+  try {
+    assert.deepEqual(getRapidApiLinkedInLocationFilters(), [
+      '"United States" OR "Germany" OR "Remote"',
+      '"Spain" OR "Madrid" OR "Barcelona"',
+      '"Ecuador" OR "Puerto Rico" OR "Caribbean"'
+    ]);
+    assert.equal(
+      getRapidApiLinkedInLocationFilters()[0]?.includes("Spain"),
+      false
+    );
+  } finally {
+    restoreProcessEnv(originalEnv);
+  }
+});
+
+test("LinkedIn searches each title against primary, Spain, and LATAM batches", async () => {
   const originalFetch = globalThis.fetch;
   const originalEnv = { ...process.env };
   const urls: URL[] = [];
@@ -63,6 +93,8 @@ test("LinkedIn searches each title against both location batches", async () => {
   process.env.JOB_RAPIDAPI_LINKEDIN_TITLE_FILTERS = "Endpoint Engineer";
   process.env.JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER =
     '"United States" OR "Remote"';
+  process.env.JOB_RAPIDAPI_LINKEDIN_SPAIN_LOCATION_FILTER =
+    '"Spain" OR "Madrid"';
   process.env.JOB_RAPIDAPI_LINKEDIN_LATAM_LOCATION_FILTER =
     '"Ecuador" OR "Caribbean"';
   process.env.JOB_RAPIDAPI_LINKEDIN_LIMIT = "25";
@@ -82,7 +114,7 @@ test("LinkedIn searches each title against both location batches", async () => {
     restoreProcessEnv(originalEnv);
   }
 
-  assert.equal(urls.length, 2);
+  assert.equal(urls.length, 3);
   assert.equal(urls[0]?.searchParams.get("limit"), "25");
   assert.equal(
     urls[0]?.searchParams.get("location_filter"),
@@ -90,6 +122,10 @@ test("LinkedIn searches each title against both location batches", async () => {
   );
   assert.equal(
     urls[1]?.searchParams.get("location_filter"),
+    '"Spain" OR "Madrid"'
+  );
+  assert.equal(
+    urls[2]?.searchParams.get("location_filter"),
     '"Ecuador" OR "Caribbean"'
   );
 });
