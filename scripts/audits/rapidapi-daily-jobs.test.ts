@@ -38,6 +38,23 @@ function jobPage(count = 10, page = 1) {
   });
 }
 
+function rateLimitedResponse(onCancel: () => void) {
+  return new Response(
+    new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode("Too Many Requests"));
+      },
+      cancel() {
+        onCancel();
+      }
+    }),
+    {
+      status: 429,
+      statusText: "Too Many Requests"
+    }
+  );
+}
+
 async function withRapidApiEnv(
   env: Record<string, string | undefined>,
   fetchImpl: typeof fetch,
@@ -283,6 +300,7 @@ test("RapidAPI Daily stops at the per-run request budget", async () => {
 
 test("RapidAPI Daily retries once on 429 then continues", async () => {
   let attempts = 0;
+  let canceledBodies = 0;
   const statuses: number[] = [];
 
   await withRapidApiEnv(
@@ -295,9 +313,8 @@ test("RapidAPI Daily retries once on 429 then continues", async () => {
       attempts += 1;
       if (attempts === 1) {
         statuses.push(429);
-        return new Response("Too Many Requests", {
-          status: 429,
-          statusText: "Too Many Requests"
+        return rateLimitedResponse(() => {
+          canceledBodies += 1;
         });
       }
 
@@ -315,10 +332,12 @@ test("RapidAPI Daily retries once on 429 then continues", async () => {
 
   assert.deepEqual(statuses, [429, 200]);
   assert.equal(attempts, 2);
+  assert.equal(canceledBodies, 1);
 });
 
 test("RapidAPI Daily stops after repeated 429s and does not keep paging", async () => {
   let attempts = 0;
+  let canceledBodies = 0;
 
   await withRapidApiEnv(
     {
@@ -329,9 +348,8 @@ test("RapidAPI Daily stops after repeated 429s and does not keep paging", async 
     },
     async () => {
       attempts += 1;
-      return new Response("Too Many Requests", {
-        status: 429,
-        statusText: "Too Many Requests"
+      return rateLimitedResponse(() => {
+        canceledBodies += 1;
       });
     },
     async () => {
@@ -346,6 +364,7 @@ test("RapidAPI Daily stops after repeated 429s and does not keep paging", async 
   );
 
   assert.equal(attempts, 2);
+  assert.equal(canceledBodies, 2);
 });
 
 test("RapidAPI Daily caps pageSize at the API maximum of 10", async () => {

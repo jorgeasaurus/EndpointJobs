@@ -344,6 +344,7 @@ async function fetchRapidApiDailyJobsPage(url: string, apiKey: string): Promise<
   });
 
   if (response.status === 429) {
+    await response.body?.cancel();
     throw new Error("429 Too Many Requests");
   }
 
