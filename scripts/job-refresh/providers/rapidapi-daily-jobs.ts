@@ -1,6 +1,6 @@
 import type { Job, Workplace } from "../../../src/types/job";
 
-import { isHighVolumeJobCountry } from "../high-volume-countries";
+import { isHighVolumeJobCountry, isSpainJobCountry } from "../high-volume-countries";
 import type { ProviderAdapter } from "../provider";
 import {
   buildStableJobId,
@@ -9,6 +9,8 @@ import {
   formatProviderError,
   formatSlugLabel,
   getCsvConfig,
+  getNonNegativeInteger,
+  getPositiveInteger,
   normalizeFirstEmploymentType,
   normalizeSalary,
   normalizeSearchText,
@@ -86,6 +88,11 @@ type RapidApiDailyJobsPage = {
   totalCount?: number;
 };
 
+const RAPIDAPI_DAILY_PAGE_SIZE_MAX = 10;
+const DEFAULT_REQUEST_DELAY_MS = 650;
+const DEFAULT_MONTHLY_REQUEST_BUDGET = 2700;
+const ASSUMED_REFRESHES_PER_MONTH = 31;
+
 export const rapidApiDailyJobsProvider: ProviderAdapter<"rapidapi"> = {
   id: "rapidapi",
   displayName: "RapidAPI Daily International Jobs",
@@ -101,22 +108,40 @@ async function fetchRapidApiDailyJobs(url: string, fetchedAt: Date) {
   }
 
   const configuredQueries = getCsvConfig("JOB_RAPIDAPI_QUERIES", []);
-  const countryCodes = getCsvConfig("JOB_RAPIDAPI_COUNTRY_CODES", [
-    process.env.JOB_RAPIDAPI_COUNTRY_CODE ?? "us"
-  ]);
-  const maxPages = Math.max(1, Number(process.env.JOB_RAPIDAPI_MAX_PAGES ?? 1));
+  const countryCodes = prioritizeRapidApiCountryCodes(
+    getCsvConfig("JOB_RAPIDAPI_COUNTRY_CODES", [
+      process.env.JOB_RAPIDAPI_COUNTRY_CODE ?? "us"
+    ])
+  );
+  const maxRequests = getRapidApiDailyJobsMaxRequestsPerRun();
+  const requestDelayMs = getRapidApiDailyJobsRequestDelayMs();
+  const retryDelayMs = getRapidApiDailyJobsRetryDelayMs();
   const jobs: Array<Job | null> = [];
+  let requestCount = 0;
   let successfulPages = 0;
   const failures: string[] = [];
 
-  for (const countryCode of countryCodes) {
+  countryLoop: for (const countryCode of countryCodes) {
     const queries = getRapidApiDailyJobsQueries(countryCode, configuredQueries);
+    const maxPages = getRapidApiDailyJobsMaxPages(countryCode);
+
     for (const query of queries) {
       for (let page = 1; page <= maxPages; page += 1) {
+        if (requestCount >= maxRequests) {
+          console.log(`Reached RapidAPI Daily run cap after ${requestCount} requests`);
+          break countryLoop;
+        }
+
         const queryUrl = buildRapidApiDailyJobsUrl(url, query, page, countryCode);
         const label = `RapidAPI Daily Jobs/${countryCode} ${query || "salary feed"} page ${page}`;
+
+        if (requestCount > 0) {
+          await delay(requestDelayMs);
+        }
+
         try {
           const payload = await fetchRapidApiDailyJobsPage(queryUrl, apiKey);
+          requestCount += 1;
           successfulPages += 1;
           jobs.push(...payload.jobs.map((job) => normalizeRapidApiDailyJob(job, query, fetchedAt)));
           console.log(`Fetched ${payload.jobs.length} raw jobs from ${label}`);
@@ -125,7 +150,46 @@ async function fetchRapidApiDailyJobs(url: string, fetchedAt: Date) {
             break;
           }
         } catch (error) {
+          requestCount += 1;
           const detail = formatProviderError(error);
+
+          if (isRapidApiDailyJobsRateLimitError(error)) {
+            if (requestCount >= maxRequests) {
+              failures.push(`${label}: ${detail}`);
+              console.warn(`Stopping RapidAPI Daily after rate limit at run cap: ${detail}`);
+              break countryLoop;
+            }
+
+            console.warn(`Retrying ${label} after 429`);
+            await delay(retryDelayMs);
+
+            try {
+              const payload = await fetchRapidApiDailyJobsPage(queryUrl, apiKey);
+              requestCount += 1;
+              successfulPages += 1;
+              jobs.push(...payload.jobs.map((job) => normalizeRapidApiDailyJob(job, query, fetchedAt)));
+              console.log(`Fetched ${payload.jobs.length} raw jobs from ${label} (retry)`);
+
+              if (payload.jobs.length === 0) {
+                break;
+              }
+
+              continue;
+            } catch (retryError) {
+              requestCount += 1;
+              const retryDetail = formatProviderError(retryError);
+              failures.push(`${label}: ${retryDetail}`);
+              console.warn(`Skipping ${label}: ${retryDetail}`);
+
+              if (isRapidApiDailyJobsRateLimitError(retryError)) {
+                console.warn("Stopping RapidAPI Daily after repeated 429s");
+                break countryLoop;
+              }
+
+              break;
+            }
+          }
+
           failures.push(`${label}: ${detail}`);
           console.warn(`Skipping ${label}: ${detail}`);
           break;
@@ -153,7 +217,79 @@ export function getRapidApiDailyJobsQueries(
     return [""];
   }
 
-  return getCsvConfig("JOB_RAPIDAPI_LATAM_QUERIES", ["endpoint"]);
+  const latamQueries = getCsvConfig("JOB_RAPIDAPI_LATAM_QUERIES", ["endpoint"]);
+
+  if (isSpainJobCountry(countryCode)) {
+    return getCsvConfig("JOB_RAPIDAPI_SPAIN_QUERIES", latamQueries);
+  }
+
+  return latamQueries;
+}
+
+export function getRapidApiDailyJobsMaxPages(countryCode: string) {
+  const fallback = getPositiveInteger(process.env.JOB_RAPIDAPI_MAX_PAGES, 1);
+
+  if (isHighVolumeJobCountry(countryCode)) {
+    return fallback;
+  }
+
+  if (isSpainJobCountry(countryCode)) {
+    return getPositiveInteger(
+      process.env.JOB_RAPIDAPI_SPAIN_MAX_PAGES,
+      getPositiveInteger(process.env.JOB_RAPIDAPI_LATAM_MAX_PAGES, fallback)
+    );
+  }
+
+  return getPositiveInteger(process.env.JOB_RAPIDAPI_LATAM_MAX_PAGES, fallback);
+}
+
+export function getRapidApiDailyJobsRequestDelayMs() {
+  return getNonNegativeInteger(process.env.JOB_RAPIDAPI_REQUEST_DELAY_MS, DEFAULT_REQUEST_DELAY_MS);
+}
+
+export function getRapidApiDailyJobsRetryDelayMs() {
+  return getNonNegativeInteger(
+    process.env.JOB_RAPIDAPI_RETRY_DELAY_MS,
+    Math.max(1500, getRapidApiDailyJobsRequestDelayMs() * 2)
+  );
+}
+
+export function getRapidApiDailyJobsMonthlyRequestBudget() {
+  return getPositiveInteger(
+    process.env.JOB_RAPIDAPI_MONTHLY_REQUEST_BUDGET,
+    DEFAULT_MONTHLY_REQUEST_BUDGET
+  );
+}
+
+export function getRapidApiDailyJobsMaxRequestsPerRun() {
+  const derived = Math.max(
+    1,
+    Math.floor(getRapidApiDailyJobsMonthlyRequestBudget() / ASSUMED_REFRESHES_PER_MONTH)
+  );
+
+  return getPositiveInteger(process.env.JOB_RAPIDAPI_MAX_REQUESTS_PER_RUN, derived);
+}
+
+export function prioritizeRapidApiCountryCodes(countryCodes: string[]) {
+  const spain: string[] = [];
+  const latam: string[] = [];
+  const highVolume: string[] = [];
+
+  for (const countryCode of countryCodes) {
+    if (isSpainJobCountry(countryCode)) {
+      spain.push(countryCode);
+    } else if (isHighVolumeJobCountry(countryCode)) {
+      highVolume.push(countryCode);
+    } else {
+      latam.push(countryCode);
+    }
+  }
+
+  return [...spain, ...latam, ...highVolume];
+}
+
+export function isRapidApiDailyJobsRateLimitError(error: unknown) {
+  return /(?:^|\D)429(?:\D|$)/.test(formatProviderError(error));
 }
 
 export function getRapidApiDailyJobsHasSalary(countryCode: string) {
@@ -180,7 +316,11 @@ function buildRapidApiDailyJobsUrl(
   url.searchParams.set("page", String(page));
 
   if (process.env.JOB_RAPIDAPI_PAGE_SIZE) {
-    url.searchParams.set("pageSize", process.env.JOB_RAPIDAPI_PAGE_SIZE);
+    const pageSize = Math.min(
+      RAPIDAPI_DAILY_PAGE_SIZE_MAX,
+      getPositiveInteger(process.env.JOB_RAPIDAPI_PAGE_SIZE, RAPIDAPI_DAILY_PAGE_SIZE_MAX)
+    );
+    url.searchParams.set("pageSize", String(pageSize));
   }
 
   if (queryParam && query) {
@@ -202,6 +342,11 @@ async function fetchRapidApiDailyJobsPage(url: string, apiKey: string): Promise<
       "x-rapidapi-key": apiKey
     }
   });
+
+  if (response.status === 429) {
+    await response.body?.cancel();
+    throw new Error("429 Too Many Requests");
+  }
 
   if (!response.ok) {
     const detail = summarize(cleanText(await response.text()));
@@ -384,4 +529,14 @@ function toNumber(value: unknown) {
 
   const parsed = Number(value.replace(/[$,]/g, ""));
   return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function delay(ms: number) {
+  if (ms <= 0) {
+    return Promise.resolve();
+  }
+
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }

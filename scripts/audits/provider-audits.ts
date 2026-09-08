@@ -278,6 +278,14 @@ export async function auditProviders({ run, sources }: AuditContext) {
     assertIncludes(sources.theirStack, "partitionJobCountryCodes", "TheirStack splits US/EU from LATAM");
     assertIncludes(sources.rapidApiDaily, "isHighVolumeJobCountry", "RapidAPI Daily uses the shared US/EU country set");
     assertIncludes(sources.rapidApiDaily, "JOB_RAPIDAPI_LATAM_HAS_SALARY", "RapidAPI Daily does not require LATAM salary");
+    assertIncludes(sources.rapidApiDaily, "JOB_RAPIDAPI_MONTHLY_REQUEST_BUDGET", "RapidAPI Daily has a monthly request budget");
+    assertIncludes(sources.workflow, 'JOB_RAPIDAPI_MAX_PAGES: "1"', "US/EU RapidAPI Daily salary feeds stay on one page");
+    assertIncludes(sources.workflow, 'JOB_RAPIDAPI_LATAM_MAX_PAGES: "3"', "LATAM RapidAPI Daily paginates under Pro");
+    assertIncludes(sources.workflow, 'JOB_RAPIDAPI_SPAIN_MAX_PAGES: "5"', "Spain RapidAPI Daily paginates further under Pro");
+    assertIncludes(sources.workflow, 'JOB_RAPIDAPI_MONTHLY_REQUEST_BUDGET: "2700"', "RapidAPI Daily leaves Pro headroom");
+    assertIncludes(sources.workflow, 'JOB_RAPIDAPI_MAX_REQUESTS_PER_RUN: "80"', "RapidAPI Daily caps each refresh");
+    assertIncludes(sources.workflow, 'JOB_RAPIDAPI_REQUEST_DELAY_MS: "650"', "RapidAPI Daily stays under 2 req/sec");
+    assertIncludes(sources.readme, "3,000 requests / month", "README documents RapidAPI Daily Pro quota");
     assertIncludes(sources.rapidApiLinkedIn, "getRapidApiLinkedInLocationFilters", "LinkedIn location filters are batched");
     assertIncludes(sources.rapidApiLinkedIn, "JOB_RAPIDAPI_LINKEDIN_SPAIN_LOCATION_FILTER", "LinkedIn Spain filter is read from env");
     assertIncludes(sources.readme, "dedicated Spain (`es`) batch");

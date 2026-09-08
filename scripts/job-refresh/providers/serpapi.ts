@@ -11,6 +11,9 @@ import {
   cleanUrl,
   extractSalaryFromText,
   getCsvConfig,
+  getNonNegativeInteger,
+  getOptionalPositiveInteger,
+  getPositiveInteger,
   getString,
   normalizeSearchText,
   normalizeEmploymentTypeLabel,
@@ -335,33 +338,6 @@ async function getSerpApiSearchBudget(apiKey: string, configuredMaxSearches: num
     `SerpAPI quota preflight allows ${budget} searches (${Math.floor(remaining)} remaining, ${reserve} reserved)`
   );
   return budget;
-}
-
-function getPositiveInteger(value: string | undefined, fallback: number) {
-  if (!value || !/^\d+$/.test(value.trim())) {
-    return fallback;
-  }
-
-  const parsed = Number.parseInt(value, 10);
-  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
-}
-
-function getOptionalPositiveInteger(value: string | undefined) {
-  if (!value || !/^\d+$/.test(value.trim())) {
-    return undefined;
-  }
-
-  const parsed = Number.parseInt(value, 10);
-  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : undefined;
-}
-
-function getNonNegativeInteger(value: string | undefined, fallback: number) {
-  if (value === undefined || !/^\d+$/.test(value.trim())) {
-    return fallback;
-  }
-
-  const parsed = Number.parseInt(value, 10);
-  return Number.isSafeInteger(parsed) && parsed >= 0 ? parsed : fallback;
 }
 
 function getNonNegativeNumber(value: unknown) {

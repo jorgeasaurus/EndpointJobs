@@ -54,7 +54,15 @@ jobs:
           RAPIDAPI_DAILY_JOBS_KEY: ${{ secrets.RAPIDAPI_DAILY_JOBS_KEY }}
           JOB_RAPIDAPI_COUNTRY_CODES: us,ch,it,es,fr,de,br,ar,cl,co,pe,mx,gt,bz,sv,hn,ni,cr,pa,ec,uy,py,bo,do,jm,pr
           JOB_RAPIDAPI_HAS_SALARY: "true"
+          JOB_RAPIDAPI_LATAM_HAS_SALARY: "false"
           JOB_RAPIDAPI_MAX_PAGES: "1"
+          JOB_RAPIDAPI_LATAM_MAX_PAGES: "3"
+          JOB_RAPIDAPI_SPAIN_MAX_PAGES: "5"
+          JOB_RAPIDAPI_LATAM_QUERIES: endpoint
+          JOB_RAPIDAPI_SPAIN_QUERIES: endpoint
+          JOB_RAPIDAPI_REQUEST_DELAY_MS: "650"
+          JOB_RAPIDAPI_MONTHLY_REQUEST_BUDGET: "2700"
+          JOB_RAPIDAPI_MAX_REQUESTS_PER_RUN: "80"
           RAPIDAPI_LINKEDIN_JOBS_KEY: ${{ secrets.RAPIDAPI_LINKEDIN_JOBS_KEY }}
           JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER: '"United States" OR "Switzerland" OR "Italy" OR "France" OR "Germany" OR "Remote"'
           JOB_RAPIDAPI_LINKEDIN_SPAIN_LOCATION_FILTER: '"Spain" OR "España" OR "Madrid" OR "Barcelona" OR "Valencia" OR "Sevilla" OR "Seville" OR "Bilbao" OR "Málaga" OR "Malaga" OR "Zaragoza" OR "Palma de Mallorca" OR "Mallorca"'
