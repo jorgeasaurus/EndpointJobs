@@ -285,7 +285,16 @@ export async function auditProviders({ run, sources }: AuditContext) {
     assertIncludes(sources.workflow, 'JOB_RAPIDAPI_MONTHLY_REQUEST_BUDGET: "2700"', "RapidAPI Daily leaves Pro headroom");
     assertIncludes(sources.workflow, 'JOB_RAPIDAPI_MAX_REQUESTS_PER_RUN: "80"', "RapidAPI Daily caps each refresh");
     assertIncludes(sources.workflow, 'JOB_RAPIDAPI_REQUEST_DELAY_MS: "650"', "RapidAPI Daily stays under 2 req/sec");
+    assertIncludes(sources.workflow, "JOB_RAPIDAPI_LATAM_QUERIES: intune,jamf,mdm,uem,endpoint", "LATAM RapidAPI Daily uses a title OR");
+    assertIncludes(sources.workflow, "JOB_RAPIDAPI_SPAIN_QUERIES: intune,jamf,mdm,uem,endpoint", "Spain RapidAPI Daily uses a title OR");
+    assertIncludes(sources.workflow, "JOB_RAPIDAPI_QUERY_PARAM: title", "RapidAPI Daily searches the documented title field");
+    assertIncludes(sources.workflow, 'JOB_RAPIDAPI_LOOKBACK_DAYS: "30"', "RapidAPI Daily searches a 30-day window");
+    assertIncludes(sources.rapidApiDaily, 'DEFAULT_QUERY_PARAM = "title"', "RapidAPI Daily defaults to the title search field");
+    assertIncludes(sources.rapidApiDaily, "getRapidApiDailyJobsSearchQueries", "RapidAPI Daily joins title terms into one request");
+    assertIncludes(sources.rapidApiDaily, "dateCreatedMin", "RapidAPI Daily sets an explicit lookback window");
     assertIncludes(sources.readme, "3,000 requests / month", "README documents RapidAPI Daily Pro quota");
+    assertIncludes(sources.readme, "title=intune,jamf,mdm,uem,endpoint", "README documents the RapidAPI Daily title OR");
+    assertIncludes(sources.readme, "do not multiply the request budget", "README says title terms stay one request");
     assertIncludes(sources.rapidApiLinkedIn, "getRapidApiLinkedInLocationFilters", "LinkedIn location filters are batched");
     assertIncludes(sources.rapidApiLinkedIn, "JOB_RAPIDAPI_LINKEDIN_SPAIN_LOCATION_FILTER", "LinkedIn Spain filter is read from env");
     assertIncludes(sources.readme, "dedicated Spain (`es`) batch");

@@ -58,8 +58,10 @@ jobs:
           JOB_RAPIDAPI_MAX_PAGES: "1"
           JOB_RAPIDAPI_LATAM_MAX_PAGES: "3"
           JOB_RAPIDAPI_SPAIN_MAX_PAGES: "5"
-          JOB_RAPIDAPI_LATAM_QUERIES: endpoint
-          JOB_RAPIDAPI_SPAIN_QUERIES: endpoint
+          JOB_RAPIDAPI_LATAM_QUERIES: intune,jamf,mdm,uem,endpoint
+          JOB_RAPIDAPI_SPAIN_QUERIES: intune,jamf,mdm,uem,endpoint
+          JOB_RAPIDAPI_QUERY_PARAM: title
+          JOB_RAPIDAPI_LOOKBACK_DAYS: "30"
           JOB_RAPIDAPI_REQUEST_DELAY_MS: "650"
           JOB_RAPIDAPI_MONTHLY_REQUEST_BUDGET: "2700"
           JOB_RAPIDAPI_MAX_REQUESTS_PER_RUN: "80"
