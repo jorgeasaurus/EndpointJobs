@@ -253,7 +253,8 @@ export function getRapidApiDailyJobsSearchQueries(
 }
 
 export function getRapidApiDailyJobsQueryParam() {
-  return process.env.JOB_RAPIDAPI_QUERY_PARAM ?? DEFAULT_QUERY_PARAM;
+  const configured = process.env.JOB_RAPIDAPI_QUERY_PARAM?.trim();
+  return configured || DEFAULT_QUERY_PARAM;
 }
 
 export function getRapidApiDailyJobsLookbackDays() {

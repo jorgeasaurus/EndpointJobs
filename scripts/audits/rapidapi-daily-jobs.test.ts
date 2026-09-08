@@ -131,6 +131,29 @@ test("RapidAPI Daily keeps salary-required empty queries for US/EU and relaxes S
   }
 });
 
+test("RapidAPI Daily query param trims whitespace and falls back to title when empty", () => {
+  const originalEnv = { ...process.env };
+
+  try {
+    delete process.env.JOB_RAPIDAPI_QUERY_PARAM;
+    assert.equal(getRapidApiDailyJobsQueryParam(), "title");
+
+    process.env.JOB_RAPIDAPI_QUERY_PARAM = "  title  ";
+    assert.equal(getRapidApiDailyJobsQueryParam(), "title");
+
+    process.env.JOB_RAPIDAPI_QUERY_PARAM = "   ";
+    assert.equal(getRapidApiDailyJobsQueryParam(), "title");
+
+    process.env.JOB_RAPIDAPI_QUERY_PARAM = "";
+    assert.equal(getRapidApiDailyJobsQueryParam(), "title");
+
+    process.env.JOB_RAPIDAPI_QUERY_PARAM = "  skills  ";
+    assert.equal(getRapidApiDailyJobsQueryParam(), "skills");
+  } finally {
+    restoreProcessEnv(originalEnv);
+  }
+});
+
 test("RapidAPI Daily Spain queries fall back to the LATAM list unless JOB_RAPIDAPI_SPAIN_QUERIES is set", () => {
   const originalEnv = { ...process.env };
   delete process.env.JOB_RAPIDAPI_QUERIES;
