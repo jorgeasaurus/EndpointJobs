@@ -734,6 +734,33 @@ export function getCsvConfig(envKey: string, fallback: string[]) {
   return values.map((value) => value.trim()).filter(Boolean);
 }
 
+export function getPositiveInteger(value: string | undefined, fallback: number) {
+  if (!value || !/^\d+$/.test(value.trim())) {
+    return fallback;
+  }
+
+  const parsed = Number.parseInt(value, 10);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+export function getOptionalPositiveInteger(value: string | undefined) {
+  if (!value || !/^\d+$/.test(value.trim())) {
+    return undefined;
+  }
+
+  const parsed = Number.parseInt(value, 10);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+export function getNonNegativeInteger(value: string | undefined, fallback: number) {
+  if (value === undefined || !/^\d+$/.test(value.trim())) {
+    return fallback;
+  }
+
+  const parsed = Number.parseInt(value, 10);
+  return Number.isSafeInteger(parsed) && parsed >= 0 ? parsed : fallback;
+}
+
 export function formatProviderError(error: unknown) {
   if (error instanceof Error) {
     const message = error.message.trim();

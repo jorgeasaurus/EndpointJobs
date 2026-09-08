@@ -9,6 +9,8 @@ import {
   formatProviderError,
   formatSlugLabel,
   getCsvConfig,
+  getNonNegativeInteger,
+  getPositiveInteger,
   normalizeFirstEmploymentType,
   normalizeSalary,
   normalizeSearchText,
@@ -536,22 +538,4 @@ function delay(ms: number) {
   return new Promise<void>((resolve) => {
     setTimeout(resolve, ms);
   });
-}
-
-function getPositiveInteger(value: string | undefined, fallback: number) {
-  if (!value || !/^\d+$/.test(value.trim())) {
-    return fallback;
-  }
-
-  const parsed = Number.parseInt(value, 10);
-  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
-}
-
-function getNonNegativeInteger(value: string | undefined, fallback: number) {
-  if (value === undefined || !/^\d+$/.test(value.trim())) {
-    return fallback;
-  }
-
-  const parsed = Number.parseInt(value, 10);
-  return Number.isSafeInteger(parsed) && parsed >= 0 ? parsed : fallback;
 }

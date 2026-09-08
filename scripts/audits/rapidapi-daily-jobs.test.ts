@@ -95,13 +95,15 @@ test("RapidAPI Daily keeps salary-required empty queries for US/EU and relaxes S
   }
 });
 
-test("RapidAPI Daily Spain queries stay env-driven and do not inherit extra LATAM terms unless asked", () => {
+test("RapidAPI Daily Spain queries fall back to the LATAM list unless JOB_RAPIDAPI_SPAIN_QUERIES is set", () => {
   const originalEnv = { ...process.env };
   delete process.env.JOB_RAPIDAPI_QUERIES;
   process.env.JOB_RAPIDAPI_LATAM_QUERIES = "endpoint";
-  process.env.JOB_RAPIDAPI_SPAIN_QUERIES = "endpoint,intune";
+  delete process.env.JOB_RAPIDAPI_SPAIN_QUERIES;
 
   try {
+    assert.deepEqual(getRapidApiDailyJobsQueries("es"), ["endpoint"]);
+    process.env.JOB_RAPIDAPI_SPAIN_QUERIES = "endpoint,intune";
     assert.deepEqual(getRapidApiDailyJobsQueries("es"), ["endpoint", "intune"]);
     assert.deepEqual(getRapidApiDailyJobsQueries("mx"), ["endpoint"]);
   } finally {
