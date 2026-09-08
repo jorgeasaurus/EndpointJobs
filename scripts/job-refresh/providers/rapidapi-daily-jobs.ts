@@ -260,7 +260,11 @@ export function getRapidApiDailyJobsLookbackDays() {
   return getPositiveInteger(process.env.JOB_RAPIDAPI_LOOKBACK_DAYS, DEFAULT_LOOKBACK_DAYS);
 }
 
-export function getRapidApiDailyJobsDateRange(fetchedAt: Date) {
+export type RapidApiDailyDateRange =
+  | { dateCreated: string }
+  | { dateCreatedMin: string; dateCreatedMax: string };
+
+export function getRapidApiDailyJobsDateRange(fetchedAt: Date): RapidApiDailyDateRange {
   const explicitDate = process.env.JOB_RAPIDAPI_DATE_CREATED?.trim();
 
   if (explicitDate) {
