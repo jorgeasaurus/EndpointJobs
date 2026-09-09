@@ -92,6 +92,16 @@ const RAPIDAPI_DAILY_PAGE_SIZE_MAX = 10;
 const DEFAULT_REQUEST_DELAY_MS = 650;
 const DEFAULT_MONTHLY_REQUEST_BUDGET = 2700;
 const ASSUMED_REFRESHES_PER_MONTH = 31;
+const DEFAULT_LOOKBACK_DAYS = 30;
+const DEFAULT_QUERY_PARAM = "title";
+
+export const defaultRapidApiDailyTitleTerms = [
+  "intune",
+  "jamf",
+  "mdm",
+  "uem",
+  "endpoint"
+] as const;
 
 export const rapidApiDailyJobsProvider: ProviderAdapter<"rapidapi"> = {
   id: "rapidapi",
@@ -122,7 +132,7 @@ async function fetchRapidApiDailyJobs(url: string, fetchedAt: Date) {
   const failures: string[] = [];
 
   countryLoop: for (const countryCode of countryCodes) {
-    const queries = getRapidApiDailyJobsQueries(countryCode, configuredQueries);
+    const queries = getRapidApiDailyJobsSearchQueries(countryCode, configuredQueries);
     const maxPages = getRapidApiDailyJobsMaxPages(countryCode);
 
     for (const query of queries) {
@@ -132,7 +142,7 @@ async function fetchRapidApiDailyJobs(url: string, fetchedAt: Date) {
           break countryLoop;
         }
 
-        const queryUrl = buildRapidApiDailyJobsUrl(url, query, page, countryCode);
+        const queryUrl = buildRapidApiDailyJobsUrl(url, query, page, countryCode, fetchedAt);
         const label = `RapidAPI Daily Jobs/${countryCode} ${query || "salary feed"} page ${page}`;
 
         if (requestCount > 0) {
@@ -143,7 +153,7 @@ async function fetchRapidApiDailyJobs(url: string, fetchedAt: Date) {
           const payload = await fetchRapidApiDailyJobsPage(queryUrl, apiKey);
           requestCount += 1;
           successfulPages += 1;
-          jobs.push(...payload.jobs.map((job) => normalizeRapidApiDailyJob(job, query, fetchedAt)));
+          jobs.push(...payload.jobs.map((job) => normalizeRapidApiDailyJob(job, fetchedAt)));
           console.log(`Fetched ${payload.jobs.length} raw jobs from ${label}`);
 
           if (payload.jobs.length === 0) {
@@ -167,7 +177,7 @@ async function fetchRapidApiDailyJobs(url: string, fetchedAt: Date) {
               const payload = await fetchRapidApiDailyJobsPage(queryUrl, apiKey);
               requestCount += 1;
               successfulPages += 1;
-              jobs.push(...payload.jobs.map((job) => normalizeRapidApiDailyJob(job, query, fetchedAt)));
+              jobs.push(...payload.jobs.map((job) => normalizeRapidApiDailyJob(job, fetchedAt)));
               console.log(`Fetched ${payload.jobs.length} raw jobs from ${label} (retry)`);
 
               if (payload.jobs.length === 0) {
@@ -217,13 +227,59 @@ export function getRapidApiDailyJobsQueries(
     return [""];
   }
 
-  const latamQueries = getCsvConfig("JOB_RAPIDAPI_LATAM_QUERIES", ["endpoint"]);
+  const latamQueries = getCsvConfig(
+    "JOB_RAPIDAPI_LATAM_QUERIES",
+    [...defaultRapidApiDailyTitleTerms]
+  );
 
   if (isSpainJobCountry(countryCode)) {
     return getCsvConfig("JOB_RAPIDAPI_SPAIN_QUERIES", latamQueries);
   }
 
   return latamQueries;
+}
+
+export function joinRapidApiDailyTitleTerms(terms: string[]) {
+  return terms.map((term) => term.trim()).filter(Boolean).join(",");
+}
+
+export function getRapidApiDailyJobsSearchQueries(
+  countryCode: string,
+  configuredQueries: string[] = getCsvConfig("JOB_RAPIDAPI_QUERIES", [])
+) {
+  const terms = getRapidApiDailyJobsQueries(countryCode, configuredQueries);
+  const joined = joinRapidApiDailyTitleTerms(terms);
+  return [joined];
+}
+
+export function getRapidApiDailyJobsQueryParam() {
+  const configured = process.env.JOB_RAPIDAPI_QUERY_PARAM?.trim();
+  return configured || DEFAULT_QUERY_PARAM;
+}
+
+export function getRapidApiDailyJobsLookbackDays() {
+  return getPositiveInteger(process.env.JOB_RAPIDAPI_LOOKBACK_DAYS, DEFAULT_LOOKBACK_DAYS);
+}
+
+export type RapidApiDailyDateRange =
+  | { dateCreated: string }
+  | { dateCreatedMin: string; dateCreatedMax: string };
+
+export function getRapidApiDailyJobsDateRange(fetchedAt: Date): RapidApiDailyDateRange {
+  const explicitDate = process.env.JOB_RAPIDAPI_DATE_CREATED?.trim();
+
+  if (explicitDate) {
+    return { dateCreated: explicitDate };
+  }
+
+  const max = toIsoDateUtc(fetchedAt);
+  const minDate = new Date(fetchedAt.getTime());
+  minDate.setUTCDate(minDate.getUTCDate() - getRapidApiDailyJobsLookbackDays());
+
+  return {
+    dateCreatedMin: toIsoDateUtc(minDate),
+    dateCreatedMax: max
+  };
 }
 
 export function getRapidApiDailyJobsMaxPages(countryCode: string) {
@@ -304,16 +360,25 @@ function buildRapidApiDailyJobsUrl(
   baseUrl: string,
   query: string,
   page: number,
-  countryCode: string
+  countryCode: string,
+  fetchedAt: Date
 ) {
   const url = new URL(baseUrl);
   const hasSalary = getRapidApiDailyJobsHasSalary(countryCode);
-  const queryParam = process.env.JOB_RAPIDAPI_QUERY_PARAM ?? "query";
+  const queryParam = getRapidApiDailyJobsQueryParam();
+  const dateRange = getRapidApiDailyJobsDateRange(fetchedAt);
 
   url.searchParams.set("format", "json");
   url.searchParams.set("countryCode", countryCode);
   url.searchParams.set("hasSalary", hasSalary);
   url.searchParams.set("page", String(page));
+
+  if ("dateCreated" in dateRange) {
+    url.searchParams.set("dateCreated", dateRange.dateCreated);
+  } else {
+    url.searchParams.set("dateCreatedMin", dateRange.dateCreatedMin);
+    url.searchParams.set("dateCreatedMax", dateRange.dateCreatedMax);
+  }
 
   if (process.env.JOB_RAPIDAPI_PAGE_SIZE) {
     const pageSize = Math.min(
@@ -389,7 +454,7 @@ function isRapidApiDailyJob(value: unknown): value is RapidApiDailyJob {
   );
 }
 
-function normalizeRapidApiDailyJob(raw: RapidApiDailyJob, query: string, fetchedAt: Date) {
+function normalizeRapidApiDailyJob(raw: RapidApiDailyJob, fetchedAt: Date) {
   const jsonLd = getFirstJsonLd(raw);
   const title = cleanText(raw.title ?? jsonLd?.title);
   const company = cleanText(raw.company ?? jsonLd?.hiringOrganization?.name);
@@ -405,7 +470,6 @@ function normalizeRapidApiDailyJob(raw: RapidApiDailyJob, query: string, fetched
   }
 
   const sourceTags = [
-    query,
     raw.portal,
     raw.source,
     raw.industry,
@@ -529,6 +593,10 @@ function toNumber(value: unknown) {
 
   const parsed = Number(value.replace(/[$,]/g, ""));
   return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+function toIsoDateUtc(value: Date) {
+  return value.toISOString().slice(0, 10);
 }
 
 function delay(ms: number) {

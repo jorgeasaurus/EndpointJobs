@@ -2,14 +2,20 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  defaultRapidApiDailyTitleTerms,
+  getRapidApiDailyJobsDateRange,
   getRapidApiDailyJobsHasSalary,
+  getRapidApiDailyJobsLookbackDays,
   getRapidApiDailyJobsMaxPages,
   getRapidApiDailyJobsMaxRequestsPerRun,
   getRapidApiDailyJobsMonthlyRequestBudget,
   getRapidApiDailyJobsQueries,
+  getRapidApiDailyJobsQueryParam,
   getRapidApiDailyJobsRequestDelayMs,
   getRapidApiDailyJobsRetryDelayMs,
+  getRapidApiDailyJobsSearchQueries,
   isRapidApiDailyJobsRateLimitError,
+  joinRapidApiDailyTitleTerms,
   prioritizeRapidApiCountryCodes,
   rapidApiDailyJobsProvider
 } from "../job-refresh/providers/rapidapi-daily-jobs";
@@ -92,15 +98,28 @@ test("RapidAPI Daily keeps salary-required empty queries for US/EU and relaxes S
   delete process.env.JOB_RAPIDAPI_SPAIN_QUERIES;
   delete process.env.JOB_RAPIDAPI_HAS_SALARY;
   delete process.env.JOB_RAPIDAPI_LATAM_HAS_SALARY;
+  delete process.env.JOB_RAPIDAPI_QUERY_PARAM;
+  delete process.env.JOB_RAPIDAPI_LOOKBACK_DAYS;
+  delete process.env.JOB_RAPIDAPI_DATE_CREATED;
 
   try {
     assert.deepEqual(getRapidApiDailyJobsQueries("us"), [""]);
     assert.deepEqual(getRapidApiDailyJobsQueries("de"), [""]);
     assert.deepEqual(getRapidApiDailyJobsQueries("ch"), [""]);
-    assert.deepEqual(getRapidApiDailyJobsQueries("es"), ["endpoint"]);
-    assert.deepEqual(getRapidApiDailyJobsQueries("ar"), ["endpoint"]);
-    assert.deepEqual(getRapidApiDailyJobsQueries("ec"), ["endpoint"]);
-    assert.deepEqual(getRapidApiDailyJobsQueries("pr"), ["endpoint"]);
+    assert.deepEqual(getRapidApiDailyJobsQueries("es"), [...defaultRapidApiDailyTitleTerms]);
+    assert.deepEqual(getRapidApiDailyJobsQueries("ar"), [...defaultRapidApiDailyTitleTerms]);
+    assert.deepEqual(getRapidApiDailyJobsQueries("ec"), [...defaultRapidApiDailyTitleTerms]);
+    assert.deepEqual(getRapidApiDailyJobsQueries("pr"), [...defaultRapidApiDailyTitleTerms]);
+    assert.deepEqual(getRapidApiDailyJobsSearchQueries("es"), [
+      joinRapidApiDailyTitleTerms([...defaultRapidApiDailyTitleTerms])
+    ]);
+    assert.deepEqual(getRapidApiDailyJobsSearchQueries("us"), [""]);
+    assert.equal(getRapidApiDailyJobsQueryParam(), "title");
+    assert.equal(getRapidApiDailyJobsLookbackDays(), 30);
+    assert.deepEqual(
+      getRapidApiDailyJobsDateRange(new Date("2026-08-30T12:00:00.000Z")),
+      { dateCreatedMin: "2026-07-31", dateCreatedMax: "2026-08-30" }
+    );
     assert.equal(getRapidApiDailyJobsHasSalary("us"), "true");
     assert.equal(getRapidApiDailyJobsHasSalary("it"), "true");
     assert.equal(getRapidApiDailyJobsHasSalary("fr"), "true");
@@ -112,17 +131,52 @@ test("RapidAPI Daily keeps salary-required empty queries for US/EU and relaxes S
   }
 });
 
+test("RapidAPI Daily query param trims whitespace and falls back to title when empty", () => {
+  const originalEnv = { ...process.env };
+
+  try {
+    delete process.env.JOB_RAPIDAPI_QUERY_PARAM;
+    assert.equal(getRapidApiDailyJobsQueryParam(), "title");
+
+    process.env.JOB_RAPIDAPI_QUERY_PARAM = "  title  ";
+    assert.equal(getRapidApiDailyJobsQueryParam(), "title");
+
+    process.env.JOB_RAPIDAPI_QUERY_PARAM = "   ";
+    assert.equal(getRapidApiDailyJobsQueryParam(), "title");
+
+    process.env.JOB_RAPIDAPI_QUERY_PARAM = "";
+    assert.equal(getRapidApiDailyJobsQueryParam(), "title");
+
+    process.env.JOB_RAPIDAPI_QUERY_PARAM = "  skills  ";
+    assert.equal(getRapidApiDailyJobsQueryParam(), "skills");
+  } finally {
+    restoreProcessEnv(originalEnv);
+  }
+});
+
 test("RapidAPI Daily Spain queries fall back to the LATAM list unless JOB_RAPIDAPI_SPAIN_QUERIES is set", () => {
   const originalEnv = { ...process.env };
   delete process.env.JOB_RAPIDAPI_QUERIES;
-  process.env.JOB_RAPIDAPI_LATAM_QUERIES = "endpoint";
+  process.env.JOB_RAPIDAPI_LATAM_QUERIES = "intune,jamf,mdm,uem,endpoint";
   delete process.env.JOB_RAPIDAPI_SPAIN_QUERIES;
 
   try {
-    assert.deepEqual(getRapidApiDailyJobsQueries("es"), ["endpoint"]);
-    process.env.JOB_RAPIDAPI_SPAIN_QUERIES = "endpoint,intune";
-    assert.deepEqual(getRapidApiDailyJobsQueries("es"), ["endpoint", "intune"]);
-    assert.deepEqual(getRapidApiDailyJobsQueries("mx"), ["endpoint"]);
+    assert.deepEqual(getRapidApiDailyJobsQueries("es"), [
+      "intune",
+      "jamf",
+      "mdm",
+      "uem",
+      "endpoint"
+    ]);
+    assert.deepEqual(getRapidApiDailyJobsSearchQueries("es"), [
+      "intune,jamf,mdm,uem,endpoint"
+    ]);
+    process.env.JOB_RAPIDAPI_SPAIN_QUERIES = "intune,ingeniero endpoint";
+    assert.deepEqual(getRapidApiDailyJobsQueries("es"), ["intune", "ingeniero endpoint"]);
+    assert.deepEqual(getRapidApiDailyJobsSearchQueries("es"), ["intune,ingeniero endpoint"]);
+    assert.deepEqual(getRapidApiDailyJobsSearchQueries("mx"), [
+      "intune,jamf,mdm,uem,endpoint"
+    ]);
   } finally {
     restoreProcessEnv(originalEnv);
   }
@@ -184,7 +238,7 @@ test("RapidAPI Daily budget helpers leave Pro headroom and derive a per-run cap"
   }
 });
 
-test("RapidAPI Daily requests set hasSalary=false for LATAM and send an endpoint query", async () => {
+test("RapidAPI Daily requests set hasSalary=false for LATAM and send a title OR", async () => {
   const urls: URL[] = [];
 
   await withRapidApiEnv(
@@ -196,7 +250,10 @@ test("RapidAPI Daily requests set hasSalary=false for LATAM and send an endpoint
       JOB_RAPIDAPI_SPAIN_MAX_PAGES: "1",
       JOB_RAPIDAPI_QUERIES: undefined,
       JOB_RAPIDAPI_LATAM_QUERIES: undefined,
-      JOB_RAPIDAPI_LATAM_HAS_SALARY: undefined
+      JOB_RAPIDAPI_LATAM_HAS_SALARY: undefined,
+      JOB_RAPIDAPI_QUERY_PARAM: undefined,
+      JOB_RAPIDAPI_LOOKBACK_DAYS: undefined,
+      JOB_RAPIDAPI_DATE_CREATED: undefined
     },
     async (input) => {
       urls.push(new URL(String(input)));
@@ -219,12 +276,20 @@ test("RapidAPI Daily requests set hasSalary=false for LATAM and send an endpoint
   const byCountry = Object.fromEntries(
     urls.map((url) => [url.searchParams.get("countryCode"), url])
   );
+  const expectedTitle = joinRapidApiDailyTitleTerms([...defaultRapidApiDailyTitleTerms]);
   assert.equal(byCountry.us?.searchParams.get("hasSalary"), "true");
   assert.equal(byCountry.us?.searchParams.get("query"), null);
+  assert.equal(byCountry.us?.searchParams.get("title"), null);
   assert.equal(byCountry.es?.searchParams.get("hasSalary"), "false");
-  assert.equal(byCountry.es?.searchParams.get("query"), "endpoint");
+  assert.equal(byCountry.es?.searchParams.get("query"), null);
+  assert.equal(byCountry.es?.searchParams.get("title"), expectedTitle);
   assert.equal(byCountry.ar?.searchParams.get("hasSalary"), "false");
-  assert.equal(byCountry.ar?.searchParams.get("query"), "endpoint");
+  assert.equal(byCountry.ar?.searchParams.get("query"), null);
+  assert.equal(byCountry.ar?.searchParams.get("title"), expectedTitle);
+  assert.equal(byCountry.es?.searchParams.get("dateCreatedMin"), "2026-07-31");
+  assert.equal(byCountry.es?.searchParams.get("dateCreatedMax"), "2026-08-30");
+  assert.equal(byCountry.us?.searchParams.get("dateCreatedMin"), "2026-07-31");
+  assert.equal(byCountry.us?.searchParams.get("dateCreatedMax"), "2026-08-30");
 });
 
 test("RapidAPI Daily paginates Spain and LATAM until empty and keeps US/EU on one page", async () => {
@@ -389,4 +454,125 @@ test("RapidAPI Daily caps pageSize at the API maximum of 10", async () => {
   );
 
   assert.equal(urls[0]?.searchParams.get("pageSize"), "10");
+});
+
+test("RapidAPI Daily joins CSV title terms into one request per country", async () => {
+  const urls: URL[] = [];
+
+  await withRapidApiEnv(
+    {
+      JOB_RAPIDAPI_COUNTRY_CODES: "es,mx",
+      JOB_RAPIDAPI_LATAM_QUERIES: "intune,jamf,mdm",
+      JOB_RAPIDAPI_SPAIN_QUERIES: "intune,jamf,mdm",
+      JOB_RAPIDAPI_MAX_PAGES: "1",
+      JOB_RAPIDAPI_LATAM_MAX_PAGES: "1",
+      JOB_RAPIDAPI_SPAIN_MAX_PAGES: "1"
+    },
+    async (input) => {
+      urls.push(new URL(String(input)));
+      return emptyPage();
+    },
+    async () => {
+      await rapidApiDailyJobsProvider.fetchJobs({
+        url: rapidApiDailyJobsProvider.defaultUrl,
+        fetchedAt: new Date("2026-08-30T12:00:00.000Z")
+      });
+    }
+  );
+
+  assert.equal(urls.length, 2);
+  assert.deepEqual(
+    urls.map((url) => `${url.searchParams.get("countryCode")}:${url.searchParams.get("title")}`),
+    ["es:intune,jamf,mdm", "mx:intune,jamf,mdm"]
+  );
+});
+
+test("RapidAPI Daily honors an explicit dateCreated override", async () => {
+  const urls: URL[] = [];
+
+  await withRapidApiEnv(
+    {
+      JOB_RAPIDAPI_COUNTRY_CODES: "es",
+      JOB_RAPIDAPI_SPAIN_MAX_PAGES: "1",
+      JOB_RAPIDAPI_DATE_CREATED: "2026-08"
+    },
+    async (input) => {
+      urls.push(new URL(String(input)));
+      return emptyPage();
+    },
+    async () => {
+      await rapidApiDailyJobsProvider.fetchJobs({
+        url: rapidApiDailyJobsProvider.defaultUrl,
+        fetchedAt: new Date("2026-08-30T12:00:00.000Z")
+      });
+    }
+  );
+
+  assert.equal(urls[0]?.searchParams.get("dateCreated"), "2026-08");
+  assert.equal(urls[0]?.searchParams.get("dateCreatedMin"), null);
+  assert.equal(urls[0]?.searchParams.get("dateCreatedMax"), null);
+});
+
+test("RapidAPI Daily keeps Intune/MDM titles and drops generic IT rows without leaking the search OR into tags", async () => {
+  await withRapidApiEnv(
+    {
+      JOB_RAPIDAPI_COUNTRY_CODES: "es",
+      JOB_RAPIDAPI_SPAIN_QUERIES: "intune,jamf,mdm,uem,endpoint",
+      JOB_RAPIDAPI_SPAIN_MAX_PAGES: "1"
+    },
+    async () => {
+      return Response.json({
+        result: [
+          {
+            title: "Ingeniero Intune",
+            company: "Acme Madrid",
+            url: "https://example.com/jobs/intune-es",
+            city: "Madrid",
+            countryCode: "es",
+            occupation: "engineer",
+            skills: ["Intune"]
+          },
+          {
+            title: "Especialista MDM",
+            company: "Acme Bogota",
+            url: "https://example.com/jobs/mdm-co",
+            city: "Bogotá",
+            countryCode: "co",
+            occupation: "specialist"
+          },
+          {
+            title: "Network Operations Analyst",
+            company: "Generic Telco",
+            url: "https://example.com/jobs/network-ops",
+            city: "Madrid",
+            countryCode: "es",
+            occupation: "analyst",
+            industry: "it",
+            skills: ["cisco", "routing"]
+          }
+        ]
+      });
+    },
+    async () => {
+      const jobs = await rapidApiDailyJobsProvider.fetchJobs({
+        url: rapidApiDailyJobsProvider.defaultUrl,
+        fetchedAt: new Date("2026-08-30T12:00:00.000Z")
+      });
+      const surviving = jobs.filter((job) => job !== null);
+
+      assert.deepEqual(
+        surviving.map((job) => job.title),
+        ["Ingeniero Intune", "Especialista MDM"]
+      );
+      assert.ok(
+        surviving.every((job) => job.source === "RapidAPI Daily International Jobs")
+      );
+      assert.ok(
+        surviving.every((job) => job.attributionLabel === "Daily International Jobs via RapidAPI")
+      );
+      assert.ok(
+        surviving.every((job) => !job.tags.some((tag) => tag.includes("intune,jamf,mdm,uem,endpoint")))
+      );
+    }
+  );
 });
