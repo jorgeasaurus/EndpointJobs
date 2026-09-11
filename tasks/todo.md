@@ -686,3 +686,5 @@ Copilot round 4: remove Workday search terms from published metadata and cancel 
 Copilot round 5: paragraph regression uses a stable scoped fixture/clock; verified with an empty feed and host clock at 2099, restoring both afterward. All 92 tests, 71 data audits, lint, and typecheck pass.
 
 Copilot round 6: reject stale rendered popup point IDs even with a current snapshot, and restore rich-result DE suffix handling. Validation: 95 tests, 71 data audits, 41 browser checks, lint, typecheck, and production build pass.
+
+Copilot round 7: disjoint hashed/readable provider IDs, Jibe haystack-only search evidence, and DE/Germany fallback. Validation: 99 tests, 71 data audits, lint, typecheck, and production build pass.
