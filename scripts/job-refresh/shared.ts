@@ -702,7 +702,13 @@ export function buildProviderJobId(
   }
 
   const fullIdentity = JSON.stringify([source, account, identity ? ["native", nativeId] : ["url", sourceUrl]]);
-  return buildStableJobId(source, account, title, fullIdentity);
+  const readable = [source, account, title]
+    .map(normalizeIdPart)
+    .filter(Boolean)
+    .join("-");
+
+  // `--` cannot appear in the readable native-ID form, which forbids empty segments.
+  return `${readable}--${shortHash(fullIdentity)}`;
 }
 
 function shortHash(value: string) {

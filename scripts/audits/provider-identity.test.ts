@@ -90,3 +90,19 @@ test("provider IDs preserve only unambiguous lossless short identities", () => {
     buildProviderJobId("activate", "A B", title, undefined, urls[0])
   );
 });
+
+test("hashed fallback IDs cannot collide with readable native IDs", () => {
+  const fallback = buildProviderJobId("activate", "example", title, undefined, urls[0]);
+  assert.match(fallback, /^activate-example-intune-endpoint-engineer--[a-f0-9]{10}$/);
+
+  const hash = fallback.slice(fallback.lastIndexOf("--") + 2);
+  const collidingNativeId = `intune-endpoint-engineer-${hash}`;
+  const readableTwin = buildProviderJobId("activate", "example", title, collidingNativeId, urls[1]);
+
+  assert.equal(readableTwin, `activate-example-${collidingNativeId}`);
+  assert.notEqual(fallback, readableTwin);
+  assert.notEqual(
+    fallback,
+    buildProviderJobId("activate", "example", title, `intune-endpoint-engineer--${hash}`, urls[1])
+  );
+});
