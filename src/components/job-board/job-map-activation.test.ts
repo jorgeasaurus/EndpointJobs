@@ -3,7 +3,8 @@ import test from "node:test";
 import type { Feature } from "geojson";
 
 import type { JobMapPoint } from "@/lib/job-map";
-import { getVisiblePopup, type ActivePopup } from "./job-map-features";
+import { makeJob } from "../../../scripts/audits/shared";
+import { getVisiblePopup, readJobPreview, type ActivePopup } from "./job-map-features";
 import { loadClusterSelection } from "./job-map-activation";
 
 const cluster: Feature = {
@@ -63,12 +64,25 @@ test("a failed worker cannot return a partial popup/camera update", async () => 
 });
 
 test("cluster popups are invalidated when the map source changes", () => {
-  const points: JobMapPoint[] = [];
+  const points: JobMapPoint[] = [{ id: "point-1", job: makeJob(), label: "New York", latitude: 40, longitude: -73 }];
   const popup: ActivePopup = {
-    count: 3, jobs: [], key: "cluster:1:3", label: "3 jobs",
+    count: 3, jobs: [readJobPreview(leaf)!], key: "cluster:1:3", label: "3 jobs",
     latitude: 40, longitude: -73, type: "cluster"
   };
   const selection = { popup, points };
   assert.equal(getVisiblePopup(selection, points), popup);
   assert.equal(getVisiblePopup(selection, [...points]), null);
+});
+
+test("stale rendered features cannot claim the current source snapshot", () => {
+  const points: JobMapPoint[] = [{ id: "current-point", job: makeJob(), label: "New York", latitude: 40, longitude: -73 }];
+  for (const type of ["job", "cluster"] as const) {
+    const popup: ActivePopup = {
+      count: 1, jobs: [readJobPreview(leaf)!], key: "stale-point", label: "Old job",
+      latitude: 40, longitude: -73, type
+    };
+    assert.equal(getVisiblePopup({ popup, points }, points), null);
+    popup.jobs = [];
+    assert.equal(getVisiblePopup({ popup, points }, points), null);
+  }
 });

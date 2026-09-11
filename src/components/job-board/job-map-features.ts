@@ -85,7 +85,9 @@ export type PopupSelection = {
 };
 
 export function getVisiblePopup(selection: PopupSelection | null, points: JobMapPoint[]) {
-  return selection?.points === points ? selection.popup : null;
+  if (!selection || selection.points !== points || selection.popup.jobs.length === 0) return null;
+  const currentPointIds = new Set(points.map((point) => point.id));
+  return selection.popup.jobs.every((job) => currentPointIds.has(job.id)) ? selection.popup : null;
 }
 
 export function getInteractiveFeature(features: MapGeoJSONFeature[] | undefined) {

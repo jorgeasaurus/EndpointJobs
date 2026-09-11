@@ -87,7 +87,9 @@ export function inferAddressCountry(job: Job) {
 
   const location = `${job.location} ${job.mapLocation?.label ?? ""}`;
   const foldedLocation = foldDiacritics(location);
-  const usStateSuffixed = getUsStateSuffix(foldedJobLocation);
+  const usStateSuffix = getUsStateSuffix(foldedJobLocation);
+  // DE also denotes Germany; preserve explicit country evidence in this case.
+  const usStateSuffixed = usStateSuffix !== undefined && usStateSuffix !== "de";
 
   for (const [pattern, countryCode] of countryMatchers) {
     if (!pattern.test(foldedLocation)) {
