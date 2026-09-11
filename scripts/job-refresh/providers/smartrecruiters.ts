@@ -3,6 +3,7 @@ import type { Job, Workplace } from "../../../src/types/job";
 import type { ProviderAdapter } from "../provider";
 import {
   addDays,
+  getJobStaleDays,
   buildStableJobId,
   cleanText,
   cleanUrl,
@@ -89,7 +90,7 @@ const defaultQueries = [
 ];
 const defaultPageLimit = 100;
 const defaultMaxPages = 3;
-const staleDays = getPositiveInteger(process.env.JOB_STALE_DAYS, 45);
+const staleDays = getJobStaleDays();
 
 export const smartRecruitersProvider: ProviderAdapter<"smartrecruiters"> = {
   id: "smartrecruiters",
@@ -290,7 +291,6 @@ function normalizeSmartRecruitersPosting(
     workplace: normalizeWorkplace(raw.location),
     postedAt,
     fetchedAt,
-    staleAfter: addDays(new Date(postedAt), staleDays).toISOString(),
     source: "SmartRecruiters",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,

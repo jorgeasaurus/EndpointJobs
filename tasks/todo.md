@@ -677,7 +677,7 @@ Dependency follow-up: MapLibre 6.9.0 resolves the remaining advisory; `npm audit
 
 Fixed and resolved Copilot’s tool-casing finding in `9e28b56`; 13 Pester tests, module analysis/build, 71 data audits, lint, and typecheck pass. Two explained React Doctor heuristic threads remain open. Fresh review requested on the new head.
 
-Historical review results below retain the counts measured at each commit. The current test run reports 114 passing tests.
+Historical review results below retain the counts measured at each commit. The current test run reports 118 passing tests.
 
 Copilot round 2: fixed audit-clock drift, Activate query contamination, invalid TheirStack ages, and stale map popups. Validation: 90 tests, 71 data audits, 41 browser checks, lint, typecheck, and production build pass.
 
@@ -739,3 +739,13 @@ Round-21 verification: three query-invariance regressions failed before the fixe
 Fallback provider IDs must depend only on stable source/account and native-ID or URL identity. Remove the unused title input and verify GUID/URL-backed records retain IDs after a title edit.
 
 Round-22 verification: title-change regression failed before the fix; all 114 tests, 71 data audits, lint, typecheck, and both full React Doctor scans pass (100/100). Short lossless native IDs remain unchanged. Fresh review follows this commit; its result will be recorded on the PR.
+
+## Fresh whole-project thermonuclear review
+
+- [x] Review frontend, domain/routes, ingestion, PowerShell, and validation boundaries.
+- [x] Fix actionable structural findings and run relevant checks.
+- [x] Repeat strict review until zero findings; record final validation.
+
+Round 1 findings: (1) stale-day parsing and deadline policy are duplicated across provider boundaries with divergent invalid-value behavior; centralize validation and remove redundant default deadlines. (2) AuditToggleButton casts away the production props contract; delete the alias and pass required children through the real component props. Frontend and domain/route reviews found no blockers.
+
+Final review: three rounds, zero remaining findings. JSX audit renderings remove the cast without violating children-prop lint rules; staged rename restored complete React Doctor maintainability scanning. Validation: npm test (118), audit:data (71), lint, typecheck, PowerShell build.ps1 -Task CI (14 Pester tests plus analysis/build), diff --check, and full React Doctor 0.5.5/0.9.13 (100/100, no skipped checks) pass. Clean: yes.

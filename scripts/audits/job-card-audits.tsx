@@ -5,6 +5,7 @@ import { formatUpdatedAt, isActiveJob } from "../../src/lib/jobs";
 import { JobContextCards } from "../../src/components/job-board/job-context-cards";
 import { WorkplaceFilters } from "../../src/components/job-board/location-filters";
 import { MatchRecommendation } from "../../src/components/job-board/match-recommendation";
+import { ToggleButton } from "../../src/components/job-board/toggle-button";
 import { ToolChips } from "../../src/components/job-board/tool-chips";
 import { JobMapCanvasLoading } from "../../src/components/job-board/job-map-loading";
 
@@ -14,7 +15,6 @@ import {
   assertNotEqual,
   assertNotIncludes,
   assertTruthy,
-  AuditToggleButton,
   stripHtml,
   type AuditContext
 } from "./shared";
@@ -207,28 +207,14 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
 
   await run("FEAT-035", "Toggle buttons emit explicit pressed state", () => {
     const active = renderToStaticMarkup(
-      createElement(
-        AuditToggleButton,
-        {
-          activeClassName: "active",
-          inactiveClassName: "inactive",
-          isActive: true,
-          onClick: () => undefined
-        },
-        "Filter"
-      )
+      <ToggleButton activeClassName="active" inactiveClassName="inactive" isActive={true} onClick={() => undefined}>
+        Filter
+      </ToggleButton>
     );
     const inactive = renderToStaticMarkup(
-      createElement(
-        AuditToggleButton,
-        {
-          activeClassName: "active",
-          inactiveClassName: "inactive",
-          isActive: false,
-          onClick: () => undefined
-        },
-        "Filter"
-      )
+      <ToggleButton activeClassName="active" inactiveClassName="inactive" isActive={false} onClick={() => undefined}>
+        Filter
+      </ToggleButton>
     );
     assertIncludes(active, 'aria-pressed="true"');
     assertIncludes(inactive, 'aria-pressed="false"');

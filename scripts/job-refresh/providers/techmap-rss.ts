@@ -3,7 +3,6 @@ import { XMLParser } from "fast-xml-parser";
 import type { Job } from "../../../src/types/job";
 import type { ProviderAdapter } from "../provider";
 import {
-  addDays,
   toEndpointJob,
   cleanText,
   cleanUrl,
@@ -36,8 +35,6 @@ type TechmapRssFeed = {
   name: string;
   url: string;
 };
-
-const staleDays = Number(process.env.JOB_STALE_DAYS ?? 45);
 
 export const techmapRssProvider = {
   id: "techmaprss",
@@ -124,7 +121,6 @@ function normalizeTechmapRssJob(raw: TechmapRssItem, feed: TechmapRssFeed, fetch
   const postedAt = rawDate && !Number.isNaN(new Date(rawDate).getTime())
     ? new Date(rawDate).toISOString()
     : fetchedAt.toISOString();
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
   const nativeId = getXmlText(raw.guid) || getXmlText(raw.id);
 
   return toEndpointJob({
@@ -134,7 +130,6 @@ function normalizeTechmapRssJob(raw: TechmapRssItem, feed: TechmapRssFeed, fetch
     location,
     postedAt,
     fetchedAt,
-    staleAfter,
     source: "Techmap RSS",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,

@@ -22,7 +22,7 @@ import { resolveJobMapLocation } from "./map-location";
 
 const toolAliases = endpointToolDefinitions;
 const platformAliases = platformDefinitions;
-const staleDays = Number(process.env.JOB_STALE_DAYS ?? 45);
+const staleDays = getJobStaleDays();
 const configuredDescriptionMaxLength = Number(process.env.JOB_DESCRIPTION_MAX_LENGTH ?? 12000);
 const configuredDescriptionMinLength = Number(process.env.JOB_DESCRIPTION_MIN_LENGTH ?? 420);
 const descriptionMaxLength =
@@ -763,6 +763,10 @@ export function getCsvConfig(envKey: string, fallback: string[]) {
   const values = configured ? configured.split(",") : fallback;
 
   return values.map((value) => value.trim()).filter(Boolean);
+}
+
+export function getJobStaleDays() {
+  return getPositiveInteger(process.env.JOB_STALE_DAYS, 45);
 }
 
 export function getPositiveInteger(value: string | undefined, fallback: number) {

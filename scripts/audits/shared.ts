@@ -1,7 +1,5 @@
 import { readFile } from "node:fs/promises";
-import type { ReactNode } from "react";
 
-import { ToggleButton } from "../../src/components/job-board/toggle-button";
 import type { EndpointTool, Job, JobsFeed, Platform } from "../../src/types/job";
 import feedData from "../../src/data/jobs.json";
 
@@ -20,14 +18,6 @@ export const fixedAuditNow = new Date("2026-06-28T20:55:00.000Z");
 const fixtureTimestamp = fixedAuditNow.getTime();
 export const feed = feedData as JobsFeed;
 
-export const AuditToggleButton = ToggleButton as unknown as (props: {
-  activeClassName: string;
-  children?: ReactNode;
-  inactiveClassName: string;
-  isActive: boolean;
-  onClick: () => void;
-}) => ReturnType<typeof ToggleButton>;
-
 const sourcePaths = {
   activeFilters: "src/components/job-board/active-filters.ts",
   animatedNumber: "src/components/job-board/animated-number.tsx",
@@ -44,7 +34,7 @@ const sourcePaths = {
   feedAudit: "scripts/audits/feed-audits.ts",
   feedSafetyAudit: "scripts/audits/feed-safety-data.ts",
   filterAudit: "scripts/audits/filter-audits.ts",
-  jobCardAudit: "scripts/audits/job-card-audits.ts",
+  jobCardAudit: "scripts/audits/job-card-audits.tsx",
   jobTaxonomy: "src/lib/job-taxonomy.ts",
   issueConfig: ".github/ISSUE_TEMPLATE/config.yml",
   issueTemplate: ".github/ISSUE_TEMPLATE/report-or-request.yml",

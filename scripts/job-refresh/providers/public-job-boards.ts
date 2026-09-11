@@ -2,7 +2,6 @@ import type { Job } from "../../../src/types/job";
 import type { ProviderAdapter } from "../provider";
 import { defaultEndpointSearchQueries } from "../search-config";
 import {
-  addDays,
   toEndpointJob,
   cleanText,
   cleanUrl,
@@ -110,8 +109,6 @@ type AdzunaJob = {
   salary_min?: number;
   salary_max?: number;
 };
-
-const staleDays = Number(process.env.JOB_STALE_DAYS ?? 45);
 
 export const publicJobBoardProviders = [
   {
@@ -364,7 +361,6 @@ function normalizeRemoteOkJob(raw: RemoteOkJob, fetchedAt: Date): Job | null {
   );
 
   const postedAt = getPostedAt(raw, fetchedAt);
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
   const salary = normalizeSalary(raw.salary_min, raw.salary_max);
   const workplace = inferWorkplace(raw.location, haystack);
 
@@ -376,7 +372,6 @@ function normalizeRemoteOkJob(raw: RemoteOkJob, fetchedAt: Date): Job | null {
     workplace,
     postedAt,
     fetchedAt,
-    staleAfter,
     source: "Remote OK",
     sourceUrl: sourceJobUrl,
     applyUrl,
@@ -405,7 +400,6 @@ function normalizeRemotiveJob(raw: RemotiveJob, fetchedAt: Date): Job | null {
     raw.publication_date && !Number.isNaN(new Date(raw.publication_date).getTime())
       ? new Date(raw.publication_date).toISOString()
       : fetchedAt.toISOString();
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
 
   return toEndpointJob({
     id: `remotive-${raw.id}`,
@@ -415,7 +409,6 @@ function normalizeRemotiveJob(raw: RemotiveJob, fetchedAt: Date): Job | null {
     workplace: "Remote",
     postedAt,
     fetchedAt,
-    staleAfter,
     source: "Remotive",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,
@@ -446,7 +439,6 @@ function normalizeArbeitnowJob(raw: ArbeitnowJob, fetchedAt: Date): Job | null {
     raw.created_at && raw.created_at > 0
       ? new Date(raw.created_at * 1000).toISOString()
       : fetchedAt.toISOString();
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
 
   return toEndpointJob({
     id: `arbeitnow-${raw.slug}`,
@@ -456,7 +448,6 @@ function normalizeArbeitnowJob(raw: ArbeitnowJob, fetchedAt: Date): Job | null {
     workplace: raw.remote ? "Remote" : undefined,
     postedAt,
     fetchedAt,
-    staleAfter,
     source: "Arbeitnow",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,
@@ -484,7 +475,6 @@ function normalizeJobicyJob(raw: JobicyJob, fetchedAt: Date): Job | null {
     raw.pubDate && !Number.isNaN(new Date(raw.pubDate).getTime())
       ? new Date(raw.pubDate).toISOString()
       : fetchedAt.toISOString();
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
 
   return toEndpointJob({
     id: `jobicy-${raw.id}`,
@@ -494,7 +484,6 @@ function normalizeJobicyJob(raw: JobicyJob, fetchedAt: Date): Job | null {
     workplace: "Remote",
     postedAt,
     fetchedAt,
-    staleAfter,
     source: "Jobicy",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,
@@ -533,7 +522,6 @@ function normalizeMuseJob(raw: MuseJob, fetchedAt: Date): Job | null {
     raw.publication_date && !Number.isNaN(new Date(raw.publication_date).getTime())
       ? new Date(raw.publication_date).toISOString()
       : fetchedAt.toISOString();
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
 
   return toEndpointJob({
     id: `muse-${raw.id}`,
@@ -542,7 +530,6 @@ function normalizeMuseJob(raw: MuseJob, fetchedAt: Date): Job | null {
     location,
     postedAt,
     fetchedAt,
-    staleAfter,
     source: "The Muse",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,
@@ -573,7 +560,6 @@ function normalizeAdzunaJob(raw: AdzunaJob, fetchedAt: Date): Job | null {
     raw.created && !Number.isNaN(new Date(raw.created).getTime())
       ? new Date(raw.created).toISOString()
       : fetchedAt.toISOString();
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
   const salary = normalizeSalary(raw.salary_min, raw.salary_max);
 
   const job = toEndpointJob({
@@ -583,7 +569,6 @@ function normalizeAdzunaJob(raw: AdzunaJob, fetchedAt: Date): Job | null {
     location,
     postedAt,
     fetchedAt,
-    staleAfter,
     source: "Adzuna",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,

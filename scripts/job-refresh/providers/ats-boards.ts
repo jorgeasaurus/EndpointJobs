@@ -2,6 +2,7 @@ import type { Job } from "../../../src/types/job";
 import type { ProviderAdapter } from "../provider";
 import {
   addDays,
+  getJobStaleDays,
   toEndpointJob,
   cleanText,
   cleanUrl,
@@ -91,7 +92,7 @@ type WorkableAccount = {
   slug: string;
 };
 
-const staleDays = Number(process.env.JOB_STALE_DAYS ?? 45);
+const staleDays = getJobStaleDays();
 
 const defaultGreenhouseBoards = [
   "jamf",
@@ -614,7 +615,6 @@ function normalizeWorkableJob(raw: WorkableJob, account: WorkableAccount, fetche
   const postedAt = published && !Number.isNaN(new Date(published).getTime())
     ? new Date(published).toISOString()
     : fetchedAt.toISOString();
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
 
   return toEndpointJob({
     id: `workable-${account.slug}-${shortcode}`,
@@ -624,7 +624,6 @@ function normalizeWorkableJob(raw: WorkableJob, account: WorkableAccount, fetche
     workplace: raw.remote ? "Remote" : undefined,
     postedAt,
     fetchedAt,
-    staleAfter,
     source: "Workable",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,

@@ -3,6 +3,7 @@ import type { Job, Workplace } from "../../../src/types/job";
 import type { ProviderAdapter } from "../provider";
 import {
   addDays,
+  getJobStaleDays,
   buildStableJobId,
   cleanText,
   cleanUrl,
@@ -73,10 +74,7 @@ const defaultRecruiteeAccounts = [
   "entyre"
 ];
 
-const configuredStaleDays = Number(process.env.JOB_STALE_DAYS ?? 45);
-const staleDays = Number.isFinite(configuredStaleDays) && configuredStaleDays > 0
-  ? configuredStaleDays
-  : 45;
+const staleDays = getJobStaleDays();
 
 export const recruiteeProvider: ProviderAdapter<"recruitee"> = {
   id: "recruitee",

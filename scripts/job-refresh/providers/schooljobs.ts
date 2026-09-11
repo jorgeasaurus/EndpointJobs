@@ -3,7 +3,6 @@ import { XMLParser } from "fast-xml-parser";
 import type { Job } from "../../../src/types/job";
 import type { ProviderAdapter } from "../provider";
 import {
-  addDays,
   toEndpointJob,
   buildStableJobId,
   cleanText,
@@ -37,8 +36,6 @@ type SchoolJobsChannel = {
   title?: unknown;
   item?: unknown;
 };
-
-const staleDays = Number(process.env.JOB_STALE_DAYS ?? 45);
 
 export const schoolJobsProvider = {
   id: "schooljobs",
@@ -103,7 +100,6 @@ function normalizeSchoolJobsItem(raw: SchoolJobsItem, company: string, fetchedAt
     ?? parseDateLike(getXmlText(raw.pubDate))
     ?? fetchedAt.toISOString();
   const closingAt = parseSchoolJobsUtcDate(getXmlText(raw["joblisting:advertiseToDateTimeUTC"]));
-  const staleAfter = closingAt ?? addDays(new Date(postedAt), staleDays).toISOString();
   const nativeId = cleanText(getXmlText(raw["joblisting:jobId"]));
 
   const job = toEndpointJob({
@@ -113,7 +109,7 @@ function normalizeSchoolJobsItem(raw: SchoolJobsItem, company: string, fetchedAt
     location,
     postedAt,
     fetchedAt,
-    staleAfter,
+    staleAfter: closingAt,
     source: "SchoolJobs",
     sourceUrl,
     applyUrl: sourceUrl,

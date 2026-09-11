@@ -3,6 +3,7 @@ import type { ProviderAdapter } from "../provider";
 import { defaultWorkdaySites, type WorkdaySite } from "./workday-sites";
 import {
   addDays,
+  getJobStaleDays,
   toEndpointJob,
   buildStableJobId,
   cleanText,
@@ -91,7 +92,7 @@ type WorkdayJob = {
   locationsText?: string;
 };
 
-const staleDays = Number(process.env.JOB_STALE_DAYS ?? 45);
+const staleDays = getJobStaleDays();
 
 const defaultAmazonQueries = [
   "macOS Client Engineering",
@@ -451,7 +452,6 @@ function normalizeJibeJob(raw: JibeJob, site: JibeSite, query: string, fetchedAt
   const sourceTags = [...categories, ...tagFields, cleanText(data.location_type), cleanText(data.employment_type)].filter(Boolean);
 
   const postedAt = parseDateLike(data.posted_date) ?? parseDateLike(data.update_date) ?? parseDateLike(data.create_date) ?? fetchedAt.toISOString();
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
 
   return toEndpointJob({
     id: buildProviderJobId("jibe", site.name, data.req_id || data.slug, sourceJobUrl),
@@ -460,7 +460,6 @@ function normalizeJibeJob(raw: JibeJob, site: JibeSite, query: string, fetchedAt
     location,
     postedAt,
     fetchedAt,
-    staleAfter,
     source: "Jibe",
     sourceUrl: sourceJobUrl,
     applyUrl,
