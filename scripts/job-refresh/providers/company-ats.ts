@@ -169,7 +169,7 @@ async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
       try {
         const payload = await fetchWorkdaySearch(site.url, query);
         completedQueries += 1;
-        jobs.push(...payload.map((job) => normalizeWorkdayJob(job, site, fetchedAt)));
+        jobs.push(...payload.map((job) => normalizeWorkdayJob(job, site, query, fetchedAt)));
         console.log(`Fetched ${payload.length} raw jobs from Workday/${site.name} query ${query}`);
       } catch (error) {
         console.warn(
@@ -358,7 +358,7 @@ function normalizeAmazonJob(raw: AmazonJob, fetchedAt: Date): Job | null {
   });
 }
 
-function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, fetchedAt: Date): Job | null {
+function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, fetchedAt: Date): Job | null {
   const title = cleanText(raw.title);
   const company = site.name;
   const sourceJobUrl = buildWorkdayJobUrl(site.url, raw.externalPath);
@@ -386,7 +386,9 @@ function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, fetchedAt: Date
     attributionLabel: `Workday / ${company}`,
     termsProfile: "public-api",
     description: bulletFields.join(" "),
-    sourceTags: bulletFields
+    sourceTags: bulletFields,
+    // Search query is relevance evidence only; do not copy it into published copy.
+    haystackParts: [query]
   });
 }
 
