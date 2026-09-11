@@ -717,3 +717,7 @@ Round-17 verification: 108 tests, 71 data audits, 41 production browser checks, 
 Copilot round 18: refresh directory active/canonical selection and pagination per request, including metadata validation; restrict the DE map exception to German cities. Both regressions failed before their fixes. All 110 tests, 71 data audits, lint, typecheck, build, and both full React Doctor scans pass (100/100).
 
 Round-18 production browser validation: all 41 checks pass.
+
+Copilot round 19: add five-minute ISR to job details so expiry-dependent content and canonical metadata refresh between builds. Verify the production prerender manifest alongside the existing expiry regression.
+
+Round-19 verification: 110 tests, lint, typecheck, build, and both React Doctor scans pass (100/100); all 886 prerendered detail routes have a 300-second refresh. Production browser checks confirm active filters collapse by mouse/keyboard and stay closed across search and filter changes; the suppressed collapse claim is not reproducible.

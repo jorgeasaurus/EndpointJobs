@@ -37,11 +37,20 @@ try {
   await expect(advanced).not.toHaveAttribute("open", "");
   await page.getByRole("searchbox", { name: "Search jobs" }).fill("Intune");
   await expect(advanced).not.toHaveAttribute("open", "");
-  await page.goto(`${baseUrl}/?sort=company`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}/?sort=company&seniority=Senior`, { waitUntil: "networkidle" });
   await expect(advanced).toHaveAttribute("open", "");
   await advanced.locator("summary").click();
   await expect(advanced).not.toHaveAttribute("open", "");
   await page.getByRole("searchbox", { name: "Search jobs" }).fill("Jamf");
+  await expect(advanced).not.toHaveAttribute("open", "");
+  await page.getByRole("button", { name: "Remove filter: Senior", exact: true }).first().click();
+  await expect(advanced).not.toHaveAttribute("open", "");
+  await expect(page.getByRole("button", { name: "Remove filter: Sort: Company", exact: true }).first()).toBeVisible();
+  await advanced.locator("summary").press("Enter");
+  await expect(advanced).toHaveAttribute("open", "");
+  await advanced.locator("summary").press("Space");
+  await expect(advanced).not.toHaveAttribute("open", "");
+  await page.getByRole("searchbox", { name: "Search jobs" }).fill("Intune");
   await expect(advanced).not.toHaveAttribute("open", "");
   console.log("Passed: API and comparison keyboard scrolling, responsive focus, and advanced-filter expansion.");
 } finally {

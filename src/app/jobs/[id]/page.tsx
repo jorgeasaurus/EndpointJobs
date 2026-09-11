@@ -29,6 +29,9 @@ type JobPageProps = {
   params: Promise<{ id: string }>;
 };
 
+// Refresh expiry-dependent content, metadata, and canonical selection between feed builds.
+export const revalidate = 300;
+
 const feed = feedData as JobsFeed;
 
 function getActiveJobs(now = new Date()) {
