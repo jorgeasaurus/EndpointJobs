@@ -122,3 +122,27 @@ test("Activate search terms do not qualify or classify unrelated listings", asyn
     process.env = originalEnv;
   }
 });
+
+test("Activate search evidence admits technical listings without changing published metadata", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalEnv = { ...process.env };
+  globalThis.fetch = async () => Response.json({
+    jobsHtml: `<li class="job-item" data-record-key="technical">
+      <h3>Systems Engineer</h3><p>Maintain business infrastructure and support internal services.</p>
+      <a href="/jobs/technical" class="view-details-link">View details</a>
+    </li>`
+  });
+  try {
+    const provider = companyAtsProviders.find((candidate) => candidate.id === "activate")!;
+    process.env.JOB_ACTIVATE_SITES = "Example|https://example.com/search|Intune";
+    const [intuneJob] = await provider.fetchJobs({ url: provider.defaultUrl, fetchedAt });
+    assert.ok(intuneJob, "query-backed technical listing is admitted");
+    assert.deepEqual(intuneJob.tools, []);
+    process.env.JOB_ACTIVATE_SITES = "Example|https://example.com/search|Jamf Android senior contract remote security";
+    const [jamfJob] = await provider.fetchJobs({ url: provider.defaultUrl, fetchedAt });
+    assert.deepEqual(jamfJob, intuneJob, "query-only evidence must not alter published fields");
+  } finally {
+    globalThis.fetch = originalFetch;
+    process.env = originalEnv;
+  }
+});

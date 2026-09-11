@@ -193,7 +193,7 @@ async function fetchActivateJobs(url: string, fetchedAt: Date) {
   for (const site of sites) {
     for (const query of site.queries) {
       const payload = await fetchActivateSearch(site.url, query, site.name);
-      jobs.push(...payload.map((job) => normalizeActivateJob(job, site, fetchedAt)));
+      jobs.push(...payload.map((job) => normalizeActivateJob(job, site, query, fetchedAt)));
       console.log(`Fetched ${payload.length} raw jobs from Activate/${site.name} query ${query}`);
     }
   }
@@ -391,7 +391,7 @@ function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, 
   });
 }
 
-function normalizeActivateJob(raw: ActivateJob, site: ActivateSite, fetchedAt: Date): Job | null {
+function normalizeActivateJob(raw: ActivateJob, site: ActivateSite, query: string, fetchedAt: Date): Job | null {
   if (!isActivateJob(raw)) {
     return null;
   }
@@ -424,6 +424,7 @@ function normalizeActivateJob(raw: ActivateJob, site: ActivateSite, fetchedAt: D
     attributionLabel: `Activate / ${site.name}`,
     termsProfile: "public-api",
     description,
+    relevanceOnlyParts: [query]
   });
 }
 
