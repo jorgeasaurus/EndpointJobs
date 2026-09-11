@@ -36,6 +36,9 @@ test("Jibe search queries keep endpoint-relevant listings without publishing the
   const [admitted] = await fetchJibeJobs("Intune");
   assert.ok(admitted);
   assert.equal(admitted.title, "IT Engineer");
+  assert.deepEqual(admitted.tools, []);
+  const [otherQuery] = await fetchJibeJobs("Jamf Android senior contract remote security");
+  assert.deepEqual(otherQuery, admitted, "Search evidence must not change any published field");
   assert.doesNotMatch(`${admitted.summary}\n${admitted.description ?? ""}`, /Intune/i);
 
   const rejected = await fetchJibeJobs("Payroll");
@@ -44,13 +47,15 @@ test("Jibe search queries keep endpoint-relevant listings without publishing the
 
 test("Jibe still publishes genuine listing evidence", async () => {
   const [job] = await fetchJibeJobs(
-    "Intune",
+    "Kandji",
     listing(
       "Windows Endpoint Engineer",
       "Manage Windows devices and Intune deployments across the enterprise. ".repeat(8)
     )
   );
   assert.ok(job);
-  assert.ok(job.tools.includes("Intune"));
+  assert.deepEqual(job.tools, ["Intune"]);
+  assert.ok(job.tags.includes("Intune"));
+  assert.deepEqual(job.platforms, ["Windows"]);
   assert.match(job.description ?? "", /Intune/);
 });

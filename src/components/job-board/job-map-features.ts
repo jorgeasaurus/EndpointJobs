@@ -21,6 +21,8 @@ export type JobFeatureProperties = {
   hasSalary: boolean;
   jobId: string;
   location: string;
+  latitude?: number;
+  longitude?: number;
   pointId: string;
   salary: string;
   source: string;
@@ -69,6 +71,8 @@ export function buildFeatureCollection(
           hasSalary: Boolean(job.salary),
           jobId: job.id,
           location: point.label,
+          latitude: point.latitude,
+          longitude: point.longitude,
           pointId: point.id,
           salary: job.salary?.label ?? "Salary not listed",
           source: job.attributionLabel,
@@ -94,6 +98,16 @@ export function getVisiblePopup(selection: PopupSelection | null, points: JobMap
     : null;
 }
 
+export function selectHoveredPopup(
+  current: PopupSelection | null,
+  popup: ActivePopup,
+  points: JobMapPoint[]
+): PopupSelection {
+  return current?.popup.key === popup.key && getVisiblePopup(current, points)
+    ? current
+    : { popup, points };
+}
+
 export function getInteractiveFeature(features: MapGeoJSONFeature[] | undefined) {
   return features?.find(
     (feature) => feature.layer.id === clusterLayerId || feature.layer.id === unclusteredLayerId
@@ -111,9 +125,14 @@ export function getEventFeature(event: MapLayerMouseEvent | MapLayerTouchEvent) 
   );
 }
 
-export function buildJobPopup(feature: MapGeoJSONFeature): ActivePopup | undefined {
+export function buildJobPopup(feature: Feature | MapGeoJSONFeature): ActivePopup | undefined {
   const preview = readJobPreview(feature);
-  const coordinates = getFeatureCoordinates(feature);
+  const sourceLatitude = getNumericProperty(feature, "latitude");
+  const sourceLongitude = getNumericProperty(feature, "longitude");
+  // Rendered tile geometry is quantized; preserve source precision for snapshot validation.
+  const coordinates = sourceLatitude !== undefined && sourceLongitude !== undefined
+    ? [sourceLongitude, sourceLatitude]
+    : getFeatureCoordinates(feature);
 
   if (!preview || !coordinates) {
     return undefined;

@@ -605,6 +605,16 @@ const searchableLocationCoordinates = locationCoordinates.map((coordinate) => ({
   normalizedKeys: coordinate.keys.map(normalizeLocation).filter(Boolean)
 }));
 
+const germanLocationKeys = [
+  ...locationCoordinates
+    .filter((coordinate) => isGermanMapLocation(coordinate.label))
+    .flatMap((coordinate) => coordinate.keys),
+  // Unmapped German cities still used as country evidence for DE suffixes.
+  "dresden",
+  "leipzig",
+  "bremen"
+];
+
 export function isGermanMapLocation(label: string | undefined) {
   return label === "Germany" || Boolean(label?.endsWith(", Germany"));
 }
@@ -618,23 +628,11 @@ export function hasGermanLocationEvidence(
   }
 
   const normalized = normalizeLocation(location);
-  if (getGermanLocationKeys().some((key) => containsNormalizedLocationKey(normalized, key))) {
+  if (germanLocationKeys.some((key) => containsNormalizedLocationKey(normalized, key))) {
     return true;
   }
 
   return isGermanMapLocation(resolveJobMapLocation(location)?.label);
-}
-
-function getGermanLocationKeys() {
-  return [
-    ...locationCoordinates
-      .filter((coordinate) => isGermanMapLocation(coordinate.label))
-      .flatMap((coordinate) => coordinate.keys),
-    // Unmapped German cities still used as country evidence for DE suffixes.
-    "dresden",
-    "leipzig",
-    "bremen"
-  ];
 }
 
 export function resolveJobMapLocation(location: string): JobMapLocation | undefined {

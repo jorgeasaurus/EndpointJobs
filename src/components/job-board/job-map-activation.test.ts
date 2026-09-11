@@ -4,7 +4,7 @@ import type { Feature } from "geojson";
 
 import { buildJobMapPoints, type JobMapPoint } from "@/lib/job-map";
 import { makeJob } from "../../../scripts/audits/shared";
-import { getVisiblePopup, readJobPreview, type ActivePopup } from "./job-map-features";
+import { buildFeatureCollection, buildJobPopup, getVisiblePopup, readJobPreview, selectHoveredPopup, type ActivePopup } from "./job-map-features";
 import { loadClusterSelection } from "./job-map-activation";
 
 const cluster: Feature = {
@@ -167,4 +167,35 @@ test("popup visibility accepts composite point ids and underlying job ids", () =
     };
     assert.equal(getVisiblePopup({ popup, points }, points), popup);
   }
+});
+
+test("hover recovers after a stale feature claimed the current source snapshot", () => {
+  const points = [matchingPoint()];
+  const freshPopup: ActivePopup = {
+    count: 1, jobs: [readJobPreview(leaf)!], key: "job:point-1", label: "New York",
+    latitude: 40, longitude: -73, type: "job"
+  };
+  const stalePopup = {
+    ...freshPopup,
+    jobs: [{ ...freshPopup.jobs[0], title: "Outdated title" }]
+  };
+  const staleSelection = selectHoveredPopup(null, stalePopup, points);
+  assert.equal(getVisiblePopup(staleSelection, points), null);
+
+  const recoveredSelection = selectHoveredPopup(staleSelection, freshPopup, points);
+  assert.equal(getVisiblePopup(recoveredSelection, points), freshPopup);
+  assert.equal(selectHoveredPopup(recoveredSelection, freshPopup, points), recoveredSelection);
+});
+
+test("rendered job popups retain source coordinates despite tile quantization", () => {
+  const points = [matchingPoint({ latitude: 40.7128, longitude: -74.006 })];
+  const feature = buildFeatureCollection(points).features[0];
+  feature.geometry.coordinates = [-74.00390625, 40.713955826286046];
+  const popup = buildJobPopup(feature)!;
+  assert.equal(popup.latitude, points[0].latitude);
+  assert.equal(popup.longitude, points[0].longitude);
+  assert.equal(getVisiblePopup({ popup, points }, points), popup);
+
+  const movedPoints = [{ ...points[0], latitude: 40.72, longitude: -74.01 }];
+  assert.equal(getVisiblePopup({ popup, points: movedPoints }, movedPoints), null);
 });

@@ -51,6 +51,8 @@ export type JobCandidate = {
   description?: string;
   sourceTags?: string[];
   haystackParts?: unknown[];
+  // Provider search evidence can admit a listing but must not supply published metadata.
+  relevanceOnlyParts?: string[];
   salary?: Job["salary"];
   roleFamily?: RoleFamily;
   seniority?: Seniority;
@@ -86,7 +88,11 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
   const platforms = derivePlatforms(haystack);
   const matchReasons = deriveMatchReasons(haystack, tools, platforms);
 
-  if (!isEndpointRelevant(haystack, title, tools)) {
+  const relevanceHaystack = normalizeSearchText(
+    [haystack, ...(candidate.relevanceOnlyParts ?? [])].join(" ")
+  );
+
+  if (!isEndpointRelevant(relevanceHaystack, title, deriveTools(relevanceHaystack))) {
     return null;
   }
 

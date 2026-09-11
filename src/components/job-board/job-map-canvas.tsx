@@ -42,7 +42,8 @@ import {
   getInteractiveFeature,
   getJobBounds,
   getJobFocusCoordinate,
-  getVisiblePopup
+  getVisiblePopup,
+  selectHoveredPopup
 } from "./job-map-features";
 import { loadClusterSelection } from "./job-map-activation";
 import { JobMapPopupContent } from "./job-map-popup";
@@ -167,9 +168,7 @@ export function JobMapCanvas({ points }: { points: JobMapPoint[] }) {
     }
 
     cancelActivation();
-    setActivePopup((current) => (current?.points === points && current.popup.key === popup.key
-      ? current
-      : { popup, points }));
+    setActivePopup((current) => selectHoveredPopup(current, popup, points));
   }, [cancelActivation, points]);
 
   const handleMouseLeave = useCallback((event: MapLayerMouseEvent) => {

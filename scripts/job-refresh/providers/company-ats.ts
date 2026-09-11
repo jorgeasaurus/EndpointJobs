@@ -387,8 +387,7 @@ function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, 
     termsProfile: "public-api",
     description: bulletFields.join(" "),
     sourceTags: bulletFields,
-    // Search query is relevance evidence only; do not copy it into published copy.
-    haystackParts: [query]
+    relevanceOnlyParts: [query]
   });
 }
 
@@ -468,8 +467,7 @@ function normalizeJibeJob(raw: JibeJob, site: JibeSite, query: string, fetchedAt
     termsProfile: "public-api",
     description,
     sourceTags,
-    // Search query is relevance evidence only; do not copy it into published copy.
-    haystackParts: [query],
+    relevanceOnlyParts: [query],
     employmentType: cleanText(data.employment_type)
   });
 }

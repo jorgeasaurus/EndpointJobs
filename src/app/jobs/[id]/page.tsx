@@ -31,15 +31,12 @@ type JobPageProps = {
 
 const feed = feedData as JobsFeed;
 
-// The feed is static for the lifetime of the server, so the canonical index is
-// computed once and reused across every metadata/render call in this module.
-const canonicalJobIndex = getCanonicalSeoIndex(
-  feed.jobs.filter((job) => isActiveJob(job))
-);
+function getActiveJobs(now = new Date()) {
+  return feed.jobs.filter((job) => isActiveJob(job, now));
+}
 
 export function generateStaticParams() {
-  // canonicalJobIndex maps every job id to its canonical id, so values()
-  // contains duplicates whenever multiple jobs share a representative.
+  const canonicalJobIndex = getCanonicalSeoIndex(getActiveJobs());
   return [...new Set(canonicalJobIndex.values())].map((id) => ({ id }));
 }
 
@@ -48,10 +45,11 @@ type ResolvedJobPage =
   | { kind: "not-found" };
 
 function resolveJobPageState(id: string): ResolvedJobPage {
-  const job = getActiveJob(id);
+  const activeJobs = getActiveJobs();
+  const job = activeJobs.find((candidate) => candidate.id === id);
   if (!job) return { kind: "not-found" };
 
-  const canonicalJobId = getCanonicalJobId(job.id);
+  const canonicalJobId = getCanonicalSeoIndex(activeJobs).get(job.id) ?? job.id;
   return { kind: "found", job, canonicalJobId };
 }
 
@@ -212,15 +210,6 @@ export default async function JobPage({ params }: JobPageProps) {
       </script>
     </main>
   );
-}
-
-function getActiveJob(id: string) {
-  const job = feed.jobs.find((candidate) => candidate.id === id);
-  return job && isActiveJob(job) ? job : undefined;
-}
-
-function getCanonicalJobId(jobId: string): string {
-  return canonicalJobIndex.get(jobId) ?? jobId;
 }
 
 function getMetaDescription(job: Job) {

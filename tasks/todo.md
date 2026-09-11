@@ -663,7 +663,7 @@ Findings and remedies:
 13. Stale directory metadata after speculative prefetch: disable prefetch on the footer directory entry; exact production sequence passes three times.
 14. Browser navigation races: wait for observable route state instead of immediate URL reads or unrelated network idleness.
 
-Validation: `npm test` (103), `npm run audit:data` (71), `npm run audit:browser` (41), `npm run typecheck`, `npm run lint`, `npm run build`, OpenAPI regeneration (unchanged), PowerShell `build.ps1 -Task CI` (13 Pester tests/analyzer/build), and `git diff --check` pass. Independent geography review compared 64,872 results against HEAD with no behavior changes.
+Validation: `npm test` (106), `npm run audit:data` (71), `npm run audit:browser` (41), `npm run typecheck`, `npm run lint`, `npm run build`, OpenAPI regeneration (unchanged), PowerShell `build.ps1 -Task CI` (13 Pester tests/analyzer/build), and `git diff --check` pass. Independent geography review compared 64,872 results against HEAD with no behavior changes.
 
 Dependency caveat: `npm audit fix --ignore-scripts` reduced 11 advisories to one MapLibre sanitizer advisory. Current attribution is hardcoded, its attribution control is disabled, and popups use React; no affected untrusted-input path was identified. React Doctor remains 49/100 due to that advisory and reviewed non-actionable heuristics (static document keys and small enum lookups); no rules were suppressed. A MapLibre v6 integration upgrade remains separate work. Packaged for a ready PR with the required app version bump to 0.1.14.
 
@@ -677,7 +677,7 @@ Dependency caveat: `npm audit fix --ignore-scripts` reduced 11 advisories to one
 
 Fixed and resolved Copilot’s tool-casing finding in `9e28b56`; 13 Pester tests, module analysis/build, 71 data audits, lint, and typecheck pass. Two explained React Doctor heuristic threads remain open. Fresh review requested on the new head.
 
-Historical review results below retain the counts measured at each commit. The current test run reports 103 passing tests.
+Historical review results below retain the counts measured at each commit. The current test run reports 106 passing tests.
 
 Copilot round 2: fixed audit-clock drift, Activate query contamination, invalid TheirStack ages, and stale map popups. Validation: 90 tests, 71 data audits, 41 browser checks, lint, typecheck, and production build pass.
 
@@ -692,3 +692,5 @@ Copilot round 6: reject stale rendered popup point IDs even with a current snaps
 Copilot round 7: disjoint hashed/readable provider IDs, Jibe haystack-only search evidence, and DE/Germany fallback. Validation: 99 tests, 71 data audits, lint, typecheck, and production build pass.
 
 Copilot round 12: reconciled current validation counts with executed command output: `npm test` reports 103 passing tests and `npm run audit:data` reports 71 passing audits. Earlier round counts are historical.
+
+Copilot round 13: separate query-only admission from published metadata, recompute canonical redirects from active jobs, recover stale hover state, and cache German location keys. Browser validation also exposed and fixed tile-coordinate rounding rejection. Validation: 106 tests, 71 data audits, 41 browser checks, lint, typecheck, and build pass.
