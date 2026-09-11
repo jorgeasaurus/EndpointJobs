@@ -663,7 +663,7 @@ Findings and remedies:
 13. Stale directory metadata after speculative prefetch: disable prefetch on the footer directory entry; exact production sequence passes three times.
 14. Browser navigation races: wait for observable route state instead of immediate URL reads or unrelated network idleness.
 
-Validation: `npm test` (91), `npm run audit:data` (71), `npm run audit:browser` (41), `npm run typecheck`, `npm run lint`, `npm run build`, OpenAPI regeneration (unchanged), PowerShell `build.ps1 -Task CI` (13 Pester tests/analyzer/build), and `git diff --check` pass. Independent geography review compared 64,872 results against HEAD with no behavior changes.
+Validation: `npm test` (92), `npm run audit:data` (71), `npm run audit:browser` (41), `npm run typecheck`, `npm run lint`, `npm run build`, OpenAPI regeneration (unchanged), PowerShell `build.ps1 -Task CI` (13 Pester tests/analyzer/build), and `git diff --check` pass. Independent geography review compared 64,872 results against HEAD with no behavior changes.
 
 Dependency caveat: `npm audit fix --ignore-scripts` reduced 11 advisories to one MapLibre sanitizer advisory. Current attribution is hardcoded, its attribution control is disabled, and popups use React; no affected untrusted-input path was identified. React Doctor remains 49/100 due to that advisory and reviewed non-actionable heuristics (static document keys and small enum lookups); no rules were suppressed. A MapLibre v6 integration upgrade remains separate work. Packaged for a ready PR with the required app version bump to 0.1.14.
 
@@ -680,3 +680,5 @@ Fixed and resolved Copilot’s tool-casing finding in `9e28b56`; 13 Pester tests
 Copilot round 2: fixed audit-clock drift, Activate query contamination, invalid TheirStack ages, and stale map popups. Validation: 90 tests, 71 data audits, 41 browser checks, lint, typecheck, and production build pass.
 
 Copilot round 3: preserve raw provider identity in hashes, normalize taxonomy aliases in PowerShell, fix comparison fixture/render clocks, and clarify the prefetch comment. Current validation: 91 tests, 71 data audits, 13 Pester tests, lint, typecheck, and production/module builds pass; 41 browser checks passed after the map fix. Awaiting a clean latest-head review.
+
+Copilot round 4: remove Workday search terms from published metadata and cancel pending map activation on movement. Validation: 92 tests, 71 data audits, 41 production browser checks, lint, typecheck, and build pass.

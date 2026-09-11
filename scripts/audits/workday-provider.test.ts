@@ -84,3 +84,30 @@ test("Workday search terms do not become relevance evidence", async () => {
     process.env = originalEnv;
   }
 });
+
+test("Workday publishes genuine bullet evidence without the search term", async () => {
+  assert.ok(workdayProvider);
+  const originalFetch = globalThis.fetch;
+  const originalEnv = { ...process.env };
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/External/jobs|Intune";
+  globalThis.fetch = async () => Response.json({
+    jobPostings: [{
+      title: "Windows Endpoint Engineer",
+      externalPath: "/job/Example/Windows-Endpoint-Engineer_R123",
+      postedOn: "Posted Today",
+      bulletFields: ["R123", "PowerShell automation", "Manage Windows devices and endpoint deployments across the enterprise. ".repeat(8)]
+    }]
+  });
+  try {
+    const [job] = await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-07-15T12:00:00.000Z") });
+    assert.ok(job);
+    assert.ok(job.tools.includes("PowerShell"));
+    assert.ok(job.tags.includes("PowerShell automation"));
+    assert.match(job.summary, /PowerShell automation/);
+    assert.match(job.description ?? "", /PowerShell automation/);
+    assert.doesNotMatch([job.summary, job.description, ...job.tags, ...job.tools].join(" "), /Intune/i);
+  } finally {
+    globalThis.fetch = originalFetch;
+    process.env = originalEnv;
+  }
+});

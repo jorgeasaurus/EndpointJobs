@@ -51,7 +51,10 @@ export function JobMapCanvas({ points }: { points: JobMapPoint[] }) {
   const mapRef = useRef<MapRef>(null);
   const [activePopup, setActivePopup] = useState<PopupSelection | null>(null);
   const activationRef = useRef<AbortController | null>(null);
-  const cancelActivation = useCallback(() => activationRef.current?.abort(), []);
+  const cancelActivation = useCallback(() => {
+    activationRef.current?.abort();
+    activationRef.current = null;
+  }, []);
   const closePopup = useCallback(() => {
     cancelActivation();
     setActivePopup(null);
@@ -145,8 +148,9 @@ export function JobMapCanvas({ points }: { points: JobMapPoint[] }) {
   }
 
   const handleMove = useCallback((event: ViewStateChangeEvent) => {
+    cancelActivation();
     setZoomLevel(Number(event.viewState.zoom.toFixed(2)));
-  }, []);
+  }, [cancelActivation]);
 
   const handleMouseMove = useCallback((event: MapLayerMouseEvent) => {
     const feature = getInteractiveFeature(event.features);
@@ -205,6 +209,8 @@ export function JobMapCanvas({ points }: { points: JobMapPoint[] }) {
       const selection = await loadClusterSelection(source, feature, map.getZoom(), activation.signal);
       if (!selection || activation.signal.aborted) return;
 
+      // The completed selection owns its camera move; later motion cancels only pending work.
+      activationRef.current = null;
       setActivePopup({ popup: selection.popup, points });
       map.easeTo(selection.camera);
     } catch (error) {
@@ -253,6 +259,7 @@ export function JobMapCanvas({ points }: { points: JobMapPoint[] }) {
         onLoad={() => window.requestAnimationFrame(() => fitToJobs(700))}
         onMouseLeave={handleMouseLeave}
         onMouseMove={handleMouseMove}
+        onMoveStart={cancelActivation}
         onMove={handleMove}
         onTouchEnd={handleTouchEnd}
         renderWorldCopies={false}

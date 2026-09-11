@@ -11,11 +11,8 @@ import {
   getCsvConfig,
   buildProviderJobId,
   normalizeSearchText,
-  normalizeDescription,
-  normalizeTags,
   parseDateLike,
-  stripHtml,
-  summarize
+  stripHtml
 } from "../shared";
 
 type AmazonJob = {
@@ -172,7 +169,7 @@ async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
       try {
         const payload = await fetchWorkdaySearch(site.url, query);
         completedQueries += 1;
-        jobs.push(...payload.map((job) => normalizeWorkdayJob(job, site, query, fetchedAt)));
+        jobs.push(...payload.map((job) => normalizeWorkdayJob(job, site, fetchedAt)));
         console.log(`Fetched ${payload.length} raw jobs from Workday/${site.name} query ${query}`);
       } catch (error) {
         console.warn(
@@ -361,7 +358,7 @@ function normalizeAmazonJob(raw: AmazonJob, fetchedAt: Date): Job | null {
   });
 }
 
-function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, fetchedAt: Date): Job | null {
+function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, fetchedAt: Date): Job | null {
   const title = cleanText(raw.title);
   const company = site.name;
   const sourceJobUrl = buildWorkdayJobUrl(site.url, raw.externalPath);
@@ -372,11 +369,10 @@ function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, 
 
   const bulletFields = Array.isArray(raw.bulletFields) ? raw.bulletFields.map(cleanText).filter(Boolean) : [];
   const location = getWorkdayLocation(raw, bulletFields);
-  const description = cleanText([title, query, bulletFields.join(" ")].join(" "));
   const postedAt = parseWorkdayPostedOn(raw.postedOn, fetchedAt) ?? fetchedAt.toISOString();
   const staleAfter = addDays(fetchedAt, staleDays).toISOString();
 
-  const job = toEndpointJob({
+  return toEndpointJob({
     id: buildStableJobId("workday", site.name, title, sourceJobUrl),
     title,
     company,
@@ -392,14 +388,6 @@ function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, 
     description: bulletFields.join(" "),
     sourceTags: bulletFields
   });
-
-  // Search terms describe how the listing was found, not evidence of its relevance.
-  return job ? {
-    ...job,
-    summary: summarize(description),
-    description: normalizeDescription(description),
-    tags: normalizeTags([query, ...bulletFields], job.tools, job.platforms)
-  } : null;
 }
 
 function normalizeActivateJob(raw: ActivateJob, site: ActivateSite, fetchedAt: Date): Job | null {
