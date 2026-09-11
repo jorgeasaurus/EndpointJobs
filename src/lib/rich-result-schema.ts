@@ -31,7 +31,7 @@ export function isRichResultEligible(job: Job) {
 }
 
 const usStatePattern =
-  /\b(?:AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC)\b/;
+  /\b(?:AL|AK|AZ|AR|CA|CO|CT|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC)\b/;
 
 const countryMatchers: Array<[RegExp, string]> = [
   [/\b(?:united states|usa|us)\b/i, "US"],
@@ -109,6 +109,12 @@ export function inferAddressCountry(job: Job) {
 
   if (usStatePattern.test(location)) {
     return "US";
+  }
+
+  // DE is Germany's ISO code as well as Delaware. Keep Delaware when the
+  // location has US-state evidence; otherwise treat a leftover DE suffix as Germany.
+  if (usStateSuffix === "de" || /\bDE\b/i.test(location)) {
+    return /\b(?:delaware|wilmington|new castle)\b/i.test(foldedLocation) ? "US" : "DE";
   }
 
   return undefined;
