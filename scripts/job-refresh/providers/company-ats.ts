@@ -466,6 +466,8 @@ function normalizeJibeJob(raw: JibeJob, site: JibeSite, query: string, fetchedAt
     termsProfile: "public-api",
     description,
     sourceTags,
+    // Search query is relevance evidence only; do not copy it into published copy.
+    haystackParts: [query],
     employmentType: cleanText(data.employment_type)
   });
 }
