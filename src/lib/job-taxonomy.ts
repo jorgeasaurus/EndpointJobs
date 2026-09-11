@@ -39,6 +39,12 @@ export const endpointToolDefinitions = [
 
 export type EndpointTool = (typeof endpointToolDefinitions)[number]["tool"];
 
+export const endpointToolNameMap = Object.fromEntries(
+  endpointToolDefinitions.flatMap(({ tool, aliases }) =>
+    [tool, ...aliases].map((name) => [name.toLowerCase(), tool])
+  )
+);
+
 const endpointToolLabels: Partial<Record<EndpointTool, string>> = {
   Kandji: "Kandji/Iru"
 };

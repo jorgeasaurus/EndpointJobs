@@ -38,7 +38,7 @@ Describe 'Get-EndpointJob' {
 
             $result.id | Should -Be 'job-1'
             Should -Invoke Invoke-RestMethod -Times 1 -ParameterFilter {
-                $Uri.AbsoluteUri -eq 'https://example.test/api/jobs?q=device%20%26%20endpoint&platforms=macOS%2CWindows&tools=Jamf%20Pro%2CIntune&workplace=Remote&salary=1&leadership=1&minSalary=150000&family=Endpoint%20Engineering&freshness=7&sort=newest&page=1&limit=50'
+                $Uri.AbsoluteUri -eq 'https://example.test/api/jobs?q=device%20%26%20endpoint&platforms=macOS%2CWindows&tools=Jamf%2CIntune&workplace=Remote&salary=1&leadership=1&minSalary=150000&family=Endpoint%20Engineering&freshness=7&sort=newest&page=1&limit=50'
             }
         }
 
@@ -51,10 +51,10 @@ Describe 'Get-EndpointJob' {
         }
 
         It 'normalizes known tool casing and preserves unknown values for API validation' {
-            Get-EndpointJob -Tool intune, 'GOOGLE workspace', 'Future Tool' -BaseUri 'https://example.test' | Out-Null
+            Get-EndpointJob -Tool intune, 'GOOGLE workspace', 'JAMF Pro', 'Azure AD', 'Future Tool' -BaseUri 'https://example.test' | Out-Null
 
             Should -Invoke Invoke-RestMethod -Times 1 -ParameterFilter {
-                $Uri.AbsoluteUri -ceq 'https://example.test/api/jobs?tools=Intune%2CGoogle%20Workspace%2CFuture%20Tool&sort=newest&page=1&limit=20'
+                $Uri.AbsoluteUri -ceq 'https://example.test/api/jobs?tools=Intune%2CGoogle%20Workspace%2CJamf%2CEntra%20ID%2CFuture%20Tool&sort=newest&page=1&limit=20'
             }
         }
 

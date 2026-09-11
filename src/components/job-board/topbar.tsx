@@ -87,7 +87,7 @@ export function SiteFooter({ updatedAt }: { updatedAt: string }) {
         </div>
 
         <nav className="footer-links" aria-label="Project links">
-          {/* Prefetching the directory can reuse page-one metadata during query pagination. */}
+          {/* Disable speculative prefetch to prevent stale page-one metadata during query pagination. */}
           <Link className="feedback-link footer-link" href={getJobsDirectoryPath()} prefetch={false}>
             <Rows3 size={15} aria-hidden="true" />
             <span>All jobs</span>

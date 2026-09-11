@@ -694,12 +694,15 @@ export function buildProviderJobId(
 ) {
   const identity = cleanText(nativeId);
 
-  // Preserve published IDs only when slug normalization cannot truncate the native ID.
-  if (/^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(identity) && identity.length <= 96) {
-    return `${source}-${normalizeIdPart(account)}-${normalizeIdPart(identity)}`;
+  // Preserve lossless IDs only where separators cannot blur account/native-ID boundaries.
+  if (/^[a-z0-9]+$/.test(source) && /^[a-z0-9]+$/.test(account) && account.length <= 96
+    && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(identity) && identity.length <= 96
+    && nativeId === identity) {
+    return `${source}-${account}-${identity}`;
   }
 
-  return buildStableJobId(source, account, title, identity || sourceUrl);
+  const fullIdentity = JSON.stringify([source, account, identity ? ["native", nativeId] : ["url", sourceUrl]]);
+  return buildStableJobId(source, account, title, fullIdentity);
 }
 
 function shortHash(value: string) {

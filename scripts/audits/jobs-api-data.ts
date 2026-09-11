@@ -9,9 +9,9 @@ import {
 } from "../../src/lib/jobs-api";
 import {
   getJobsApiOpenApiAppliedFiltersSchema,
-  getJobsApiOpenApiParameters,
-  jobsApiQueryContract
+  getJobsApiOpenApiParameters
 } from "../../src/lib/jobs-api-contract";
+import { endpointToolNameMap } from "../../src/lib/job-taxonomy";
 import type { Job, JobsFeed } from "../../src/types/job";
 
 type RunAudit = (
@@ -182,7 +182,7 @@ export async function auditJobsApiData(run: RunAudit) {
     );
     assertDeepEqual(
       JSON.parse(await readFile("powershell/EndpointJobs/EndpointTools.json", "utf8")),
-      jobsApiQueryContract.tools.values,
+      endpointToolNameMap,
       "PowerShell tool names match canonical contract"
     );
     assertSchema(specification, "#/components/schemas/JobCollection", result.body);

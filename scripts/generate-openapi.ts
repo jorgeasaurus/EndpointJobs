@@ -2,9 +2,10 @@ import { readFile, writeFile } from "node:fs/promises";
 
 import {
   getJobsApiOpenApiAppliedFiltersSchema,
-  getJobsApiOpenApiParameters,
-  jobsApiQueryContract
+  getJobsApiOpenApiParameters
 } from "../src/lib/jobs-api-contract";
+
+import { endpointToolNameMap } from "../src/lib/job-taxonomy";
 
 const path = "public/openapi.json";
 const specification = JSON.parse(await readFile(path, "utf8"));
@@ -17,5 +18,5 @@ await writeFile(path, `${JSON.stringify(specification, null, 2)}\n`);
 
 await writeFile(
   "powershell/EndpointJobs/EndpointTools.json",
-  `${JSON.stringify(jobsApiQueryContract.tools.values, null, 2)}\n`
+  `${JSON.stringify(endpointToolNameMap, null, 2)}\n`
 );
