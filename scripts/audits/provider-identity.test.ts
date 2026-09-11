@@ -68,7 +68,7 @@ test("Techmap hashes the complete source URL when the RSS item has no native ide
 });
 
 test("provider IDs preserve only unambiguous lossless short identities", () => {
-  assert.equal(buildProviderJobId("activate", "example", title, "abc-123", urls[0]), "activate-example-abc-123");
+  assert.equal(buildProviderJobId("activate", "example", "abc-123", urls[0]), "activate-example-abc-123");
   const identityPairs = [
     ["A-B", "same-id", "A B", "same-id"],
     ["Example", "same-id", "example", "same-id"],
@@ -80,29 +80,51 @@ test("provider IDs preserve only unambiguous lossless short identities", () => {
   ];
   for (const [accountA, nativeA, accountB, nativeB] of identityPairs) {
     assert.notEqual(
-      buildProviderJobId("activate", accountA, title, nativeA, urls[0]),
-      buildProviderJobId("activate", accountB, title, nativeB, urls[0]),
+      buildProviderJobId("activate", accountA, nativeA, urls[0]),
+      buildProviderJobId("activate", accountB, nativeB, urls[0]),
       `distinct identity tuples: ${JSON.stringify([accountA, nativeA, accountB, nativeB])}`
     );
   }
   assert.notEqual(
-    buildProviderJobId("activate", "A-B", title, undefined, urls[0]),
-    buildProviderJobId("activate", "A B", title, undefined, urls[0])
+    buildProviderJobId("activate", "A-B", undefined, urls[0]),
+    buildProviderJobId("activate", "A B", undefined, urls[0])
   );
 });
 
 test("hashed fallback IDs cannot collide with readable native IDs", () => {
-  const fallback = buildProviderJobId("activate", "example", title, undefined, urls[0]);
-  assert.match(fallback, /^activate-example-intune-endpoint-engineer--[a-f0-9]{10}$/);
+  const fallback = buildProviderJobId("activate", "example", undefined, urls[0]);
+  assert.match(fallback, /^activate-example--[a-f0-9]{10}$/);
 
   const hash = fallback.slice(fallback.lastIndexOf("--") + 2);
-  const collidingNativeId = `intune-endpoint-engineer-${hash}`;
-  const readableTwin = buildProviderJobId("activate", "example", title, collidingNativeId, urls[1]);
+  const collidingNativeId = hash;
+  const readableTwin = buildProviderJobId("activate", "example", collidingNativeId, urls[1]);
 
   assert.equal(readableTwin, `activate-example-${collidingNativeId}`);
   assert.notEqual(fallback, readableTwin);
   assert.notEqual(
     fallback,
-    buildProviderJobId("activate", "example", title, `intune-endpoint-engineer--${hash}`, urls[1])
+    buildProviderJobId("activate", "example", `--${hash}`, urls[1])
   );
+});
+
+test("Techmap fallback IDs survive title edits with a stable GUID or source URL", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalEnv = { ...process.env };
+  process.env.JOB_TECHMAP_RSS_FEEDS = "example|https://example.com/rss";
+  let currentTitle = title;
+  globalThis.fetch = async () => new Response(`<rss><channel>${["unsafe:guid/123", undefined].map((guid, index) => `<item><title>${currentTitle}</title>${guid ? `<guid>${guid}</guid>` : ""}<link>${urls[index]}</link></item>`).join("")}</channel></rss>`);
+  try {
+    const context = { url: techmapRssProvider.defaultUrl, fetchedAt: new Date("2026-07-15T12:00:00.000Z") };
+    const before = await techmapRssProvider.fetchJobs(context);
+    currentTitle = "Senior Intune Endpoint Engineer";
+    const after = await techmapRssProvider.fetchJobs(context);
+    assert.equal(before.length, 2);
+    assert.ok(before.every(Boolean));
+    assert.ok(after.every(Boolean));
+    assert.deepEqual(after.map((job) => job?.id), before.map((job) => job?.id));
+    assert.ok(after.every((job) => job?.title === currentTitle));
+  } finally {
+    globalThis.fetch = originalFetch;
+    process.env = originalEnv;
+  }
 });

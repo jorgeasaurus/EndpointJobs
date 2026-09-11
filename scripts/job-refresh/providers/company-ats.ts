@@ -411,7 +411,7 @@ function normalizeActivateJob(raw: ActivateJob, site: ActivateSite, query: strin
   const staleAfter = addDays(fetchedAt, staleDays).toISOString();
 
   return toEndpointJob({
-    id: buildProviderJobId("activate", site.name, title, raw.id, sourceJobUrl),
+    id: buildProviderJobId("activate", site.name, raw.id, sourceJobUrl),
     title,
     company,
     location,
@@ -454,7 +454,7 @@ function normalizeJibeJob(raw: JibeJob, site: JibeSite, query: string, fetchedAt
   const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
 
   return toEndpointJob({
-    id: buildProviderJobId("jibe", site.name, title, data.req_id || data.slug, sourceJobUrl),
+    id: buildProviderJobId("jibe", site.name, data.req_id || data.slug, sourceJobUrl),
     title,
     company,
     location,

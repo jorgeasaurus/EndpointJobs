@@ -677,7 +677,7 @@ Dependency follow-up: MapLibre 6.9.0 resolves the remaining advisory; `npm audit
 
 Fixed and resolved Copilot’s tool-casing finding in `9e28b56`; 13 Pester tests, module analysis/build, 71 data audits, lint, and typecheck pass. Two explained React Doctor heuristic threads remain open. Fresh review requested on the new head.
 
-Historical review results below retain the counts measured at each commit. The current test run reports 113 passing tests.
+Historical review results below retain the counts measured at each commit. The current test run reports 114 passing tests.
 
 Copilot round 2: fixed audit-clock drift, Activate query contamination, invalid TheirStack ages, and stale map popups. Validation: 90 tests, 71 data audits, 41 browser checks, lint, typecheck, and production build pass.
 
@@ -733,3 +733,9 @@ After this commit: push fixes, resolve handled feedback, and request a fresh lat
 The round-20 history and completed checklist are now included in the repository update.
 
 Round-21 verification: three query-invariance regressions failed before the fixes; all 113 tests, 71 data audits, lint, typecheck, and both full React Doctor scans pass (100/100). Previous production build/browser and PowerShell results remain applicable to this ingestion-only change.
+
+## Copilot round 22
+
+Fallback provider IDs must depend only on stable source/account and native-ID or URL identity. Remove the unused title input and verify GUID/URL-backed records retain IDs after a title edit.
+
+Round-22 verification: title-change regression failed before the fix; all 114 tests, 71 data audits, lint, typecheck, and both full React Doctor scans pass (100/100). Short lossless native IDs remain unchanged. Fresh review follows this commit; its result will be recorded on the PR.

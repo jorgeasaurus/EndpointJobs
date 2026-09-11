@@ -694,7 +694,6 @@ export function buildStableJobId(source: string, account: string, title: string,
 export function buildProviderJobId(
   source: string,
   account: string,
-  title: string,
   nativeId: string | undefined,
   sourceUrl: string
 ) {
@@ -708,7 +707,7 @@ export function buildProviderJobId(
   }
 
   const fullIdentity = JSON.stringify([source, account, identity ? ["native", nativeId] : ["url", sourceUrl]]);
-  const readable = [source, account, title]
+  const readable = [source, account]
     .map(normalizeIdPart)
     .filter(Boolean)
     .join("-");

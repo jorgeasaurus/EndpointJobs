@@ -128,7 +128,7 @@ function normalizeTechmapRssJob(raw: TechmapRssItem, feed: TechmapRssFeed, fetch
   const nativeId = getXmlText(raw.guid) || getXmlText(raw.id);
 
   return toEndpointJob({
-    id: buildProviderJobId("techmaprss", feed.name, title, nativeId, sourceJobUrl),
+    id: buildProviderJobId("techmaprss", feed.name, nativeId, sourceJobUrl),
     title,
     company,
     location,
