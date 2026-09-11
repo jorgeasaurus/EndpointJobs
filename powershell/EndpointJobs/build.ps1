@@ -77,7 +77,7 @@ function Invoke-Build {
     }
     New-Item -Path $buildDirectory -ItemType Directory -Force | Out-Null
 
-    foreach ($item in @('EndpointJobs.psd1', 'EndpointJobs.psm1', 'Private', 'Public')) {
+    foreach ($item in @('EndpointJobs.psd1', 'EndpointJobs.psm1', 'EndpointTools.json', 'Private', 'Public')) {
         Copy-Item -Path (Join-Path $PSScriptRoot $item) -Destination $buildDirectory -Recurse -Force
     }
 

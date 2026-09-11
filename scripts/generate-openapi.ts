@@ -2,7 +2,8 @@ import { readFile, writeFile } from "node:fs/promises";
 
 import {
   getJobsApiOpenApiAppliedFiltersSchema,
-  getJobsApiOpenApiParameters
+  getJobsApiOpenApiParameters,
+  jobsApiQueryContract
 } from "../src/lib/jobs-api-contract";
 
 const path = "public/openapi.json";
@@ -13,3 +14,8 @@ specification.paths["/api/jobs"].get.parameters = Object.keys(
 ).map((name) => ({ $ref: `#/components/parameters/${name}` }));
 specification.components.schemas.Filters = getJobsApiOpenApiAppliedFiltersSchema();
 await writeFile(path, `${JSON.stringify(specification, null, 2)}\n`);
+
+await writeFile(
+  "powershell/EndpointJobs/EndpointTools.json",
+  `${JSON.stringify(jobsApiQueryContract.tools.values, null, 2)}\n`
+);

@@ -154,6 +154,16 @@ function Get-EndpointJob {
             )
         }
 
+        $parameters.tools = @(
+            foreach ($value in $Tool) {
+                if ($script:EndpointToolNames.ContainsKey($value)) {
+                    $script:EndpointToolNames[$value]
+                } else {
+                    $value
+                }
+            }
+        )
+
         do {
             $queryString = ConvertTo-EndpointJobsQueryString -Parameters $parameters
             $response = Invoke-EndpointJobsRequest -Uri ("$rootUri/api/jobs?$queryString")

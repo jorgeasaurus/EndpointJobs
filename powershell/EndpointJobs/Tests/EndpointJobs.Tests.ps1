@@ -46,7 +46,15 @@ Describe 'Get-EndpointJob' {
             Get-EndpointJob -Platform windows, MACOS -Workplace remote -Seniority senior -RoleFamily 'endpoint engineering' -Sort COMPANY -BaseUri 'https://example.test' | Out-Null
 
             Should -Invoke Invoke-RestMethod -Times 1 -ParameterFilter {
-                $Uri.AbsoluteUri -eq 'https://example.test/api/jobs?platforms=Windows%2CmacOS&workplace=Remote&seniority=Senior&family=Endpoint%20Engineering&sort=company&page=1&limit=20'
+                $Uri.AbsoluteUri -ceq 'https://example.test/api/jobs?platforms=Windows%2CmacOS&workplace=Remote&seniority=Senior&family=Endpoint%20Engineering&sort=company&page=1&limit=20'
+            }
+        }
+
+        It 'normalizes known tool casing and preserves unknown values for API validation' {
+            Get-EndpointJob -Tool intune, 'GOOGLE workspace', 'Future Tool' -BaseUri 'https://example.test' | Out-Null
+
+            Should -Invoke Invoke-RestMethod -Times 1 -ParameterFilter {
+                $Uri.AbsoluteUri -ceq 'https://example.test/api/jobs?tools=Intune%2CGoogle%20Workspace%2CFuture%20Tool&sort=newest&page=1&limit=20'
             }
         }
 

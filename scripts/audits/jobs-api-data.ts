@@ -9,7 +9,8 @@ import {
 } from "../../src/lib/jobs-api";
 import {
   getJobsApiOpenApiAppliedFiltersSchema,
-  getJobsApiOpenApiParameters
+  getJobsApiOpenApiParameters,
+  jobsApiQueryContract
 } from "../../src/lib/jobs-api-contract";
 import type { Job, JobsFeed } from "../../src/types/job";
 
@@ -178,6 +179,11 @@ export async function auditJobsApiData(run: RunAudit) {
       readPointer(specification, "#/components/schemas/Filters"),
       getJobsApiOpenApiAppliedFiltersSchema(),
       "OpenAPI applied filters match canonical contract"
+    );
+    assertDeepEqual(
+      JSON.parse(await readFile("powershell/EndpointJobs/EndpointTools.json", "utf8")),
+      jobsApiQueryContract.tools.values,
+      "PowerShell tool names match canonical contract"
     );
     assertSchema(specification, "#/components/schemas/JobCollection", result.body);
     if (oneDay.ok) {
