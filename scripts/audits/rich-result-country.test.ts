@@ -17,7 +17,9 @@ test("Delaware locations retain their map coordinates and US rich-result country
   const mapLocation = resolveJobMapLocation(location);
   assert.equal(mapLocation?.label, "Wilmington, DE");
   assert.equal(inferAddressCountry(makeJob({ location, mapLocation })), "US");
-  assert.equal(inferAddressCountry(makeJob({ location: "Wilmington, DE", mapLocation: undefined })), "US");
+  for (const delawareCity of ["Dover, DE", "Newark, DE", "Wilmington, DE", "New Castle, DE"]) {
+    assert.equal(inferAddressCountry(makeJob({ location: delawareCity, mapLocation: undefined })), "US");
+  }
 });
 
 test("German DE suffixes are not labeled as Delaware", () => {
@@ -25,4 +27,5 @@ test("German DE suffixes are not labeled as Delaware", () => {
   assert.equal(inferAddressCountry(makeJob({ location: "Berlin, Germany", mapLocation: undefined })), "DE");
   assert.equal(inferAddressCountry(makeJob({ location: "Munich, DE", mapLocation: undefined })), "DE");
   assert.equal(inferAddressCountry(makeJob({ location: "Wilmington, DE", mapLocation: undefined })), "US");
+  assert.equal(inferAddressCountry(makeJob({ location: "Rue de la Paix, Paris", mapLocation: undefined })), undefined);
 });

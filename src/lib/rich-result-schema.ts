@@ -111,10 +111,21 @@ export function inferAddressCountry(job: Job) {
     return "US";
   }
 
-  // DE is Germany's ISO code as well as Delaware. Keep Delaware when the
-  // location has US-state evidence; otherwise treat a leftover DE suffix as Germany.
-  if (usStateSuffix === "de" || /\bDE\b/i.test(location)) {
-    return /\b(?:delaware|wilmington|new castle)\b/i.test(foldedLocation) ? "US" : "DE";
+  // DE is Germany's ISO code as well as Delaware. Keep the generic Delaware
+  // suffix as US unless the location has explicit German country or city evidence.
+  // Match an uppercase DE token or a trailing DE suffix so mid-string words
+  // like "de" in "Rue de la Paix" are not treated as a country or US state.
+  const foldedCombinedLocation = foldTokens(location);
+  if (
+    usStateSuffix === "de" ||
+    getUsStateSuffix(foldedCombinedLocation) === "de" ||
+    /\bDE\b/.test(location)
+  ) {
+    return /\b(?:germany|deutschland|berlin|hamburg|munich|munchen|muenchen|frankfurt|cologne|koln|koeln|stuttgart|dusseldorf|duesseldorf)\b/.test(
+      foldedCombinedLocation
+    )
+      ? "DE"
+      : "US";
   }
 
   return undefined;
