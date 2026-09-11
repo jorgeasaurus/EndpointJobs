@@ -677,7 +677,7 @@ Dependency follow-up: MapLibre 6.9.0 resolves the remaining advisory; `npm audit
 
 Fixed and resolved Copilot’s tool-casing finding in `9e28b56`; 13 Pester tests, module analysis/build, 71 data audits, lint, and typecheck pass. Two explained React Doctor heuristic threads remain open. Fresh review requested on the new head.
 
-Historical review results below retain the counts measured at each commit. The current test run reports 110 passing tests.
+Historical review results below retain the counts measured at each commit. The current test run reports 113 passing tests.
 
 Copilot round 2: fixed audit-clock drift, Activate query contamination, invalid TheirStack ages, and stale map popups. Validation: 90 tests, 71 data audits, 41 browser checks, lint, typecheck, and production build pass.
 
@@ -704,7 +704,7 @@ Copilot round 15: completed on `5d22b5b` with zero new comments; no unresolved C
 - [x] Capture full-project baseline and rule guidance.
 - [x] Fix dependency, UI, and maintainability findings; keep application rules enabled.
 - [x] Verify full scan, tests, data/browser audits, lint, typecheck, and build.
-- [ ] Update PR and complete a fresh Copilot review.
+- [x] Update PR and complete a fresh Copilot review.
 
 React Doctor verification: 48→100/100 on 0.5.5; 0.9.13 also reports 100 with complete full-project coverage and no skipped checks. All 107 tests, 71 data audits, 41 production browser checks, focused accessibility checks, lint, typecheck, and build pass. `npm audit`: zero vulnerabilities. No application rules disabled; copied MapLibre worker artifacts excluded as vendor code.
 
@@ -721,3 +721,15 @@ Round-18 production browser validation: all 41 checks pass.
 Copilot round 19: add five-minute ISR to job details so expiry-dependent content and canonical metadata refresh between builds. Verify the production prerender manifest alongside the existing expiry regression.
 
 Round-19 verification: 110 tests, lint, typecheck, build, and both React Doctor scans pass (100/100); all 886 prerendered detail routes have a 300-second refresh. Production browser checks confirm active filters collapse by mouse/keyboard and stay closed across search and filter changes; the suppressed collapse claim is not reproducible.
+
+Copilot round 20 completed on 2a55763 with no new actionable findings. The repeated collapse claim is explained with passing production browser evidence and left open; all handled threads are resolved. Local, remote, and PR heads match; all applicable CI checks pass and the PR is ready. The completion record is included with the subsequent round-21 fixes.
+
+## Copilot round 21
+
+- [x] Separate query-only evidence in AidevBoard, SerpAPI, and RapidAPI LinkedIn; verify admission and published output.
+- [x] Run tests, data audits, lint, typecheck, and full React Doctor scans.
+After this commit: push fixes, resolve handled feedback, and request a fresh latest-head review. The final review result will be recorded on the PR to avoid a self-invalidating documentation commit.
+
+The round-20 history and completed checklist are now included in the repository update.
+
+Round-21 verification: three query-invariance regressions failed before the fixes; all 113 tests, 71 data audits, lint, typecheck, and both full React Doctor scans pass (100/100). Previous production build/browser and PowerShell results remain applicable to this ingestion-only change.

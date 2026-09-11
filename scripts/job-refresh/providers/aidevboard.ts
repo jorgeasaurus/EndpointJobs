@@ -196,7 +196,6 @@ function normalizeAiDevBoardJob(
     .filter(Boolean)
     .join("\n\n");
   const sourceTags = [
-    query,
     raw.job_type,
     raw.experience_level,
     raw.workplace,
@@ -220,6 +219,7 @@ function normalizeAiDevBoardJob(
     termsProfile: "public-api",
     description,
     sourceTags,
+    relevanceOnlyParts: [query],
     salary: normalizeSalary(
       normalizeAiDevBoardSalaryAmount(raw.salary_min),
       normalizeAiDevBoardSalaryAmount(raw.salary_max)

@@ -319,7 +319,6 @@ function normalizeRapidApiLinkedInJob(
   const employmentType = firstFieldText(raw, rapidApiLinkedInFields.employmentType);
   const workplaceType = firstFieldText(raw, rapidApiLinkedInFields.workplaceType);
   const sourceTags = [
-    titleFilter,
     employmentType,
     firstFieldText(raw, rapidApiLinkedInFields.seniority),
     workplaceType,
@@ -341,7 +340,8 @@ function normalizeRapidApiLinkedInJob(
     termsProfile: "partner-terms",
     description,
     sourceTags,
-    haystackParts: [titleFilter, workplaceType],
+    relevanceOnlyParts: [titleFilter],
+    haystackParts: [workplaceType],
     salary: getRapidApiLinkedInSalary(raw, description),
     employmentType: normalizeFirstEmploymentType([employmentType])
   });

@@ -445,7 +445,7 @@ export function normalizeSerpApiGoogleJob(
   const location = correctVerifiedJobLocation(rawLocation, sourceJobUrl);
 
   const extensions = (raw.extensions ?? []).map(cleanText).filter(Boolean);
-  const sourceTags = [query, raw.via, raw.detected_extensions?.schedule_type, ...extensions]
+  const sourceTags = [raw.via, raw.detected_extensions?.schedule_type, ...extensions]
     .map(cleanText)
     .filter(Boolean);
 
@@ -464,6 +464,7 @@ export function normalizeSerpApiGoogleJob(
     termsProfile: "partner-terms",
     description: restoreSerpApiDescriptionStructure(raw),
     sourceTags,
+    relevanceOnlyParts: [query],
     haystackParts: [raw.via],
     salary: getSerpApiGoogleJobsSalary(raw, marketCurrency),
     employmentType: normalizeSerpApiGoogleJobsEmploymentType(raw)
