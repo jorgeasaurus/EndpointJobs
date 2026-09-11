@@ -1,6 +1,6 @@
 {
   "name": "endpoint-jobs",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test": "tsx --test scripts/audits/*.test.ts src/components/job-board/*.test.ts",
     "jobs:refresh": "tsx scripts/refresh-jobs.ts",
     "docs:api": "tsx scripts/generate-openapi.ts",
     "doctor": "react-doctor",

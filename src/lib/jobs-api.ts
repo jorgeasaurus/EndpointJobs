@@ -1,23 +1,13 @@
-import {
-  filterJobs,
-  freshnessFilterDayValues,
-  minimumSalaryFilterValues,
-  type JobFilters
-} from "@/lib/job-filters";
+import { filterJobs, type JobFilters } from "@/lib/job-filters";
 import {
   jobsApiQueryContract,
   type JobsApiAppliedFilters,
   type JobsApiQueryDefinition
 } from "@/lib/jobs-api-contract";
-import {
-  isActiveJob,
-  platformOptions,
-  roleFamilyOptions,
-  seniorityOptions,
-  toolOptions
-} from "@/lib/jobs";
-import { metroAreaOptions } from "@/lib/metro-areas";
+import { isActiveJob } from "@/lib/jobs";
 import type { Job, JobsFeed } from "@/types/job";
+
+const queryDefinitions = new Map<string, JobsApiQueryDefinition>(Object.entries(jobsApiQueryContract));
 
 export const jobsApiHeaders = {
   "Access-Control-Allow-Headers": "Content-Type",
@@ -104,10 +94,9 @@ function parseQuery(searchParams: URLSearchParams):
   | { ok: false; errors: string[] }
   | { ok: true; filters: JobFilters; page: number; limit: number } {
   const errors: string[] = [];
-  const contract = jobsApiQueryContract as Record<string, JobsApiQueryDefinition>;
 
   for (const key of new Set(searchParams.keys())) {
-    const definition = contract[key];
+    const definition = queryDefinitions.get(key);
     if (!definition) {
       errors.push(`Unknown parameter: ${key}`);
       continue;
@@ -127,17 +116,17 @@ function parseQuery(searchParams: URLSearchParams):
     filters: {
       query: readText(searchParams, "q"),
       locationQuery: readText(searchParams, "location"),
-      selectedPlatforms: readMulti(searchParams, "platforms", platformOptions),
-      selectedTools: readMulti(searchParams, "tools", toolOptions),
-      selectedMetroAreas: readMulti(searchParams, "metroAreas", metroAreaOptions, "|"),
-      workplace: readEnum(searchParams, "workplace", ["Remote", "Hybrid", "On-site"] as const, "Any"),
-      salaryOnly: readEnum(searchParams, "salary", ["1"] as const, "0") === "1",
-      leadershipOnly: readEnum(searchParams, "leadership", ["1"] as const, "0") === "1",
-      minimumSalary: readEnum(searchParams, "minSalary", minimumSalaryFilterValues, "Any"),
-      seniority: readEnum(searchParams, "seniority", seniorityOptions, "All"),
-      roleFamily: readEnum(searchParams, "family", roleFamilyOptions, "All"),
-      freshness: readEnum(searchParams, "freshness", freshnessFilterDayValues, "Any"),
-      sort: readEnum(searchParams, "sort", ["newest", "salary", "company"] as const, "newest")
+      selectedPlatforms: readMulti(searchParams, "platforms", jobsApiQueryContract.platforms),
+      selectedTools: readMulti(searchParams, "tools", jobsApiQueryContract.tools),
+      selectedMetroAreas: readMulti(searchParams, "metroAreas", jobsApiQueryContract.metroAreas),
+      workplace: readEnum(searchParams, "workplace", jobsApiQueryContract.workplace.values, "Any"),
+      salaryOnly: readEnum(searchParams, "salary", jobsApiQueryContract.salary.values, "0") === "1",
+      leadershipOnly: readEnum(searchParams, "leadership", jobsApiQueryContract.leadership.values, "0") === "1",
+      minimumSalary: readEnum(searchParams, "minSalary", jobsApiQueryContract.minSalary.values, "Any"),
+      seniority: readEnum(searchParams, "seniority", jobsApiQueryContract.seniority.values, "All"),
+      roleFamily: readEnum(searchParams, "family", jobsApiQueryContract.family.values, "All"),
+      freshness: readEnum(searchParams, "freshness", jobsApiQueryContract.freshness.values, "Any"),
+      sort: readEnum(searchParams, "sort", jobsApiQueryContract.sort.values, jobsApiQueryContract.sort.default)
     }
   };
 }
@@ -173,7 +162,7 @@ function validateValue(
   }
   const separator = definition.kind === "multi" ? definition.separator ?? "," : ",";
   const values = definition.kind === "multi" ? value.split(separator).map((item) => item.trim()) : [normalizedValue];
-  if (values.some((item) => !item || !definition.values.includes(item as never))) {
+  if (values.some((item) => !item || !definition.values.includes(item))) {
     errors.push(definition.kind === "multi"
       ? `${key} contains an unsupported value`
       : `${key} must be one of: ${definition.values.join(", ")}`);
@@ -191,11 +180,10 @@ function readText(searchParams: URLSearchParams, key: "q" | "location") {
 function readMulti<T extends string>(
   params: URLSearchParams,
   key: string,
-  options: readonly T[],
-  separator = ","
+  definition: { values: readonly T[]; separator?: string }
 ) {
-  const selected = new Set(params.get(key)?.split(separator).map((value) => value.trim()) ?? []);
-  return options.filter((option) => selected.has(option));
+  const selected = new Set(params.get(key)?.split(definition.separator ?? ",").map((value) => value.trim()) ?? []);
+  return definition.values.filter((option) => selected.has(option));
 }
 
 function readEnum<T extends string, F extends string>(

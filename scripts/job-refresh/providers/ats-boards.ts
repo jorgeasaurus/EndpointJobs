@@ -2,24 +2,14 @@ import type { Job } from "../../../src/types/job";
 import type { ProviderAdapter } from "../provider";
 import {
   addDays,
+  toEndpointJob,
   cleanText,
   cleanUrl,
-  deriveMatchReasons,
-  derivePlatforms,
-  deriveTools,
   getCsvConfig,
+  getPositiveInteger,
   getString,
-  inferEmploymentType,
-  inferRoleFamily,
-  inferSeniority,
-  inferWorkplace,
-  isEndpointRelevant,
   normalizeEmploymentTypeLabel,
-  normalizeSearchText,
-  normalizeDescription,
-  normalizeTags,
   stripHtml,
-  summarize
 } from "../shared";
 
 type GreenhouseJob = {
@@ -308,7 +298,7 @@ async function fetchWorkableJobs(url: string, fetchedAt: Date) {
 
 async function fetchWorkableAccount(baseUrl: string, slug: string) {
   const jobs: WorkableJob[] = [];
-  const maxPages = Math.max(1, Number(process.env.JOB_WORKABLE_MAX_PAGES ?? 3));
+  const maxPages = getPositiveInteger(process.env.JOB_WORKABLE_MAX_PAGES, 3);
   let token: string | undefined;
 
   for (let page = 0; page < maxPages; page += 1) {
@@ -480,46 +470,29 @@ function normalizeGreenhouseJob(raw: GreenhouseJob, board: string, fetchedAt: Da
         .filter(Boolean)
     : [];
   const sourceTags = [...departments, ...offices];
-  const haystack = normalizeSearchText([title, company, location, sourceTags.join(" "), description].join(" "));
-  const tools = deriveTools(haystack);
-  const platforms = derivePlatforms(haystack);
-  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
-
-  if (!isEndpointRelevant(haystack, title, tools)) {
-    return null;
-  }
 
   const postedAt =
     raw.updated_at && !Number.isNaN(new Date(raw.updated_at).getTime())
       ? new Date(raw.updated_at).toISOString()
-      : new Date().toISOString();
+      : fetchedAt.toISOString();
   const staleAfter = addDays(fetchedAt, staleDays).toISOString();
 
-  return {
+  return toEndpointJob({
     id: `greenhouse-${board}-${raw.id}`,
     title,
     company,
-    location: location || "Unknown",
-    workplace: inferWorkplace(location, haystack),
+    location,
     postedAt,
-    fetchedAt: fetchedAt.toISOString(),
+    fetchedAt,
     staleAfter,
-    expiresAt: staleAfter,
     source: "Greenhouse",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,
     attributionLabel: `Greenhouse / ${company}`,
     termsProfile: "public-api",
-    summary: summarize(description),
-    description: normalizeDescription(description),
-    tags: normalizeTags(sourceTags, tools, platforms),
-    matchReasons,
-    tools,
-    platforms,
-    roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack, title),
-    employmentType: inferEmploymentType(haystack)
-  };
+    description,
+    sourceTags,
+  });
 }
 
 function normalizeLeverJob(raw: LeverJob, companySlug: string, fetchedAt: Date): Job | null {
@@ -549,46 +522,30 @@ function normalizeLeverJob(raw: LeverJob, companySlug: string, fetchedAt: Date):
   ]
     .map(cleanText)
     .filter(Boolean);
-  const haystack = normalizeSearchText([title, company, location, sourceTags.join(" "), description].join(" "));
-  const tools = deriveTools(haystack);
-  const platforms = derivePlatforms(haystack);
-  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
-
-  if (!isEndpointRelevant(haystack, title, tools)) {
-    return null;
-  }
 
   const postedAt =
     raw.createdAt && !Number.isNaN(new Date(raw.createdAt).getTime())
       ? new Date(raw.createdAt).toISOString()
-      : new Date().toISOString();
+      : fetchedAt.toISOString();
   const staleAfter = addDays(fetchedAt, staleDays).toISOString();
 
-  return {
+  return toEndpointJob({
     id: `lever-${companySlug}-${raw.id}`,
     title,
     company,
-    location: location || "Unknown",
-    workplace: inferWorkplace(location, haystack),
+    location,
     postedAt,
-    fetchedAt: fetchedAt.toISOString(),
+    fetchedAt,
     staleAfter,
-    expiresAt: staleAfter,
     source: "Lever",
     sourceUrl: sourceJobUrl,
     applyUrl,
     attributionLabel: `Lever / ${company}`,
     termsProfile: "public-api",
-    summary: summarize(description),
-    description: normalizeDescription(description),
-    tags: normalizeTags(sourceTags, tools, platforms),
-    matchReasons,
-    tools,
-    platforms,
-    roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack, title),
-    employmentType: cleanText(raw.categories?.commitment) || inferEmploymentType(haystack)
-  };
+    description,
+    sourceTags,
+    employmentType: cleanText(raw.categories?.commitment)
+  });
 }
 
 function normalizeAshbyJob(raw: AshbyJob, board: string, fetchedAt: Date): Job | null {
@@ -605,49 +562,31 @@ function normalizeAshbyJob(raw: AshbyJob, board: string, fetchedAt: Date): Job |
   const sourceTags = [raw.department, raw.team, raw.employmentType, raw.workplaceType]
     .map(cleanText)
     .filter(Boolean);
-  const haystack = normalizeSearchText(
-    [title, company, raw.location, sourceTags.join(" "), description].join(" ")
-  );
-  const tools = deriveTools(haystack);
-  const platforms = derivePlatforms(haystack);
-  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
-
-  if (!isEndpointRelevant(haystack, title, tools)) {
-    return null;
-  }
 
   const postedAt =
     raw.publishedAt && !Number.isNaN(new Date(raw.publishedAt).getTime())
       ? new Date(raw.publishedAt).toISOString()
-      : new Date().toISOString();
+      : fetchedAt.toISOString();
   const staleAfter = addDays(fetchedAt, staleDays).toISOString();
-  const workplace = raw.isRemote ? "Remote" : inferWorkplace(raw.location, `${haystack} ${raw.workplaceType ?? ""}`);
 
-  return {
+  return toEndpointJob({
     id: `ashby-${board}-${raw.id}`,
     title,
     company,
-    location: cleanText(raw.location) || "Unknown",
-    workplace,
+    location: cleanText(raw.location),
+    workplace: raw.isRemote ? "Remote" : undefined,
     postedAt,
-    fetchedAt: fetchedAt.toISOString(),
+    fetchedAt,
     staleAfter,
-    expiresAt: staleAfter,
     source: "Ashby",
     sourceUrl: sourceJobUrl,
     applyUrl,
     attributionLabel: `Ashby / ${company}`,
     termsProfile: "public-api",
-    summary: summarize(description),
-    description: normalizeDescription(description),
-    tags: normalizeTags(sourceTags, tools, platforms),
-    matchReasons,
-    tools,
-    platforms,
-    roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack, title),
-    employmentType: cleanText(raw.employmentType) || inferEmploymentType(haystack)
-  };
+    description,
+    sourceTags,
+    employmentType: cleanText(raw.employmentType)
+  });
 }
 
 function normalizeWorkableJob(raw: WorkableJob, account: WorkableAccount, fetchedAt: Date): Job | null {
@@ -670,49 +609,31 @@ function normalizeWorkableJob(raw: WorkableJob, account: WorkableAccount, fetche
   const sourceTags = [department, employmentType, raw.workplace, raw.location?.workplace]
     .map(cleanText)
     .filter(Boolean);
-  const haystack = normalizeSearchText([title, company, location, sourceTags.join(" "), description].join(" "));
-  const tools = deriveTools(haystack);
-  const platforms = derivePlatforms(haystack);
-  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
-
-  if (!isEndpointRelevant(haystack, title, tools)) {
-    return null;
-  }
 
   const published = raw.published ?? raw.published_on;
   const postedAt = published && !Number.isNaN(new Date(published).getTime())
     ? new Date(published).toISOString()
     : fetchedAt.toISOString();
   const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
-  const workplace = raw.remote
-    ? "Remote"
-    : inferWorkplace(location, `${haystack} ${raw.workplace ?? ""} ${raw.location?.workplace ?? ""}`);
 
-  return {
+  return toEndpointJob({
     id: `workable-${account.slug}-${shortcode}`,
     title,
     company,
-    location: location || "Unknown",
-    workplace,
+    location,
+    workplace: raw.remote ? "Remote" : undefined,
     postedAt,
-    fetchedAt: fetchedAt.toISOString(),
+    fetchedAt,
     staleAfter,
-    expiresAt: staleAfter,
     source: "Workable",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,
     attributionLabel: `Workable / ${company}`,
     termsProfile: "public-api",
-    summary: summarize(description),
-    description: normalizeDescription(description),
-    tags: normalizeTags(sourceTags, tools, platforms),
-    matchReasons,
-    tools,
-    platforms,
-    roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack, title),
-    employmentType: employmentType || inferEmploymentType(haystack)
-  };
+    description,
+    sourceTags,
+    employmentType: employmentType
+  });
 }
 
 function buildGreenhouseBoardUrl(baseUrl: string, board: string) {

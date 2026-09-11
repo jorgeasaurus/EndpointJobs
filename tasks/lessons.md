@@ -1,5 +1,7 @@
 # Lessons
 
+- When the user expands a review to the whole project, audit all maintained code and infrastructure rather than limiting findings to a branch diff.
+
 - When a user supplies an exact documentation query, preserve its filters and pagination verbatim and capture output from that exact request.
 - CSS compatibility warnings should be fixed in pairs near the standard declaration, with the prefixed fallback first and the standard property last.
 - Adjacent filter sections need explicit sibling spacing; internal grid gaps do not separate a following chip row when optional active filters are absent.

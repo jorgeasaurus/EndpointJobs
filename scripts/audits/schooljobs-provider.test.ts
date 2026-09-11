@@ -84,3 +84,20 @@ test("SchoolJobs reports HTTP failures", async () => {
     globalThis.fetch = originalFetch;
   }
 });
+
+test("SchoolJobs uses source URLs to distinguish same-title listings without native IDs", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response(`<rss><channel><title>Example Schools</title>${[1, 2].map((id) => `
+    <item><title>Intune Endpoint Engineer</title><link>https://example.com/jobs/${id}</link></item>
+  `).join("")}</channel></rss>`);
+  try {
+    const jobs = await schoolJobsProvider.fetchJobs({ url: schoolJobsProvider.defaultUrl, fetchedAt: new Date("2026-07-15T12:00:00.000Z") });
+    assert.equal(jobs.length, 2);
+    assert.ok(jobs[0]);
+    assert.ok(jobs[1]);
+    assert.notEqual(jobs[0].id, jobs[1].id);
+    assert.equal(jobs[0].expiresAt, undefined);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});

@@ -6,6 +6,7 @@ import {
   cleanText,
   cleanUrl,
   getCsvConfig,
+  getPositiveInteger,
   normalizeEmploymentTypeLabel,
   normalizeSalary,
   parseDateLike,
@@ -67,10 +68,10 @@ async function fetchAiDevBoardJobs(url: string, fetchedAt: Date) {
   }
 
   const queries = getCsvConfig("JOB_AIDEVBOARD_QUERIES", defaultAiDevBoardQueries);
-  const maxPages = Math.max(1, Number(process.env.JOB_AIDEVBOARD_MAX_PAGES ?? 1));
+  const maxPages = getPositiveInteger(process.env.JOB_AIDEVBOARD_MAX_PAGES, 1);
   const limit = Math.min(
     50,
-    Math.max(1, Number(process.env.JOB_AIDEVBOARD_LIMIT ?? 20))
+    getPositiveInteger(process.env.JOB_AIDEVBOARD_LIMIT, 20)
   );
   const jobs: Array<Job | null> = [];
 

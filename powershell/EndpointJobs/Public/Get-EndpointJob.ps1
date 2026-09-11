@@ -136,6 +136,24 @@ function Get-EndpointJob {
             limit      = $Limit
         }
 
+        # PowerShell validation is case-insensitive; the API requires canonical casing.
+        $validatedFilters = @{
+            platforms = 'Platform'
+            workplace = 'Workplace'
+            seniority = 'Seniority'
+            family = 'RoleFamily'
+            sort = 'Sort'
+        }
+        foreach ($filter in $validatedFilters.GetEnumerator()) {
+            $validation = $MyInvocation.MyCommand.Parameters[$filter.Value].Attributes |
+                Where-Object { $_ -is [System.Management.Automation.ValidateSetAttribute] }
+            $parameters[$filter.Key] = @(
+                foreach ($value in $parameters[$filter.Key]) {
+                    $validation.ValidValues | Where-Object { $_ -ieq $value }
+                }
+            )
+        }
+
         do {
             $queryString = ConvertTo-EndpointJobsQueryString -Parameters $parameters
             $response = Invoke-EndpointJobsRequest -Uri ("$rootUri/api/jobs?$queryString")

@@ -685,6 +685,23 @@ export function buildStableJobId(source: string, account: string, title: string,
   return `${readable}-${shortHash(sourceUrl)}`;
 }
 
+export function buildProviderJobId(
+  source: string,
+  account: string,
+  title: string,
+  nativeId: string | undefined,
+  sourceUrl: string
+) {
+  const identity = cleanText(nativeId);
+
+  // Preserve published IDs only when slug normalization cannot truncate the native ID.
+  if (/^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(identity) && identity.length <= 96) {
+    return `${source}-${normalizeIdPart(account)}-${normalizeIdPart(identity)}`;
+  }
+
+  return buildStableJobId(source, account, title, identity || sourceUrl);
+}
+
 function shortHash(value: string) {
   return createHash("sha1").update(value).digest("hex").slice(0, 10);
 }

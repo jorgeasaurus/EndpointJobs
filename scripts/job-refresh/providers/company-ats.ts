@@ -3,20 +3,13 @@ import type { ProviderAdapter } from "../provider";
 import { defaultWorkdaySites, type WorkdaySite } from "./workday-sites";
 import {
   addDays,
+  toEndpointJob,
   buildStableJobId,
   cleanText,
   cleanUrl,
   containsAlias,
-  deriveMatchReasons,
-  derivePlatforms,
-  deriveTools,
   getCsvConfig,
-  inferEmploymentType,
-  inferRoleFamily,
-  inferSeniority,
-  inferWorkplace,
-  isEndpointRelevant,
-  normalizeIdPart,
+  buildProviderJobId,
   normalizeSearchText,
   normalizeDescription,
   normalizeTags,
@@ -345,43 +338,27 @@ function normalizeAmazonJob(raw: AmazonJob, fetchedAt: Date): Job | null {
     .map(cleanText)
     .filter(Boolean);
   const location = cleanText(raw.normalized_location ?? raw.location);
-  const haystack = normalizeSearchText([title, company, location, sourceTags.join(" "), description].join(" "));
-  const tools = deriveTools(haystack);
-  const platforms = derivePlatforms(haystack);
-  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
 
-  if (!isEndpointRelevant(haystack, title, tools)) {
-    return null;
-  }
-
-  const postedAt = parseDateLike(raw.posted_date) ?? parseDateLike(raw.updated_time) ?? new Date().toISOString();
+  const postedAt = parseDateLike(raw.posted_date) ?? parseDateLike(raw.updated_time) ?? fetchedAt.toISOString();
   const staleAfter = addDays(fetchedAt, staleDays).toISOString();
 
-  return {
+  return toEndpointJob({
     id: `amazon-${raw.id}`,
     title,
     company,
-    location: location || "Unknown",
-    workplace: inferWorkplace(location, haystack),
+    location,
     postedAt,
-    fetchedAt: fetchedAt.toISOString(),
+    fetchedAt,
     staleAfter,
-    expiresAt: staleAfter,
     source: "Amazon Jobs",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,
     attributionLabel: "Amazon Jobs",
     termsProfile: "public-api",
-    summary: summarize(description),
-    description: normalizeDescription(description),
-    tags: normalizeTags(sourceTags, tools, platforms),
-    matchReasons,
-    tools,
-    platforms,
-    roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack, title),
-    employmentType: cleanText(raw.job_schedule_type) || inferEmploymentType(haystack)
-  };
+    description,
+    sourceTags,
+    employmentType: cleanText(raw.job_schedule_type)
+  });
 }
 
 function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, fetchedAt: Date): Job | null {
@@ -396,43 +373,33 @@ function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, 
   const bulletFields = Array.isArray(raw.bulletFields) ? raw.bulletFields.map(cleanText).filter(Boolean) : [];
   const location = getWorkdayLocation(raw, bulletFields);
   const description = cleanText([title, query, bulletFields.join(" ")].join(" "));
-  const haystack = normalizeSearchText([title, company, location, bulletFields.join(" ")].join(" "));
-  const tools = deriveTools(haystack);
-  const platforms = derivePlatforms(haystack);
-  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
-
-  if (!isEndpointRelevant(haystack, title, tools)) {
-    return null;
-  }
-
   const postedAt = parseWorkdayPostedOn(raw.postedOn, fetchedAt) ?? fetchedAt.toISOString();
   const staleAfter = addDays(fetchedAt, staleDays).toISOString();
 
-  return {
+  const job = toEndpointJob({
     id: buildStableJobId("workday", site.name, title, sourceJobUrl),
     title,
     company,
-    location: location || "Unknown",
-    workplace: inferWorkplace(location, haystack),
+    location,
     postedAt,
-    fetchedAt: fetchedAt.toISOString(),
+    fetchedAt,
     staleAfter,
-    expiresAt: staleAfter,
     source: "Workday",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,
     attributionLabel: `Workday / ${company}`,
     termsProfile: "public-api",
+    description: bulletFields.join(" "),
+    sourceTags: bulletFields
+  });
+
+  // Search terms describe how the listing was found, not evidence of its relevance.
+  return job ? {
+    ...job,
     summary: summarize(description),
     description: normalizeDescription(description),
-    tags: normalizeTags([query, ...bulletFields], tools, platforms),
-    matchReasons,
-    tools,
-    platforms,
-    roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack, title),
-    employmentType: inferEmploymentType(haystack)
-  };
+    tags: normalizeTags([query, ...bulletFields], job.tools, job.platforms)
+  } : null;
 }
 
 function normalizeActivateJob(raw: ActivateJob, site: ActivateSite, query: string, fetchedAt: Date): Job | null {
@@ -450,43 +417,26 @@ function normalizeActivateJob(raw: ActivateJob, site: ActivateSite, query: strin
 
   const location = cleanText(raw.location);
   const description = cleanText([query, raw.summary].filter(Boolean).join(" "));
-  const haystack = normalizeSearchText([title, company, location, description].join(" "));
-  const tools = deriveTools(haystack);
-  const platforms = derivePlatforms(haystack);
-  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
-
-  if (!isEndpointRelevant(haystack, title, tools)) {
-    return null;
-  }
 
   const postedAt = fetchedAt.toISOString();
   const staleAfter = addDays(fetchedAt, staleDays).toISOString();
 
-  return {
-    id: `activate-${normalizeIdPart(site.name)}-${normalizeIdPart(raw.id ?? sourceJobUrl)}`,
+  return toEndpointJob({
+    id: buildProviderJobId("activate", site.name, title, raw.id, sourceJobUrl),
     title,
     company,
-    location: location || "Unknown",
-    workplace: inferWorkplace(location, haystack),
+    location,
     postedAt,
-    fetchedAt: fetchedAt.toISOString(),
+    fetchedAt,
     staleAfter,
-    expiresAt: staleAfter,
     source: "Activate",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,
     attributionLabel: `Activate / ${site.name}`,
     termsProfile: "public-api",
-    summary: summarize(description),
-    description: normalizeDescription(description),
-    tags: normalizeTags([query], tools, platforms),
-    matchReasons,
-    tools,
-    platforms,
-    roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack, title),
-    employmentType: inferEmploymentType(haystack)
-  };
+    description,
+    sourceTags: [query],
+  });
 }
 
 function normalizeJibeJob(raw: JibeJob, site: JibeSite, query: string, fetchedAt: Date): Job | null {
@@ -510,43 +460,27 @@ function normalizeJibeJob(raw: JibeJob, site: JibeSite, query: string, fetchedAt
     .map(cleanText)
     .filter(Boolean);
   const sourceTags = [...categories, ...tagFields, cleanText(data.location_type), cleanText(data.employment_type)].filter(Boolean);
-  const haystack = normalizeSearchText([title, company, location, sourceTags.join(" "), description].join(" "));
-  const tools = deriveTools(haystack);
-  const platforms = derivePlatforms(haystack);
-  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
-
-  if (!isEndpointRelevant(haystack, title, tools)) {
-    return null;
-  }
 
   const postedAt = parseDateLike(data.posted_date) ?? parseDateLike(data.update_date) ?? parseDateLike(data.create_date) ?? fetchedAt.toISOString();
   const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
 
-  return {
-    id: `jibe-${normalizeIdPart(site.name)}-${normalizeIdPart(data.req_id ?? data.slug ?? sourceJobUrl)}`,
+  return toEndpointJob({
+    id: buildProviderJobId("jibe", site.name, title, data.req_id || data.slug, sourceJobUrl),
     title,
     company,
-    location: location || "Unknown",
-    workplace: inferWorkplace(location, haystack),
+    location,
     postedAt,
-    fetchedAt: fetchedAt.toISOString(),
+    fetchedAt,
     staleAfter,
-    expiresAt: staleAfter,
     source: "Jibe",
     sourceUrl: sourceJobUrl,
     applyUrl,
     attributionLabel: `Jibe / ${site.name}`,
     termsProfile: "public-api",
-    summary: summarize(description),
-    description: normalizeDescription(description),
-    tags: normalizeTags(sourceTags, tools, platforms),
-    matchReasons,
-    tools,
-    platforms,
-    roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack, title),
-    employmentType: cleanText(data.employment_type) || inferEmploymentType(haystack)
-  };
+    description,
+    sourceTags,
+    employmentType: cleanText(data.employment_type)
+  });
 }
 
 function parseWorkdayPostedOn(value: string | undefined, fetchedAt: Date) {

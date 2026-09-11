@@ -42,6 +42,14 @@ Describe 'Get-EndpointJob' {
             }
         }
 
+        It 'normalizes validated filter casing to the API contract' {
+            Get-EndpointJob -Platform windows, MACOS -Workplace remote -Seniority senior -RoleFamily 'endpoint engineering' -Sort COMPANY -BaseUri 'https://example.test' | Out-Null
+
+            Should -Invoke Invoke-RestMethod -Times 1 -ParameterFilter {
+                $Uri.AbsoluteUri -eq 'https://example.test/api/jobs?platforms=Windows%2CmacOS&workplace=Remote&seniority=Senior&family=Endpoint%20Engineering&sort=company&page=1&limit=20'
+            }
+        }
+
         It 'returns the response envelope when RawResponse is selected' {
             $response = Get-EndpointJob -RawResponse -BaseUri 'https://example.test'
 

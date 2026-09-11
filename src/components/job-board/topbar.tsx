@@ -87,7 +87,8 @@ export function SiteFooter({ updatedAt }: { updatedAt: string }) {
         </div>
 
         <nav className="footer-links" aria-label="Project links">
-          <Link className="feedback-link footer-link" href={getJobsDirectoryPath()}>
+          {/* Prefetching the directory can reuse page-one metadata during query pagination. */}
+          <Link className="feedback-link footer-link" href={getJobsDirectoryPath()} prefetch={false}>
             <Rows3 size={15} aria-hidden="true" />
             <span>All jobs</span>
           </Link>

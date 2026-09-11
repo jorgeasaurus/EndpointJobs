@@ -10,6 +10,7 @@ import type { JobsFeed } from "../../src/types/job";
 import { assertIncludes, assertTruthy, makeJob, type AuditContext } from "./shared";
 
 const auditAppRouter = {
+  bfcacheId: "audit",
   back() {},
   forward() {},
   refresh() {},

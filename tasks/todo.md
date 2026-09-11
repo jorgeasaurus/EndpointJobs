@@ -635,3 +635,34 @@ Committed as `0e81117` on `agent/fix-issue-29-location`, pushed to origin, and o
 ## Review
 
 Pending.
+
+# Whole-project thermonuclear review-fix loop
+
+- [x] Audit frontend, domain/API, ingestion, tooling, and PowerShell with strict structural standards.
+- [x] Record baseline findings and fix every actionable root cause.
+- [x] Repeat independent reviews until no findings remain.
+- [x] Validate types, lint, build, provider tests, data/browser audits, and relevant PowerShell checks.
+
+## Review
+
+Scope: all maintained project code. Five review rounds converged to no actionable code findings. Existing task history and generated feed data are preserved.
+
+Findings and remedies:
+1. API prototype-key crashes and duplicated options: validate through the canonical contract.
+2. Incomplete URL state casts and duplicate selections: complete typed parsing.
+3. Stale/partial map selections: concurrent reads, cancellation, source snapshot ownership.
+4. Duplicate paragraph key collisions: stable document positions.
+5. Duplicate location policy and generic metro machinery: shared guards and one matcher.
+6. Repeated provider normalization: canonical candidate boundary, preserving provider evidence.
+7. Invalid pagination and repeated retry branches: canonical integer parsing and one success path.
+8. Missing/truncated provider identities: stable fallback IDs with collision coverage.
+9. Oversized browser runner: focused map suite, same coverage.
+10. Time-dependent fixtures and undiscoverable tests: one fixture clock and `npm test`.
+11. PowerShell dependency/casing boundaries: pinned Pester before analysis and canonical enum serialization.
+12. Dependency advisories: compatible patches applied; MapLibre reviewed separately because its major upgrade changes integration.
+13. Stale directory metadata after speculative prefetch: disable prefetch on the footer directory entry; exact production sequence passes three times.
+14. Browser navigation races: wait for observable route state instead of immediate URL reads or unrelated network idleness.
+
+Validation: `npm test` (88), `npm run audit:data` (71), `npm run audit:browser` (41), `npm run typecheck`, `npm run lint`, `npm run build`, OpenAPI regeneration (unchanged), PowerShell `build.ps1 -Task CI` (12 Pester tests/analyzer/build), and `git diff --check` pass. Independent geography review compared 64,872 results against HEAD with no behavior changes.
+
+Dependency caveat: `npm audit fix --ignore-scripts` reduced 11 advisories to one MapLibre sanitizer advisory. Current attribution is hardcoded, its attribution control is disabled, and popups use React; no affected untrusted-input path was identified. React Doctor remains 49/100 due to that advisory and reviewed non-actionable heuristics (static document keys and small enum lookups); no rules were suppressed. A MapLibre v6 integration upgrade remains separate work. Packaged for a ready PR with the required app version bump to 0.1.14.

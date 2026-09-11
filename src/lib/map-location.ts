@@ -1,4 +1,9 @@
-import { isJamaicaUsNeighborhood, isNewMexicoUsLocation } from "@/lib/text";
+import {
+  getUsStateSuffix,
+  isAmbiguousPanamaCity,
+  isJamaicaUsNeighborhood,
+  isNewMexicoUsLocation
+} from "@/lib/location-context";
 import type { JobMapLocation } from "@/types/job";
 
 type Coordinate = JobMapLocation & {
@@ -634,8 +639,7 @@ function isInternationalCityWithExplicitUsState(label: string, normalizedLocatio
 
   if (
     (label === "Panama" || label.endsWith(", Panama")) &&
-    containsNormalizedLocationKey(normalizedLocation, "panama city") &&
-    !hasPanamaCountryContext(normalizedLocation)
+    isAmbiguousPanamaCity(normalizedLocation)
   ) {
     return true;
   }
@@ -644,15 +648,9 @@ function isInternationalCityWithExplicitUsState(label: string, normalizedLocatio
     return false;
   }
 
-  const locationWithoutCountry = normalizedLocation.replace(
-    / (?:us|usa|united states(?: of america)?)$/,
-    ""
-  );
-  const locationWithoutTrailingZip = locationWithoutCountry.replace(/ \d{5}(?: \d{4})?$/, "");
-
-  return /(?:^| )(?:al|ak|az|ar|ca|co|ct|dc|fl|ga|hi|id|il|in|ia|ks|ky|la|me|md|ma|mi|mn|ms|mo|mt|ne|nv|nh|nj|nm|ny|nc|nd|oh|ok|or|pa|ri|sc|sd|tn|tx|ut|vt|va|wa|wv|wi|wy)$/.test(
-    locationWithoutTrailingZip
-  );
+  const state = getUsStateSuffix(normalizedLocation);
+  // Bare DE is also the German country code used by provider locations.
+  return state !== undefined && state !== "de";
 }
 
 const usStateGuardedInternationalCountries = [
@@ -697,14 +695,6 @@ function hasCostaRicaContext(normalizedLocation: string) {
   return (
     containsNormalizedLocationKey(normalizedLocation, "costa rica") ||
     containsNormalizedLocationKey(normalizedLocation, "san jose cr")
-  );
-}
-
-function hasPanamaCountryContext(normalizedLocation: string) {
-  return (
-    containsNormalizedLocationKey(normalizedLocation, "panama city panama") ||
-    containsNormalizedLocationKey(normalizedLocation, "ciudad de panama") ||
-    containsNormalizedLocationKey(normalizedLocation, "republic of panama")
   );
 }
 

@@ -105,11 +105,11 @@ export async function auditJobsApiData(run: RunAudit) {
       "unsupported metro area rejected"
     );
 
-    for (const query of ["page=1e2", "limit=0x10"]) {
+    for (const query of ["page=1e2", "limit=0x10", "constructor=x", "__proto__=x", "toString=x"]) {
       assertEqual(
         queryJobs(feed, new URLSearchParams(query), now).ok,
         false,
-        `non-decimal integer rejected: ${query}`
+        `invalid query rejected: ${query}`
       );
     }
 

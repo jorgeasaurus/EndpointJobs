@@ -8,6 +8,7 @@ import {
   cleanUrl,
   deriveTools,
   getCsvConfig,
+  getPositiveInteger,
   isEndpointRelevant,
   normalizeEmploymentTypeLabel,
   normalizeSearchText,
@@ -483,12 +484,6 @@ function isSmartRecruitersPosting(value: unknown): value is SmartRecruitersPosti
 
 function formatCompanyIdentifier(value: string) {
   return cleanText(value.replace(/([a-z0-9])([A-Z])/g, "$1 $2"));
-}
-
-function getPositiveInteger(value: string | undefined, fallback: number) {
-  const parsed = Number(value);
-
-  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
 }
 
 function formatError(error: unknown) {

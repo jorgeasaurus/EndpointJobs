@@ -33,26 +33,31 @@ import {
 } from "./job-map-config";
 import {
   type ActivePopup,
-  type JobPreview,
+  type PopupSelection,
   buildFeatureCollection,
   buildJobPopup,
   getBestRenderedFocus,
-  getClusterLabel,
   getEventFeature,
-  getFeatureCoordinates,
   getFitPadding,
   getInteractiveFeature,
   getJobBounds,
   getJobFocusCoordinate,
-  getNumericProperty,
-  getVisiblePopup,
-  readJobPreview
+  getVisiblePopup
 } from "./job-map-features";
+import { loadClusterSelection } from "./job-map-activation";
 import { JobMapPopupContent } from "./job-map-popup";
 
 export function JobMapCanvas({ points }: { points: JobMapPoint[] }) {
   const mapRef = useRef<MapRef>(null);
-  const [activePopup, setActivePopup] = useState<ActivePopup | null>(null);
+  const [activePopup, setActivePopup] = useState<PopupSelection | null>(null);
+  const activationRef = useRef<AbortController | null>(null);
+  const cancelActivation = useCallback(() => activationRef.current?.abort(), []);
+  const closePopup = useCallback(() => {
+    cancelActivation();
+    setActivePopup(null);
+  }, [cancelActivation]);
+
+  useEffect(() => cancelActivation, [points, cancelActivation]);
   const [zoomLevel, setZoomLevel] = useState(minZoom);
   const featureCollection = useMemo(() => buildFeatureCollection(points), [points]);
   const jobFocusCoordinate = useMemo(() => getJobFocusCoordinate(points), [points]);
@@ -106,7 +111,8 @@ export function JobMapCanvas({ points }: { points: JobMapPoint[] }) {
   );
 
   useEffect(() => {
-    window.requestAnimationFrame(() => fitToJobs(420));
+    const frame = window.requestAnimationFrame(() => fitToJobs(420));
+    return () => window.cancelAnimationFrame(frame);
   }, [fitToJobs]);
 
   function handleZoomIn() {
@@ -156,14 +162,18 @@ export function JobMapCanvas({ points }: { points: JobMapPoint[] }) {
       return;
     }
 
-    setActivePopup((current) => (current?.key === popup.key ? current : popup));
-  }, []);
+    cancelActivation();
+    setActivePopup((current) => (current?.points === points && current.popup.key === popup.key
+      ? current
+      : { popup, points }));
+  }, [cancelActivation, points]);
 
   const handleMouseLeave = useCallback((event: MapLayerMouseEvent) => {
     event.target.getCanvas().style.cursor = "";
   }, []);
 
   const activateFeature = useCallback(async (feature: MapGeoJSONFeature | undefined) => {
+    cancelActivation();
     if (!feature) {
       setActivePopup(null);
       return;
@@ -173,7 +183,7 @@ export function JobMapCanvas({ points }: { points: JobMapPoint[] }) {
       const popup = buildJobPopup(feature);
 
       if (popup) {
-        setActivePopup(popup);
+        setActivePopup({ popup, points });
       }
 
       return;
@@ -183,39 +193,25 @@ export function JobMapCanvas({ points }: { points: JobMapPoint[] }) {
       return;
     }
 
-    const coordinates = getFeatureCoordinates(feature);
-    const clusterId = getNumericProperty(feature, "cluster_id");
-    const pointCount = getNumericProperty(feature, "point_count");
-    const source = mapRef.current?.getMap().getSource(sourceId) as GeoJSONSource | undefined;
+    const map = mapRef.current;
+    const source = map?.getMap().getSource<GeoJSONSource>(sourceId);
 
-    if (!coordinates || clusterId === undefined || pointCount === undefined || !source) {
-      return;
+    if (!map || !source) return;
+
+    const activation = new AbortController();
+    activationRef.current = activation;
+
+    try {
+      const selection = await loadClusterSelection(source, feature, map.getZoom(), activation.signal);
+      if (!selection || activation.signal.aborted) return;
+
+      setActivePopup({ popup: selection.popup, points });
+      map.easeTo(selection.camera);
+    } catch (error) {
+      // Source updates can invalidate worker cluster IDs while a selection loads.
+      if (!activation.signal.aborted) console.warn("Unable to select map cluster", error);
     }
-
-    const leaves = await source.getClusterLeaves(clusterId, Math.min(pointCount, 6), 0);
-    const previews = leaves.map(readJobPreview).filter((job): job is JobPreview => Boolean(job));
-    const [longitude, latitude] = coordinates;
-
-    setActivePopup({
-      count: pointCount,
-      jobs: previews,
-      key: `cluster:${clusterId}:${pointCount}`,
-      label: getClusterLabel(pointCount, previews),
-      latitude,
-      longitude,
-      type: "cluster"
-    });
-
-    const currentZoom = mapRef.current?.getZoom() ?? minZoom;
-    const expansionZoom = await source.getClusterExpansionZoom(clusterId);
-    const nextZoom = Math.min(maxZoom, expansionZoom, currentZoom + 1.15);
-
-    mapRef.current?.easeTo({
-      center: coordinates,
-      duration: 300,
-      zoom: nextZoom
-    });
-  }, []);
+  }, [cancelActivation, points]);
 
   const handleClick = useCallback(
     (event: MapLayerMouseEvent) => {
@@ -286,7 +282,7 @@ export function JobMapCanvas({ points }: { points: JobMapPoint[] }) {
             longitude={visiblePopup.longitude}
             maxWidth="340px"
             offset={22}
-            onClose={() => setActivePopup(null)}
+            onClose={closePopup}
           >
             <JobMapPopupContent popup={visiblePopup} />
           </Popup>
@@ -302,7 +298,7 @@ export function JobMapCanvas({ points }: { points: JobMapPoint[] }) {
       />
 
       {visiblePopup ? (
-        <JobMapMobileSheet onClose={() => setActivePopup(null)} popup={visiblePopup} />
+        <JobMapMobileSheet onClose={closePopup} popup={visiblePopup} />
       ) : null}
     </div>
   );

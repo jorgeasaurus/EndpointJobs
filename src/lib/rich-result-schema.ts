@@ -1,5 +1,11 @@
 import type { Job } from "@/types/job";
-import { foldTokens, isJamaicaUsNeighborhood, isNewMexicoUsLocation, normalizeText } from "@/lib/text";
+import { foldTokens, normalizeText } from "@/lib/text";
+import {
+  getUsStateSuffix,
+  isAmbiguousPanamaCity,
+  isJamaicaUsNeighborhood,
+  isNewMexicoUsLocation
+} from "@/lib/location-context";
 import { getJobWorkplace } from "@/lib/workplace";
 
 // Google requires ~1000+ characters of complete description text before a
@@ -81,7 +87,7 @@ export function inferAddressCountry(job: Job) {
 
   const location = `${job.location} ${job.mapLocation?.label ?? ""}`;
   const foldedLocation = foldDiacritics(location);
-  const usStateSuffixed = hasExplicitUsStateSuffix(job.location);
+  const usStateSuffixed = getUsStateSuffix(foldedJobLocation);
 
   for (const [pattern, countryCode] of countryMatchers) {
     if (!pattern.test(foldedLocation)) {
@@ -92,7 +98,7 @@ export function inferAddressCountry(job: Job) {
       return "US";
     }
 
-    if (countryCode === "PA" && isAmbiguousPanamaCity(foldedLocation)) {
+    if (countryCode === "PA" && isAmbiguousPanamaCity(foldTokens(location))) {
       continue;
     }
 
@@ -108,34 +114,6 @@ export function inferAddressCountry(job: Job) {
 
 function foldDiacritics(value: string) {
   return value.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
-}
-
-function hasExplicitUsStateSuffix(location: string) {
-  const normalized = foldDiacritics(location)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim()
-    .replace(/\s+/g, " ")
-    .replace(/ (?:us|usa|united states(?: of america)?)$/, "")
-    .replace(/ \d{5}(?: \d{4})?$/, "");
-
-  return /(?:^| )(?:al|ak|az|ar|ca|co|ct|de|fl|ga|hi|id|il|in|ia|ks|ky|la|me|md|ma|mi|mn|ms|mo|mt|ne|nv|nh|nj|nm|ny|nc|nd|oh|ok|or|pa|ri|sc|sd|tn|tx|ut|vt|va|wa|wv|wi|wy|dc)$/.test(
-    normalized
-  );
-}
-
-function isAmbiguousPanamaCity(foldedLocation: string) {
-  const normalized = foldedLocation
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim()
-    .replace(/\s+/g, " ");
-
-  if (!/\bpanama city\b/.test(normalized)) {
-    return false;
-  }
-
-  return !/\b(?:panama city panama|ciudad de panama|republic of panama)\b/.test(normalized);
 }
 
 export function normalizeEmploymentType(value: string) {

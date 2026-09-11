@@ -79,15 +79,13 @@ export function buildFeatureCollection(
   };
 }
 
-export function getVisiblePopup(popup: ActivePopup | null, points: JobMapPoint[]) {
-  if (!popup) {
-    return null;
-  }
+export type PopupSelection = {
+  popup: ActivePopup;
+  points: JobMapPoint[];
+};
 
-  const pointIds = new Set(points.map((point) => point.id));
-  const hasVisibleJob = popup.jobs.some((job) => pointIds.has(job.id));
-
-  return hasVisibleJob ? popup : null;
+export function getVisiblePopup(selection: PopupSelection | null, points: JobMapPoint[]) {
+  return selection?.points === points ? selection.popup : null;
 }
 
 export function getInteractiveFeature(features: MapGeoJSONFeature[] | undefined) {
@@ -160,7 +158,7 @@ export function getFeatureCoordinates(feature: Feature | MapGeoJSONFeature): [nu
   return [longitude, latitude];
 }
 
-export function getNumericProperty(feature: MapGeoJSONFeature, key: string) {
+export function getNumericProperty(feature: Pick<Feature, "properties">, key: string) {
   const value = feature.properties?.[key];
   return typeof value === "number" && Number.isFinite(value) ? value : undefined;
 }

@@ -4,23 +4,13 @@ import type { Job } from "../../../src/types/job";
 import type { ProviderAdapter } from "../provider";
 import {
   addDays,
+  toEndpointJob,
   buildStableJobId,
   cleanText,
   cleanUrl,
-  deriveMatchReasons,
-  derivePlatforms,
-  deriveTools,
-  inferEmploymentType,
-  inferRoleFamily,
-  inferSeniority,
-  inferWorkplace,
-  isEndpointRelevant,
   normalizeDescription,
-  normalizeSearchText,
-  normalizeTags,
   parseDateLike,
   stripHtml,
-  summarize,
   toArray
 } from "../shared";
 
@@ -109,20 +99,6 @@ function normalizeSchoolJobsItem(raw: SchoolJobsItem, company: string, fetchedAt
   const division = cleanText(getXmlText(raw["joblisting:division"]));
   const categories = getCategories(raw["joblisting:categories"]);
   const sourceTags = [department, division, jobType, ...categories].filter(Boolean);
-  const haystack = normalizeSearchText([
-    title,
-    company,
-    location,
-    sourceTags.join(" "),
-    searchableDescription
-  ].join(" "));
-  const tools = deriveTools(haystack);
-  const platforms = derivePlatforms(haystack);
-
-  if (!isEndpointRelevant(haystack, title, tools)) {
-    return null;
-  }
-
   const postedAt = parseSchoolJobsUtcDate(getXmlText(raw["joblisting:advertiseFromDateUTC"]))
     ?? parseDateLike(getXmlText(raw.pubDate))
     ?? fetchedAt.toISOString();
@@ -130,31 +106,25 @@ function normalizeSchoolJobsItem(raw: SchoolJobsItem, company: string, fetchedAt
   const staleAfter = closingAt ?? addDays(new Date(postedAt), staleDays).toISOString();
   const nativeId = cleanText(getXmlText(raw["joblisting:jobId"]));
 
-  return {
-    id: buildStableJobId("schooljobs", company, title, nativeId ?? sourceUrl),
+  const job = toEndpointJob({
+    id: buildStableJobId("schooljobs", company, title, nativeId || sourceUrl),
     title,
     company,
-    location: location || "Unknown",
-    workplace: inferWorkplace(location, haystack),
+    location,
     postedAt,
-    fetchedAt: fetchedAt.toISOString(),
+    fetchedAt,
     staleAfter,
-    ...(closingAt ? { expiresAt: closingAt } : {}),
     source: "SchoolJobs",
     sourceUrl,
     applyUrl: sourceUrl,
     attributionLabel: `SchoolJobs / ${company}`,
     termsProfile: "public-api",
-    summary: summarize(searchableDescription),
-    ...(description ? { description } : {}),
-    tags: normalizeTags(sourceTags, tools, platforms),
-    matchReasons: deriveMatchReasons(haystack, tools, platforms),
-    tools,
-    platforms,
-    roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack, title),
-    employmentType: jobType || inferEmploymentType(haystack)
-  };
+    description: searchableDescription,
+    sourceTags,
+    employmentType: jobType
+  });
+
+  return job ? { ...job, expiresAt: closingAt } : null;
 }
 
 function getChannel(parsed: unknown): SchoolJobsChannel | undefined {

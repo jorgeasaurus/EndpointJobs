@@ -17,6 +17,7 @@ export type RunAudit = (
 
 export const deadAdzunaUrl = "https://www.adzuna.com/details/5763079616";
 export const fixedAuditNow = new Date("2026-06-28T20:55:00.000Z");
+const fixtureTimestamp = Date.now();
 export const feed = feedData as JobsFeed;
 
 export const AuditToggleButton = ToggleButton as unknown as (props: {
@@ -32,6 +33,7 @@ export const sourcePaths = {
   animatedNumber: "src/components/job-board/animated-number.tsx",
   atsBoards: "scripts/job-refresh/providers/ats-boards.ts",
   browserAudit: "scripts/audit-user-stories-browser.mjs",
+  mapBrowserAudit: "scripts/audits/job-map-browser.mjs",
   comparisonBrowserAudit: "scripts/audits/job-comparison-browser.mjs",
   comparisonDataAudit: "scripts/audits/job-comparison-data.ts",
   companyAts: "scripts/job-refresh/providers/company-ats.ts",
@@ -311,11 +313,11 @@ export function stripHtml(value: string) {
 }
 
 export function daysAgo(days: number) {
-  return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+  return new Date(fixtureTimestamp - days * 24 * 60 * 60 * 1000).toISOString();
 }
 
 export function daysFromNow(days: number) {
-  return new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+  return new Date(fixtureTimestamp + days * 24 * 60 * 60 * 1000).toISOString();
 }
 
 export function makeAdzunaJob(overrides: Partial<Job> = {}): Job {
@@ -336,7 +338,7 @@ export function makeJob(overrides: Partial<Job> = {}): Job {
     location: "Remote",
     workplace: "Remote",
     postedAt: daysAgo(1),
-    fetchedAt: new Date().toISOString(),
+    fetchedAt: new Date(fixtureTimestamp).toISOString(),
     staleAfter: daysFromNow(30),
     source: "Audit",
     sourceUrl: "https://example.com/audit-job",

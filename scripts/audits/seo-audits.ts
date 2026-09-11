@@ -1,4 +1,9 @@
 import { existsSync } from "node:fs";
+import { Children, isValidElement, type ReactNode } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+
+import JobPage, { generateStaticParams } from "../../src/app/jobs/[id]/page";
+import feedData from "../../src/data/jobs.json";
 
 import sitemap from "../../src/app/sitemap";
 import { getEndpointToolUrl } from "../../src/app/site-metadata";
@@ -48,15 +53,38 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
       "page > Math.max(totalPages, 1)",
       "empty feed keeps page 1 valid"
     );
-    assertIncludes(
-      sources.jobPage,
-      "key={hashParagraph(paragraph)}",
-      "paragraph keys hash full content"
-    );
-    assertNotIncludes(sources.jobPage, "key={paragraph.slice(0, 64)}", "no prefix-collision keys");
     assertIncludes(sources.topbar, "getJobsDirectoryPath()", "directory discovery link");
     assertIncludes(sources.topbar, "https://buymeacoffee.com/jorgeasaurus", "support link");
     assertTruthy(existsSync("public/og-image.png"), "missing public/og-image.png");
+  });
+
+  await run("REG-UI-PARAGRAPHS", "Repeated job description paragraphs keep unique sibling identities", async () => {
+    const id = generateStaticParams()[0]?.id;
+    const job = feedData.jobs.find((candidate) => candidate.id === id);
+    assertTruthy(job, "active canonical job fixture");
+    if (!job) return;
+    const originalDescription = job.description;
+    const paragraph = "Maintain endpoint platforms and automate device management. ".repeat(4).trim();
+
+    try {
+      job.description = `${paragraph}\n${paragraph}`;
+      const page = await JobPage({ params: Promise.resolve({ id: job.id }) });
+      const markup = renderToStaticMarkup(page);
+      assertEqual(markup.split(`<p>${paragraph}</p>`).length - 1, 2, "both duplicate paragraphs render");
+      const keys: (string | null)[] = [];
+      function visit(node: ReactNode) {
+        Children.forEach(node, (child) => {
+          if (!isValidElement<{ children?: ReactNode }>(child)) return;
+          if (child.type === "p" && child.props.children === paragraph) keys.push(child.key);
+          visit(child.props.children);
+        });
+      }
+      visit(page);
+      assertEqual(keys.length, 2, "both paragraph elements are present");
+      assertEqual(new Set(keys).size, 2, "duplicate content has distinct keys");
+    } finally {
+      job.description = originalDescription;
+    }
   });
 
   await run("FEAT-052", "Home JSON-LD emits escaped collection data", () => {

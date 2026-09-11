@@ -67,3 +67,20 @@ test("Workday normalizes GEICO roles and sends its required language header", as
     Object.assign(process.env, originalEnv);
   }
 });
+
+test("Workday search terms do not become relevance evidence", async () => {
+  assert.ok(workdayProvider);
+  const originalFetch = globalThis.fetch;
+  const originalEnv = { ...process.env };
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/External/jobs|Intune";
+  globalThis.fetch = async () => Response.json({
+    jobPostings: [{ title: "Systems Engineer", externalPath: "/job/Example/Systems-Engineer_R123", postedOn: "Posted Today", bulletFields: ["R123"] }]
+  });
+  try {
+    const jobs = await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-07-15T12:00:00.000Z") });
+    assert.deepEqual(jobs, [null]);
+  } finally {
+    globalThis.fetch = originalFetch;
+    process.env = originalEnv;
+  }
+});
