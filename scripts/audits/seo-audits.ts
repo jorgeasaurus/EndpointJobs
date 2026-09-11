@@ -282,6 +282,9 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     assertEqual(inferAddressCountry(makeJob({ location: "San Juan Capistrano, CA" })), "US");
     assertEqual(inferAddressCountry(makeJob({ location: "Berlin, Germany", mapLocation: undefined })), "DE");
     assertEqual(inferAddressCountry(makeJob({ location: "Berlin, DE", mapLocation: undefined })), "DE");
+    assertEqual(inferAddressCountry(makeJob({ location: "Dresden, DE", mapLocation: undefined })), "DE");
+    assertEqual(inferAddressCountry(makeJob({ location: "Leipzig, DE", mapLocation: undefined })), "DE");
+    assertEqual(inferAddressCountry(makeJob({ location: "Bremen, DE", mapLocation: undefined })), "DE");
     assertEqual(inferAddressCountry(makeJob({ location: "Wilmington, DE", mapLocation: undefined })), "US");
     assertEqual(inferAddressCountry(makeJob({ location: "Dover, DE", mapLocation: undefined })), "US");
     assertEqual(inferAddressCountry(makeJob({ location: "Newark, DE", mapLocation: undefined })), "US");

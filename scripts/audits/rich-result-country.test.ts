@@ -26,6 +26,19 @@ test("German DE suffixes are not labeled as Delaware", () => {
   assert.equal(inferAddressCountry(makeJob({ location: "Berlin, DE", mapLocation: undefined })), "DE");
   assert.equal(inferAddressCountry(makeJob({ location: "Berlin, Germany", mapLocation: undefined })), "DE");
   assert.equal(inferAddressCountry(makeJob({ location: "Munich, DE", mapLocation: undefined })), "DE");
+  assert.equal(inferAddressCountry(makeJob({ location: "Dresden, DE", mapLocation: undefined })), "DE");
+  assert.equal(inferAddressCountry(makeJob({ location: "Leipzig, DE", mapLocation: undefined })), "DE");
+  assert.equal(inferAddressCountry(makeJob({ location: "Bremen, DE", mapLocation: undefined })), "DE");
+  assert.equal(
+    inferAddressCountry(
+      makeJob({
+        location: "Campus, DE",
+        mapLocation: { label: "Dresden, Germany", latitude: 51.0504, longitude: 13.7373 }
+      })
+    ),
+    "DE"
+  );
   assert.equal(inferAddressCountry(makeJob({ location: "Wilmington, DE", mapLocation: undefined })), "US");
+  assert.equal(inferAddressCountry(makeJob({ location: "Lewes, DE", mapLocation: undefined })), "US");
   assert.equal(inferAddressCountry(makeJob({ location: "Rue de la Paix, Paris", mapLocation: undefined })), undefined);
 });

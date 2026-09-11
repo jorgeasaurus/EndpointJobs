@@ -6,6 +6,7 @@ import {
   isJamaicaUsNeighborhood,
   isNewMexicoUsLocation
 } from "@/lib/location-context";
+import { hasGermanLocationEvidence } from "@/lib/map-location";
 import { getJobWorkplace } from "@/lib/workplace";
 
 // Google requires ~1000+ characters of complete description text before a
@@ -112,7 +113,7 @@ export function inferAddressCountry(job: Job) {
   }
 
   // DE is Germany's ISO code as well as Delaware. Keep the generic Delaware
-  // suffix as US unless the location has explicit German country or city evidence.
+  // suffix as US unless shared map/country evidence identifies Germany.
   // Match an uppercase DE token or a trailing DE suffix so mid-string words
   // like "de" in "Rue de la Paix" are not treated as a country or US state.
   const foldedCombinedLocation = foldTokens(location);
@@ -121,11 +122,7 @@ export function inferAddressCountry(job: Job) {
     getUsStateSuffix(foldedCombinedLocation) === "de" ||
     /\bDE\b/.test(location)
   ) {
-    return /\b(?:germany|deutschland|berlin|hamburg|munich|munchen|muenchen|frankfurt|cologne|koln|koeln|stuttgart|dusseldorf|duesseldorf)\b/.test(
-      foldedCombinedLocation
-    )
-      ? "DE"
-      : "US";
+    return hasGermanLocationEvidence(job.location, job.mapLocation) ? "DE" : "US";
   }
 
   return undefined;
