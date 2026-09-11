@@ -663,7 +663,7 @@ Findings and remedies:
 13. Stale directory metadata after speculative prefetch: disable prefetch on the footer directory entry; exact production sequence passes three times.
 14. Browser navigation races: wait for observable route state instead of immediate URL reads or unrelated network idleness.
 
-Validation: `npm test` (108), `npm run audit:data` (71), `npm run audit:browser` (41), `npm run typecheck`, `npm run lint`, `npm run build`, OpenAPI regeneration (unchanged), PowerShell `build.ps1 -Task CI` (14 Pester tests/analyzer/build), and `git diff --check` pass. Independent geography review compared 64,872 results against HEAD with no behavior changes.
+Validation: `npm test` (110), `npm run audit:data` (71), `npm run audit:browser` (41), `npm run typecheck`, `npm run lint`, `npm run build`, OpenAPI regeneration (unchanged), PowerShell `build.ps1 -Task CI` (14 Pester tests/analyzer/build), and `git diff --check` pass. Independent geography review compared 64,872 results against HEAD with no behavior changes.
 
 Dependency follow-up: MapLibre 6.9.0 resolves the remaining advisory; `npm audit` reports zero vulnerabilities. Full-project React Doctor 0.5.5 and 0.9.13 report 100/100 with no findings. Copied vendor worker modules are excluded from source linting; application rules remain enabled. App version is 0.1.14.
 
@@ -677,7 +677,7 @@ Dependency follow-up: MapLibre 6.9.0 resolves the remaining advisory; `npm audit
 
 Fixed and resolved Copilot’s tool-casing finding in `9e28b56`; 13 Pester tests, module analysis/build, 71 data audits, lint, and typecheck pass. Two explained React Doctor heuristic threads remain open. Fresh review requested on the new head.
 
-Historical review results below retain the counts measured at each commit. The current test run reports 108 passing tests.
+Historical review results below retain the counts measured at each commit. The current test run reports 110 passing tests.
 
 Copilot round 2: fixed audit-clock drift, Activate query contamination, invalid TheirStack ages, and stale map popups. Validation: 90 tests, 71 data audits, 41 browser checks, lint, typecheck, and production build pass.
 
@@ -713,3 +713,7 @@ Copilot round 16: preserve Activate query-only relevance without changing publis
 Copilot round 17: trim known PowerShell alias lookup keys, reuse normalized German evidence, release removed scroll-region child observations, and centralize tool-list reset CSS. The alias regression failed before the fix; module CI now passes 14 Pester tests. Duplicate German-key feedback handled once.
 
 Round-17 verification: 108 tests, 71 data audits, 41 production browser checks, focused accessibility checks, 14 Pester tests, lint, typecheck, production/module builds, and both full React Doctor scans pass (100/100).
+
+Copilot round 18: refresh directory active/canonical selection and pagination per request, including metadata validation; restrict the DE map exception to German cities. Both regressions failed before their fixes. All 110 tests, 71 data audits, lint, typecheck, build, and both full React Doctor scans pass (100/100).
+
+Round-18 production browser validation: all 41 checks pass.

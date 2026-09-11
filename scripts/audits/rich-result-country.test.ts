@@ -5,6 +5,14 @@ import { resolveJobMapLocation } from "../../src/lib/map-location";
 import { inferAddressCountry } from "../../src/lib/rich-result-schema";
 import { makeJob } from "./shared";
 
+test("DE map suffix exception is limited to German cities", () => {
+  for (const location of ["Spain, DE", "Brazil, DE", "Peru, DE", "Sydney, DE", "Spain, IN", "Berlin, NH"]) {
+    assert.equal(resolveJobMapLocation(location), undefined, location);
+  }
+  assert.equal(resolveJobMapLocation("Berlin, DE")?.label, "Berlin, Germany");
+  assert.equal(resolveJobMapLocation("Munich, DE")?.label, "Munich, Germany");
+});
+
 test("ambiguous DE suffix does not override an explicit country in rich results", () => {
   for (const [location, country] of [["Brazil, DE", "BR"], ["Peru, DE", "PE"], ["Spain, DE", "ES"]]) {
     assert.equal(inferAddressCountry(makeJob({ location, mapLocation: undefined })), country);

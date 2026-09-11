@@ -679,8 +679,9 @@ function isInternationalCityWithExplicitUsState(label: string, normalizedLocatio
   }
 
   const state = getUsStateSuffix(normalizedLocation);
-  // Bare DE is also the German country code used by provider locations.
-  return state !== undefined && state !== "de";
+  // German cities may use DE as a country code; other guarded labels retain
+  // the full US-state collision check, including Delaware.
+  return state !== undefined && !(state === "de" && label.endsWith(", Germany"));
 }
 
 const usStateGuardedInternationalCountries = [
