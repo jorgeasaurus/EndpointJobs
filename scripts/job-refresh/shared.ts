@@ -401,7 +401,7 @@ export function inferWorkplace(location: string | undefined, haystack: string): 
   return "Unknown";
 }
 
-export function normalizeTags(
+function normalizeTags(
   sourceTags: string[],
   tools: EndpointTool[],
   platforms: Platform[]
@@ -675,7 +675,7 @@ export function parseDateLike(value: string | undefined) {
   return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
 }
 
-export function normalizeIdPart(value: string) {
+function normalizeIdPart(value: string) {
   return normalizeSearchText(value)
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")

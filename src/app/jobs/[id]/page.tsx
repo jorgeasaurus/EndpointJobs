@@ -106,7 +106,12 @@ export default async function JobPage({ params }: JobPageProps) {
   }
 
   const applicationUrl = job.applyUrl ?? job.sourceUrl;
-  const descriptionParagraphs = getExpandedDescriptionParagraphs(job);
+  const paragraphOccurrences = new Map<string, number>();
+  const descriptionParagraphs = getExpandedDescriptionParagraphs(job).map((text) => {
+    const occurrence = paragraphOccurrences.get(text) ?? 0;
+    paragraphOccurrences.set(text, occurrence + 1);
+    return { text, key: JSON.stringify([text, occurrence]) };
+  });
 
   return (
     <main className="site-frame job-detail-frame">
@@ -158,8 +163,8 @@ export default async function JobPage({ params }: JobPageProps) {
               <section aria-labelledby="job-description-heading" className="job-detail-description">
                 <span className="section-kicker">Role overview</span>
                 <h2 id="job-description-heading">Job description</h2>
-                {descriptionParagraphs.map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
+                {descriptionParagraphs.map((paragraph) => (
+                  <p key={paragraph.key}>{paragraph.text}</p>
                 ))}
               </section>
             ) : null}

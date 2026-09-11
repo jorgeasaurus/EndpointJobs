@@ -13,7 +13,7 @@ const freshnessFilterValueSet: ReadonlySet<string> = new Set(freshnessFilterValu
 export const minimumSalaryFilterValues = ["Any", "80000", "100000", "120000", "150000", "180000", "200000"] as const;
 export type MinimumSalaryFilter = (typeof minimumSalaryFilterValues)[number];
 
-export { isMetroAreaFilter, metroAreaOptions } from "@/lib/metro-areas";
+export { metroAreaOptions } from "@/lib/metro-areas";
 export type { MetroAreaFilter } from "@/lib/metro-areas";
 
 export type JobFilters = {
@@ -49,7 +49,10 @@ export function filterJobs(jobs: Job[], filters: JobFilters, now = new Date()) {
   const maximumAgeDays = filters.freshness === "Any" ? null : Number(filters.freshness);
   return jobs.filter((job) => {
     const workplace = getJobWorkplace(job);
-    if (query && !getSearchText(job).includes(query)) return false;
+    if (query) {
+      const searchText: string = getSearchText(job);
+      if (!searchText.includes(query)) return false;
+    }
     if (location) {
       const locationHaystack = foldTokens(`${job.location} ${job.mapLocation?.label ?? ""} ${workplace}`);
       if (!locationHaystack.includes(location)) return false;

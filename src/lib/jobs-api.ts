@@ -8,6 +8,12 @@ import { isActiveJob } from "@/lib/jobs";
 import type { Job, JobsFeed } from "@/types/job";
 
 const queryDefinitions = new Map<string, JobsApiQueryDefinition>(Object.entries(jobsApiQueryContract));
+const queryValueSets = new Map<string, ReadonlySet<string>>();
+for (const [key, definition] of queryDefinitions) {
+  if (definition.kind === "enum" || definition.kind === "multi") {
+    queryValueSets.set(key, new Set(definition.values));
+  }
+}
 
 export const jobsApiHeaders = {
   "Access-Control-Allow-Headers": "Content-Type",
@@ -162,7 +168,8 @@ function validateValue(
   }
   const separator = definition.kind === "multi" ? definition.separator ?? "," : ",";
   const values = definition.kind === "multi" ? value.split(separator).map((item) => item.trim()) : [normalizedValue];
-  if (values.some((item) => !item || !definition.values.includes(item))) {
+  const allowedValues = queryValueSets.get(key);
+  if (values.some((item) => !item || !allowedValues?.has(item))) {
     errors.push(definition.kind === "multi"
       ? `${key} contains an unsupported value`
       : `${key} must be one of: ${definition.values.join(", ")}`);

@@ -63,7 +63,6 @@ export function mountEndpointSignalField(
   const positions = nodes.map(() => new THREE.Vector3());
   let width = 1;
   let height = 1;
-  let animationFrame = 0;
 
   webglRenderer.domElement.dataset.endpointSignalCanvas = "true";
   hostElement.appendChild(webglRenderer.domElement);
@@ -131,16 +130,15 @@ export function mountEndpointSignalField(
     routeGeometry.attributes.color.needsUpdate = true;
 
     webglRenderer.render(scene, camera);
-    animationFrame = window.requestAnimationFrame(render);
   }
 
   const resizeObserver = new ResizeObserver(resize);
   resizeObserver.observe(hostElement);
   resize();
-  animationFrame = window.requestAnimationFrame(render);
+  webglRenderer.setAnimationLoop(render);
 
   return () => {
-    window.cancelAnimationFrame(animationFrame);
+    webglRenderer.setAnimationLoop(null);
     resizeObserver.disconnect();
     fieldElement.classList.remove("parallax-field--three");
     hostElement.removeChild(webglRenderer.domElement);

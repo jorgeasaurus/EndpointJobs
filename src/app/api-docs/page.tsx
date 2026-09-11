@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { ScrollRegion } from "@/components/scroll-region";
 import { ApiCodeBlock } from "@/components/api-code-block";
 import { getOpenApiPath, siteUrl } from "@/app/site-metadata";
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
@@ -123,7 +124,7 @@ export default function ApiDocsPage() {
               <h2 id="api-parameters-heading">Query parameters</h2>
               <p>Multi-value filters are comma-separated unless noted otherwise.</p>
             </div>
-            <div className="api-table-scroll" role="region" aria-label="Jobs API query parameters" tabIndex={0}>
+            <ScrollRegion className="api-table-scroll" label="Jobs API query parameters">
               <table>
                 <thead>
                   <tr><th scope="col">Parameter</th><th scope="col">Type</th><th scope="col">Accepted values</th></tr>
@@ -138,7 +139,7 @@ export default function ApiDocsPage() {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </ScrollRegion>
           </section>
 
           <section className="api-response-section" aria-labelledby="api-response-heading">

@@ -254,6 +254,7 @@ export function JobMapCanvas({ points }: { points: JobMapPoint[] }) {
         mapStyle={darkRasterStyle}
         maxZoom={maxZoom}
         minZoom={minZoom}
+        workerUrl="/maplibre/maplibre-gl-worker.mjs"
         onClick={handleClick}
         onLoad={() => window.requestAnimationFrame(() => fitToJobs(700))}
         onMouseLeave={handleMouseLeave}

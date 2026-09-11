@@ -8,7 +8,7 @@ export function hasExplicitOnsiteWorkplace(text: string): boolean {
   return explicitOnsiteWorkplacePattern.test(normalizeText(text));
 }
 
-export function getJobWorkplaceText(
+function getJobWorkplaceText(
   job: Pick<Job, "location" | "summary" | "description">
 ) {
   return `${job.location} ${job.summary} ${job.description ?? ""}`;

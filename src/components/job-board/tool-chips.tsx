@@ -23,38 +23,38 @@ export function ToolChips({
     const hiddenTechnologyLabel = hiddenCount === 1 ? "technology" : "technologies";
 
     return (
-      <div
+      <ul
         className="tag-row tool-chips"
         aria-label="Matched tools and platforms"
-        role="group"
+        style={{ listStyle: "none", marginBottom: 0, marginLeft: 0, marginRight: 0, padding: 0 }}
       >
         {visiblePlatforms.map((platform) => (
-          <span
+          <li
             aria-label={`Platform: ${platform}`}
             className="tool-chip tool-chip--platform"
             key={`platform-${platform}`}
           >
             {platform}
-          </span>
+          </li>
         ))}
         {visibleTools.map((tool) => (
-          <span
+          <li
             aria-label={`Tool: ${getEndpointToolLabel(tool)}`}
             className="tool-chip tool-chip--tool"
             key={`tool-${tool}`}
           >
             {getEndpointToolLabel(tool)}
-          </span>
+          </li>
         ))}
         {hiddenCount > 0 ? (
-          <span
+          <li
             aria-label={`${hiddenCount} additional ${hiddenTechnologyLabel}; open job details to view`}
             className="tool-chip tool-chip--more"
           >
             +{hiddenCount} more
-          </span>
+          </li>
         ) : null}
-      </div>
+      </ul>
     );
   }
 

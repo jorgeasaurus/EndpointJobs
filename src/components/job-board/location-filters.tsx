@@ -50,7 +50,7 @@ export function WorkplaceFilters({
         <MapPin size={15} aria-hidden="true" />
         Workplace
       </span>
-      <div className="workplace-filter" aria-label="Workplace" role="group">
+      <fieldset className="workplace-filter" aria-label="Workplace" style={{ margin: 0 }}>
         {workplaceFilterOptions.map((option) => {
           const count = workplaceCounts[option.value];
           return (
@@ -70,7 +70,7 @@ export function WorkplaceFilters({
             </ToggleButton>
           );
         })}
-      </div>
+      </fieldset>
     </section>
   );
 }

@@ -77,12 +77,6 @@ export const metroAreaOptions = [
 
 export type MetroAreaFilter = (typeof metroAreaOptions)[number];
 
-const metroAreaValueSet: ReadonlySet<string> = new Set(metroAreaOptions);
-
-export function isMetroAreaFilter(value: string): value is MetroAreaFilter {
-  return metroAreaValueSet.has(value);
-}
-
 const metroAreaKeywordSets: Record<MetroAreaFilter, readonly string[]> = {
   "Atlanta, GA": ["atlanta", "georgia us"],
   "Austin, TX": ["austin", "bastrop tx", "bastrop bastrop", "tarrytown travis"],

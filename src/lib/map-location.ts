@@ -600,20 +600,20 @@ const locationCoordinates: Coordinate[] = [
   { label: "Japan", latitude: 36.2048, longitude: 138.2529, keys: ["japan remote"] }
 ];
 
-const searchableLocationCoordinates = locationCoordinates.map((coordinate) => ({
-  ...coordinate,
-  normalizedKeys: coordinate.keys.map(normalizeLocation).filter(Boolean)
-}));
+const searchableLocationCoordinates: Array<Coordinate & { normalizedKeys: string[] }> = [];
+const germanLocationKeys: string[] = [];
 
-const germanLocationKeys = [
-  ...locationCoordinates
-    .filter((coordinate) => isGermanMapLocation(coordinate.label))
-    .flatMap((coordinate) => coordinate.keys),
-  // Unmapped German cities still used as country evidence for DE suffixes.
-  "dresden",
-  "leipzig",
-  "bremen"
-];
+for (const coordinate of locationCoordinates) {
+  const normalizedKeys: string[] = [];
+  for (const key of coordinate.keys) {
+    const normalized = normalizeLocation(key);
+    if (normalized) normalizedKeys.push(normalized);
+  }
+  searchableLocationCoordinates.push({ ...coordinate, normalizedKeys });
+  if (isGermanMapLocation(coordinate.label)) germanLocationKeys.push(...coordinate.keys);
+}
+// Unmapped German cities still used as country evidence for DE suffixes.
+germanLocationKeys.push("dresden", "leipzig", "bremen");
 
 export function isGermanMapLocation(label: string | undefined) {
   return label === "Germany" || Boolean(label?.endsWith(", Germany"));

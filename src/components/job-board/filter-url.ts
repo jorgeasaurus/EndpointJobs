@@ -133,7 +133,7 @@ export function toFreshnessFilter(value: string): FreshnessFilter {
   return isFreshnessFilter(value) ? value : "Any";
 }
 
-export function toWorkplaceFilter(value: string): WorkplaceFilter {
+function toWorkplaceFilter(value: string): WorkplaceFilter {
   if (value === "Remote" || value === "Hybrid" || value === "On-site") {
     return value;
   }

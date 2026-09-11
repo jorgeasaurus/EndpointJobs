@@ -164,10 +164,10 @@ function escapeHtml(value: string) {
 }
 
 export function formatDescriptionAsHtml(value: string) {
-  const paragraphs = value
-    .split(/\n+/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean);
-
-  return paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("");
+  const paragraphs: string[] = [];
+  for (const paragraph of value.split(/\n+/)) {
+    const trimmed = paragraph.trim();
+    if (trimmed) paragraphs.push(`<p>${escapeHtml(trimmed)}</p>`);
+  }
+  return paragraphs.join("");
 }

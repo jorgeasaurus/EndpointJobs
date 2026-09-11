@@ -651,7 +651,7 @@ Findings and remedies:
 1. API prototype-key crashes and duplicated options: validate through the canonical contract.
 2. Incomplete URL state casts and duplicate selections: complete typed parsing.
 3. Stale/partial map selections: concurrent reads, cancellation, source snapshot ownership.
-4. Duplicate paragraph key collisions: stable document positions.
+4. Duplicate paragraph key collisions: content-and-occurrence identities.
 5. Duplicate location policy and generic metro machinery: shared guards and one matcher.
 6. Repeated provider normalization: canonical candidate boundary, preserving provider evidence.
 7. Invalid pagination and repeated retry branches: canonical integer parsing and one success path.
@@ -659,19 +659,19 @@ Findings and remedies:
 9. Oversized browser runner: focused map suite, same coverage.
 10. Time-dependent fixtures and undiscoverable tests: one fixture clock and `npm test`.
 11. PowerShell dependency/casing boundaries: pinned Pester before analysis and canonical enum serialization.
-12. Dependency advisories: compatible patches applied; MapLibre reviewed separately because its major upgrade changes integration.
+12. Dependency advisories: patched dependencies, including MapLibre v6 with matching React wrapper and self-hosted worker modules.
 13. Stale directory metadata after speculative prefetch: disable prefetch on the footer directory entry; exact production sequence passes three times.
 14. Browser navigation races: wait for observable route state instead of immediate URL reads or unrelated network idleness.
 
 Validation: `npm test` (107), `npm run audit:data` (71), `npm run audit:browser` (41), `npm run typecheck`, `npm run lint`, `npm run build`, OpenAPI regeneration (unchanged), PowerShell `build.ps1 -Task CI` (13 Pester tests/analyzer/build), and `git diff --check` pass. Independent geography review compared 64,872 results against HEAD with no behavior changes.
 
-Dependency caveat: `npm audit fix --ignore-scripts` reduced 11 advisories to one MapLibre sanitizer advisory. Current attribution is hardcoded, its attribution control is disabled, and popups use React; no affected untrusted-input path was identified. React Doctor remains 49/100 due to that advisory and reviewed non-actionable heuristics (static document keys and small enum lookups); no rules were suppressed. A MapLibre v6 integration upgrade remains separate work. Packaged for a ready PR with the required app version bump to 0.1.14.
+Dependency follow-up: MapLibre 6.9.0 resolves the remaining advisory; `npm audit` reports zero vulnerabilities. Full-project React Doctor 0.5.5 and 0.9.13 report 100/100 with no findings. Copied vendor worker modules are excluded from source linting; application rules remain enabled. App version is 0.1.14.
 
 # PR #52 Copilot review loop
 
 - [x] Capture review baseline and disposition existing feedback.
 - [x] Fix, verify, push, and resolve valid findings.
-- [ ] Confirm a fresh clean Copilot review on the latest head.
+- [x] Confirm a fresh clean Copilot review on the latest head.
 
 ## Review
 
@@ -696,3 +696,14 @@ Copilot round 12: reconciled current validation counts with executed command out
 Copilot round 13: separate query-only admission from published metadata, recompute canonical redirects from active jobs, recover stale hover state, and cache German location keys. Browser validation also exposed and fixed tile-coordinate rounding rejection. Validation: 106 tests, 71 data audits, 41 browser checks, lint, typecheck, and build pass.
 
 Copilot round 14: invalidate stale salary previews and recover on fresh hover data. Validation: 107 tests, 71 data audits, 41 browser checks, lint, typecheck, and build pass.
+
+Copilot round 15: completed on `5d22b5b` with zero new comments; no unresolved Copilot threads. Local/remote/PR heads match and applicable CI checks pass. Three distinct React Doctor heuristics remain explained and open; MapLibre advisory remains documented. Completion recorded locally to preserve the reviewed commit.
+
+# React Doctor 100/100
+
+- [x] Capture full-project baseline and rule guidance.
+- [x] Fix dependency, UI, and maintainability findings; keep application rules enabled.
+- [x] Verify full scan, tests, data/browser audits, lint, typecheck, and build.
+- [ ] Update PR and complete a fresh Copilot review.
+
+React Doctor verification: 48→100/100 on 0.5.5; 0.9.13 also reports 100 with complete full-project coverage and no skipped checks. All 107 tests, 71 data audits, 41 production browser checks, focused accessibility checks, lint, typecheck, and build pass. `npm audit`: zero vulnerabilities. No application rules disabled; copied MapLibre worker artifacts excluded as vendor code.

@@ -111,7 +111,10 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
     assertIncludes(jobCardMarkup, "Autopilot");
     assertIncludes(jobCardMarkup, "Platform: Windows");
     assertIncludes(jobCardMarkup, "Tool: Autopilot");
-    assertIncludes(jobCardMarkup, 'role="group"');
+    const technologyList = jobCardMarkup.match(/<ul\b[^>]*aria-label="Matched tools and platforms"[^>]*>([\s\S]*?)<\/ul>/)?.[1];
+    assertTruthy(technologyList, "technologies need a named native list");
+    assertTruthy(/<li\b[^>]*aria-label="Platform: Windows"/.test(technologyList ?? ""), "platform needs a list item");
+    assertTruthy(/<li\b[^>]*aria-label="Tool: Autopilot"/.test(technologyList ?? ""), "tool needs a list item");
 
     const sourceJob = feed.jobs[0];
     assertTruthy(sourceJob, "feed needs a source-link fixture");
@@ -189,10 +192,12 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
   await run("FEAT-079", "Map fallback exposes one busy loading status", () => {
     const markup = renderToStaticMarkup(createElement(JobMapCanvasLoading));
     assertIncludes(markup, 'aria-busy="true"');
-    assertIncludes(markup, 'role="status"');
+    assertIncludes(markup, 'aria-live="polite"');
     assertIncludes(markup, "Loading map");
     assertIncludes(markup, "beautiful-loading-state--orbit");
-    assertEqual((markup.match(/role="status"/g) ?? []).length, 1);
+    // Native output elements expose status semantics without a redundant role.
+    assertEqual((markup.match(/<output\b/g) ?? []).length, 1);
+    assertEqual((markup.match(/role="status"/g) ?? []).length, 0);
     assertIncludes(sources.jobMap, 'import { JobMapCanvasLoading } from "./job-map-loading"');
     assertIncludes(sources.jobMap, "loading: () => <JobMapCanvasLoading />");
     assertIncludes(sources.jobBoardPrimitivesCss, "color: var(--white-60)");

@@ -158,7 +158,7 @@ export const roleFamilyOptions = [
 
 export type RoleFamily = (typeof roleFamilyOptions)[number];
 
-export const systemsAdministrationRoleTerms = [
+const systemsAdministrationRoleTerms = [
   "systems administrator",
   "system administrator",
   "systems administration",
@@ -269,7 +269,7 @@ export const technicalRoleTitleTerms = [
   ...specialistTechnicalRoleTerms
 ] as const;
 
-export const endpointSecurityRoleTerms = [
+const endpointSecurityRoleTerms = [
   "endpoint security",
   "endpoint protection",
   "endpoint detection",

@@ -10,9 +10,8 @@ export function LoadingState({
   variant?: "grid" | "orbit";
 }) {
   return (
-    <span
+    <output
       className={`beautiful-loading-state beautiful-loading-state--${variant}`}
-      role="status"
       aria-live="polite"
     >
       <span className="beautiful-loading-pixels" aria-hidden="true">
@@ -21,6 +20,6 @@ export function LoadingState({
         ))}
       </span>
       <span className="beautiful-loading-label">{label}</span>
-    </span>
+    </output>
   );
 }

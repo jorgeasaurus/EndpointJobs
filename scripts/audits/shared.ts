@@ -28,7 +28,7 @@ export const AuditToggleButton = ToggleButton as unknown as (props: {
   onClick: () => void;
 }) => ReturnType<typeof ToggleButton>;
 
-export const sourcePaths = {
+const sourcePaths = {
   activeFilters: "src/components/job-board/active-filters.ts",
   animatedNumber: "src/components/job-board/animated-number.tsx",
   atsBoards: "scripts/job-refresh/providers/ats-boards.ts",
@@ -122,7 +122,7 @@ export async function readSources(): Promise<Sources> {
   return loaded;
 }
 
-export async function readText(path: string) {
+async function readText(path: string) {
   return readFile(path, "utf8");
 }
 
@@ -316,7 +316,7 @@ export function daysAgo(days: number) {
   return new Date(fixtureTimestamp - days * 24 * 60 * 60 * 1000).toISOString();
 }
 
-export function daysFromNow(days: number) {
+function daysFromNow(days: number) {
   return new Date(fixtureTimestamp + days * 24 * 60 * 60 * 1000).toISOString();
 }
 
