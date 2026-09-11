@@ -9,7 +9,7 @@ import {
   buildFeatureCollection,
   readJobPreview
 } from "../../src/components/job-board/job-map-features";
-import { resolveJobMapLocation } from "../job-refresh/map-location";
+import { hasGermanLocationEvidence, resolveJobMapLocation } from "../../src/lib/map-location";
 
 import {
   assertEqual,
@@ -162,11 +162,12 @@ export async function auditMaps({ feed, run, sources }: AuditContext) {
     assertEqual(resolveJobMapLocation("Mooresville, NC")?.label, "Mooresville, NC");
     assertEqual(resolveJobMapLocation("Berlin, Germany")?.label, "Berlin, Germany");
     assertEqual(resolveJobMapLocation("Berlin, DE")?.label, "Berlin, Germany");
-    assertEqual(resolveJobMapLocation("Dresden, DE")?.label, "Dresden, Germany");
-    assertEqual(resolveJobMapLocation("Leipzig, DE")?.label, "Leipzig, Germany");
-    assertEqual(resolveJobMapLocation("Bremen, DE")?.label, "Bremen, Germany");
-    assertEqual(resolveJobMapLocation("Dresden, TN"), undefined);
-    assertEqual(resolveJobMapLocation("Bremen, GA"), undefined);
+    assertEqual(hasGermanLocationEvidence("Dresden, DE"), true);
+    assertEqual(hasGermanLocationEvidence("Leipzig, DE"), true);
+    assertEqual(hasGermanLocationEvidence("Bremen, DE"), true);
+    assertEqual(hasGermanLocationEvidence("Dover, DE"), false);
+    assertEqual(hasGermanLocationEvidence("Lewes, DE"), false);
+    assertEqual(resolveJobMapLocation("Oberneuland, Bremen"), undefined);
     assertEqual(resolveJobMapLocation("München, Deutschland")?.label, "Munich, Germany");
     assertEqual(resolveJobMapLocation("Germany")?.label, "Germany");
     assertEqual(

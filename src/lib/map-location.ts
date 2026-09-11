@@ -495,9 +495,6 @@ const locationCoordinates: Coordinate[] = [
   { label: "Cologne, Germany", latitude: 50.9375, longitude: 6.9603, keys: ["cologne", "koln", "koeln"] },
   { label: "Stuttgart, Germany", latitude: 48.7758, longitude: 9.1829, keys: ["stuttgart"] },
   { label: "Düsseldorf, Germany", latitude: 51.2277, longitude: 6.7735, keys: ["dusseldorf", "duesseldorf"] },
-  { label: "Dresden, Germany", latitude: 51.0504, longitude: 13.7373, keys: ["dresden"] },
-  { label: "Leipzig, Germany", latitude: 51.3397, longitude: 12.3731, keys: ["leipzig"] },
-  { label: "Bremen, Germany", latitude: 53.0793, longitude: 8.8017, keys: ["bremen"] },
   { label: "Germany", latitude: 51.1657, longitude: 10.4515, keys: ["germany", "deutschland"] },
   {
     label: "Paris, France",
@@ -621,14 +618,23 @@ export function hasGermanLocationEvidence(
   }
 
   const normalized = normalizeLocation(location);
-  if (
-    containsNormalizedLocationKey(normalized, "germany") ||
-    containsNormalizedLocationKey(normalized, "deutschland")
-  ) {
+  if (getGermanLocationKeys().some((key) => containsNormalizedLocationKey(normalized, key))) {
     return true;
   }
 
   return isGermanMapLocation(resolveJobMapLocation(location)?.label);
+}
+
+function getGermanLocationKeys() {
+  return [
+    ...locationCoordinates
+      .filter((coordinate) => isGermanMapLocation(coordinate.label))
+      .flatMap((coordinate) => coordinate.keys),
+    // Unmapped German cities still used as country evidence for DE suffixes.
+    "dresden",
+    "leipzig",
+    "bremen"
+  ];
 }
 
 export function resolveJobMapLocation(location: string): JobMapLocation | undefined {
