@@ -86,8 +86,12 @@ export type PopupSelection = {
 
 export function getVisiblePopup(selection: PopupSelection | null, points: JobMapPoint[]) {
   if (!selection || selection.points !== points || selection.popup.jobs.length === 0) return null;
-  const currentPointIds = new Set(points.map((point) => point.id));
-  return selection.popup.jobs.every((job) => currentPointIds.has(job.id)) ? selection.popup : null;
+  return selection.popup.jobs.every((job) => {
+    const point = findCurrentPoint(job.id, points);
+    return point !== undefined && popupJobMatchesCurrentPoint(selection.popup, job, point);
+  })
+    ? selection.popup
+    : null;
 }
 
 export function getInteractiveFeature(features: MapGeoJSONFeature[] | undefined) {
@@ -229,6 +233,26 @@ export function getFitPadding() {
     right: 54,
     top: 50
   };
+}
+
+function findCurrentPoint(previewId: string, points: JobMapPoint[]) {
+  return (
+    points.find((point) => point.id === previewId) ??
+    points.find((point) => point.job.id === previewId)
+  );
+}
+
+function popupJobMatchesCurrentPoint(popup: ActivePopup, job: JobPreview, point: JobMapPoint) {
+  return (
+    job.title === point.job.title &&
+    job.company === point.job.company &&
+    job.location === point.label &&
+    job.applyUrl === (point.job.applyUrl ?? "") &&
+    (popup.type !== "job" ||
+      (popup.latitude === point.latitude &&
+        popup.longitude === point.longitude &&
+        popup.label === point.label))
+  );
 }
 
 function getJobFeatureProperties(

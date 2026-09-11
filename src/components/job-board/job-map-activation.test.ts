@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type { Feature } from "geojson";
 
-import type { JobMapPoint } from "@/lib/job-map";
+import { buildJobMapPoints, type JobMapPoint } from "@/lib/job-map";
 import { makeJob } from "../../../scripts/audits/shared";
 import { getVisiblePopup, readJobPreview, type ActivePopup } from "./job-map-features";
 import { loadClusterSelection } from "./job-map-activation";
@@ -17,6 +17,17 @@ const leaf: Feature = {
   geometry: { type: "Point", coordinates: [-73, 40] },
   properties: { pointId: "point-1", title: "Engineer", company: "Example", location: "New York" }
 };
+
+function matchingPoint(overrides: Partial<JobMapPoint> = {}): JobMapPoint {
+  return {
+    id: "point-1",
+    job: makeJob({ title: "Engineer", company: "Example", applyUrl: undefined }),
+    label: "New York",
+    latitude: 40,
+    longitude: -73,
+    ...overrides
+  };
+}
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
@@ -64,7 +75,7 @@ test("a failed worker cannot return a partial popup/camera update", async () => 
 });
 
 test("cluster popups are invalidated when the map source changes", () => {
-  const points: JobMapPoint[] = [{ id: "point-1", job: makeJob(), label: "New York", latitude: 40, longitude: -73 }];
+  const points = [matchingPoint()];
   const popup: ActivePopup = {
     count: 3, jobs: [readJobPreview(leaf)!], key: "cluster:1:3", label: "3 jobs",
     latitude: 40, longitude: -73, type: "cluster"
@@ -75,7 +86,7 @@ test("cluster popups are invalidated when the map source changes", () => {
 });
 
 test("stale rendered features cannot claim the current source snapshot", () => {
-  const points: JobMapPoint[] = [{ id: "current-point", job: makeJob(), label: "New York", latitude: 40, longitude: -73 }];
+  const points = [matchingPoint({ id: "current-point" })];
   for (const type of ["job", "cluster"] as const) {
     const popup: ActivePopup = {
       count: 1, jobs: [readJobPreview(leaf)!], key: "stale-point", label: "Old job",
@@ -84,5 +95,76 @@ test("stale rendered features cannot claim the current source snapshot", () => {
     assert.equal(getVisiblePopup({ popup, points }, points), null);
     popup.jobs = [];
     assert.equal(getVisiblePopup({ popup, points }, points), null);
+  }
+});
+
+test("job popups stay visible when preview, position, and label match the current point", () => {
+  const points = [matchingPoint()];
+  const popup: ActivePopup = {
+    count: 1, jobs: [readJobPreview(leaf)!], key: "job:point-1", label: "New York",
+    latitude: 40, longitude: -73, type: "job"
+  };
+  assert.equal(getVisiblePopup({ popup, points }, points), popup);
+});
+
+test("stale preview fields are discarded even when the point id is unchanged", () => {
+  const points = [matchingPoint({
+    job: makeJob({ title: "Updated title", company: "New Co", applyUrl: "https://example.com/new" }),
+    label: "Boston",
+    latitude: 42,
+    longitude: -71
+  })];
+  const popup: ActivePopup = {
+    count: 1, jobs: [readJobPreview(leaf)!], key: "job:point-1", label: "New York",
+    latitude: 40, longitude: -73, type: "job"
+  };
+  assert.equal(getVisiblePopup({ popup, points }, points), null);
+});
+
+test("job popups are discarded when the current point moved or relabeled", () => {
+  const points = [matchingPoint()];
+  const jobs = [readJobPreview(leaf)!];
+  assert.equal(getVisiblePopup({
+    popup: { count: 1, jobs, key: "job:point-1", label: "New York", latitude: 41, longitude: -73, type: "job" },
+    points
+  }, points), null);
+  assert.equal(getVisiblePopup({
+    popup: { count: 1, jobs, key: "job:point-1", label: "Boston", latitude: 40, longitude: -73, type: "job" },
+    points
+  }, points), null);
+});
+
+test("popup visibility accepts composite point ids and underlying job ids", () => {
+  const job = makeJob({
+    id: "job-99",
+    title: "Engineer",
+    company: "Example",
+    applyUrl: undefined,
+    mapLocation: { label: "New York", latitude: 40, longitude: -73 }
+  });
+  const points = buildJobMapPoints([job]);
+  const point = points[0];
+  assert.ok(point);
+  assert.equal(point.id, "40.000,-73.000:job-99");
+
+  const fromPointId = readJobPreview({
+    type: "Feature",
+    geometry: { type: "Point", coordinates: [-73, 40] },
+    properties: { pointId: point.id, title: "Engineer", company: "Example", location: "New York" }
+  })!;
+  const fromJobId = readJobPreview({
+    type: "Feature",
+    geometry: { type: "Point", coordinates: [-73, 40] },
+    properties: { jobId: "job-99", title: "Engineer", company: "Example", location: "New York" }
+  })!;
+  assert.equal(fromPointId.id, point.id);
+  assert.equal(fromJobId.id, "job-99");
+
+  for (const preview of [fromPointId, fromJobId]) {
+    const popup: ActivePopup = {
+      count: 1, jobs: [preview], key: `job:${preview.id}`, label: "New York",
+      latitude: 40, longitude: -73, type: "job"
+    };
+    assert.equal(getVisiblePopup({ popup, points }, points), popup);
   }
 });
