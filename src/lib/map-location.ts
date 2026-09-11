@@ -1,4 +1,9 @@
-import { isJamaicaUsNeighborhood, isNewMexicoUsLocation } from "@/lib/text";
+import {
+  getUsStateSuffix,
+  isAmbiguousPanamaCity,
+  isJamaicaUsNeighborhood,
+  isNewMexicoUsLocation
+} from "@/lib/location-context";
 import type { JobMapLocation } from "@/types/job";
 
 type Coordinate = JobMapLocation & {
@@ -595,10 +600,40 @@ const locationCoordinates: Coordinate[] = [
   { label: "Japan", latitude: 36.2048, longitude: 138.2529, keys: ["japan remote"] }
 ];
 
-const searchableLocationCoordinates = locationCoordinates.map((coordinate) => ({
-  ...coordinate,
-  normalizedKeys: coordinate.keys.map(normalizeLocation).filter(Boolean)
-}));
+const searchableLocationCoordinates: Array<Coordinate & { normalizedKeys: string[] }> = [];
+const germanLocationKeys: string[] = [];
+
+for (const coordinate of locationCoordinates) {
+  const normalizedKeys: string[] = [];
+  for (const key of coordinate.keys) {
+    const normalized = normalizeLocation(key);
+    if (normalized) normalizedKeys.push(normalized);
+  }
+  searchableLocationCoordinates.push({ ...coordinate, normalizedKeys });
+  if (isGermanMapLocation(coordinate.label)) germanLocationKeys.push(...normalizedKeys);
+}
+// Unmapped German cities still used as country evidence for DE suffixes.
+germanLocationKeys.push("dresden", "leipzig", "bremen");
+
+export function isGermanMapLocation(label: string | undefined) {
+  return label === "Germany" || Boolean(label?.endsWith(", Germany"));
+}
+
+export function hasGermanLocationEvidence(
+  location: string,
+  mapLocation?: JobMapLocation
+) {
+  if (isGermanMapLocation(mapLocation?.label)) {
+    return true;
+  }
+
+  const normalized = normalizeLocation(location);
+  if (germanLocationKeys.some((key) => containsNormalizedLocationKey(normalized, key))) {
+    return true;
+  }
+
+  return isGermanMapLocation(resolveJobMapLocation(location)?.label);
+}
 
 export function resolveJobMapLocation(location: string): JobMapLocation | undefined {
   const normalized = normalizeLocation(location);
@@ -634,8 +669,7 @@ function isInternationalCityWithExplicitUsState(label: string, normalizedLocatio
 
   if (
     (label === "Panama" || label.endsWith(", Panama")) &&
-    containsNormalizedLocationKey(normalizedLocation, "panama city") &&
-    !hasPanamaCountryContext(normalizedLocation)
+    isAmbiguousPanamaCity(normalizedLocation)
   ) {
     return true;
   }
@@ -644,15 +678,10 @@ function isInternationalCityWithExplicitUsState(label: string, normalizedLocatio
     return false;
   }
 
-  const locationWithoutCountry = normalizedLocation.replace(
-    / (?:us|usa|united states(?: of america)?)$/,
-    ""
-  );
-  const locationWithoutTrailingZip = locationWithoutCountry.replace(/ \d{5}(?: \d{4})?$/, "");
-
-  return /(?:^| )(?:al|ak|az|ar|ca|co|ct|dc|fl|ga|hi|id|il|in|ia|ks|ky|la|me|md|ma|mi|mn|ms|mo|mt|ne|nv|nh|nj|nm|ny|nc|nd|oh|ok|or|pa|ri|sc|sd|tn|tx|ut|vt|va|wa|wv|wi|wy)$/.test(
-    locationWithoutTrailingZip
-  );
+  const state = getUsStateSuffix(normalizedLocation);
+  // German cities may use DE as a country code; other guarded labels retain
+  // the full US-state collision check, including Delaware.
+  return state !== undefined && !(state === "de" && label.endsWith(", Germany"));
 }
 
 const usStateGuardedInternationalCountries = [
@@ -697,14 +726,6 @@ function hasCostaRicaContext(normalizedLocation: string) {
   return (
     containsNormalizedLocationKey(normalizedLocation, "costa rica") ||
     containsNormalizedLocationKey(normalizedLocation, "san jose cr")
-  );
-}
-
-function hasPanamaCountryContext(normalizedLocation: string) {
-  return (
-    containsNormalizedLocationKey(normalizedLocation, "panama city panama") ||
-    containsNormalizedLocationKey(normalizedLocation, "ciudad de panama") ||
-    containsNormalizedLocationKey(normalizedLocation, "republic of panama")
   );
 }
 

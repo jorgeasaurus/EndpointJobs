@@ -1,9 +1,10 @@
+import { mock } from "node:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import { updateComparisonSelection } from "../../src/components/job-board/comparison-selection";
 import { JobComparison } from "../../src/components/job-board/job-comparison";
-import type { Job } from "../../src/types/job";
+import { daysAgo, fixedAuditNow, makeJob } from "./shared";
 
 type RunAudit = (
   id: string,
@@ -13,13 +14,19 @@ type RunAudit = (
 
 export async function auditJobComparisonData(run: RunAudit) {
   await run("FEAT-070", "Job comparison renders requested decision fields", () => {
-    const markup = renderToStaticMarkup(
-      createElement(JobComparison, {
-        jobs: comparisonJobs,
-        onClear: () => undefined,
-        onRemove: () => undefined
-      })
-    );
+    mock.timers.enable({ apis: ["Date"], now: fixedAuditNow });
+    let markup: string;
+    try {
+      markup = renderToStaticMarkup(
+        createElement(JobComparison, {
+          jobs: comparisonJobs,
+          onClear: () => undefined,
+          onRemove: () => undefined
+        })
+      );
+    } finally {
+      mock.timers.reset();
+    }
 
     [
       "Compare 2 roles",
@@ -32,6 +39,8 @@ export async function auditJobComparisonData(run: RunAudit) {
       "Tools",
       "Match signals",
       "Freshness",
+      "1 day old",
+      "3 days old",
       "$120k-$150k",
       "Not shown"
     ].forEach((text) => assertIncludes(markup, text));
@@ -57,7 +66,7 @@ export async function auditJobComparisonData(run: RunAudit) {
 }
 
 const comparisonJobs = [
-  makeComparisonJob({
+  makeJob({
     id: "comparison-one",
     title: "Endpoint Engineer",
     company: "Example One",
@@ -68,7 +77,7 @@ const comparisonJobs = [
     platforms: ["Windows"],
     seniority: "Senior"
   }),
-  makeComparisonJob({
+  makeJob({
     id: "comparison-two",
     title: "Client Platform Engineer",
     company: "Example Two",
@@ -80,37 +89,6 @@ const comparisonJobs = [
     seniority: "Mid"
   })
 ];
-
-function makeComparisonJob(overrides: Partial<Job>): Job {
-  return {
-    id: "comparison-job",
-    title: "Endpoint Engineer",
-    company: "Example Company",
-    location: "Remote",
-    workplace: "Remote",
-    postedAt: daysAgo(1),
-    fetchedAt: new Date().toISOString(),
-    staleAfter: daysAgo(-30),
-    source: "Audit",
-    sourceUrl: "https://example.com/job",
-    applyUrl: "https://example.com/job/apply",
-    attributionLabel: "Audit Source",
-    termsProfile: "public-api",
-    summary: "Endpoint engineering role.",
-    tags: ["Endpoint"],
-    matchReasons: ["Endpoint engineering"],
-    tools: [],
-    platforms: ["Windows"],
-    roleFamily: "Endpoint Engineering",
-    seniority: "Mid",
-    employmentType: "Full-time",
-    ...overrides
-  };
-}
-
-function daysAgo(days: number) {
-  return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
-}
 
 function assertIncludes(value: string, expected: string) {
   if (!value.includes(expected)) {

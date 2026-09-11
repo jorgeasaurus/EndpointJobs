@@ -21,6 +21,8 @@ export type JobFeatureProperties = {
   hasSalary: boolean;
   jobId: string;
   location: string;
+  latitude?: number;
+  longitude?: number;
   pointId: string;
   salary: string;
   source: string;
@@ -69,6 +71,8 @@ export function buildFeatureCollection(
           hasSalary: Boolean(job.salary),
           jobId: job.id,
           location: point.label,
+          latitude: point.latitude,
+          longitude: point.longitude,
           pointId: point.id,
           salary: job.salary?.label ?? "Salary not listed",
           source: job.attributionLabel,
@@ -79,15 +83,29 @@ export function buildFeatureCollection(
   };
 }
 
-export function getVisiblePopup(popup: ActivePopup | null, points: JobMapPoint[]) {
-  if (!popup) {
-    return null;
-  }
+export type PopupSelection = {
+  popup: ActivePopup;
+  points: JobMapPoint[];
+};
 
-  const pointIds = new Set(points.map((point) => point.id));
-  const hasVisibleJob = popup.jobs.some((job) => pointIds.has(job.id));
+export function getVisiblePopup(selection: PopupSelection | null, points: JobMapPoint[]) {
+  if (!selection || selection.points !== points || selection.popup.jobs.length === 0) return null;
+  return selection.popup.jobs.every((job) => {
+    const point = findCurrentPoint(job.id, points);
+    return point !== undefined && popupJobMatchesCurrentPoint(selection.popup, job, point);
+  })
+    ? selection.popup
+    : null;
+}
 
-  return hasVisibleJob ? popup : null;
+export function selectHoveredPopup(
+  current: PopupSelection | null,
+  popup: ActivePopup,
+  points: JobMapPoint[]
+): PopupSelection {
+  return current?.popup.key === popup.key && getVisiblePopup(current, points)
+    ? current
+    : { popup, points };
 }
 
 export function getInteractiveFeature(features: MapGeoJSONFeature[] | undefined) {
@@ -107,9 +125,14 @@ export function getEventFeature(event: MapLayerMouseEvent | MapLayerTouchEvent) 
   );
 }
 
-export function buildJobPopup(feature: MapGeoJSONFeature): ActivePopup | undefined {
+export function buildJobPopup(feature: Feature | MapGeoJSONFeature): ActivePopup | undefined {
   const preview = readJobPreview(feature);
-  const coordinates = getFeatureCoordinates(feature);
+  const sourceLatitude = getNumericProperty(feature, "latitude");
+  const sourceLongitude = getNumericProperty(feature, "longitude");
+  // Rendered tile geometry is quantized; preserve source precision for snapshot validation.
+  const coordinates = sourceLatitude !== undefined && sourceLongitude !== undefined
+    ? [sourceLongitude, sourceLatitude]
+    : getFeatureCoordinates(feature);
 
   if (!preview || !coordinates) {
     return undefined;
@@ -160,7 +183,7 @@ export function getFeatureCoordinates(feature: Feature | MapGeoJSONFeature): [nu
   return [longitude, latitude];
 }
 
-export function getNumericProperty(feature: MapGeoJSONFeature, key: string) {
+export function getNumericProperty(feature: Pick<Feature, "properties">, key: string) {
   const value = feature.properties?.[key];
   return typeof value === "number" && Number.isFinite(value) ? value : undefined;
 }
@@ -229,6 +252,27 @@ export function getFitPadding() {
     right: 54,
     top: 50
   };
+}
+
+function findCurrentPoint(previewId: string, points: JobMapPoint[]) {
+  return (
+    points.find((point) => point.id === previewId) ??
+    points.find((point) => point.job.id === previewId)
+  );
+}
+
+function popupJobMatchesCurrentPoint(popup: ActivePopup, job: JobPreview, point: JobMapPoint) {
+  return (
+    job.title === point.job.title &&
+    job.company === point.job.company &&
+    job.salary === (point.job.salary?.label || "Salary not listed") &&
+    job.location === point.label &&
+    job.applyUrl === (point.job.applyUrl ?? "") &&
+    (popup.type !== "job" ||
+      (popup.latitude === point.latitude &&
+        popup.longitude === point.longitude &&
+        popup.label === point.label))
+  );
 }
 
 function getJobFeatureProperties(

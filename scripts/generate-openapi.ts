@@ -5,6 +5,8 @@ import {
   getJobsApiOpenApiParameters
 } from "../src/lib/jobs-api-contract";
 
+import { endpointToolNameMap } from "../src/lib/job-taxonomy";
+
 const path = "public/openapi.json";
 const specification = JSON.parse(await readFile(path, "utf8"));
 specification.components.parameters = getJobsApiOpenApiParameters();
@@ -13,3 +15,8 @@ specification.paths["/api/jobs"].get.parameters = Object.keys(
 ).map((name) => ({ $ref: `#/components/parameters/${name}` }));
 specification.components.schemas.Filters = getJobsApiOpenApiAppliedFiltersSchema();
 await writeFile(path, `${JSON.stringify(specification, null, 2)}\n`);
+
+await writeFile(
+  "powershell/EndpointJobs/EndpointTools.json",
+  `${JSON.stringify(endpointToolNameMap, null, 2)}\n`
+);

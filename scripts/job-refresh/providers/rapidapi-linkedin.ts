@@ -9,6 +9,7 @@ import {
   extractSalaryFromText,
   formatSlugLabel,
   getCsvConfig,
+  getPositiveInteger,
   normalizeFirstEmploymentType,
   normalizeSalary,
   normalizeSearchText,
@@ -128,14 +129,8 @@ async function fetchRapidApiLinkedInJobs(url: string, fetchedAt: Date) {
     defaultTitleFilters
   );
   const locationFilters = getRapidApiLinkedInLocationFilters();
-  const maxPages = Math.max(
-    1,
-    Number(process.env.JOB_RAPIDAPI_LINKEDIN_MAX_PAGES ?? 1)
-  );
-  const limit = Math.max(
-    1,
-    Number(process.env.JOB_RAPIDAPI_LINKEDIN_LIMIT ?? 25)
-  );
+  const maxPages = getPositiveInteger(process.env.JOB_RAPIDAPI_LINKEDIN_MAX_PAGES, 1);
+  const limit = getPositiveInteger(process.env.JOB_RAPIDAPI_LINKEDIN_LIMIT, 25);
   const jobs: Array<Job | null> = [];
 
   for (const titleFilter of titleFilters) {
@@ -324,7 +319,6 @@ function normalizeRapidApiLinkedInJob(
   const employmentType = firstFieldText(raw, rapidApiLinkedInFields.employmentType);
   const workplaceType = firstFieldText(raw, rapidApiLinkedInFields.workplaceType);
   const sourceTags = [
-    titleFilter,
     employmentType,
     firstFieldText(raw, rapidApiLinkedInFields.seniority),
     workplaceType,
@@ -346,7 +340,8 @@ function normalizeRapidApiLinkedInJob(
     termsProfile: "partner-terms",
     description,
     sourceTags,
-    haystackParts: [titleFilter, workplaceType],
+    relevanceOnlyParts: [titleFilter],
+    haystackParts: [workplaceType],
     salary: getRapidApiLinkedInSalary(raw, description),
     employmentType: normalizeFirstEmploymentType([employmentType])
   });

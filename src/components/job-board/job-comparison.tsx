@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 
 import { ExternalLink, ListTree, Scale, X } from "lucide-react";
 
+import { ScrollRegion } from "@/components/scroll-region";
 import { formatPostedDate, getFreshnessLabel } from "@/lib/jobs";
 import { getJobWorkplace } from "@/lib/workplace";
 import type { Job } from "@/types/job";
@@ -44,11 +45,9 @@ export function JobComparison({
         </button>
       </div>
 
-      <div
-        aria-label="Scrollable job comparison"
+      <ScrollRegion
+        label="Scrollable job comparison"
         className="comparison-scroll"
-        role="region"
-        tabIndex={0}
       >
         <table
           aria-label="Job comparison"
@@ -120,7 +119,7 @@ export function JobComparison({
             </tr>
           </tbody>
         </table>
-      </div>
+      </ScrollRegion>
     </section>
   );
 }

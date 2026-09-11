@@ -10,10 +10,6 @@
  *   fuzzy token matching where only the word shapes matter (filters, titles).
  * - `foldTokens` is `normalizeTokens` plus diacritic folding, so São Paulo and
  *   Sao Paulo match in free-text location search.
- * - `isNewMexicoUsLocation` is the shared New Mexico collision check for an
- *   already folded/normalized location string.
- * - `isJamaicaUsNeighborhood` is the shared Jamaica, Queens / Jamaica, NY
- *   collision check for an already folded/normalized location string.
  */
 
 export function normalizeText(value: string) {
@@ -34,30 +30,4 @@ export function foldTokens(value: string) {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/\s+/g, " ")
     .trim();
-}
-
-export function isNewMexicoUsLocation(normalizedLocation: string) {
-  if (` ${normalizedLocation} `.includes(" new mexico ")) {
-    return true;
-  }
-
-  const locationWithoutCountry = normalizedLocation.replace(
-    / (?:us|usa|united states(?: of america)?)$/,
-    ""
-  );
-  const locationWithoutTrailingZip = locationWithoutCountry.replace(/ \d{5}(?: \d{4})?$/, "");
-  return /(?:^| )nm$/.test(locationWithoutTrailingZip);
-}
-
-export function isJamaicaUsNeighborhood(normalizedLocation: string) {
-  const haystack = ` ${normalizedLocation} `;
-  if (!haystack.includes(" jamaica ")) {
-    return false;
-  }
-
-  return (
-    haystack.includes(" queens ")
-    || haystack.includes(" jamaica ny ")
-    || haystack.includes(" jamaica new york ")
-  ) && !haystack.includes(" kingston ") && !haystack.includes(" jm ");
 }

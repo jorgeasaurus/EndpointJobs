@@ -1,5 +1,7 @@
 # Lessons
 
+- When the user expands a review to the whole project, audit all maintained code and infrastructure rather than limiting findings to a branch diff.
+
 - When a user supplies an exact documentation query, preserve its filters and pagination verbatim and capture output from that exact request.
 - CSS compatibility warnings should be fixed in pairs near the standard declaration, with the prefixed fallback first and the standard property last.
 - Adjacent filter sections need explicit sibling spacing; internal grid gaps do not separate a following chip row when optional active filters are absent.
@@ -58,3 +60,5 @@
 - Multi-control facet rails need their own layout row; nesting one beneath a peer in a shared grid stretches adjacent controls and destroys hierarchy. Verify the exact reported viewport before committing the design.
 - Compact filter metadata still needs to be comfortably legible; validate label and count type sizes at the reported desktop and mobile widths, not only for overflow.
 - IT automation roles that own employee tooling, access, and onboarding workflows can be endpoint-relevant even without an OS-management product in the title; accept them through narrow title rules while retaining service-desk exclusions.
+
+- Paginate GitHub review polling; the REST default of 30 reviews can hide a completed cycle. Prefer the thread-aware review-state script for latest-head and unresolved-thread checks.

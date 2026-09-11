@@ -29,17 +29,17 @@ type JobPageProps = {
   params: Promise<{ id: string }>;
 };
 
+// Refresh expiry-dependent content, metadata, and canonical selection between feed builds.
+export const revalidate = 300;
+
 const feed = feedData as JobsFeed;
 
-// The feed is static for the lifetime of the server, so the canonical index is
-// computed once and reused across every metadata/render call in this module.
-const canonicalJobIndex = getCanonicalSeoIndex(
-  feed.jobs.filter((job) => isActiveJob(job))
-);
+function getActiveJobs(now = new Date()) {
+  return feed.jobs.filter((job) => isActiveJob(job, now));
+}
 
 export function generateStaticParams() {
-  // canonicalJobIndex maps every job id to its canonical id, so values()
-  // contains duplicates whenever multiple jobs share a representative.
+  const canonicalJobIndex = getCanonicalSeoIndex(getActiveJobs());
   return [...new Set(canonicalJobIndex.values())].map((id) => ({ id }));
 }
 
@@ -48,10 +48,11 @@ type ResolvedJobPage =
   | { kind: "not-found" };
 
 function resolveJobPageState(id: string): ResolvedJobPage {
-  const job = getActiveJob(id);
+  const activeJobs = getActiveJobs();
+  const job = activeJobs.find((candidate) => candidate.id === id);
   if (!job) return { kind: "not-found" };
 
-  const canonicalJobId = getCanonicalJobId(job.id);
+  const canonicalJobId = getCanonicalSeoIndex(activeJobs).get(job.id) ?? job.id;
   return { kind: "found", job, canonicalJobId };
 }
 
@@ -108,7 +109,12 @@ export default async function JobPage({ params }: JobPageProps) {
   }
 
   const applicationUrl = job.applyUrl ?? job.sourceUrl;
-  const descriptionParagraphs = getExpandedDescriptionParagraphs(job);
+  const paragraphOccurrences = new Map<string, number>();
+  const descriptionParagraphs = getExpandedDescriptionParagraphs(job).map((text) => {
+    const occurrence = paragraphOccurrences.get(text) ?? 0;
+    paragraphOccurrences.set(text, occurrence + 1);
+    return { text, key: JSON.stringify([text, occurrence]) };
+  });
 
   return (
     <main className="site-frame job-detail-frame">
@@ -161,9 +167,7 @@ export default async function JobPage({ params }: JobPageProps) {
                 <span className="section-kicker">Role overview</span>
                 <h2 id="job-description-heading">Job description</h2>
                 {descriptionParagraphs.map((paragraph) => (
-                  // Paragraphs are plain text with no natural id; key on a full-
-                  // content hash so duplicates share no key and indices stay out.
-                  <p key={hashParagraph(paragraph)}>{paragraph}</p>
+                  <p key={paragraph.key}>{paragraph.text}</p>
                 ))}
               </section>
             ) : null}
@@ -214,27 +218,6 @@ export default async function JobPage({ params }: JobPageProps) {
       </script>
     </main>
   );
-}
-
-function getActiveJob(id: string) {
-  const job = feed.jobs.find((candidate) => candidate.id === id);
-  return job && isActiveJob(job) ? job : undefined;
-}
-
-// FNV-1a: tiny deterministic hash, stable across renders for identical input.
-function hashParagraph(value: string) {
-  let hash = 0x811c9dc5;
-
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index);
-    hash = Math.imul(hash, 0x01000193);
-  }
-
-  return (hash >>> 0).toString(36);
-}
-
-function getCanonicalJobId(jobId: string): string {
-  return canonicalJobIndex.get(jobId) ?? jobId;
 }
 
 function getMetaDescription(job: Job) {

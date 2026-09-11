@@ -1,7 +1,5 @@
 import { readFile } from "node:fs/promises";
-import type { ReactNode } from "react";
 
-import { ToggleButton } from "../../src/components/job-board/toggle-button";
 import type { EndpointTool, Job, JobsFeed, Platform } from "../../src/types/job";
 import feedData from "../../src/data/jobs.json";
 
@@ -17,21 +15,15 @@ export type RunAudit = (
 
 export const deadAdzunaUrl = "https://www.adzuna.com/details/5763079616";
 export const fixedAuditNow = new Date("2026-06-28T20:55:00.000Z");
+const fixtureTimestamp = fixedAuditNow.getTime();
 export const feed = feedData as JobsFeed;
 
-export const AuditToggleButton = ToggleButton as unknown as (props: {
-  activeClassName: string;
-  children?: ReactNode;
-  inactiveClassName: string;
-  isActive: boolean;
-  onClick: () => void;
-}) => ReturnType<typeof ToggleButton>;
-
-export const sourcePaths = {
+const sourcePaths = {
   activeFilters: "src/components/job-board/active-filters.ts",
   animatedNumber: "src/components/job-board/animated-number.tsx",
   atsBoards: "scripts/job-refresh/providers/ats-boards.ts",
   browserAudit: "scripts/audit-user-stories-browser.mjs",
+  mapBrowserAudit: "scripts/audits/job-map-browser.mjs",
   comparisonBrowserAudit: "scripts/audits/job-comparison-browser.mjs",
   comparisonDataAudit: "scripts/audits/job-comparison-data.ts",
   companyAts: "scripts/job-refresh/providers/company-ats.ts",
@@ -42,7 +34,7 @@ export const sourcePaths = {
   feedAudit: "scripts/audits/feed-audits.ts",
   feedSafetyAudit: "scripts/audits/feed-safety-data.ts",
   filterAudit: "scripts/audits/filter-audits.ts",
-  jobCardAudit: "scripts/audits/job-card-audits.ts",
+  jobCardAudit: "scripts/audits/job-card-audits.tsx",
   jobTaxonomy: "src/lib/job-taxonomy.ts",
   issueConfig: ".github/ISSUE_TEMPLATE/config.yml",
   issueTemplate: ".github/ISSUE_TEMPLATE/report-or-request.yml",
@@ -120,7 +112,7 @@ export async function readSources(): Promise<Sources> {
   return loaded;
 }
 
-export async function readText(path: string) {
+async function readText(path: string) {
   return readFile(path, "utf8");
 }
 
@@ -311,11 +303,11 @@ export function stripHtml(value: string) {
 }
 
 export function daysAgo(days: number) {
-  return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+  return new Date(fixtureTimestamp - days * 24 * 60 * 60 * 1000).toISOString();
 }
 
-export function daysFromNow(days: number) {
-  return new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+function daysFromNow(days: number) {
+  return new Date(fixtureTimestamp + days * 24 * 60 * 60 * 1000).toISOString();
 }
 
 export function makeAdzunaJob(overrides: Partial<Job> = {}): Job {
@@ -336,7 +328,7 @@ export function makeJob(overrides: Partial<Job> = {}): Job {
     location: "Remote",
     workplace: "Remote",
     postedAt: daysAgo(1),
-    fetchedAt: new Date().toISOString(),
+    fetchedAt: new Date(fixtureTimestamp).toISOString(),
     staleAfter: daysFromNow(30),
     source: "Audit",
     sourceUrl: "https://example.com/audit-job",

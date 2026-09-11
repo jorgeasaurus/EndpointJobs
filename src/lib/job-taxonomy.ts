@@ -39,6 +39,12 @@ export const endpointToolDefinitions = [
 
 export type EndpointTool = (typeof endpointToolDefinitions)[number]["tool"];
 
+export const endpointToolNameMap = Object.fromEntries(
+  endpointToolDefinitions.flatMap(({ tool, aliases }) =>
+    [tool, ...aliases].map((name) => [name.toLowerCase(), tool])
+  )
+);
+
 const endpointToolLabels: Partial<Record<EndpointTool, string>> = {
   Kandji: "Kandji/Iru"
 };
@@ -152,7 +158,7 @@ export const roleFamilyOptions = [
 
 export type RoleFamily = (typeof roleFamilyOptions)[number];
 
-export const systemsAdministrationRoleTerms = [
+const systemsAdministrationRoleTerms = [
   "systems administrator",
   "system administrator",
   "systems administration",
@@ -263,7 +269,7 @@ export const technicalRoleTitleTerms = [
   ...specialistTechnicalRoleTerms
 ] as const;
 
-export const endpointSecurityRoleTerms = [
+const endpointSecurityRoleTerms = [
   "endpoint security",
   "endpoint protection",
   "endpoint detection",

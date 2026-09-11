@@ -38,7 +38,7 @@ export function formatPostedDate(value: string) {
   return postedDateFormatter.format(date);
 }
 
-export function getPostedAgeDays(value: string, now = new Date()) {
+function getPostedAgeDays(value: string, now = new Date()) {
   const posted = new Date(value);
 
   if (Number.isNaN(posted.getTime())) {

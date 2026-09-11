@@ -152,7 +152,7 @@ export function getJobsApiOpenApiAppliedFiltersSchema() {
 
 export function getJobsApiOpenApiParameters() {
   return Object.fromEntries(
-    (Object.entries(jobsApiQueryContract) as [string, JobsApiQueryDefinition][]).map(([name, definition]) => [
+    Object.entries(jobsApiQueryContract).map(([name, definition]: [string, JobsApiQueryDefinition]) => [
       definition.openApiName,
       {
         name,

@@ -1,4 +1,4 @@
-import { useEffect, useRef, type RefObject } from "react";
+import { useState, type RefObject } from "react";
 
 import {
   BriefcaseBusiness,
@@ -165,13 +165,13 @@ export function StickyActiveFilters({
   }
 
   return (
-    <div className="sticky-active-filters" role="region" aria-label="Active filters">
+    <section className="sticky-active-filters" aria-label="Active filters">
       <ActiveFilterChips
         activeFilterItems={activeFilterItems}
         clearFilters={clearFilters}
         dispatch={dispatch}
       />
-    </div>
+    </section>
   );
 }
 
@@ -415,6 +415,8 @@ function PlatformFilters({
   dispatch: FilterDispatch;
   selectedPlatforms: Platform[];
 }) {
+  const selectedPlatformSet = new Set(selectedPlatforms);
+
   return (
     <div className="quick-filters" aria-label="Platform filters">
       {platformOptions.map((platform) => (
@@ -422,7 +424,7 @@ function PlatformFilters({
           key={platform}
           activeClassName="facet-button is-active"
           inactiveClassName="facet-button"
-          isActive={selectedPlatforms.includes(platform)}
+          isActive={selectedPlatformSet.has(platform)}
           onClick={() => dispatch({ type: "togglePlatform", value: platform })}
         >
           {platform}
@@ -485,19 +487,14 @@ function AdvancedFilters({
     selectedTools
   });
   const hasAdvancedFilters = advancedCount > 0;
+  const [userExpanded, setUserExpanded] = useState(hasAdvancedFilters);
   const selectedMetroAreaSet = new Set(selectedMetroAreas);
   const selectedToolSet = new Set(selectedTools);
-  const advancedFiltersRef = useRef<HTMLDetailsElement>(null);
-
-  useEffect(() => {
-    if (hasAdvancedFilters) {
-      advancedFiltersRef.current?.setAttribute("open", "");
-    }
-  }, [hasAdvancedFilters]);
 
   return (
     <details
-      ref={advancedFiltersRef}
+      open={hasAdvancedFilters || userExpanded}
+      onToggle={(event) => setUserExpanded(event.currentTarget.open)}
       className="advanced-filters hero-filter-stack"
     >
       <summary className="advanced-filters-summary mobile-filter-summary">

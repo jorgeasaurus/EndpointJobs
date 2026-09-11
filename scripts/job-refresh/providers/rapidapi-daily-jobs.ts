@@ -150,8 +150,7 @@ async function fetchRapidApiDailyJobs(url: string, fetchedAt: Date) {
         }
 
         try {
-          const payload = await fetchRapidApiDailyJobsPage(queryUrl, apiKey);
-          requestCount += 1;
+          const payload = await fetchPageWithRetry(queryUrl, label, apiKey);
           successfulPages += 1;
           jobs.push(...payload.jobs.map((job) => normalizeRapidApiDailyJob(job, fetchedAt)));
           console.log(`Fetched ${payload.jobs.length} raw jobs from ${label}`);
@@ -160,51 +159,34 @@ async function fetchRapidApiDailyJobs(url: string, fetchedAt: Date) {
             break;
           }
         } catch (error) {
-          requestCount += 1;
           const detail = formatProviderError(error);
-
-          if (isRapidApiDailyJobsRateLimitError(error)) {
-            if (requestCount >= maxRequests) {
-              failures.push(`${label}: ${detail}`);
-              console.warn(`Stopping RapidAPI Daily after rate limit at run cap: ${detail}`);
-              break countryLoop;
-            }
-
-            console.warn(`Retrying ${label} after 429`);
-            await delay(retryDelayMs);
-
-            try {
-              const payload = await fetchRapidApiDailyJobsPage(queryUrl, apiKey);
-              requestCount += 1;
-              successfulPages += 1;
-              jobs.push(...payload.jobs.map((job) => normalizeRapidApiDailyJob(job, fetchedAt)));
-              console.log(`Fetched ${payload.jobs.length} raw jobs from ${label} (retry)`);
-
-              if (payload.jobs.length === 0) {
-                break;
-              }
-
-              continue;
-            } catch (retryError) {
-              requestCount += 1;
-              const retryDetail = formatProviderError(retryError);
-              failures.push(`${label}: ${retryDetail}`);
-              console.warn(`Skipping ${label}: ${retryDetail}`);
-
-              if (isRapidApiDailyJobsRateLimitError(retryError)) {
-                console.warn("Stopping RapidAPI Daily after repeated 429s");
-                break countryLoop;
-              }
-
-              break;
-            }
-          }
-
           failures.push(`${label}: ${detail}`);
           console.warn(`Skipping ${label}: ${detail}`);
+
+          if (isRapidApiDailyJobsRateLimitError(error)) {
+            console.warn("Stopping RapidAPI Daily after repeated 429s or exhausted request budget");
+            break countryLoop;
+          }
+
           break;
         }
       }
+    }
+  }
+
+  async function fetchPageWithRetry(queryUrl: string, label: string, key: string) {
+    requestCount += 1;
+    try {
+      return await fetchRapidApiDailyJobsPage(queryUrl, key);
+    } catch (error) {
+      if (!isRapidApiDailyJobsRateLimitError(error) || requestCount >= maxRequests) {
+        throw error;
+      }
+
+      console.warn(`Retrying ${label} after 429`);
+      await delay(retryDelayMs);
+      requestCount += 1;
+      return fetchRapidApiDailyJobsPage(queryUrl, key);
     }
   }
 

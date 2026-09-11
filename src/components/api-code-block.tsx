@@ -3,6 +3,8 @@
 import { Check, Copy } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { ScrollRegion } from "@/components/scroll-region";
+
 // Adapted from Beautiful UI's Code Block primitive.
 // https://www.beautifului.dev/#code-block
 export function ApiCodeBlock({
@@ -43,7 +45,7 @@ export function ApiCodeBlock({
           {buttonLabel}
         </button>
       </figcaption>
-      <pre tabIndex={0} aria-label={`${title} code`}><code>{code}</code></pre>
+      <ScrollRegion as="pre" label={`${title} code`}><code>{code}</code></ScrollRegion>
       <span className="sr-only" aria-live="polite">
         {copyState === "copied"
           ? `Copied ${title} to clipboard`

@@ -101,6 +101,7 @@ await run("TRACKER-001", "Canonical story sheet has complete source evidence", a
 
   const auditSource = [
     sources.browserAudit,
+    sources.mapBrowserAudit,
     sources.comparisonBrowserAudit,
     sources.comparisonDataAudit,
     sources.feedAudit,

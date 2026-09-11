@@ -11,6 +11,7 @@ import {
   getJobsApiOpenApiAppliedFiltersSchema,
   getJobsApiOpenApiParameters
 } from "../../src/lib/jobs-api-contract";
+import { endpointToolNameMap } from "../../src/lib/job-taxonomy";
 import type { Job, JobsFeed } from "../../src/types/job";
 
 type RunAudit = (
@@ -105,11 +106,11 @@ export async function auditJobsApiData(run: RunAudit) {
       "unsupported metro area rejected"
     );
 
-    for (const query of ["page=1e2", "limit=0x10"]) {
+    for (const query of ["page=1e2", "limit=0x10", "constructor=x", "__proto__=x", "toString=x"]) {
       assertEqual(
         queryJobs(feed, new URLSearchParams(query), now).ok,
         false,
-        `non-decimal integer rejected: ${query}`
+        `invalid query rejected: ${query}`
       );
     }
 
@@ -178,6 +179,11 @@ export async function auditJobsApiData(run: RunAudit) {
       readPointer(specification, "#/components/schemas/Filters"),
       getJobsApiOpenApiAppliedFiltersSchema(),
       "OpenAPI applied filters match canonical contract"
+    );
+    assertDeepEqual(
+      JSON.parse(await readFile("powershell/EndpointJobs/EndpointTools.json", "utf8")),
+      endpointToolNameMap,
+      "PowerShell tool names match canonical contract"
     );
     assertSchema(specification, "#/components/schemas/JobCollection", result.body);
     if (oneDay.ok) {

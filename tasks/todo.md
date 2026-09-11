@@ -635,3 +635,117 @@ Committed as `0e81117` on `agent/fix-issue-29-location`, pushed to origin, and o
 ## Review
 
 Pending.
+
+# Whole-project thermonuclear review-fix loop
+
+- [x] Audit frontend, domain/API, ingestion, tooling, and PowerShell with strict structural standards.
+- [x] Record baseline findings and fix every actionable root cause.
+- [x] Repeat independent reviews until no findings remain.
+- [x] Validate types, lint, build, provider tests, data/browser audits, and relevant PowerShell checks.
+
+## Review
+
+Scope: all maintained project code. Five review rounds converged to no actionable code findings. Existing task history and generated feed data are preserved.
+
+Findings and remedies:
+1. API prototype-key crashes and duplicated options: validate through the canonical contract.
+2. Incomplete URL state casts and duplicate selections: complete typed parsing.
+3. Stale/partial map selections: concurrent reads, cancellation, source snapshot ownership.
+4. Duplicate paragraph key collisions: content-and-occurrence identities.
+5. Duplicate location policy and generic metro machinery: shared guards and one matcher.
+6. Repeated provider normalization: canonical candidate boundary, preserving provider evidence.
+7. Invalid pagination and repeated retry branches: canonical integer parsing and one success path.
+8. Missing/truncated provider identities: stable fallback IDs with collision coverage.
+9. Oversized browser runner: focused map suite, same coverage.
+10. Time-dependent fixtures and undiscoverable tests: one fixture clock and `npm test`.
+11. PowerShell dependency/casing boundaries: pinned Pester before analysis and canonical enum serialization.
+12. Dependency advisories: patched dependencies, including MapLibre v6 with matching React wrapper and self-hosted worker modules.
+13. Stale directory metadata after speculative prefetch: disable prefetch on the footer directory entry; exact production sequence passes three times.
+14. Browser navigation races: wait for observable route state instead of immediate URL reads or unrelated network idleness.
+
+Validation: `npm test` (110), `npm run audit:data` (71), `npm run audit:browser` (41), `npm run typecheck`, `npm run lint`, `npm run build`, OpenAPI regeneration (unchanged), PowerShell `build.ps1 -Task CI` (14 Pester tests/analyzer/build), and `git diff --check` pass. Independent geography review compared 64,872 results against HEAD with no behavior changes.
+
+Dependency follow-up: MapLibre 6.9.0 resolves the remaining advisory; `npm audit` reports zero vulnerabilities. Full-project React Doctor 0.5.5 and 0.9.13 report 100/100 with no findings. Copied vendor worker modules are excluded from source linting; application rules remain enabled. App version is 0.1.14.
+
+# PR #52 Copilot review loop
+
+- [x] Capture review baseline and disposition existing feedback.
+- [x] Fix, verify, push, and resolve valid findings.
+- [x] Confirm a fresh clean Copilot review on the latest head.
+
+## Review
+
+Fixed and resolved Copilot’s tool-casing finding in `9e28b56`; 13 Pester tests, module analysis/build, 71 data audits, lint, and typecheck pass. Two explained React Doctor heuristic threads remain open. Fresh review requested on the new head.
+
+Historical review results below retain the counts measured at each commit. The current test run reports 118 passing tests.
+
+Copilot round 2: fixed audit-clock drift, Activate query contamination, invalid TheirStack ages, and stale map popups. Validation: 90 tests, 71 data audits, 41 browser checks, lint, typecheck, and production build pass.
+
+Copilot round 3: preserve raw provider identity in hashes, normalize taxonomy aliases in PowerShell, fix comparison fixture/render clocks, and clarify the prefetch comment. Validation at that commit: 91 tests, 71 data audits, 13 Pester tests, lint, typecheck, and production/module builds pass; 41 browser checks passed after the map fix. Awaiting a clean latest-head review.
+
+Copilot round 4: remove Workday search terms from published metadata and cancel pending map activation on movement. Validation: 92 tests, 71 data audits, 41 production browser checks, lint, typecheck, and build pass.
+
+Copilot round 5: paragraph regression uses a stable scoped fixture/clock; verified with an empty feed and host clock at 2099, restoring both afterward. All 92 tests, 71 data audits, lint, and typecheck pass.
+
+Copilot round 6: reject stale rendered popup point IDs even with a current snapshot, and restore rich-result DE suffix handling. Validation: 95 tests, 71 data audits, 41 browser checks, lint, typecheck, and production build pass.
+
+Copilot round 7: disjoint hashed/readable provider IDs, Jibe haystack-only search evidence, and DE/Germany fallback. Validation: 99 tests, 71 data audits, lint, typecheck, and production build pass.
+
+Copilot round 12: reconciled current validation counts with executed command output: `npm test` reports 103 passing tests and `npm run audit:data` reports 71 passing audits. Earlier round counts are historical.
+
+Copilot round 13: separate query-only admission from published metadata, recompute canonical redirects from active jobs, recover stale hover state, and cache German location keys. Browser validation also exposed and fixed tile-coordinate rounding rejection. Validation: 106 tests, 71 data audits, 41 browser checks, lint, typecheck, and build pass.
+
+Copilot round 14: invalidate stale salary previews and recover on fresh hover data. Validation: 107 tests, 71 data audits, 41 browser checks, lint, typecheck, and build pass.
+
+Copilot round 15: completed on `5d22b5b` with zero new comments; no unresolved Copilot threads. Local/remote/PR heads match and applicable CI checks pass. Three distinct React Doctor heuristics remain explained and open; MapLibre advisory remains documented. Completion recorded locally to preserve the reviewed commit.
+
+# React Doctor 100/100
+
+- [x] Capture full-project baseline and rule guidance.
+- [x] Fix dependency, UI, and maintainability findings; keep application rules enabled.
+- [x] Verify full scan, tests, data/browser audits, lint, typecheck, and build.
+- [x] Update PR and complete a fresh Copilot review.
+
+React Doctor verification: 48→100/100 on 0.5.5; 0.9.13 also reports 100 with complete full-project coverage and no skipped checks. All 107 tests, 71 data audits, 41 production browser checks, focused accessibility checks, lint, typecheck, and build pass. `npm audit`: zero vulnerabilities. No application rules disabled; copied MapLibre worker artifacts excluded as vendor code.
+
+Copilot round 16: preserve Activate query-only relevance without changing published metadata. Regression fails before the fix; all 108 tests, 71 data audits, lint, and typecheck pass. React Doctor remains 100/100; UI/build results from the preceding commit remain applicable to this ingestion-only change.
+
+Copilot round 17: trim known PowerShell alias lookup keys, reuse normalized German evidence, release removed scroll-region child observations, and centralize tool-list reset CSS. The alias regression failed before the fix; module CI now passes 14 Pester tests. Duplicate German-key feedback handled once.
+
+Round-17 verification: 108 tests, 71 data audits, 41 production browser checks, focused accessibility checks, 14 Pester tests, lint, typecheck, production/module builds, and both full React Doctor scans pass (100/100).
+
+Copilot round 18: refresh directory active/canonical selection and pagination per request, including metadata validation; restrict the DE map exception to German cities. Both regressions failed before their fixes. All 110 tests, 71 data audits, lint, typecheck, build, and both full React Doctor scans pass (100/100).
+
+Round-18 production browser validation: all 41 checks pass.
+
+Copilot round 19: add five-minute ISR to job details so expiry-dependent content and canonical metadata refresh between builds. Verify the production prerender manifest alongside the existing expiry regression.
+
+Round-19 verification: 110 tests, lint, typecheck, build, and both React Doctor scans pass (100/100); all 886 prerendered detail routes have a 300-second refresh. Production browser checks confirm active filters collapse by mouse/keyboard and stay closed across search and filter changes; the suppressed collapse claim is not reproducible.
+
+Copilot round 20 completed on 2a55763 with no new actionable findings. The repeated collapse claim is explained with passing production browser evidence and left open; all handled threads are resolved. Local, remote, and PR heads match; all applicable CI checks pass and the PR is ready. The completion record is included with the subsequent round-21 fixes.
+
+## Copilot round 21
+
+- [x] Separate query-only evidence in AidevBoard, SerpAPI, and RapidAPI LinkedIn; verify admission and published output.
+- [x] Run tests, data audits, lint, typecheck, and full React Doctor scans.
+After this commit: push fixes, resolve handled feedback, and request a fresh latest-head review. The final review result will be recorded on the PR to avoid a self-invalidating documentation commit.
+
+The round-20 history and completed checklist are now included in the repository update.
+
+Round-21 verification: three query-invariance regressions failed before the fixes; all 113 tests, 71 data audits, lint, typecheck, and both full React Doctor scans pass (100/100). Previous production build/browser and PowerShell results remain applicable to this ingestion-only change.
+
+## Copilot round 22
+
+Fallback provider IDs must depend only on stable source/account and native-ID or URL identity. Remove the unused title input and verify GUID/URL-backed records retain IDs after a title edit.
+
+Round-22 verification: title-change regression failed before the fix; all 114 tests, 71 data audits, lint, typecheck, and both full React Doctor scans pass (100/100). Short lossless native IDs remain unchanged. Fresh review follows this commit; its result will be recorded on the PR.
+
+## Fresh whole-project thermonuclear review
+
+- [x] Review frontend, domain/routes, ingestion, PowerShell, and validation boundaries.
+- [x] Fix actionable structural findings and run relevant checks.
+- [x] Repeat strict review until zero findings; record final validation.
+
+Round 1 findings: (1) stale-day parsing and deadline policy are duplicated across provider boundaries with divergent invalid-value behavior; centralize validation and remove redundant default deadlines. (2) AuditToggleButton casts away the production props contract; delete the alias and pass required children through the real component props. Frontend and domain/route reviews found no blockers.
+
+Final review: three rounds, zero remaining findings. JSX audit renderings remove the cast without violating children-prop lint rules; staged rename restored complete React Doctor maintainability scanning. Validation: npm test (118), audit:data (71), lint, typecheck, PowerShell build.ps1 -Task CI (14 Pester tests plus analysis/build), diff --check, and full React Doctor 0.5.5/0.9.13 (100/100, no skipped checks) pass. Clean: yes.

@@ -38,7 +38,31 @@ Describe 'Get-EndpointJob' {
 
             $result.id | Should -Be 'job-1'
             Should -Invoke Invoke-RestMethod -Times 1 -ParameterFilter {
-                $Uri.AbsoluteUri -eq 'https://example.test/api/jobs?q=device%20%26%20endpoint&platforms=macOS%2CWindows&tools=Jamf%20Pro%2CIntune&workplace=Remote&salary=1&leadership=1&minSalary=150000&family=Endpoint%20Engineering&freshness=7&sort=newest&page=1&limit=50'
+                $Uri.AbsoluteUri -eq 'https://example.test/api/jobs?q=device%20%26%20endpoint&platforms=macOS%2CWindows&tools=Jamf%2CIntune&workplace=Remote&salary=1&leadership=1&minSalary=150000&family=Endpoint%20Engineering&freshness=7&sort=newest&page=1&limit=50'
+            }
+        }
+
+        It 'normalizes validated filter casing to the API contract' {
+            Get-EndpointJob -Platform windows, MACOS -Workplace remote -Seniority senior -RoleFamily 'endpoint engineering' -Sort COMPANY -BaseUri 'https://example.test' | Out-Null
+
+            Should -Invoke Invoke-RestMethod -Times 1 -ParameterFilter {
+                $Uri.AbsoluteUri -ceq 'https://example.test/api/jobs?platforms=Windows%2CmacOS&workplace=Remote&seniority=Senior&family=Endpoint%20Engineering&sort=company&page=1&limit=20'
+            }
+        }
+
+        It 'normalizes known tool casing and preserves unknown values for API validation' {
+            Get-EndpointJob -Tool intune, 'GOOGLE workspace', 'JAMF Pro', 'Azure AD', 'Future Tool' -BaseUri 'https://example.test' | Out-Null
+
+            Should -Invoke Invoke-RestMethod -Times 1 -ParameterFilter {
+                $Uri.AbsoluteUri -ceq 'https://example.test/api/jobs?tools=Intune%2CGoogle%20Workspace%2CJamf%2CEntra%20ID%2CFuture%20Tool&sort=newest&page=1&limit=20'
+            }
+        }
+
+        It 'trims known tool aliases while preserving unknown tool input' {
+            Get-EndpointJob -Tool ' Jamf Pro ', ' intune ', ' Azure AD ', ' Future Tool ' -BaseUri 'https://example.test' | Out-Null
+
+            Should -Invoke Invoke-RestMethod -Times 1 -ParameterFilter {
+                $Uri.AbsoluteUri -ceq 'https://example.test/api/jobs?tools=Jamf%2CIntune%2CEntra%20ID%2C%20Future%20Tool%20&sort=newest&page=1&limit=20'
             }
         }
 

@@ -104,6 +104,11 @@
 }
 
 .tool-chips {
+  margin-right: 0;
+  margin-bottom: 0;
+  margin-left: 0;
+  padding: 0;
+  list-style: none;
   display: flex;
   flex-wrap: wrap;
   gap: 7px;

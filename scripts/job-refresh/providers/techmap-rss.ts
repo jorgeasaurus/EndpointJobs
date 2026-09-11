@@ -3,23 +3,11 @@ import { XMLParser } from "fast-xml-parser";
 import type { Job } from "../../../src/types/job";
 import type { ProviderAdapter } from "../provider";
 import {
-  addDays,
+  toEndpointJob,
   cleanText,
   cleanUrl,
-  deriveMatchReasons,
-  derivePlatforms,
-  deriveTools,
-  inferEmploymentType,
-  inferRoleFamily,
-  inferSeniority,
-  inferWorkplace,
-  isEndpointRelevant,
-  normalizeIdPart,
-  normalizeSearchText,
-  normalizeDescription,
-  normalizeTags,
+  buildProviderJobId,
   stripHtml,
-  summarize,
   toArray
 } from "../shared";
 
@@ -47,8 +35,6 @@ type TechmapRssFeed = {
   name: string;
   url: string;
 };
-
-const staleDays = Number(process.env.JOB_STALE_DAYS ?? 45);
 
 export const techmapRssProvider = {
   id: "techmaprss",
@@ -130,47 +116,28 @@ function normalizeTechmapRssJob(raw: TechmapRssItem, feed: TechmapRssFeed, fetch
   const categories = flattenXmlValues(raw.category).map(cleanText).filter(Boolean);
   const location = cleanText(getXmlText(raw.location));
   const sourceTags = [feed.name, ...categories].filter(Boolean);
-  const haystack = normalizeSearchText([title, company, location, sourceTags.join(" "), description].join(" "));
-  const tools = deriveTools(haystack);
-  const platforms = derivePlatforms(haystack);
-  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
-
-  if (!isEndpointRelevant(haystack, title, tools)) {
-    return null;
-  }
 
   const rawDate = getXmlText(raw.pubDate) ?? getXmlText(raw.published) ?? getXmlText(raw.updated);
   const postedAt = rawDate && !Number.isNaN(new Date(rawDate).getTime())
     ? new Date(rawDate).toISOString()
     : fetchedAt.toISOString();
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
-  const idSource = cleanText(getXmlText(raw.guid) ?? getXmlText(raw.id) ?? sourceJobUrl ?? title);
+  const nativeId = getXmlText(raw.guid) || getXmlText(raw.id);
 
-  return {
-    id: `techmaprss-${normalizeIdPart(feed.name)}-${normalizeIdPart(idSource)}`,
+  return toEndpointJob({
+    id: buildProviderJobId("techmaprss", feed.name, nativeId, sourceJobUrl),
     title,
     company,
-    location: location || "Unknown",
-    workplace: inferWorkplace(location, haystack),
+    location,
     postedAt,
-    fetchedAt: fetchedAt.toISOString(),
-    staleAfter,
-    expiresAt: staleAfter,
+    fetchedAt,
     source: "Techmap RSS",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,
     attributionLabel: `Techmap RSS / ${feed.name}`,
     termsProfile: "partner-terms",
-    summary: summarize(description),
-    description: normalizeDescription(description),
-    tags: normalizeTags(sourceTags, tools, platforms),
-    matchReasons,
-    tools,
-    platforms,
-    roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack, title),
-    employmentType: inferEmploymentType(haystack)
-  };
+    description,
+    sourceTags,
+  });
 }
 
 function getRssItems(parsed: unknown): TechmapRssItem[] {

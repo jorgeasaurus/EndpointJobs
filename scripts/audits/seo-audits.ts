@@ -1,4 +1,10 @@
 import { existsSync } from "node:fs";
+import { mock } from "node:test";
+import { Children, isValidElement, type ReactNode } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+
+import JobPage from "../../src/app/jobs/[id]/page";
+import feedData from "../../src/data/jobs.json";
 
 import sitemap from "../../src/app/sitemap";
 import { getEndpointToolUrl } from "../../src/app/site-metadata";
@@ -22,6 +28,7 @@ import {
   assertIncludes,
   assertNotIncludes,
   assertTruthy,
+  fixedAuditNow,
   makeJob,
   type AuditContext
 } from "./shared";
@@ -48,15 +55,41 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
       "page > Math.max(totalPages, 1)",
       "empty feed keeps page 1 valid"
     );
-    assertIncludes(
-      sources.jobPage,
-      "key={hashParagraph(paragraph)}",
-      "paragraph keys hash full content"
-    );
-    assertNotIncludes(sources.jobPage, "key={paragraph.slice(0, 64)}", "no prefix-collision keys");
     assertIncludes(sources.topbar, "getJobsDirectoryPath()", "directory discovery link");
     assertIncludes(sources.topbar, "https://buymeacoffee.com/jorgeasaurus", "support link");
     assertTruthy(existsSync("public/og-image.png"), "missing public/og-image.png");
+  });
+
+  await run("REG-UI-PARAGRAPHS", "Repeated job description paragraphs keep unique sibling identities", async () => {
+    const paragraph = "Maintain endpoint platforms and automate device management. ".repeat(4).trim();
+    const job = makeJob({
+      id: "audit-repeated-description-paragraphs",
+      description: `${paragraph}\n${paragraph}`
+    });
+    const jobs = feedData.jobs as Job[];
+    assertTruthy(!jobs.some((candidate) => candidate.id === job.id), "unique paragraph fixture id");
+    mock.timers.enable({ apis: ["Date"], now: fixedAuditNow });
+    jobs.push(job);
+
+    try {
+      const page = await JobPage({ params: Promise.resolve({ id: job.id }) });
+      const markup = renderToStaticMarkup(page);
+      assertEqual(markup.split(`<p>${paragraph}</p>`).length - 1, 2, "both duplicate paragraphs render");
+      const keys: (string | null)[] = [];
+      function visit(node: ReactNode) {
+        Children.forEach(node, (child) => {
+          if (!isValidElement<{ children?: ReactNode }>(child)) return;
+          if (child.type === "p" && child.props.children === paragraph) keys.push(child.key);
+          visit(child.props.children);
+        });
+      }
+      visit(page);
+      assertEqual(keys.length, 2, "both paragraph elements are present");
+      assertEqual(new Set(keys).size, 2, "duplicate content has distinct keys");
+    } finally {
+      jobs.splice(jobs.indexOf(job), 1);
+      mock.timers.reset();
+    }
   });
 
   await run("FEAT-052", "Home JSON-LD emits escaped collection data", () => {
@@ -247,6 +280,16 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     assertEqual(inferAddressCountry(makeJob({ location: "San Juan, PR" })), "PR");
     assertEqual(inferAddressCountry(makeJob({ location: "Puerto Rico", mapLocation: undefined })), "PR");
     assertEqual(inferAddressCountry(makeJob({ location: "San Juan Capistrano, CA" })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Berlin, Germany", mapLocation: undefined })), "DE");
+    assertEqual(inferAddressCountry(makeJob({ location: "Berlin, DE", mapLocation: undefined })), "DE");
+    assertEqual(inferAddressCountry(makeJob({ location: "Dresden, DE", mapLocation: undefined })), "DE");
+    assertEqual(inferAddressCountry(makeJob({ location: "Leipzig, DE", mapLocation: undefined })), "DE");
+    assertEqual(inferAddressCountry(makeJob({ location: "Bremen, DE", mapLocation: undefined })), "DE");
+    assertEqual(inferAddressCountry(makeJob({ location: "Wilmington, DE", mapLocation: undefined })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Dover, DE", mapLocation: undefined })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Newark, DE", mapLocation: undefined })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "New Castle, DE", mapLocation: undefined })), "US");
+    assertEqual(inferAddressCountry(makeJob({ location: "Rue de la Paix, Paris", mapLocation: undefined })), undefined);
     assertEqual(
       inferAddressCountry(
         makeJob({

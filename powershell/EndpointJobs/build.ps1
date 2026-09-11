@@ -48,6 +48,8 @@ function Import-BuildDependency {
 }
 
 function Invoke-Analyze {
+    # Analysis of Pester tests can auto-load a different installed version.
+    Import-BuildDependency -Name Pester
     Import-BuildDependency -Name PSScriptAnalyzer
     $issues = @(Invoke-ScriptAnalyzer -Path $PSScriptRoot -Recurse -Settings (Join-Path $PSScriptRoot 'PSScriptAnalyzerSettings.psd1'))
     if ($issues.Count -gt 0) {
@@ -75,7 +77,7 @@ function Invoke-Build {
     }
     New-Item -Path $buildDirectory -ItemType Directory -Force | Out-Null
 
-    foreach ($item in @('EndpointJobs.psd1', 'EndpointJobs.psm1', 'Private', 'Public')) {
+    foreach ($item in @('EndpointJobs.psd1', 'EndpointJobs.psm1', 'EndpointTools.json', 'Private', 'Public')) {
         Copy-Item -Path (Join-Path $PSScriptRoot $item) -Destination $buildDirectory -Recurse -Force
     }
 

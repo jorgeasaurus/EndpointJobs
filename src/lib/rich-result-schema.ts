@@ -1,5 +1,12 @@
 import type { Job } from "@/types/job";
-import { foldTokens, isJamaicaUsNeighborhood, isNewMexicoUsLocation, normalizeText } from "@/lib/text";
+import { foldTokens, normalizeText } from "@/lib/text";
+import {
+  getUsStateSuffix,
+  isAmbiguousPanamaCity,
+  isJamaicaUsNeighborhood,
+  isNewMexicoUsLocation
+} from "@/lib/location-context";
+import { hasGermanLocationEvidence } from "@/lib/map-location";
 import { getJobWorkplace } from "@/lib/workplace";
 
 // Google requires ~1000+ characters of complete description text before a
@@ -25,7 +32,7 @@ export function isRichResultEligible(job: Job) {
 }
 
 const usStatePattern =
-  /\b(?:AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC)\b/;
+  /\b(?:AL|AK|AZ|AR|CA|CO|CT|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC)\b/;
 
 const countryMatchers: Array<[RegExp, string]> = [
   [/\b(?:united states|usa|us)\b/i, "US"],
@@ -81,7 +88,9 @@ export function inferAddressCountry(job: Job) {
 
   const location = `${job.location} ${job.mapLocation?.label ?? ""}`;
   const foldedLocation = foldDiacritics(location);
-  const usStateSuffixed = hasExplicitUsStateSuffix(job.location);
+  const usStateSuffix = getUsStateSuffix(foldedJobLocation);
+  // DE also denotes Germany; preserve explicit country evidence in this case.
+  const usStateSuffixed = usStateSuffix !== undefined && usStateSuffix !== "de";
 
   for (const [pattern, countryCode] of countryMatchers) {
     if (!pattern.test(foldedLocation)) {
@@ -92,7 +101,7 @@ export function inferAddressCountry(job: Job) {
       return "US";
     }
 
-    if (countryCode === "PA" && isAmbiguousPanamaCity(foldedLocation)) {
+    if (countryCode === "PA" && isAmbiguousPanamaCity(foldTokens(location))) {
       continue;
     }
 
@@ -103,39 +112,24 @@ export function inferAddressCountry(job: Job) {
     return "US";
   }
 
+  // DE is Germany's ISO code as well as Delaware. Keep the generic Delaware
+  // suffix as US unless shared map/country evidence identifies Germany.
+  // Match an uppercase DE token or a trailing DE suffix so mid-string words
+  // like "de" in "Rue de la Paix" are not treated as a country or US state.
+  const foldedCombinedLocation = foldTokens(location);
+  if (
+    usStateSuffix === "de" ||
+    getUsStateSuffix(foldedCombinedLocation) === "de" ||
+    /\bDE\b/.test(location)
+  ) {
+    return hasGermanLocationEvidence(job.location, job.mapLocation) ? "DE" : "US";
+  }
+
   return undefined;
 }
 
 function foldDiacritics(value: string) {
   return value.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
-}
-
-function hasExplicitUsStateSuffix(location: string) {
-  const normalized = foldDiacritics(location)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim()
-    .replace(/\s+/g, " ")
-    .replace(/ (?:us|usa|united states(?: of america)?)$/, "")
-    .replace(/ \d{5}(?: \d{4})?$/, "");
-
-  return /(?:^| )(?:al|ak|az|ar|ca|co|ct|de|fl|ga|hi|id|il|in|ia|ks|ky|la|me|md|ma|mi|mn|ms|mo|mt|ne|nv|nh|nj|nm|ny|nc|nd|oh|ok|or|pa|ri|sc|sd|tn|tx|ut|vt|va|wa|wv|wi|wy|dc)$/.test(
-    normalized
-  );
-}
-
-function isAmbiguousPanamaCity(foldedLocation: string) {
-  const normalized = foldedLocation
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim()
-    .replace(/\s+/g, " ");
-
-  if (!/\bpanama city\b/.test(normalized)) {
-    return false;
-  }
-
-  return !/\b(?:panama city panama|ciudad de panama|republic of panama)\b/.test(normalized);
 }
 
 export function normalizeEmploymentType(value: string) {
@@ -170,10 +164,10 @@ function escapeHtml(value: string) {
 }
 
 export function formatDescriptionAsHtml(value: string) {
-  const paragraphs = value
-    .split(/\n+/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean);
-
-  return paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("");
+  const paragraphs: string[] = [];
+  for (const paragraph of value.split(/\n+/)) {
+    const trimmed = paragraph.trim();
+    if (trimmed) paragraphs.push(`<p>${escapeHtml(trimmed)}</p>`);
+  }
+  return paragraphs.join("");
 }

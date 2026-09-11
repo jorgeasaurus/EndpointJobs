@@ -77,12 +77,6 @@ export const metroAreaOptions = [
 
 export type MetroAreaFilter = (typeof metroAreaOptions)[number];
 
-const metroAreaValueSet: ReadonlySet<string> = new Set(metroAreaOptions);
-
-export function isMetroAreaFilter(value: string): value is MetroAreaFilter {
-  return metroAreaValueSet.has(value);
-}
-
 const metroAreaKeywordSets: Record<MetroAreaFilter, readonly string[]> = {
   "Atlanta, GA": ["atlanta", "georgia us"],
   "Austin, TX": ["austin", "bastrop tx", "bastrop bastrop", "tarrytown travis"],
@@ -173,64 +167,28 @@ const metroAreaExcludeKeywordSets: Partial<Record<MetroAreaFilter, readonly stri
   "Valencia, Spain": ["valencia ca", "valencia california"]
 };
 
-type TokenAliasMatcher<T extends string> = {
-  matches: (job: Job, value: T) => boolean;
-};
-
-export function createTokenAliasMatcher<T extends string>(
-  options: readonly T[],
-  keywordSets: Record<T, readonly string[]>,
-  buildHaystack: (job: Job) => string,
-  excludeKeywordSets: Partial<Record<T, readonly string[]>> = {}
-): TokenAliasMatcher<T> {
-  // Precompute value → keywords once; matches() runs per job × selected
-  // option during filtering, so lookups stay O(1).
-  const matchers = new Map(
-    options.map((value) => [
-      value,
-      keywordSets[value].map((key) => foldTokens(key))
-    ])
-  );
-  const excludeMatchers = new Map(
-    options.map((value) => [
-      value,
-      (excludeKeywordSets[value] ?? []).map((key) => foldTokens(key))
-    ])
-  );
-
-  return {
-    matches(job, value) {
-      const keywords = matchers.get(value);
-      if (!keywords) return false;
-
-      const haystack = ` ${foldTokens(buildHaystack(job))} `;
-      const excludes = excludeMatchers.get(value) ?? [];
-      if (excludes.some((keyword) => keyword && haystack.includes(` ${keyword} `))) {
-        return false;
-      }
-      return keywords.some((keyword) => keyword && haystack.includes(` ${keyword} `));
-    }
-  };
-}
+const metroMatchers = new Map(
+  metroAreaOptions.map((value) => [value, {
+    keywords: metroAreaKeywordSets[value].map(foldTokens),
+    excludes: (metroAreaExcludeKeywordSets[value] ?? []).map(foldTokens)
+  }])
+);
 
 function buildLocationHaystack(job: Job) {
   return `${job.location} ${job.mapLocation?.label ?? ""} ${getJobWorkplace(job)}`;
 }
 
-const tokenAliasMatcher = createTokenAliasMatcher(
-  metroAreaOptions,
-  metroAreaKeywordSets,
-  buildLocationHaystack,
-  metroAreaExcludeKeywordSets
-);
-
 export const metroAreaMatcher = {
   matches(job: Job, value: MetroAreaFilter) {
+    const matcher = metroMatchers.get(value);
+    if (!matcher) return false;
     if (value === "San Jose, CA" && hasAccentedSanJoseWithoutCaliforniaContext(job)) {
       return false;
     }
 
-    return tokenAliasMatcher.matches(job, value);
+    const haystack = ` ${foldTokens(buildLocationHaystack(job))} `;
+    const containsKeyword = (keyword: string) => Boolean(keyword) && haystack.includes(` ${keyword} `);
+    return !matcher.excludes.some(containsKeyword) && matcher.keywords.some(containsKeyword);
   }
 };
 

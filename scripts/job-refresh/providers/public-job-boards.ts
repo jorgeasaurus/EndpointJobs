@@ -2,25 +2,17 @@ import type { Job } from "../../../src/types/job";
 import type { ProviderAdapter } from "../provider";
 import { defaultEndpointSearchQueries } from "../search-config";
 import {
-  addDays,
+  toEndpointJob,
   cleanText,
   cleanUrl,
-  deriveMatchReasons,
-  derivePlatforms,
-  deriveTools,
   formatProviderError,
   getCsvConfig,
+  getPositiveInteger,
   inferEmploymentType,
-  inferRoleFamily,
-  inferSeniority,
   inferWorkplace,
-  isEndpointRelevant,
   normalizeSalary,
   normalizeSearchText,
-  normalizeDescription,
-  normalizeTags,
   stripHtml,
-  summarize
 } from "../shared";
 
 type RemoteOkJob = {
@@ -118,8 +110,6 @@ type AdzunaJob = {
   salary_max?: number;
 };
 
-const staleDays = Number(process.env.JOB_STALE_DAYS ?? 45);
-
 export const publicJobBoardProviders = [
   {
     id: "remoteok",
@@ -172,7 +162,7 @@ export const publicJobBoardProviders = [
 ] as const satisfies readonly ProviderAdapter[];
 
 async function fetchMuseJobs(url: string, fetchedAt: Date) {
-  const pages = Math.max(1, Number(process.env.JOB_MUSE_PAGES ?? 5));
+  const pages = getPositiveInteger(process.env.JOB_MUSE_PAGES, 5);
   const jobs: Array<Job | null> = [];
   let successfulPages = 0;
 
@@ -369,45 +359,29 @@ function normalizeRemoteOkJob(raw: RemoteOkJob, fetchedAt: Date): Job | null {
   const haystack = normalizeSearchText(
     [title, company, raw.location, tags.join(" "), description].join(" ")
   );
-  const tools = deriveTools(haystack);
-  const platforms = derivePlatforms(haystack);
-  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
 
-  if (!isEndpointRelevant(haystack, title, tools)) {
-    return null;
-  }
-
-  const postedAt = getPostedAt(raw);
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
+  const postedAt = getPostedAt(raw, fetchedAt);
   const salary = normalizeSalary(raw.salary_min, raw.salary_max);
   const workplace = inferWorkplace(raw.location, haystack);
 
-  return {
+  return toEndpointJob({
     id: `remoteok-${raw.id}`,
     title,
     company,
     location: cleanText(raw.location) || "Remote",
     workplace,
     postedAt,
-    fetchedAt: fetchedAt.toISOString(),
-    staleAfter,
-    expiresAt: staleAfter,
+    fetchedAt,
     source: "Remote OK",
     sourceUrl: sourceJobUrl,
     applyUrl,
     attributionLabel: "Remote OK",
     termsProfile: "attribution-required",
-    summary: summarize(description),
-    description: normalizeDescription(description),
-    tags: normalizeTags(tags, tools, platforms),
-    matchReasons,
-    tools,
-    platforms,
-    roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack, title),
+    description,
+    sourceTags: tags,
     employmentType: inferEmploymentType(haystack),
     ...(salary ? { salary } : {})
-  };
+  });
 }
 
 function normalizeRemotiveJob(raw: RemotiveJob, fetchedAt: Date): Job | null {
@@ -421,57 +395,31 @@ function normalizeRemotiveJob(raw: RemotiveJob, fetchedAt: Date): Job | null {
 
   const description = stripHtml(raw.description ?? "");
   const sourceTags = [raw.category, raw.job_type].map(cleanText).filter(Boolean);
-  const haystack = normalizeSearchText(
-    [
-      title,
-      company,
-      raw.candidate_required_location,
-      raw.category,
-      raw.job_type,
-      raw.salary,
-      description
-    ].join(" ")
-  );
-  const tools = deriveTools(haystack);
-  const platforms = derivePlatforms(haystack);
-  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
-
-  if (!isEndpointRelevant(haystack, title, tools)) {
-    return null;
-  }
 
   const postedAt =
     raw.publication_date && !Number.isNaN(new Date(raw.publication_date).getTime())
       ? new Date(raw.publication_date).toISOString()
-      : new Date().toISOString();
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
+      : fetchedAt.toISOString();
 
-  return {
+  return toEndpointJob({
     id: `remotive-${raw.id}`,
     title,
     company,
     location: cleanText(raw.candidate_required_location) || "Remote",
     workplace: "Remote",
     postedAt,
-    fetchedAt: fetchedAt.toISOString(),
-    staleAfter,
-    expiresAt: staleAfter,
+    fetchedAt,
     source: "Remotive",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,
     attributionLabel: "Remotive",
     termsProfile: "attribution-required",
-    summary: summarize(description),
-    description: normalizeDescription(description),
-    tags: normalizeTags(sourceTags, tools, platforms),
-    matchReasons,
-    tools,
-    platforms,
-    roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack, title),
+    description,
+    sourceTags,
+    haystackParts: [raw.salary],
     employmentType: normalizeRemotiveJobType(raw.job_type),
     ...(raw.salary ? { salary: { currency: "USD", label: cleanText(raw.salary) } } : {})
-  };
+  });
 }
 
 function normalizeArbeitnowJob(raw: ArbeitnowJob, fetchedAt: Date): Job | null {
@@ -486,49 +434,28 @@ function normalizeArbeitnowJob(raw: ArbeitnowJob, fetchedAt: Date): Job | null {
   const description = stripHtml(raw.description ?? "");
   const tags = Array.isArray(raw.tags) ? raw.tags.map(cleanText).filter(Boolean) : [];
   const jobTypes = Array.isArray(raw.job_types) ? raw.job_types.map(cleanText).filter(Boolean) : [];
-  const haystack = normalizeSearchText(
-    [title, company, raw.location, tags.join(" "), jobTypes.join(" "), description].join(" ")
-  );
-  const tools = deriveTools(haystack);
-  const platforms = derivePlatforms(haystack);
-  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
-
-  if (!isEndpointRelevant(haystack, title, tools)) {
-    return null;
-  }
 
   const postedAt =
     raw.created_at && raw.created_at > 0
       ? new Date(raw.created_at * 1000).toISOString()
-      : new Date().toISOString();
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
-  const workplace = raw.remote ? "Remote" : inferWorkplace(raw.location, haystack);
+      : fetchedAt.toISOString();
 
-  return {
+  return toEndpointJob({
     id: `arbeitnow-${raw.slug}`,
     title,
     company,
-    location: cleanText(raw.location) || (raw.remote ? "Remote" : "Unknown"),
-    workplace,
+    location: cleanText(raw.location) || (raw.remote ? "Remote" : undefined),
+    workplace: raw.remote ? "Remote" : undefined,
     postedAt,
-    fetchedAt: fetchedAt.toISOString(),
-    staleAfter,
-    expiresAt: staleAfter,
+    fetchedAt,
     source: "Arbeitnow",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,
     attributionLabel: "Arbeitnow",
     termsProfile: "attribution-required",
-    summary: summarize(description),
-    description: normalizeDescription(description),
-    tags: normalizeTags([...tags, ...jobTypes], tools, platforms),
-    matchReasons,
-    tools,
-    platforms,
-    roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack, title),
-    employmentType: inferEmploymentType(haystack)
-  };
+    description,
+    sourceTags: [...tags, ...jobTypes],
+  });
 }
 
 function normalizeJobicyJob(raw: JobicyJob, fetchedAt: Date): Job | null {
@@ -543,48 +470,30 @@ function normalizeJobicyJob(raw: JobicyJob, fetchedAt: Date): Job | null {
   const description = stripHtml(raw.jobDescription ?? raw.jobExcerpt ?? "");
   const industry = Array.isArray(raw.jobIndustry) ? raw.jobIndustry.map(cleanText).filter(Boolean) : [];
   const jobType = Array.isArray(raw.jobType) ? raw.jobType.map(cleanText).filter(Boolean) : [];
-  const haystack = normalizeSearchText(
-    [title, company, raw.jobGeo, raw.jobLevel, industry.join(" "), jobType.join(" "), description].join(" ")
-  );
-  const tools = deriveTools(haystack);
-  const platforms = derivePlatforms(haystack);
-  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
-
-  if (!isEndpointRelevant(haystack, title, tools)) {
-    return null;
-  }
 
   const postedAt =
     raw.pubDate && !Number.isNaN(new Date(raw.pubDate).getTime())
       ? new Date(raw.pubDate).toISOString()
-      : new Date().toISOString();
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
+      : fetchedAt.toISOString();
 
-  return {
+  return toEndpointJob({
     id: `jobicy-${raw.id}`,
     title,
     company,
     location: cleanText(raw.jobGeo) || "Remote",
     workplace: "Remote",
     postedAt,
-    fetchedAt: fetchedAt.toISOString(),
-    staleAfter,
-    expiresAt: staleAfter,
+    fetchedAt,
     source: "Jobicy",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,
     attributionLabel: "Jobicy",
     termsProfile: "attribution-required",
-    summary: summarize(description),
-    description: normalizeDescription(description),
-    tags: normalizeTags([...industry, ...jobType], tools, platforms),
-    matchReasons,
-    tools,
-    platforms,
-    roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack, title),
-    employmentType: jobType[0] || inferEmploymentType(haystack)
-  };
+    description,
+    sourceTags: [...industry, ...jobType],
+    haystackParts: [raw.jobLevel],
+    employmentType: jobType[0]
+  });
 }
 
 function normalizeMuseJob(raw: MuseJob, fetchedAt: Date): Job | null {
@@ -608,46 +517,28 @@ function normalizeMuseJob(raw: MuseJob, fetchedAt: Date): Job | null {
     : [];
   const sourceTags = [...categories, ...levels, cleanText(raw.type)].filter(Boolean);
   const location = locations.join("; ");
-  const haystack = normalizeSearchText([title, company, location, sourceTags.join(" "), description].join(" "));
-  const tools = deriveTools(haystack);
-  const platforms = derivePlatforms(haystack);
-  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
-
-  if (!isEndpointRelevant(haystack, title, tools)) {
-    return null;
-  }
 
   const postedAt =
     raw.publication_date && !Number.isNaN(new Date(raw.publication_date).getTime())
       ? new Date(raw.publication_date).toISOString()
-      : new Date().toISOString();
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
+      : fetchedAt.toISOString();
 
-  return {
+  return toEndpointJob({
     id: `muse-${raw.id}`,
     title,
     company,
-    location: location || "Unknown",
-    workplace: inferWorkplace(location, haystack),
+    location,
     postedAt,
-    fetchedAt: fetchedAt.toISOString(),
-    staleAfter,
-    expiresAt: staleAfter,
+    fetchedAt,
     source: "The Muse",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,
     attributionLabel: "The Muse",
     termsProfile: "public-api",
-    summary: summarize(description),
-    description: normalizeDescription(description),
-    tags: normalizeTags(sourceTags, tools, platforms),
-    matchReasons,
-    tools,
-    platforms,
-    roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack, title),
-    employmentType: cleanText(raw.type) || inferEmploymentType(haystack)
-  };
+    description,
+    sourceTags,
+    employmentType: cleanText(raw.type)
+  });
 }
 
 function normalizeAdzunaJob(raw: AdzunaJob, fetchedAt: Date): Job | null {
@@ -664,48 +555,37 @@ function normalizeAdzunaJob(raw: AdzunaJob, fetchedAt: Date): Job | null {
   const sourceTags = [raw.category?.label, raw.category?.tag, raw.contract_type, raw.contract_time]
     .map(cleanText)
     .filter(Boolean);
-  const haystack = normalizeSearchText([title, company, location, sourceTags.join(" "), description].join(" "));
-  const tools = deriveTools(haystack);
-  const platforms = derivePlatforms(haystack);
-  const matchReasons = deriveMatchReasons(haystack, tools, platforms);
-
-  if (!isEndpointRelevant(haystack, title, tools)) {
-    return null;
-  }
 
   const postedAt =
     raw.created && !Number.isNaN(new Date(raw.created).getTime())
       ? new Date(raw.created).toISOString()
-      : new Date().toISOString();
-  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
+      : fetchedAt.toISOString();
   const salary = normalizeSalary(raw.salary_min, raw.salary_max);
 
-  return {
+  const job = toEndpointJob({
     id: `adzuna-${raw.id}`,
     title,
     company,
-    location: location || "Unknown",
-    workplace: inferWorkplace(location, haystack),
+    location,
     postedAt,
-    fetchedAt: fetchedAt.toISOString(),
-    staleAfter,
-    expiresAt: staleAfter,
+    fetchedAt,
     source: "Adzuna",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,
     attributionLabel: "Adzuna",
     termsProfile: "attribution-required",
-    summary: summarizeAdzunaListing(company, location, sourceTags, tools, platforms),
-    // Adzuna documents this field as a snippet, not a full description.
-    tags: normalizeTags(sourceTags, tools, platforms),
-    matchReasons,
-    tools,
-    platforms,
-    roleFamily: inferRoleFamily(haystack, tools, platforms),
-    seniority: inferSeniority(haystack, title),
-    employmentType: cleanText(raw.contract_type ?? raw.contract_time) || inferEmploymentType(haystack),
+    description,
+    sourceTags,
+    employmentType: cleanText(raw.contract_type ?? raw.contract_time),
     ...(salary ? { salary } : {})
-  };
+  });
+
+  // Adzuna supplies a snippet; use it for classification but never publish it.
+  return job ? {
+    ...job,
+    summary: summarizeAdzunaListing(company, location, sourceTags, job.tools, job.platforms),
+    description: undefined
+  } : null;
 }
 
 function summarizeAdzunaListing(
@@ -769,7 +649,7 @@ function normalizeRemotiveJobType(value: string | undefined) {
   return "Full-time";
 }
 
-function getPostedAt(raw: RemoteOkJob) {
+function getPostedAt(raw: RemoteOkJob, fetchedAt: Date) {
   if (raw.date && !Number.isNaN(new Date(raw.date).getTime())) {
     return new Date(raw.date).toISOString();
   }
@@ -778,7 +658,7 @@ function getPostedAt(raw: RemoteOkJob) {
     return new Date(raw.epoch * 1000).toISOString();
   }
 
-  return new Date().toISOString();
+  return fetchedAt.toISOString();
 }
 
 function buildMusePageUrl(baseUrl: string, page: number) {

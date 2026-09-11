@@ -22,7 +22,7 @@ import { resolveJobMapLocation } from "./map-location";
 
 const toolAliases = endpointToolDefinitions;
 const platformAliases = platformDefinitions;
-const staleDays = Number(process.env.JOB_STALE_DAYS ?? 45);
+const staleDays = getJobStaleDays();
 const configuredDescriptionMaxLength = Number(process.env.JOB_DESCRIPTION_MAX_LENGTH ?? 12000);
 const configuredDescriptionMinLength = Number(process.env.JOB_DESCRIPTION_MIN_LENGTH ?? 420);
 const descriptionMaxLength =
@@ -51,6 +51,8 @@ export type JobCandidate = {
   description?: string;
   sourceTags?: string[];
   haystackParts?: unknown[];
+  // Provider search evidence can admit a listing but must not supply published metadata.
+  relevanceOnlyParts?: string[];
   salary?: Job["salary"];
   roleFamily?: RoleFamily;
   seniority?: Seniority;
@@ -86,7 +88,11 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
   const platforms = derivePlatforms(haystack);
   const matchReasons = deriveMatchReasons(haystack, tools, platforms);
 
-  if (!isEndpointRelevant(haystack, title, tools)) {
+  const relevanceHaystack = normalizeSearchText(
+    [haystack, ...(candidate.relevanceOnlyParts ?? [])].join(" ")
+  );
+
+  if (!isEndpointRelevant(relevanceHaystack, title, deriveTools(relevanceHaystack))) {
     return null;
   }
 
@@ -395,7 +401,7 @@ export function inferWorkplace(location: string | undefined, haystack: string): 
   return "Unknown";
 }
 
-export function normalizeTags(
+function normalizeTags(
   sourceTags: string[],
   tools: EndpointTool[],
   platforms: Platform[]
@@ -669,7 +675,7 @@ export function parseDateLike(value: string | undefined) {
   return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
 }
 
-export function normalizeIdPart(value: string) {
+function normalizeIdPart(value: string) {
   return normalizeSearchText(value)
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
@@ -683,6 +689,31 @@ export function buildStableJobId(source: string, account: string, title: string,
     .join("-");
 
   return `${readable}-${shortHash(sourceUrl)}`;
+}
+
+export function buildProviderJobId(
+  source: string,
+  account: string,
+  nativeId: string | undefined,
+  sourceUrl: string
+) {
+  const identity = cleanText(nativeId);
+
+  // Preserve lossless IDs only where separators cannot blur account/native-ID boundaries.
+  if (/^[a-z0-9]+$/.test(source) && /^[a-z0-9]+$/.test(account) && account.length <= 96
+    && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(identity) && identity.length <= 96
+    && nativeId === identity) {
+    return `${source}-${account}-${identity}`;
+  }
+
+  const fullIdentity = JSON.stringify([source, account, identity ? ["native", nativeId] : ["url", sourceUrl]]);
+  const readable = [source, account]
+    .map(normalizeIdPart)
+    .filter(Boolean)
+    .join("-");
+
+  // `--` cannot appear in the readable native-ID form, which forbids empty segments.
+  return `${readable}--${shortHash(fullIdentity)}`;
 }
 
 function shortHash(value: string) {
@@ -732,6 +763,10 @@ export function getCsvConfig(envKey: string, fallback: string[]) {
   const values = configured ? configured.split(",") : fallback;
 
   return values.map((value) => value.trim()).filter(Boolean);
+}
+
+export function getJobStaleDays() {
+  return getPositiveInteger(process.env.JOB_STALE_DAYS, 45);
 }
 
 export function getPositiveInteger(value: string | undefined, fallback: number) {

@@ -23,17 +23,21 @@ type DirectoryPageProps = {
 const jobsPerPage = 50;
 const feed = feedData as JobsFeed;
 
-// The feed is static for the lifetime of the server, so the canonical index is
-// computed once and reused on every request.
-const canonicalJobIds = new Set(
-  getCanonicalSeoIndex(feed.jobs.filter((job) => isActiveJob(job))).values()
-);
-const activeJobs = feed.jobs.filter(
-  (job) => isActiveJob(job) && canonicalJobIds.has(job.id)
-);
+function resolveDirectoryPage(value: string | string[] | undefined) {
+  const page = parsePage(value);
+  const now = new Date();
+  const unexpiredJobs = feed.jobs.filter((job) => isActiveJob(job, now));
+  const canonicalJobIds = new Set(getCanonicalSeoIndex(unexpiredJobs).values());
+  const activeJobs = unexpiredJobs.filter((job) => canonicalJobIds.has(job.id));
+  const totalPages = Math.ceil(activeJobs.length / jobsPerPage);
+
+  // Page 1 remains valid when the directory is empty.
+  if (page > Math.max(totalPages, 1)) notFound();
+  return { page, activeJobs, totalPages };
+}
 
 export async function generateMetadata({ searchParams }: DirectoryPageProps): Promise<Metadata> {
-  const page = parsePage((await searchParams).page);
+  const { page } = resolveDirectoryPage((await searchParams).page);
   const title = page > 1 ? `Endpoint Jobs Directory — Page ${page}` : "Endpoint Jobs Directory";
   const canonical = page > 1 ? `${siteUrl}/jobs?page=${page}` : `${siteUrl}/jobs`;
 
@@ -46,14 +50,7 @@ export async function generateMetadata({ searchParams }: DirectoryPageProps): Pr
 }
 
 export default async function JobsDirectory({ searchParams }: DirectoryPageProps) {
-  const page = parsePage((await searchParams).page);
-  const totalPages = Math.ceil(activeJobs.length / jobsPerPage);
-
-  // An empty feed yields totalPages 0; page 1 is still valid (renders an empty
-  // directory) rather than 404ing the whole route.
-  if (page > Math.max(totalPages, 1)) {
-    notFound();
-  }
+  const { page, activeJobs, totalPages } = resolveDirectoryPage((await searchParams).page);
 
   const pageJobs = activeJobs.slice((page - 1) * jobsPerPage, page * jobsPerPage);
 

@@ -1,0 +1,5 @@
+{
+  "ignore": {
+    "files": ["public/maplibre/*.mjs"]
+  }
+}
