@@ -1,8 +1,9 @@
 import { existsSync } from "node:fs";
+import { mock } from "node:test";
 import { Children, isValidElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import JobPage, { generateStaticParams } from "../../src/app/jobs/[id]/page";
+import JobPage from "../../src/app/jobs/[id]/page";
 import feedData from "../../src/data/jobs.json";
 
 import sitemap from "../../src/app/sitemap";
@@ -27,6 +28,7 @@ import {
   assertIncludes,
   assertNotIncludes,
   assertTruthy,
+  fixedAuditNow,
   makeJob,
   type AuditContext
 } from "./shared";
@@ -59,15 +61,17 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
   });
 
   await run("REG-UI-PARAGRAPHS", "Repeated job description paragraphs keep unique sibling identities", async () => {
-    const id = generateStaticParams()[0]?.id;
-    const job = feedData.jobs.find((candidate) => candidate.id === id);
-    assertTruthy(job, "active canonical job fixture");
-    if (!job) return;
-    const originalDescription = job.description;
     const paragraph = "Maintain endpoint platforms and automate device management. ".repeat(4).trim();
+    const job = makeJob({
+      id: "audit-repeated-description-paragraphs",
+      description: `${paragraph}\n${paragraph}`
+    });
+    const jobs = feedData.jobs as Job[];
+    assertTruthy(!jobs.some((candidate) => candidate.id === job.id), "unique paragraph fixture id");
+    mock.timers.enable({ apis: ["Date"], now: fixedAuditNow });
+    jobs.push(job);
 
     try {
-      job.description = `${paragraph}\n${paragraph}`;
       const page = await JobPage({ params: Promise.resolve({ id: job.id }) });
       const markup = renderToStaticMarkup(page);
       assertEqual(markup.split(`<p>${paragraph}</p>`).length - 1, 2, "both duplicate paragraphs render");
@@ -83,7 +87,8 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
       assertEqual(keys.length, 2, "both paragraph elements are present");
       assertEqual(new Set(keys).size, 2, "duplicate content has distinct keys");
     } finally {
-      job.description = originalDescription;
+      jobs.splice(jobs.indexOf(job), 1);
+      mock.timers.reset();
     }
   });
 

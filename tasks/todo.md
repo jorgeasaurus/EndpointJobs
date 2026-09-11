@@ -682,3 +682,5 @@ Copilot round 2: fixed audit-clock drift, Activate query contamination, invalid 
 Copilot round 3: preserve raw provider identity in hashes, normalize taxonomy aliases in PowerShell, fix comparison fixture/render clocks, and clarify the prefetch comment. Current validation: 91 tests, 71 data audits, 13 Pester tests, lint, typecheck, and production/module builds pass; 41 browser checks passed after the map fix. Awaiting a clean latest-head review.
 
 Copilot round 4: remove Workday search terms from published metadata and cancel pending map activation on movement. Validation: 92 tests, 71 data audits, 41 production browser checks, lint, typecheck, and build pass.
+
+Copilot round 5: paragraph regression uses a stable scoped fixture/clock; verified with an empty feed and host clock at 2099, restoring both afterward. All 92 tests, 71 data audits, lint, and typecheck pass.
