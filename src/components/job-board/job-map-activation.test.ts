@@ -199,3 +199,22 @@ test("rendered job popups retain source coordinates despite tile quantization", 
   const movedPoints = [{ ...points[0], latitude: 40.72, longitude: -74.01 }];
   assert.equal(getVisiblePopup({ popup, points: movedPoints }, movedPoints), null);
 });
+
+test("salary changes invalidate visible popups and fresh hover data recovers", () => {
+  const points = [matchingPoint()];
+  for (const type of ["job", "cluster"] as const) {
+    const popup: ActivePopup = {
+      count: 1, jobs: [readJobPreview(leaf)!], key: "job:point-1", label: "New York",
+      latitude: 40, longitude: -73, type
+    };
+    const selection = { popup, points };
+    assert.equal(getVisiblePopup(selection, points), popup);
+    points[0].job.salary = { label: "$150k", min: 150000, currency: "USD" };
+    assert.equal(getVisiblePopup(selection, points), null);
+    const fresh = { ...popup, jobs: [{ ...popup.jobs[0], salary: "$150k" }] };
+    const recovered = selectHoveredPopup(selection, fresh, points);
+    assert.equal(getVisiblePopup(recovered, points), fresh);
+    points[0].job.salary = undefined;
+    assert.equal(getVisiblePopup(recovered, points), null);
+  }
+});

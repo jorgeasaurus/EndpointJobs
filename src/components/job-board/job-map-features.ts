@@ -265,6 +265,7 @@ function popupJobMatchesCurrentPoint(popup: ActivePopup, job: JobPreview, point:
   return (
     job.title === point.job.title &&
     job.company === point.job.company &&
+    job.salary === (point.job.salary?.label || "Salary not listed") &&
     job.location === point.label &&
     job.applyUrl === (point.job.applyUrl ?? "") &&
     (popup.type !== "job" ||
