@@ -156,8 +156,9 @@ function Get-EndpointJob {
 
         $parameters.tools = @(
             foreach ($value in $Tool) {
-                if ($script:EndpointToolNames.ContainsKey($value)) {
-                    $script:EndpointToolNames[$value]
+                $lookupKey = $value.Trim()
+                if ($script:EndpointToolNames.ContainsKey($lookupKey)) {
+                    $script:EndpointToolNames[$lookupKey]
                 } else {
                     $value
                 }

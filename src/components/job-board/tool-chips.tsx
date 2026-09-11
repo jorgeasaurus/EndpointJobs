@@ -26,7 +26,6 @@ export function ToolChips({
       <ul
         className="tag-row tool-chips"
         aria-label="Matched tools and platforms"
-        style={{ listStyle: "none", marginBottom: 0, marginLeft: 0, marginRight: 0, padding: 0 }}
       >
         {visiblePlatforms.map((platform) => (
           <li

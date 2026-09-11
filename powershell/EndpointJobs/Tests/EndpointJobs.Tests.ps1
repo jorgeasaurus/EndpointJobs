@@ -58,6 +58,14 @@ Describe 'Get-EndpointJob' {
             }
         }
 
+        It 'trims known tool aliases while preserving unknown tool input' {
+            Get-EndpointJob -Tool ' Jamf Pro ', ' intune ', ' Azure AD ', ' Future Tool ' -BaseUri 'https://example.test' | Out-Null
+
+            Should -Invoke Invoke-RestMethod -Times 1 -ParameterFilter {
+                $Uri.AbsoluteUri -ceq 'https://example.test/api/jobs?tools=Jamf%2CIntune%2CEntra%20ID%2C%20Future%20Tool%20&sort=newest&page=1&limit=20'
+            }
+        }
+
         It 'returns the response envelope when RawResponse is selected' {
             $response = Get-EndpointJob -RawResponse -BaseUri 'https://example.test'
 

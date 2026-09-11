@@ -610,7 +610,7 @@ for (const coordinate of locationCoordinates) {
     if (normalized) normalizedKeys.push(normalized);
   }
   searchableLocationCoordinates.push({ ...coordinate, normalizedKeys });
-  if (isGermanMapLocation(coordinate.label)) germanLocationKeys.push(...coordinate.keys);
+  if (isGermanMapLocation(coordinate.label)) germanLocationKeys.push(...normalizedKeys);
 }
 // Unmapped German cities still used as country evidence for DE suffixes.
 germanLocationKeys.push("dresden", "leipzig", "bremen");

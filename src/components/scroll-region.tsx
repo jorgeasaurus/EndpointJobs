@@ -22,8 +22,16 @@ export function ScrollRegion({
     const observer = new ResizeObserver(onChange);
     observer.observe(region);
     for (const child of region.children) observer.observe(child);
-    const mutations = new MutationObserver(() => {
-      for (const child of region.children) observer.observe(child);
+    const mutations = new MutationObserver((records) => {
+      for (const record of records) {
+        if (record.type !== "childList" || record.target !== region) continue;
+        for (const removed of record.removedNodes) {
+          if (removed instanceof Element) observer.unobserve(removed);
+        }
+        for (const added of record.addedNodes) {
+          if (added instanceof Element) observer.observe(added);
+        }
+      }
       onChange();
     });
     mutations.observe(region, { childList: true, subtree: true, characterData: true });
