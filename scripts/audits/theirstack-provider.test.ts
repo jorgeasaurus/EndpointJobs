@@ -66,3 +66,33 @@ test("TheirStack role search posts one request per country batch", async () => {
   assert.equal(bodies[1]?.limit, 25);
   assert.equal(bodies[2]?.limit, 25);
 });
+
+test("TheirStack uses a non-negative integer maximum age or the default", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalEnv = { ...process.env };
+  const bodies: Array<Record<string, unknown>> = [];
+  Object.assign(process.env, {
+    THEIRSTACK_API_KEY: "test-key",
+    JOB_THEIRSTACK_TITLE_QUERIES: "endpoint engineer",
+    JOB_THEIRSTACK_COMPANY_NAMES: " ",
+    JOB_THEIRSTACK_COUNTRY_CODES: "US",
+    JOB_THEIRSTACK_MAX_PAGES: "1"
+  });
+  globalThis.fetch = async (_input, init) => {
+    bodies.push(JSON.parse(String(init?.body)) as Record<string, unknown>);
+    return Response.json({ data: [] });
+  };
+  try {
+    for (const value of ["-1", "0", "2.5", "", "not-a-number", "Infinity", "7"]) {
+      process.env.JOB_THEIRSTACK_MAX_AGE_DAYS = value;
+      await theirStackProvider.fetchJobs({
+        url: theirStackProvider.defaultUrl,
+        fetchedAt: new Date("2026-08-30T12:00:00.000Z")
+      });
+    }
+    assert.deepEqual(bodies.map((body) => body.posted_at_max_age_days), [30, 0, 30, 30, 30, 30, 7]);
+  } finally {
+    globalThis.fetch = originalFetch;
+    restoreProcessEnv(originalEnv);
+  }
+});

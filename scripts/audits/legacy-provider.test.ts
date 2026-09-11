@@ -92,3 +92,33 @@ test("invalid pagination options fall back to the provider default instead of sk
     process.env = originalEnv;
   }
 });
+
+test("Activate search terms do not qualify or classify unrelated listings", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalEnv = { ...process.env };
+  process.env.JOB_ACTIVATE_SITES = "Example|https://example.com/search|Intune";
+  const listing = (id: string, jobTitle: string, summary: string) => `
+    <li class="job-item" data-record-key="${id}">
+      <h3>${jobTitle}</h3><p>${summary}</p>
+      <a href="/jobs/${id}" class="view-details-link">View details</a>
+    </li>`;
+  globalThis.fetch = async () => Response.json({
+    jobsHtml: listing("unrelated", "Accountant", "Prepare financial statements and tax returns.")
+      + listing("endpoint", "Windows Endpoint Engineer", "Manage Windows device deployment and endpoint operations.")
+  });
+  try {
+    const provider = companyAtsProviders.find((candidate) => candidate.id === "activate")!;
+    const jobs = await provider.fetchJobs({ url: provider.defaultUrl, fetchedAt });
+    assert.equal(jobs.length, 2);
+    assert.equal(jobs[0], null);
+    const endpointJob = jobs[1];
+    assert.ok(endpointJob);
+    assert.ok(endpointJob.platforms.includes("Windows"));
+    assert.ok(!endpointJob.tools.includes("Intune"));
+    assert.ok(!endpointJob.description?.includes("Intune"));
+    assert.ok(!endpointJob.tags.includes("Intune"));
+  } finally {
+    globalThis.fetch = originalFetch;
+    process.env = originalEnv;
+  }
+});

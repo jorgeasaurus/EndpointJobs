@@ -17,7 +17,7 @@ export type RunAudit = (
 
 export const deadAdzunaUrl = "https://www.adzuna.com/details/5763079616";
 export const fixedAuditNow = new Date("2026-06-28T20:55:00.000Z");
-const fixtureTimestamp = Date.now();
+const fixtureTimestamp = fixedAuditNow.getTime();
 export const feed = feedData as JobsFeed;
 
 export const AuditToggleButton = ToggleButton as unknown as (props: {

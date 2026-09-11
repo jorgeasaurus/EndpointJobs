@@ -8,6 +8,7 @@ import {
   cleanUrl,
   formatSlugLabel,
   getCsvConfig,
+  getNonNegativeInteger,
   getPositiveInteger,
   normalizeFirstEmploymentType,
   normalizeSalary,
@@ -266,7 +267,7 @@ function buildTheirStackSearchBody(
   options: { companyNames?: string[]; countryCodes?: string[] } = {}
 ) {
   const limit = getPositiveInteger(process.env.JOB_THEIRSTACK_LIMIT, 25);
-  const maxAgeDays = Number(process.env.JOB_THEIRSTACK_MAX_AGE_DAYS ?? 30);
+  const maxAgeDays = getNonNegativeInteger(process.env.JOB_THEIRSTACK_MAX_AGE_DAYS, 30);
   const countryCodes = options.countryCodes
     ?? getCsvConfig("JOB_THEIRSTACK_COUNTRY_CODES", ["US"]);
   const titleQueries = getCsvConfig("JOB_THEIRSTACK_TITLE_QUERIES", defaultEndpointSearchQueries);
@@ -278,7 +279,7 @@ function buildTheirStackSearchBody(
     job_title_or: titleQueries,
     limit,
     page,
-    posted_at_max_age_days: Number.isFinite(maxAgeDays) ? maxAgeDays : 30,
+    posted_at_max_age_days: maxAgeDays,
     property_exists_or: ["final_url", "company_object.domain"]
   };
 

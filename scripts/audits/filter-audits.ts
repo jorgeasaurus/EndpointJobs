@@ -19,6 +19,7 @@ import {
   assertIds,
   assertLabels,
   assertTruthy,
+  fixedAuditNow,
   makeJob,
   type AuditContext
 } from "./shared";
@@ -196,10 +197,10 @@ export async function auditFilters({ filterFixtureJobs, run, sources }: AuditCon
     assertLabels(getActiveFilterItems({ ...initialFilterState, freshness: "1" }), [
       "Last 1 day"
     ]);
-    assertIds(filterJobs(filterFixtureJobs, { ...initialFilterState, freshness: "7" }), [
+    assertIds(filterJobs(filterFixtureJobs, { ...initialFilterState, freshness: "7" }, fixedAuditNow), [
       "recent-intune"
     ]);
-    assertIds(filterJobs(filterFixtureJobs, { ...initialFilterState, freshness: "14" }), [
+    assertIds(filterJobs(filterFixtureJobs, { ...initialFilterState, freshness: "14" }, fixedAuditNow), [
       "recent-intune",
       "mac-jamf"
     ]);

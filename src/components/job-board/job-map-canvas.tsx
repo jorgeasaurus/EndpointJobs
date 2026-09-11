@@ -174,8 +174,8 @@ export function JobMapCanvas({ points }: { points: JobMapPoint[] }) {
 
   const activateFeature = useCallback(async (feature: MapGeoJSONFeature | undefined) => {
     cancelActivation();
+    setActivePopup(null);
     if (!feature) {
-      setActivePopup(null);
       return;
     }
 

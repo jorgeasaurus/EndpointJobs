@@ -401,7 +401,8 @@ export async function auditNormalizers({ run, sources }: AuditContext) {
       isActiveJob(
         makeJob({
           staleAfter: daysAgo(1)
-        })
+        }),
+        fixedAuditNow
       ),
       false
     );
