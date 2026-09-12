@@ -50,7 +50,7 @@ The refresh script keeps the site cheap to host: there is no database, queue, or
 
 Broader aggregator scanning includes Endpoint/UEM/security vendors and enterprise employers such as Kandji, Fleet, NinjaOne, Addigy, Mosyle, CrowdStrike, SentinelOne, Palo Alto Networks, 1Password, Bitwarden, BeyondTrust, Apple, Microsoft, Adobe, Salesforce, ServiceNow, Block, Capital One, Bloomberg, and Netflix. Search defaults also include client platform, client infrastructure, employee experience, digital workplace, corporate engineering, enterprise engineering, device trust, zero-touch, IT systems engineer, and tech operations language.
 
-Current default public providers: Remotive, Arbeitnow, Jobicy, Remote OK, Greenhouse, Lever, The Muse, Ashby, Amazon Jobs, Workday, Oracle HCM, Jibe, Activate, SmartRecruiters, Recruitee, Curated Jobs, Himalayas, and 4 Day Week.
+Current default public providers: Remotive, Arbeitnow, Jobicy, Remote OK, Greenhouse, Lever, The Muse, Ashby, Amazon Jobs, Workday, Oracle HCM, Jibe, Activate, SmartRecruiters, Recruitee, SchoolJobs, Curated Jobs, Himalayas, and 4 Day Week.
 
 Optional configured providers: Workable, Techmap RSS, Adzuna, TheirStack, SerpAPI Google Jobs, RapidAPI Daily International Jobs, RapidAPI LinkedIn Job Search, USAJOBS, and AI Dev Board.
 

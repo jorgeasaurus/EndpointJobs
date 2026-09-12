@@ -5,19 +5,26 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 
-for (const { provider, detailStatus, searchFailure = false } of [
+for (const { provider, detailStatus, searchFailure = false, searchTimeout = false } of [
   { provider: "workday", detailStatus: 500 },
   { provider: "workday", detailStatus: 500, searchFailure: true },
+  { provider: "workday", detailStatus: 500, searchFailure: true, searchTimeout: true },
   { provider: "workday", detailStatus: 404 },
   { provider: "oraclehcm", detailStatus: 500 }
 ]) {
-  test(`refresh ${detailStatus === 500 ? "preserves the previous feed on failed" : "omits closed"} ${provider} ${searchFailure ? "search" : "details"}`, async (t) => {
+  test(`refresh ${detailStatus === 500 ? "preserves the previous feed on failed" : "omits closed"} ${provider} ${searchTimeout ? "search timeout" : searchFailure ? "search" : "details"}`, async (t) => {
     const directory = await mkdtemp(join(tmpdir(), "endpoint-refresh-"));
     t.after(() => rm(directory, { recursive: true, force: true }));
     const output = join(directory, "jobs.json");
     const previous = JSON.stringify({ updatedAt: "2026-09-12", source: { name: "Previous" }, jobs: [{ id: "previous-job" }] });
     await writeFile(output, previous);
     const result = spawnSync(process.execPath, ["--import", "tsx", "--input-type=module", "-e", `
+      if (${searchTimeout}) AbortSignal.timeout = (milliseconds) => {
+        if (!(milliseconds > 0 && milliseconds <= 30000)) throw new Error("Unbounded search timeout");
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(new DOMException("Search timed out", "TimeoutError")), 5);
+        return controller.signal;
+      };
       globalThis.fetch = async (input, init) => {
         const url = String(input);
         if (url.includes("boards-api.greenhouse.io")) return Response.json({ jobs: [{
@@ -26,6 +33,12 @@ for (const { provider, detailStatus, searchFailure = false } of [
           content: "Manage Windows endpoints with Intune."
         }] });
         if (url.includes("example.wd1.myworkdayjobs.com")) {
+          if (init?.method === "POST" && ${searchTimeout}) {
+            if (!init.signal) throw new Error("Missing search signal");
+            return new Promise((resolve, reject) => {
+              init.signal.addEventListener("abort", () => reject(init.signal.reason), { once: true });
+            });
+          }
           if (init?.method === "POST" && ${searchFailure}) return new Response(null, { status: 500 });
           if (init?.method === "POST") return Response.json({ jobPostings: [{
             title: "Endpoint Engineer", externalPath: "/job/Chicago/Endpoint_456"
@@ -55,6 +68,7 @@ for (const { provider, detailStatus, searchFailure = false } of [
     if (detailStatus === 500) {
       assert.equal(result.status, 1, result.stderr);
       assert.match(result.stderr, provider === "workday" ? searchFailure ? /WorkdayIncompleteSnapshotError/ : /WorkdayDetailError/ : /OracleHcmIncompleteSnapshotError/);
+      if (searchTimeout) assert.match(result.stderr, /Search timed out/);
       assert.equal(written, previous, "No successful provider may overwrite the feed after incomplete details");
     } else {
       assert.equal(result.status, 0, result.stderr);

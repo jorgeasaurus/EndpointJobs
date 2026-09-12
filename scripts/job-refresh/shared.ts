@@ -454,7 +454,8 @@ export function normalizeSalary(min?: number, max?: number) {
 }
 
 export function extractSalaryFromText(value: string | undefined): Job["salary"] | undefined {
-  const text = cleanText(stripHtml(value ?? ""));
+  // Some ATS salary ranges use Hangul filler as an invisible separator.
+  const text = cleanText(stripHtml(value ?? "").replace(/\u3164/g, " "));
 
   if (!text) {
     return undefined;

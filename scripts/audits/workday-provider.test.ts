@@ -260,7 +260,7 @@ test("Workday bounds detail requests and propagates timeouts", async (t) => {
   });
   try {
     await assert.rejects(workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") }), (error) => error instanceof WorkdayDetailError && error.cause === timeoutError);
-    assert.equal(timeout.mock.callCount(), 1);
+    assert.equal(timeout.mock.callCount(), 2);
   } finally {
     if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
     else process.env.JOB_WORKDAY_SITES = originalSites;
@@ -338,3 +338,23 @@ test("Workday detail-enabled identities survive title edits at the same native p
   assert.ok(other);
   assert.notEqual(original.id, other.id);
 });
+
+for (const suffix of ["/jobs", "/jobs/", "/jobs///"]) {
+  test(`Workday detail URLs normalize the configured ${suffix} suffix`, async (t) => {
+    assert.ok(workdayProvider);
+    const originalSites = process.env.JOB_WORKDAY_SITES;
+    process.env.JOB_WORKDAY_SITES = `Example|https://example.com/wday/cxs/example/Careers${suffix}|Endpoint|true`;
+    t.after(() => {
+      if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+      else process.env.JOB_WORKDAY_SITES = originalSites;
+    });
+    let detailUrl: string | undefined;
+    t.mock.method(globalThis, "fetch", async (input: unknown, init?: RequestInit) => {
+      if (init?.method === "POST") return Response.json({ jobPostings: [detailPosting] });
+      detailUrl = String(input);
+      return Response.json({ jobPostingInfo: validDetail });
+    });
+    await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
+    assert.equal(detailUrl, "https://example.com/wday/cxs/example/Careers/job/Chicago/Endpoint-Engineer_R123");
+  });
+}

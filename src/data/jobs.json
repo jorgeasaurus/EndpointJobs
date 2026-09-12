@@ -278,6 +278,12 @@
         "label": "United States",
         "latitude": 39.8283,
         "longitude": -98.5795
+      },
+      "salary": {
+        "min": 97916,
+        "max": 139880,
+        "currency": "USD",
+        "label": "$98k-$140k"
       }
     },
     {

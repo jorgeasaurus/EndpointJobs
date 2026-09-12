@@ -300,7 +300,8 @@ async function fetchWorkdaySearch(url: string, query: string) {
       limit,
       offset: 0,
       searchText: query
-    })
+    }),
+    signal: AbortSignal.timeout(15_000)
   });
 
   if (!response.ok) {
@@ -317,7 +318,7 @@ async function fetchWorkdaySearch(url: string, query: string) {
 }
 
 async function fetchWorkdayDetail(siteUrl: string, job: WorkdayJob): Promise<WorkdayJob | null> {
-  const url = siteUrl.replace(/\/jobs$/, "") + job.externalPath;
+  const url = siteUrl.replace(/\/+$/, "").replace(/\/jobs$/, "") + job.externalPath;
   const response = await fetch(url, {
     headers: { accept: "application/json", "accept-language": "en-US,en;q=0.9", "user-agent": "Mozilla/5.0" },
     signal: AbortSignal.timeout(15_000)
