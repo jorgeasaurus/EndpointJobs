@@ -749,3 +749,14 @@ Round-22 verification: title-change regression failed before the fix; all 114 te
 Round 1 findings: (1) stale-day parsing and deadline policy are duplicated across provider boundaries with divergent invalid-value behavior; centralize validation and remove redundant default deadlines. (2) AuditToggleButton casts away the production props contract; delete the alias and pass required children through the real component props. Frontend and domain/route reviews found no blockers.
 
 Final review: three rounds, zero remaining findings. JSX audit renderings remove the cast without violating children-prop lint rules; staged rename restored complete React Doctor maintainability scanning. Validation: npm test (118), audit:data (71), lint, typecheck, PowerShell build.ps1 -Task CI (14 Pester tests plus analysis/build), diff --check, and full React Doctor 0.5.5/0.9.13 (100/100, no skipped checks) pass. Clean: yes.
+# LinkedIn company-source expansion
+
+- [x] Inspect the open past-24-hours LinkedIn results and identify missing employers.
+- [x] Verify direct employer sources and add supported recurring coverage.
+- [x] Merge verified relevant listings into the feed and run focused validation.
+
+## Review
+
+Reviewed 75 LinkedIn results; added 14 recurring sources: Archer, DRW, Obsidian Security, Later, Snorkel AI, Applied Intuition, Radiant Industries, SC Johnson, U.S. Bank, IFF, Greenberg Traurig, Morgan Stanley, Tempus AI, and Florida Blue. Imported 9 verified jobs from 8 employers (882 → 891 active; 477 → 486 mapped against refreshed main), preserving original dates and excluding older reposts from this batch.
+
+Corrected ATS workplace metadata, original publication dates, and Workday expiry handling; added Oracle HCM support and narrow endpoint relevance rules. Tests, data audit, typecheck, lint, production build, and local rendered listings verified before rebasing. Against refreshed main: 128 tests, data audit, typecheck, lint, and production build pass; version bumped to 0.1.15 for the PR.

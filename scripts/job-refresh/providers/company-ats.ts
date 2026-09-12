@@ -11,6 +11,8 @@ import {
   containsAlias,
   getCsvConfig,
   buildProviderJobId,
+  inferWorkplace,
+  normalizeEmploymentTypeLabel,
   normalizeSearchText,
   parseDateLike,
   stripHtml
@@ -90,6 +92,18 @@ type WorkdayJob = {
   postedOn?: string;
   bulletFields?: string[];
   locationsText?: string;
+  detail?: {
+    title?: string;
+    jobDescription?: string;
+    location?: string;
+    additionalLocations?: string[];
+    startDate?: string;
+    endDate?: string;
+    canApply?: boolean;
+    posted?: boolean;
+    remoteType?: string;
+    timeType?: string;
+  };
 };
 
 const staleDays = getJobStaleDays();
@@ -166,11 +180,23 @@ async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
   let completedQueries = 0;
 
   for (const site of sites) {
+    const seenPaths = new Set<string>();
     for (const query of site.queries) {
       try {
         const payload = await fetchWorkdaySearch(site.url, query);
         completedQueries += 1;
-        jobs.push(...payload.map((job) => normalizeWorkdayJob(job, site, query, fetchedAt)));
+        for (const job of payload) {
+          if (!job.externalPath || seenPaths.has(job.externalPath)) continue;
+          seenPaths.add(job.externalPath);
+          try {
+            const enriched = site.fetchDetails
+              ? await fetchWorkdayDetail(site.url, job)
+              : job;
+            if (enriched) jobs.push(normalizeWorkdayJob(enriched, site, query, fetchedAt));
+          } catch (error) {
+            console.warn(`Skipping Workday/${site.name} detail ${job.externalPath}: ${error instanceof Error ? error.message : String(error)}`);
+          }
+        }
         console.log(`Fetched ${payload.length} raw jobs from Workday/${site.name} query ${query}`);
       } catch (error) {
         console.warn(
@@ -272,6 +298,23 @@ async function fetchWorkdaySearch(url: string, query: string) {
   return (json as { jobPostings: unknown[] }).jobPostings.filter(isWorkdayJob);
 }
 
+async function fetchWorkdayDetail(siteUrl: string, job: WorkdayJob): Promise<WorkdayJob | null> {
+  const url = siteUrl.replace(/\/jobs$/, "") + job.externalPath;
+  const response = await fetch(url, {
+    headers: { accept: "application/json", "accept-language": "en-US,en;q=0.9", "user-agent": "Mozilla/5.0" }
+  });
+  if (response.status === 404 || response.status === 410) return null;
+  if (!response.ok) throw new Error(`Workday detail request failed: ${response.status}`);
+  const payload: unknown = await response.json();
+  const detail = payload && typeof payload === "object"
+    ? (payload as { jobPostingInfo?: WorkdayJob["detail"] }).jobPostingInfo
+    : undefined;
+  if (!detail || typeof detail !== "object" || typeof detail.startDate !== "string" || !parseDateLike(detail.startDate)) {
+    throw new Error("Workday detail did not include a valid job posting date");
+  }
+  return { ...job, detail };
+}
+
 async function fetchActivateSearch(url: string, query: string, siteName: string) {
   const queryUrl = buildActivateSearchUrl(url, query);
   const response = await fetch(queryUrl, {
@@ -360,7 +403,13 @@ function normalizeAmazonJob(raw: AmazonJob, fetchedAt: Date): Job | null {
 }
 
 function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, fetchedAt: Date): Job | null {
-  const title = cleanText(raw.title);
+  const detail = raw.detail;
+  const endDate = detail?.endDate ? parseDateLike(detail.endDate) : undefined;
+  const expiresAt = endDate && /^\d{4}-\d{2}-\d{2}$/.test(detail?.endDate ?? "")
+    ? new Date(new Date(endDate).getTime() + 86_400_000 - 1).toISOString()
+    : endDate;
+  if (detail?.canApply === false || detail?.posted === false || (expiresAt && new Date(expiresAt) < fetchedAt)) return null;
+  const title = cleanText(detail?.title || raw.title);
   const company = site.name;
   const sourceJobUrl = buildWorkdayJobUrl(site.url, raw.externalPath);
 
@@ -369,15 +418,22 @@ function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, 
   }
 
   const bulletFields = Array.isArray(raw.bulletFields) ? raw.bulletFields.map(cleanText).filter(Boolean) : [];
-  const location = getWorkdayLocation(raw, bulletFields);
-  const postedAt = parseWorkdayPostedOn(raw.postedOn, fetchedAt) ?? fetchedAt.toISOString();
-  const staleAfter = addDays(fetchedAt, staleDays).toISOString();
+  const location = detail?.location
+    ? [detail.location, ...(detail.additionalLocations ?? [])].join("; ")
+    : getWorkdayLocation(raw, bulletFields);
+  const description = detail?.jobDescription ? stripHtml(detail.jobDescription) : bulletFields.join(" ");
+  const haystack = normalizeSearchText([title, company, location, bulletFields.join(" "), description, detail?.remoteType].join(" "));
+  const postedAt = parseDateLike(detail?.startDate) ?? parseWorkdayPostedOn(raw.postedOn, fetchedAt) ?? fetchedAt.toISOString();
+  if (detail && new Date(postedAt) > fetchedAt) return null;
+  const freshnessEnd = addDays(fetchedAt, staleDays).toISOString();
+  const staleAfter = expiresAt && expiresAt < freshnessEnd ? expiresAt : freshnessEnd;
 
-  return toEndpointJob({
+  const job = toEndpointJob({
     id: buildStableJobId("workday", site.name, title, sourceJobUrl),
     title,
     company,
     location,
+    workplace: inferWorkdayWorkplace(location, haystack, detail?.remoteType),
     postedAt,
     fetchedAt,
     staleAfter,
@@ -386,10 +442,22 @@ function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, 
     applyUrl: sourceJobUrl,
     attributionLabel: `Workday / ${company}`,
     termsProfile: "public-api",
-    description: bulletFields.join(" "),
+    description,
     sourceTags: bulletFields,
-    relevanceOnlyParts: [query]
+    haystackParts: [detail?.remoteType],
+    relevanceOnlyParts: detail ? [] : [query],
+    employmentType: normalizeEmploymentTypeLabel(detail?.timeType)
   });
+  return job && expiresAt ? { ...job, expiresAt } : job;
+}
+
+function inferWorkdayWorkplace(location: string, haystack: string, remoteType?: string): Job["workplace"] {
+  const explicit = normalizeSearchText(remoteType ?? "");
+  if (explicit === "hybrid") return "Hybrid";
+  if (explicit === "remote") return "Remote";
+  if (["on-site", "onsite", "on site"].includes(explicit)) return "On-site";
+  if (/remote work available (?:once|twice|[1-4] days?) (?:a|per) week/.test(haystack)) return "Hybrid";
+  return inferWorkplace(location, haystack);
 }
 
 function normalizeActivateJob(raw: ActivateJob, site: ActivateSite, query: string, fetchedAt: Date): Job | null {
@@ -529,7 +597,7 @@ function buildAmazonJobUrl(jobPath: string | undefined) {
   }
 }
 
-function getWorkdaySites(defaultUrl: string) {
+function getWorkdaySites(defaultUrl: string): WorkdaySite[] {
   const configured = process.env.JOB_WORKDAY_SITES;
 
   if (!configured) {
@@ -544,7 +612,7 @@ function getWorkdaySites(defaultUrl: string) {
     .map((entry) => entry.trim())
     .filter(Boolean)
     .map((entry) => {
-      const [name, url, queries] = entry.split("|");
+      const [name, url, queries, fetchDetails] = entry.split("|");
 
       if (!name || !url || !queries) {
         throw new Error(`Invalid JOB_WORKDAY_SITES entry: ${entry}`);
@@ -553,6 +621,7 @@ function getWorkdaySites(defaultUrl: string) {
       return {
         name: cleanText(name),
         url: cleanText(url),
+        fetchDetails: fetchDetails === "true" || defaultWorkdaySites.some((site) => site.url === cleanText(url) && "fetchDetails" in site && site.fetchDetails),
         queries: queries.split(";").map(cleanText).filter(Boolean)
       };
     });

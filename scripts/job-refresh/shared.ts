@@ -170,6 +170,8 @@ export function isEndpointRelevant(
     "client infrastructure",
     "device fleet",
     "device trust",
+    "device management",
+    "digital workplace",
     "zero-touch",
     "zero touch",
     "m365",
@@ -195,6 +197,9 @@ export function isEndpointRelevant(
   const looksLikeApplicationSecurity =
     containsAlias(normalizedTitle, "application security") ||
     containsAlias(normalizedTitle, "appsec");
+  const looksLikeTradingInfrastructure =
+    containsAlias(normalizedTitle, "trading systems") ||
+    containsAlias(normalizedTitle, "trade systems");
   const looksLikeSoftwareProductRole =
     containsAlias(normalizedTitle, "software engineer") ||
     containsAlias(normalizedTitle, "software development engineer") ||
@@ -221,6 +226,7 @@ export function isEndpointRelevant(
     looksLikeSapDataManagement ||
     (looksLikeFrontlineSupport && !hasEndpointTitle) ||
     (looksLikeApplicationSecurity && !hasEndpointTitle) ||
+    (looksLikeTradingInfrastructure && !hasEndpointTitle) ||
     (looksLikeSoftwareProductRole && !hasClientEngineeringTitle)
   ) {
     return false;

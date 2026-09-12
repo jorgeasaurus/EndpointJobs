@@ -6,6 +6,56 @@ import { defaultWorkdaySites } from "../job-refresh/providers/workday-sites";
 
 const workdayProvider = companyAtsProviders.find((provider) => provider.id === "workday");
 
+test("Workday details preserve original dates, qualify generic titles, and exclude closed postings", async () => {
+  assert.ok(workdayProvider);
+  const originalFetch = globalThis.fetch;
+  const originalSites = process.env.JOB_WORKDAY_SITES;
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.wd1.myworkdayjobs.com/wday/cxs/example/Careers/jobs|Endpoint;Intune|true";
+  const details = [
+    { startDate: "2026-04-13", endDate: "2026-09-21", canApply: true },
+    { startDate: "2026-09-11", endDate: "2026-09-11", canApply: true },
+    { startDate: "2026-09-11", canApply: false },
+    { startDate: "2026-09-11", posted: false },
+    { startDate: "2026-09-11", endDate: "2026-09-12", canApply: true },
+    { startDate: "2026-09-13", canApply: true },
+    { startDate: "2026-09-11", remoteType: undefined, jobDescription: "Manage enterprise endpoints using Intune and Jamf. Remote work available once a week after 90-day onboarding period." },
+    { startDate: "2026-09-11", remoteType: "Hybrid", jobDescription: "Manage enterprise endpoints using Intune and Jamf. Support remote users across offices." },
+    { startDate: "2026-09-11", jobDescription: "Develop clinical trial endpoints for pharmaceutical research." }
+  ];
+  let detailRequests = 0;
+  globalThis.fetch = async (input, init) => {
+    if (init?.method === "POST") {
+      return Response.json({ jobPostings: details.map((_, index) => ({ title: "Enterprise Systems Administrator", externalPath: `/job/Chicago/Administrator_${index}`, postedOn: "Posted 30+ Days Ago" })) });
+    }
+    detailRequests += 1;
+    const index = Number(String(input).split("_").at(-1));
+    return Response.json({ jobPostingInfo: {
+      title: "Enterprise Systems Administrator", jobDescription: "<p>Manage enterprise endpoints with Microsoft Intune, Jamf and Windows Autopilot. Own device lifecycle provisioning, policy configuration, patch deployment, application packaging, compliance monitoring, automation, and technical escalations for the company workstation fleet. Work with security and infrastructure teams to improve employee computing experiences, manage software updates, document operational standards, and develop reliable deployment workflows for Windows and macOS devices across all corporate offices.</p>",
+      location: "Chicago, IL", remoteType: "Hybrid", timeType: "Full time", ...details[index]
+    } });
+  };
+  try {
+    const jobs = (await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") })).filter((job) => job !== null);
+    assert.equal(detailRequests, details.length, "Details are fetched once across overlapping queries");
+    assert.equal(jobs.length, 4);
+    assert.equal(jobs[0].postedAt, "2026-04-13T00:00:00.000Z");
+    assert.equal(jobs[0].expiresAt, "2026-09-21T23:59:59.999Z");
+    assert.equal(jobs[1].expiresAt, "2026-09-12T23:59:59.999Z");
+    assert.equal(jobs[0].staleAfter, jobs[0].expiresAt);
+    assert.equal(jobs[1].staleAfter, jobs[1].expiresAt);
+    assert.equal(jobs[0].employmentType, "Full-time");
+    assert.equal(jobs[2].workplace, "Hybrid");
+    assert.equal(jobs[3].workplace, "Hybrid");
+    assert.match(jobs[0].description ?? "", /Microsoft Intune/);
+    assert.ok(jobs[0].tools.includes("Intune"));
+    assert.equal(jobs[0].location, "Chicago, IL");
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+    else process.env.JOB_WORKDAY_SITES = originalSites;
+  }
+});
+
 test("Workday defaults include GEICO's focused endpoint searches", () => {
   assert.deepEqual(
     defaultWorkdaySites.find((site) => site.name === "GEICO"),

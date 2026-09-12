@@ -17,6 +17,7 @@ type GreenhouseJob = {
   id?: string | number;
   title?: string;
   updated_at?: string;
+  first_published?: string;
   location?: {
     name?: string;
   };
@@ -142,7 +143,12 @@ const defaultGreenhouseBoards = [
   "truveta",
   "intercom",
   "amplitude",
-  "ubiquiti"
+  "ubiquiti",
+  "archer56",
+  "drweng",
+  "obsidiansecurity",
+  "later",
+  "snorkelai"
 ];
 
 const defaultLeverCompanies = ["jumpcloud", "brightonjones", "hermeus", "omnidian", "whoop"];
@@ -157,7 +163,9 @@ const defaultAshbyBoards = [
   "elevenlabs",
   "watershed",
   "suno",
-  "voleon"
+  "voleon",
+  "applied",
+  "radiant-industries"
 ];
 
 const defaultWorkableAccounts: WorkableAccount[] = [];
@@ -472,10 +480,10 @@ function normalizeGreenhouseJob(raw: GreenhouseJob, board: string, fetchedAt: Da
     : [];
   const sourceTags = [...departments, ...offices];
 
-  const postedAt =
-    raw.updated_at && !Number.isNaN(new Date(raw.updated_at).getTime())
-      ? new Date(raw.updated_at).toISOString()
-      : fetchedAt.toISOString();
+  const publicationDate = [raw.first_published, raw.updated_at].find(
+    (value) => value && !Number.isNaN(new Date(value).getTime())
+  );
+  const postedAt = publicationDate ? new Date(publicationDate).toISOString() : fetchedAt.toISOString();
   const staleAfter = addDays(fetchedAt, staleDays).toISOString();
 
   return toEndpointJob({
@@ -483,6 +491,7 @@ function normalizeGreenhouseJob(raw: GreenhouseJob, board: string, fetchedAt: Da
     title,
     company,
     location,
+    workplace: getLinkedInWorkplaceTag(description),
     postedAt,
     fetchedAt,
     staleAfter,
@@ -569,13 +578,15 @@ function normalizeAshbyJob(raw: AshbyJob, board: string, fetchedAt: Date): Job |
       ? new Date(raw.publishedAt).toISOString()
       : fetchedAt.toISOString();
   const staleAfter = addDays(fetchedAt, staleDays).toISOString();
+  const workplace = normalizeAshbyWorkplace(raw.workplaceType)
+    ?? (raw.isRemote ? "Remote" : undefined);
 
   return toEndpointJob({
     id: `ashby-${board}-${raw.id}`,
     title,
     company,
     location: cleanText(raw.location),
-    workplace: raw.isRemote ? "Remote" : undefined,
+    workplace,
     postedAt,
     fetchedAt,
     staleAfter,
@@ -586,8 +597,25 @@ function normalizeAshbyJob(raw: AshbyJob, board: string, fetchedAt: Date): Job |
     termsProfile: "public-api",
     description,
     sourceTags,
-    employmentType: cleanText(raw.employmentType)
+    employmentType: normalizeEmploymentTypeLabel(raw.employmentType)
   });
+}
+
+function normalizeAshbyWorkplace(value: string | undefined) {
+  switch (cleanText(value).toLowerCase().replace(/[\s-]/g, "")) {
+    case "onsite": return "On-site";
+    case "hybrid": return "Hybrid";
+    case "remote": return "Remote";
+    default: return undefined;
+  }
+}
+
+function getLinkedInWorkplaceTag(description: string) {
+  const tag = description.match(/#LI-(Hybrid|Remote|Onsite)\b/i)?.[1].toLowerCase();
+  if (tag === "hybrid") return "Hybrid";
+  if (tag === "remote") return "Remote";
+  if (tag === "onsite") return "On-site";
+  return undefined;
 }
 
 function normalizeWorkableJob(raw: WorkableJob, account: WorkableAccount, fetchedAt: Date): Job | null {
@@ -741,6 +769,8 @@ function formatSourceAccountName(slug: string) {
   const knownNames: Record<string, string> = {
     andurilindustries: "Anduril",
     anthropic: "Anthropic",
+    applied: "Applied Intuition",
+    archer56: "Archer",
     automox: "Automox",
     boxinc: "Box",
     brightonjones: "Brighton Jones",
@@ -750,6 +780,7 @@ function formatSourceAccountName(slug: string) {
     databricks: "Databricks",
     datadog: "Datadog",
     doordashusa: "DoorDash",
+    drweng: "DRW",
     elastic: "Elastic",
     elevenlabs: "ElevenLabs",
     instacart: "Instacart",
@@ -761,11 +792,13 @@ function formatSourceAccountName(slug: string) {
     lyft: "Lyft",
     mongodb: "MongoDB",
     okta: "Okta",
+    obsidiansecurity: "Obsidian Security",
     openai: "OpenAI",
     perplexity: "Perplexity",
     robinhood: "Robinhood",
     samsara: "Samsara",
     scaleai: "Scale AI",
+    snorkelai: "Snorkel AI",
     sonyinteractiveentertainmentglobal: "PlayStation",
     stripe: "Stripe",
     tanium: "Tanium",
