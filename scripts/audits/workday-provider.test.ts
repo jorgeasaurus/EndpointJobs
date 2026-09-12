@@ -397,3 +397,75 @@ for (const suffix of ["/", "///"]) {
     assert.equal(detailRequests, 1);
   });
 }
+
+for (const postings of [[{ unexpected: true }], [detailPosting, { title: 42, externalPath: "/job/bad" }]]) {
+  test("Workday rejects malformed search entries for detail-enabled sites", async (t) => {
+    assert.ok(workdayProvider);
+    const originalSites = process.env.JOB_WORKDAY_SITES;
+    process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
+    t.after(() => {
+      if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+      else process.env.JOB_WORKDAY_SITES = originalSites;
+    });
+    t.mock.method(globalThis, "fetch", async () => Response.json({ jobPostings: postings }));
+    await assert.rejects(workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") }), WorkdayIncompleteSnapshotError);
+  });
+}
+
+for (const endDate of ["invalid", 42, "", null]) {
+  test(`Workday validates a present closing date: ${JSON.stringify(endDate)}`, async (t) => {
+    assert.ok(workdayProvider);
+    const originalSites = process.env.JOB_WORKDAY_SITES;
+    process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
+    t.after(() => {
+      if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+      else process.env.JOB_WORKDAY_SITES = originalSites;
+    });
+    t.mock.method(globalThis, "fetch", async (_input: unknown, init?: RequestInit) => init?.method === "POST"
+      ? Response.json({ jobPostings: [detailPosting] })
+      : Response.json({ jobPostingInfo: { ...validDetail, endDate } }));
+    const result = workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
+    if (endDate === "" || endDate === null) assert.equal((await result).filter(Boolean).length, 1);
+    else await assert.rejects(result, WorkdayDetailError);
+  });
+}
+
+test("Workday shares one deadline across searches and details and caps the final request", async (t) => {
+  assert.ok(workdayProvider);
+  const originalSites = process.env.JOB_WORKDAY_SITES;
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint;Intune|true";
+  t.after(() => {
+    if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+    else process.env.JOB_WORKDAY_SITES = originalSites;
+  });
+  let elapsed = 0;
+  let requests = 0;
+  const timeouts: number[] = [];
+  t.mock.method(Date, "now", () => elapsed);
+  t.mock.method(AbortSignal, "timeout", (milliseconds: number) => {
+    timeouts.push(milliseconds);
+    return new AbortController().signal;
+  });
+  t.mock.method(globalThis, "fetch", async (_input: unknown, init?: RequestInit) => {
+    requests += 1;
+    elapsed += requests <= 8 ? 14_000 : 8_000;
+    if (init?.method === "POST") return Response.json({ jobPostings: Array.from({ length: 20 }, (_, index) => ({ ...detailPosting, externalPath: `${detailPosting.externalPath}-${index}` })) });
+    return Response.json({ jobPostingInfo: validDetail });
+  });
+  await assert.rejects(workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") }), WorkdayIncompleteSnapshotError);
+  assert.equal(requests, 9, "Includes the search request in the shared budget and stops remaining detail work");
+  assert.deepEqual(timeouts, [15_000, 15_000, 15_000, 15_000, 15_000, 15_000, 15_000, 15_000, 8_000]);
+});
+
+test("Workday legacy search-only sites continue filtering malformed entries", async (t) => {
+  assert.ok(workdayProvider);
+  const originalSites = process.env.JOB_WORKDAY_SITES;
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|false";
+  t.after(() => {
+    if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+    else process.env.JOB_WORKDAY_SITES = originalSites;
+  });
+  t.mock.method(globalThis, "fetch", async () => Response.json({ jobPostings: [detailPosting, { unexpected: true }] }));
+  const jobs = await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
+  assert.equal(jobs.filter(Boolean).length, 1);
+});

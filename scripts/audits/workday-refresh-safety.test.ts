@@ -5,15 +5,17 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 
-for (const { provider, detailStatus, searchFailure = false, searchTimeout = false, malformedDetail = false } of [
+for (const { provider, detailStatus, searchFailure = false, searchTimeout = false, malformedDetail = false, malformedSearch = false } of [
   { provider: "workday", detailStatus: 500 },
   { provider: "workday", detailStatus: 500, searchFailure: true },
   { provider: "workday", detailStatus: 500, searchFailure: true, searchTimeout: true },
   { provider: "workday", detailStatus: 200, malformedDetail: true },
   { provider: "workday", detailStatus: 404 },
-  { provider: "oraclehcm", detailStatus: 500 }
+  { provider: "oraclehcm", detailStatus: 500 },
+  { provider: "oraclehcm", detailStatus: 200, malformedSearch: true },
+  { provider: "workday", detailStatus: 200, malformedSearch: true }
 ]) {
-  test(`refresh ${(detailStatus === 500 || malformedDetail) ? "preserves the previous feed on failed" : "omits closed"} ${provider} ${malformedDetail ? "malformed details" : searchTimeout ? "search timeout" : searchFailure ? "search" : "details"}`, async (t) => {
+  test(`refresh ${(detailStatus === 500 || malformedDetail || malformedSearch) ? "preserves the previous feed on failed" : "omits closed"} ${provider} ${malformedSearch ? "malformed search" : malformedDetail ? "malformed details" : searchTimeout ? "search timeout" : searchFailure ? "search" : "details"}`, async (t) => {
     const directory = await mkdtemp(join(tmpdir(), "endpoint-refresh-"));
     t.after(() => rm(directory, { recursive: true, force: true }));
     const output = join(directory, "jobs.json");
@@ -34,6 +36,7 @@ for (const { provider, detailStatus, searchFailure = false, searchTimeout = fals
           content: "Manage Windows endpoints with Intune."
         }] });
         if (url.includes("example.wd1.myworkdayjobs.com")) {
+          if (init?.method === "POST" && ${malformedSearch}) return Response.json({jobPostings: [{}]});
           if (init?.method === "POST" && ${searchTimeout}) {
             if (!init.signal) throw new Error("Missing search signal");
             return new Promise((resolve, reject) => {
@@ -49,7 +52,7 @@ for (const { provider, detailStatus, searchFailure = false, searchTimeout = fals
         }
         if (url.includes("fa-etum-saasfaprod1.fa.ocs.oraclecloud.com")) {
           if (url.includes("recruitingCEJobRequisitions?")) return Response.json({
-            items: [{ TotalJobsCount: 1, requisitionList: [{ Id: "41900", Title: "Endpoint Engineer" }] }]
+            items: [{ TotalJobsCount: 1, requisitionList: ${malformedSearch} ? [{}] : [{ Id: "41900", Title: "Endpoint Engineer" }] }]
           });
           return new Response(null, { status: ${detailStatus} });
         }
@@ -67,9 +70,9 @@ for (const { provider, detailStatus, searchFailure = false, searchTimeout = fals
     });
     assert.equal(result.error, undefined);
     const written = await readFile(output, "utf8");
-    if (detailStatus === 500 || malformedDetail) {
+    if (detailStatus === 500 || malformedDetail || malformedSearch) {
       assert.equal(result.status, 1, result.stderr);
-      assert.match(result.stderr, provider === "workday" ? searchFailure ? /WorkdayIncompleteSnapshotError/ : /WorkdayDetailError/ : /OracleHcmIncompleteSnapshotError/);
+      assert.match(result.stderr, provider === "workday" ? (searchFailure || malformedSearch) ? /WorkdayIncompleteSnapshotError/ : /WorkdayDetailError/ : /OracleHcmIncompleteSnapshotError/);
       if (searchTimeout) assert.match(result.stderr, /Search timed out/);
       assert.equal(written, previous, "No successful provider may overwrite the feed after incomplete details");
     } else {

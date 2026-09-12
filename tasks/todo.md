@@ -778,3 +778,5 @@ Third review: normalized Oracle API bases, skipped closed Oracle details, failed
 Fourth review: bounded Workday searches to 15 seconds, normalized trailing slashes in detail URLs, restored IFF salary extraction for Hangul filler separators, and documented SchoolJobs defaults. All 172 tests, data audit, typecheck, lint, and production build pass; request another latest-head review.
 
 Fifth review: wrap malformed Workday detail normalization as an incomplete snapshot and inherit detail defaults across trailing-slash overrides. The CLI malformed-payload regression fails before the fix and passes afterward; all 177 tests, data audit, typecheck, and lint pass. Prior production build remains applicable to these ingestion-only changes.
+
+Sixth review: reject malformed Workday/Oracle search entries, validate Workday closing dates, enforce a shared 120-second Workday deadline, and audit all 14 new source defaults. Declined the Oracle 41901 Windows claim: stored/live text has no Windows reference and current normalized metadata matches. All 192 tests, data audit, typecheck, and lint pass; prior production build remains applicable.

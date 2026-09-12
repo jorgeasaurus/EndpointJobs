@@ -34,7 +34,7 @@ function installFetch(t: TestContext, records: unknown[], total = records.length
 const fetchJobs = () => oracleHcmProvider.fetchJobs({ url: oracleHcmProvider.defaultUrl, fetchedAt });
 
 test("Oracle HCM deduplicates searches and preserves employer dates, full text, identity, location and links", async (t) => {
-  const requests = installFetch(t, [null, { placeholder: true }, detail]);
+  const requests = installFetch(t, [detail]);
   const jobs = await fetchJobs();
   assert.equal(jobs.length, 1);
   const job = jobs[0]!;
@@ -226,3 +226,24 @@ for (const status of [401, 403, 429, 500]) {
     await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && error.message.includes(`request failed: ${status}`));
   });
 }
+
+
+for (const [label, records] of [
+  ["all malformed", [null, { placeholder: true }]],
+  ["mixed valid and malformed", [detail, { ...detail, Id: 41901 }]],
+  ["missing title", [{ Id: "41900" }]],
+  ["empty title", [{ Id: "41900", Title: "  " }]]
+] as const) {
+  test(`Oracle HCM rejects ${label} search records without returning a partial snapshot`, async (t) => {
+    const requests = installFetch(t, [...records]);
+    await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && /malformed requisition/.test(error.message));
+    assert.equal(requests.length, 1);
+    assert.ok(requests[0].pathname.endsWith("recruitingCEJobRequisitions"));
+  });
+}
+
+test("Oracle HCM accepts a valid empty search snapshot", async (t) => {
+  const requests = installFetch(t, []);
+  assert.deepEqual(await fetchJobs(), []);
+  assert.equal(requests.length, 4);
+});

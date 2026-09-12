@@ -70,7 +70,8 @@ async function fetchOracleJobs(url: string, fetchedAt: Date): Promise<Job[]> {
         throw new Error("Oracle HCM search did not include requisitionList and TotalJobsCount");
       }
       for (const raw of result.requisitionList) {
-        if (isRequisition(raw)) ids.add(raw.Id);
+        if (!isRequisition(raw)) throw new Error("Oracle HCM search included a malformed requisition");
+        ids.add(raw.Id);
         if (ids.size > maxDetails) {
           throw new Error(`Oracle HCM exceeded the ${maxDetails} detail result bound`);
         }

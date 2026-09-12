@@ -17,6 +17,8 @@ import {
   evaluateCuratedAvailability
 } from "../job-refresh/providers/curated-jobs";
 import { normalizeSerpApiGoogleJob } from "../job-refresh/providers/serpapi";
+import { defaultWorkdaySites } from "../job-refresh/providers/workday-sites";
+import { oracleHcmProvider } from "../job-refresh/providers/oracle-hcm";
 
 import {
   assertArrayIncludes,
@@ -234,6 +236,29 @@ export async function auditProviders({ run, sources }: AuditContext) {
   });
 
   await run("FEAT-058", "Expanded direct ATS sources are configured", () => {
+    const greenhouseDefaults = sources.atsBoards.match(/const defaultGreenhouseBoards = \[([\s\S]*?)\]/)?.[1] ?? "";
+    const ashbyDefaults = sources.atsBoards.match(/const defaultAshbyBoards = \[([\s\S]*?)\]/)?.[1] ?? "";
+    for (const board of ["archer56", "drweng", "obsidiansecurity", "later", "snorkelai"]) {
+      assertIncludes(greenhouseDefaults, `"${board}"`, `discovered Greenhouse board ${board}`);
+    }
+    for (const board of ["applied", "radiant-industries"]) {
+      assertIncludes(ashbyDefaults, `"${board}"`, `discovered Ashby board ${board}`);
+    }
+    for (const [company, hostname, tenant, site, queries] of [
+      ["SC Johnson", "scj.wd5.myworkdayjobs.com", "scj", "External_Career_Site", ["Endpoint"]],
+      ["U.S. Bank", "usbank.wd1.myworkdayjobs.com", "usbank", "US_Bank_Careers", ["Intune"]],
+      ["IFF", "iff.wd5.myworkdayjobs.com", "iff", "iff_careers", ["Endpoint"]],
+      ["Greenberg Traurig", "gtlaw.wd1.myworkdayjobs.com", "gtlaw", "GTLAW", ["Endpoint"]],
+      ["Morgan Stanley", "ms.wd5.myworkdayjobs.com", "ms", "External", ["Windows Infrastructure", "Endpoint"]],
+      ["Tempus AI", "tempus.wd5.myworkdayjobs.com", "tempus", "Tempus_Careers", ["Endpoint"]]
+    ] as const) {
+      const configured = defaultWorkdaySites.find((entry) => entry.name === company);
+      assertEqual(configured?.url, `https://${hostname}/wday/cxs/${tenant}/${site}/jobs`, `discovered Workday site ${company}`);
+      assertEqual(configured && "fetchDetails" in configured && configured.fetchDetails, true, `${company} requires employer details`);
+      assertArrayIncludes(configured?.queries ?? [], queries);
+    }
+    assertEqual(oracleHcmProvider.defaultUrl, "https://fa-etum-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/latest");
+    assertIncludes(sources.oracleHcm, 'number: "floridablue", company: "Florida Blue"', "discovered Oracle HCM employer");
     ["spacex", "gitlab", "coinbase", "canonical", "pinterest", "block", "roblox"].forEach(
       (board) => {
         assertIncludes(sources.atsBoards, `"${board}"`, `default Greenhouse board ${board}`);

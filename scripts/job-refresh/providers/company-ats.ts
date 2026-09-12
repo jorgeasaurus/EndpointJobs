@@ -190,6 +190,7 @@ export class WorkdayDetailError extends WorkdayIncompleteSnapshotError {
 
 async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
   const sites = getWorkdaySites(url);
+  const deadline = sites.some((site) => site.fetchDetails) ? Date.now() + 120_000 : undefined;
   const jobs: Array<Job | null> = [];
   let completedQueries = 0;
 
@@ -198,9 +199,12 @@ async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
     for (const query of site.queries) {
       let payload: WorkdayJob[];
       try {
-        payload = await fetchWorkdaySearch(site.url, query);
+        payload = await fetchWorkdaySearch(site.url, query, site.fetchDetails, deadline);
+        assertWorkdayDeadline(deadline);
       } catch (error) {
-        if (site.fetchDetails) throw new WorkdayIncompleteSnapshotError(site.name, `query ${query}`, error);
+        if (site.fetchDetails || (deadline !== undefined && Date.now() >= deadline)) {
+          throw new WorkdayIncompleteSnapshotError(site.name, `query ${query}`, error);
+        }
         console.warn(
           `Skipping Workday/${site.name} query ${query}: ${error instanceof Error ? error.message : String(error)}`
         );
@@ -211,10 +215,14 @@ async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
         if (!job.externalPath || seenPaths.has(job.externalPath)) continue;
         seenPaths.add(job.externalPath);
         try {
-          const enriched = site.fetchDetails ? await fetchWorkdayDetail(site.url, job) : job;
+          const enriched = site.fetchDetails ? await fetchWorkdayDetail(site.url, job, deadline) : job;
+          assertWorkdayDeadline(deadline);
           if (enriched) jobs.push(normalizeWorkdayJob(enriched, site, query, fetchedAt));
         } catch (error) {
           if (site.fetchDetails) throw new WorkdayDetailError(site.name, job.externalPath, error);
+          if (deadline !== undefined && Date.now() >= deadline) {
+            throw new WorkdayIncompleteSnapshotError(site.name, `query ${query}`, error);
+          }
           throw error;
         }
       }
@@ -280,7 +288,17 @@ async function fetchAmazonSearch(url: string) {
   return (json as { jobs: unknown[] }).jobs.filter(isAmazonJob);
 }
 
-async function fetchWorkdaySearch(url: string, query: string) {
+function assertWorkdayDeadline(deadline: number | undefined) {
+  if (deadline !== undefined && Date.now() >= deadline) throw new Error("Workday snapshot exceeded its 120-second deadline");
+}
+
+function workdayRequestSignal(deadline: number | undefined) {
+  const remaining = deadline === undefined ? 15_000 : deadline - Date.now();
+  if (remaining <= 0) throw new Error("Workday snapshot exceeded its 120-second deadline");
+  return AbortSignal.timeout(Math.min(15_000, remaining));
+}
+
+async function fetchWorkdaySearch(url: string, query: string, requireValidEntries = false, deadline?: number) {
   const configuredLimit = Number(process.env.JOB_WORKDAY_RESULTS_PER_QUERY ?? 10);
   const limit = Number.isFinite(configuredLimit) && configuredLimit > 0 ? configuredLimit : 10;
   const response = await fetch(url, {
@@ -299,7 +317,7 @@ async function fetchWorkdaySearch(url: string, query: string) {
       offset: 0,
       searchText: query
     }),
-    signal: AbortSignal.timeout(15_000)
+    signal: workdayRequestSignal(deadline)
   });
 
   if (!response.ok) {
@@ -312,14 +330,20 @@ async function fetchWorkdaySearch(url: string, query: string) {
     throw new Error("Workday response did not include a jobPostings array");
   }
 
-  return (json as { jobPostings: unknown[] }).jobPostings.filter(isWorkdayJob);
+  const postings = (json as { jobPostings: unknown[] }).jobPostings;
+  if (requireValidEntries && postings.some((entry) => !isWorkdayJob(entry)
+    || typeof entry.title !== "string" || !entry.title.trim()
+    || typeof entry.externalPath !== "string" || !entry.externalPath.trim())) {
+    throw new Error("Workday search included an invalid job posting");
+  }
+  return postings.filter(isWorkdayJob);
 }
 
-async function fetchWorkdayDetail(siteUrl: string, job: WorkdayJob): Promise<WorkdayJob | null> {
+async function fetchWorkdayDetail(siteUrl: string, job: WorkdayJob, deadline?: number): Promise<WorkdayJob | null> {
   const url = siteUrl.replace(/\/+$/, "").replace(/\/jobs$/, "") + job.externalPath;
   const response = await fetch(url, {
     headers: { accept: "application/json", "accept-language": "en-US,en;q=0.9", "user-agent": "Mozilla/5.0" },
-    signal: AbortSignal.timeout(15_000)
+    signal: workdayRequestSignal(deadline)
   });
   if (response.status === 404 || response.status === 410) return null;
   if (!response.ok) throw new Error(`Workday detail request failed: ${response.status}`);
@@ -329,6 +353,10 @@ async function fetchWorkdayDetail(siteUrl: string, job: WorkdayJob): Promise<Wor
     : undefined;
   if (!detail || typeof detail !== "object" || typeof detail.startDate !== "string" || !parseDateLike(detail.startDate)) {
     throw new Error("Workday detail did not include a valid job posting date");
+  }
+  if (detail.endDate != null && detail.endDate !== ""
+    && (typeof detail.endDate !== "string" || !parseDateLike(detail.endDate))) {
+    throw new Error("Workday detail included an invalid closing date");
   }
   return { ...job, detail };
 }
