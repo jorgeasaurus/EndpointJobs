@@ -53,12 +53,13 @@ export const oracleHcmProvider: ProviderAdapter<"oraclehcm"> = {
 };
 
 async function fetchOracleJobs(url: string, fetchedAt: Date): Promise<Job[]> {
+  const apiBaseUrl = url.replace(/\/+$/, "");
   const deadline = Date.now() + providerTimeoutMs;
   const ids = new Set<string>();
   // Fail the provider on incomplete searches, rather than publishing a partial source snapshot.
   for (const query of queries) {
     for (let page = 0; page < maxPages; page += 1) {
-      const searchUrl = new URL(`${url}/recruitingCEJobRequisitions`);
+      const searchUrl = new URL(`${apiBaseUrl}/recruitingCEJobRequisitions`);
       searchUrl.searchParams.set("onlyData", "true");
       searchUrl.searchParams.set("expand", "requisitionList");
       searchUrl.searchParams.set("finder", `findReqs;siteNumber=${site.number},keyword=${query},limit=${pageSize},offset=${page * pageSize}`);
@@ -82,10 +83,10 @@ async function fetchOracleJobs(url: string, fetchedAt: Date): Promise<Job[]> {
   }
   const jobs: Job[] = [];
   for (const id of ids) {
-    const detailUrl = new URL(`${url}/recruitingCEJobRequisitionDetails`);
+    const detailUrl = new URL(`${apiBaseUrl}/recruitingCEJobRequisitionDetails`);
     detailUrl.searchParams.set("onlyData", "true");
     detailUrl.searchParams.set("finder", `ById;Id=${id}`);
-    const payload = await requestItems(detailUrl, deadline);
+    const payload = await requestItems(detailUrl, deadline, { allowMissing: true });
     // A requisition can close between search and detail requests.
     if (payload.length === 0) continue;
     const detail = payload.find((item) => isRequisition(item) && item.Id === id);
@@ -96,13 +97,15 @@ async function fetchOracleJobs(url: string, fetchedAt: Date): Promise<Job[]> {
   return jobs;
 }
 
-async function requestItems(url: URL, deadline: number): Promise<unknown[]> {
+async function requestItems(url: URL, deadline: number, { allowMissing = false } = {}): Promise<unknown[]> {
   const remainingMs = deadline - Date.now();
   if (remainingMs <= 0) throw new Error("Oracle HCM exceeded the 60 second provider deadline");
   const response = await fetch(url, {
     headers: { accept: "application/json", "accept-language": "en-US" },
     signal: AbortSignal.timeout(Math.min(20_000, remainingMs))
   });
+  if (Date.now() >= deadline) throw new Error("Oracle HCM exceeded the 60 second provider deadline");
+  if (allowMissing && (response.status === 404 || response.status === 410)) return [];
   if (!response.ok) throw new Error(`Oracle HCM request failed: ${response.status}`);
   const body: unknown = await response.json();
   if (Date.now() >= deadline) throw new Error("Oracle HCM exceeded the 60 second provider deadline");

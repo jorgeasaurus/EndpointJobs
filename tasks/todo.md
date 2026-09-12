@@ -757,7 +757,7 @@ Final review: three rounds, zero remaining findings. JSX audit renderings remove
 
 ## Review
 
-Reviewed 75 LinkedIn results; added 14 recurring sources: Archer, DRW, Obsidian Security, Later, Snorkel AI, Applied Intuition, Radiant Industries, SC Johnson, U.S. Bank, IFF, Greenberg Traurig, Morgan Stanley, Tempus AI, and Florida Blue. Imported 9 verified jobs from 8 employers (882 → 891 active; 477 → 486 mapped against refreshed main), preserving original dates and excluding older reposts from this batch.
+Reviewed 75 LinkedIn results; added 14 recurring sources: Archer, DRW, Obsidian Security, Later, Snorkel AI, Applied Intuition, Radiant Industries, SC Johnson, U.S. Bank, IFF, Greenberg Traurig, Morgan Stanley, Tempus AI, and Florida Blue. Imported 9 verified jobs from 8 employers (882 → 891 active; 477 → 489 mapped against refreshed main), preserving original dates and excluding older reposts from this batch.
 
 Corrected ATS workplace metadata, original publication dates, and Workday expiry handling; added Oracle HCM support and narrow endpoint relevance rules. Tests, data audit, typecheck, lint, production build, and local rendered listings verified before rebasing. Against refreshed main: 128 tests, data audit, typecheck, lint, and production build pass; version bumped to 0.1.15 for the PR.
 
@@ -772,3 +772,5 @@ Corrected ATS workplace metadata, original publication dates, and Workday expiry
 Fixed Workday detail failure/timeout handling and explicit overrides, workplace metadata, Oracle canonicalization/configuration/description normalization, source documentation, and provider wiring. All 145 tests, data audit, typecheck, lint, and production build pass; the refresh integration test proves detail outages cannot replace the existing feed. Final acceptance requires a fresh Copilot review on the pushed commit with no actionable comments.
 
 Second review: fixed seven valid summary findings covering entity decoding, Oracle deadline/link handling, Jacksonville coordinates, singular trading titles, and feed source ordering. Declined the Snorkel macOS suggestion: cached and live employer text contains no macOS reference; Jamf/Apple Business Manager alone does not establish the platform. All 153 tests, data audit, typecheck, lint, and build pass before requesting another review.
+
+Third review: normalized Oracle API bases, skipped closed Oracle details, failed closed on detail-enabled Workday search outages, and stabilized IDs for the four new Workday listings. Corrected mapped totals; the repeated unsupported Snorkel claim is explained and left open. Validation: 166 tests, data audit, typecheck, lint, and production build pass; final review gate remains pending.

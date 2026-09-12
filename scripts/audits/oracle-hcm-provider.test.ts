@@ -178,3 +178,51 @@ test("Oracle HCM deadline spans detail retrieval and discards a partial result",
   await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && /provider deadline/.test(error.message));
   assert.equal(detailRequests, 2);
 });
+
+
+test("Oracle HCM normalizes trailing slashes on its API override", async (t) => {
+  const requests = installFetch(t, [detail]);
+  for (const suffix of ["/", "///"]) {
+    const jobs = await oracleHcmProvider.fetchJobs({ url: `https://proxy.example.test/oracle${suffix}`, fetchedAt });
+    assert.equal(jobs.length, 1);
+  }
+  assert.ok(requests.some((url) => url.pathname === "/oracle/recruitingCEJobRequisitions"));
+  assert.ok(requests.some((url) => url.pathname === "/oracle/recruitingCEJobRequisitionDetails"));
+  assert.ok(requests.every((url) => !url.pathname.includes("//")));
+});
+
+test("Oracle HCM skips details closed with 404 or 410 while retaining active jobs", async (t) => {
+  const records = [{ ...detail, Id: "404" }, { ...detail, Id: "410" }, detail];
+  t.mock.method(globalThis, "fetch", async (input: string | URL | Request) => {
+    const url = new URL(String(input));
+    if (url.pathname.endsWith("recruitingCEJobRequisitions")) {
+      return Response.json({ items: [{ TotalJobsCount: records.length, requisitionList: records }] });
+    }
+    const id = url.searchParams.get("finder")?.split("=")[1];
+    if (id === "404" || id === "410") return new Response(null, { status: Number(id) });
+    return Response.json({ items: [detail] });
+  });
+  const jobs = await fetchJobs();
+  assert.equal(jobs.length, 1);
+  assert.ok(jobs[0]?.sourceUrl?.endsWith(`/job/${detail.Id}`));
+});
+
+for (const status of [404, 410, 500]) {
+  test(`Oracle HCM search HTTP ${status} fails closed`, async (t) => {
+    t.mock.method(globalThis, "fetch", async () => new Response(null, { status }));
+    await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && error.message.includes(`request failed: ${status}`));
+  });
+}
+
+for (const status of [401, 403, 429, 500]) {
+  test(`Oracle HCM detail HTTP ${status} fails closed`, async (t) => {
+    t.mock.method(globalThis, "fetch", async (input: string | URL | Request) => {
+      const url = new URL(String(input));
+      if (url.pathname.endsWith("recruitingCEJobRequisitions")) {
+        return Response.json({ items: [{ TotalJobsCount: 1, requisitionList: [detail] }] });
+      }
+      return new Response(null, { status });
+    });
+    await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && error.message.includes(`request failed: ${status}`));
+  });
+}

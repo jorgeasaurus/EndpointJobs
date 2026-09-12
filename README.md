@@ -91,7 +91,7 @@ Additional employer defaults: Greenhouse (`archer56`, `drweng`, `obsidiansecurit
 
 Oracle HCM uses Florida Blue's public API at `https://fa-etum-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/latest`; `JOB_ORACLEHCM_API_URL` overrides that API base, not the employer/site identity. Searches cover macOS, Jamf, Intune, and endpoint; employer publication and closing dates determine eligibility. A 60-second provider deadline and 50-detail limit abort incomplete refreshes; public application links always use the employer host.
 
-Workday overrides use `JOB_WORKDAY_SITES='Company|https://host/wday/cxs/tenant/site/jobs|Endpoint;Intune|true'` (separate sites with `;;`). The optional fourth field controls detail fetching: `true` enables it, `false` disables it, and omission inherits the matching default site's setting.
+Workday overrides use `JOB_WORKDAY_SITES='Company|https://host/wday/cxs/tenant/site/jobs|Endpoint;Intune|true'` (separate sites with `;;`). The optional fourth field controls detail fetching: `true` enables it, `false` disables it, and omission inherits the matching default site's setting. Detail-enabled sites abort the refresh on search/detail failures and use the employer path for stable IDs; closed details (404/410) are skipped.
 
 Workable uses `JOB_WORKABLE_ACCOUNTS=slug` or `Display Name|slug` entries, with optional `JOB_WORKABLE_DETAIL_API_URL` for v1 detail overrides.
 

@@ -174,9 +174,16 @@ async function fetchAmazonJobs(url: string, fetchedAt: Date) {
   return jobs;
 }
 
-export class WorkdayDetailError extends Error {
+export class WorkdayIncompleteSnapshotError extends Error {
+  constructor(site: string, operation: string, cause: unknown) {
+    super(`Workday/${site} ${operation} failed: ${cause instanceof Error ? cause.message : String(cause)}`, { cause });
+    this.name = "WorkdayIncompleteSnapshotError";
+  }
+}
+
+export class WorkdayDetailError extends WorkdayIncompleteSnapshotError {
   constructor(site: string, path: string, cause: unknown) {
-    super(`Workday/${site} detail ${path} failed: ${cause instanceof Error ? cause.message : String(cause)}`, { cause });
+    super(site, `detail ${path}`, cause);
     this.name = "WorkdayDetailError";
   }
 }
@@ -193,6 +200,7 @@ async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
       try {
         payload = await fetchWorkdaySearch(site.url, query);
       } catch (error) {
+        if (site.fetchDetails) throw new WorkdayIncompleteSnapshotError(site.name, `query ${query}`, error);
         console.warn(
           `Skipping Workday/${site.name} query ${query}: ${error instanceof Error ? error.message : String(error)}`
         );
@@ -440,7 +448,9 @@ function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, 
   const staleAfter = expiresAt && expiresAt < freshnessEnd ? expiresAt : freshnessEnd;
 
   const job = toEndpointJob({
-    id: buildStableJobId("workday", site.name, title, sourceJobUrl),
+    id: site.fetchDetails
+      ? buildProviderJobId("workday", site.name, raw.externalPath, sourceJobUrl)
+      : buildStableJobId("workday", site.name, title, sourceJobUrl),
     title,
     company,
     location,

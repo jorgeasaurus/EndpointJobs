@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type { Job } from "../../src/types/job";
 
-import { companyAtsProviders, WorkdayDetailError } from "../job-refresh/providers/company-ats";
+import { companyAtsProviders, WorkdayDetailError, WorkdayIncompleteSnapshotError } from "../job-refresh/providers/company-ats";
 import { defaultWorkdaySites } from "../job-refresh/providers/workday-sites";
 
 const workdayProvider = companyAtsProviders.find((provider) => provider.id === "workday");
@@ -291,4 +291,50 @@ test("Workday detail overrides honor explicit false and inherit defaults only wh
     if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
     else process.env.JOB_WORKDAY_SITES = originalSites;
   }
+});
+
+for (const fetchDetails of [true, false]) {
+  test(`Workday ${fetchDetails ? "rejects" : "tolerates"} search failures for ${fetchDetails ? "detail-enabled" : "legacy search-only"} sites`, async (t) => {
+    assert.ok(workdayProvider);
+    const originalSites = process.env.JOB_WORKDAY_SITES;
+    process.env.JOB_WORKDAY_SITES = `First|https://first.example/wday/cxs/first/Careers/jobs|Endpoint|false;;Second|https://second.example/wday/cxs/second/Careers/jobs|Endpoint;Intune|${fetchDetails}`;
+    t.after(() => {
+      if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+      else process.env.JOB_WORKDAY_SITES = originalSites;
+    });
+    t.mock.method(globalThis, "fetch", async (input: unknown) => {
+      if (String(input).includes("first.example")) return Response.json({ jobPostings: [detailPosting] });
+      return new Response(null, { status: 503 });
+    });
+    const result = workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
+    if (fetchDetails) await assert.rejects(result, WorkdayIncompleteSnapshotError);
+    else assert.equal((await result).filter(Boolean).length, 1);
+  });
+}
+
+test("Workday detail-enabled identities survive title edits at the same native path", async (t) => {
+  assert.ok(workdayProvider);
+  const originalSites = process.env.JOB_WORKDAY_SITES;
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
+  t.after(() => {
+    if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+    else process.env.JOB_WORKDAY_SITES = originalSites;
+  });
+  let title = "Endpoint Engineer";
+  let externalPath = detailPosting.externalPath;
+  t.mock.method(globalThis, "fetch", async (_input: unknown, init?: RequestInit) => {
+    if (init?.method === "POST") return Response.json({ jobPostings: [{ ...detailPosting, title, externalPath }] });
+    return Response.json({ jobPostingInfo: { ...validDetail, title } });
+  });
+  const context = { url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") };
+  const [original] = await workdayProvider.fetchJobs(context);
+  title = "Senior Endpoint Engineer";
+  const [renamed] = await workdayProvider.fetchJobs(context);
+  assert.ok(original && renamed);
+  assert.notEqual(original.title, renamed.title);
+  assert.equal(original.id, renamed.id);
+  externalPath += "-different";
+  const [other] = await workdayProvider.fetchJobs(context);
+  assert.ok(other);
+  assert.notEqual(original.id, other.id);
 });

@@ -4,7 +4,7 @@ import { dirname, resolve } from "node:path";
 import type { ProviderAdapter } from "./job-refresh/provider";
 import { aiDevBoardProvider } from "./job-refresh/providers/aidevboard";
 import { atsBoardProviders } from "./job-refresh/providers/ats-boards";
-import { companyAtsProviders, WorkdayDetailError } from "./job-refresh/providers/company-ats";
+import { companyAtsProviders, WorkdayIncompleteSnapshotError } from "./job-refresh/providers/company-ats";
 import { curatedJobProvider } from "./job-refresh/providers/curated-jobs";
 import { publicJobBoardProviders } from "./job-refresh/providers/public-job-boards";
 import { rapidApiDailyJobsProvider } from "./job-refresh/providers/rapidapi-daily-jobs";
@@ -249,7 +249,7 @@ async function fetchConfiguredProviderJobs(
 
       console.log(`Fetched ${providerJobs.length} raw jobs from ${adapter.displayName}`);
     } catch (error) {
-      if (error instanceof WorkdayDetailError || error instanceof OracleHcmIncompleteSnapshotError) throw error;
+      if (error instanceof WorkdayIncompleteSnapshotError || error instanceof OracleHcmIncompleteSnapshotError) throw error;
       console.warn(`Skipping ${provider}: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
