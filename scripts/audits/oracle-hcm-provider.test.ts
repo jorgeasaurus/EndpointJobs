@@ -247,3 +247,29 @@ test("Oracle HCM accepts a valid empty search snapshot", async (t) => {
   assert.deepEqual(await fetchJobs(), []);
   assert.equal(requests.length, 4);
 });
+
+
+test("Oracle HCM rejects successful detail responses without the requested requisition", async (t) => {
+  t.mock.method(globalThis, "fetch", async (input: string | URL | Request) => {
+    const url = new URL(String(input));
+    if (url.pathname.endsWith("recruitingCEJobRequisitions")) {
+      return Response.json({ items: [{ TotalJobsCount: 1, requisitionList: [detail] }] });
+    }
+    return Response.json({ items: [] });
+  });
+  await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && /missing detail for 41900/.test(error.message));
+});
+
+for (const invalidDate of ["not-a-date", "2026-99-99", 1790000000000]) {
+  test(`Oracle HCM rejects invalid employer closing date ${invalidDate}`, async (t) => {
+    installFetch(t, [detail, { ...detail, Id: "41901", ExternalPostedEndDate: invalidDate }]);
+    await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && /invalid closing date for 41901/.test(error.message));
+  });
+}
+
+test("Oracle HCM permits absent employer closing dates and retains the freshness cutoff", async (t) => {
+  installFetch(t, [undefined, null, "", "  "].map((ExternalPostedEndDate, index) => ({ ...detail, Id: String(index), ExternalPostedEndDate })));
+  const jobs = await fetchJobs();
+  assert.equal(jobs.length, 4);
+  assert.ok(jobs.every((job) => job?.staleAfter === "2026-10-04T10:58:59.000Z"));
+});

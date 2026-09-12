@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { cleanText, stripHtml } from "../job-refresh/shared";
+import { cleanText, stripHtml, toEndpointJob } from "../job-refresh/shared";
 
 test("HTML text decodes decimal and hexadecimal numeric character references", () => {
   assert.equal(stripHtml("10&#43; years; C&#x2b;&#X2B;; caf&#233;; &#x1F680;"), "10+ years; C++; café; \u{1F680}");
@@ -19,4 +19,21 @@ test("Invalid numeric Unicode references cannot crash text normalization", () =>
   assert.equal(stripHtml("&#0; &#xD800; &#55296; &#x110000; &#999999999999999999999999999999999999999;"), "\uFFFD \uFFFD \uFFFD \uFFFD \uFFFD");
   assert.equal(stripHtml("&#x10FFFF;"), "\u{10FFFF}");
   assert.equal(stripHtml("&#xZZ; &#-1; &unknown;"), "&#xZZ; &#-1; &unknown;");
+});
+
+test("Job normalization retains numeric angle placeholders in summaries and full descriptions", () => {
+  const html = `<p>Manage Intune &#60;device&#62; and &#x3c;policy&#x3e; templates.</p><p>${"Automate Windows endpoint deployment and compliance. ".repeat(12)}</p>`;
+  for (const descriptionFormat of ["html", "text"] as const) {
+    const job = toEndpointJob({
+      id: "literal-templates", title: "Endpoint Engineer", company: "Example",
+      postedAt: "2026-09-12T00:00:00Z", fetchedAt: new Date("2026-09-12T12:00:00Z"),
+      source: "Greenhouse", sourceUrl: "https://example.com/jobs/templates",
+      attributionLabel: "Example", termsProfile: "public-api",
+      description: descriptionFormat === "text" ? stripHtml(html) : html,
+      descriptionFormat
+    });
+    assert.ok(job?.summary.includes("<device> and <policy>"));
+    assert.ok(job?.description?.includes("<device> and <policy>"));
+    assert.ok(!job?.description?.includes("<p>"));
+  }
 });

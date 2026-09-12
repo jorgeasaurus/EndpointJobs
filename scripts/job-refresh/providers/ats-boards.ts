@@ -506,6 +506,7 @@ function normalizeGreenhouseJob(raw: GreenhouseJob, board: string, fetchedAt: Da
     attributionLabel: `Greenhouse / ${company}`,
     termsProfile: "public-api",
     description,
+    descriptionFormat: "text",
     sourceTags,
   });
 }
@@ -558,6 +559,7 @@ function normalizeLeverJob(raw: LeverJob, companySlug: string, fetchedAt: Date):
     attributionLabel: `Lever / ${company}`,
     termsProfile: "public-api",
     description,
+    descriptionFormat: "text",
     sourceTags,
     employmentType: cleanText(raw.categories?.commitment)
   });
@@ -601,6 +603,7 @@ function normalizeAshbyJob(raw: AshbyJob, board: string, fetchedAt: Date): Job |
     attributionLabel: `Ashby / ${company}`,
     termsProfile: "public-api",
     description,
+    descriptionFormat: "text",
     sourceTags,
     employmentType: normalizeEmploymentTypeLabel(raw.employmentType)
   });
@@ -670,6 +673,7 @@ function normalizeWorkableJob(raw: WorkableJob, account: WorkableAccount, fetche
     attributionLabel: `Workable / ${company}`,
     termsProfile: "public-api",
     description,
+    descriptionFormat: "text",
     sourceTags,
     employmentType: employmentType
   });

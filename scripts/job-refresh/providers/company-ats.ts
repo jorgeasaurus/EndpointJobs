@@ -358,6 +358,10 @@ async function fetchWorkdayDetail(siteUrl: string, job: WorkdayJob, deadline?: n
     && (typeof detail.endDate !== "string" || !parseDateLike(detail.endDate))) {
     throw new Error("Workday detail included an invalid closing date");
   }
+  if (detail.additionalLocations != null && (!Array.isArray(detail.additionalLocations)
+    || detail.additionalLocations.some((location) => typeof location !== "string"))) {
+    throw new TypeError("Workday detail locations must be an array of strings");
+  }
   return { ...job, detail };
 }
 
@@ -443,6 +447,7 @@ function normalizeAmazonJob(raw: AmazonJob, fetchedAt: Date): Job | null {
     attributionLabel: "Amazon Jobs",
     termsProfile: "public-api",
     description,
+    descriptionFormat: "text",
     sourceTags,
     employmentType: cleanText(raw.job_schedule_type)
   });
@@ -491,6 +496,7 @@ function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, 
     attributionLabel: `Workday / ${company}`,
     termsProfile: "public-api",
     description,
+    descriptionFormat: "text",
     sourceTags: bulletFields,
     haystackParts: [detail?.remoteType],
     relevanceOnlyParts: detail ? [] : [query],
@@ -541,6 +547,7 @@ function normalizeActivateJob(raw: ActivateJob, site: ActivateSite, query: strin
     attributionLabel: `Activate / ${site.name}`,
     termsProfile: "public-api",
     description,
+    descriptionFormat: "text",
     relevanceOnlyParts: [query]
   });
 }
@@ -582,6 +589,7 @@ function normalizeJibeJob(raw: JibeJob, site: JibeSite, query: string, fetchedAt
     attributionLabel: `Jibe / ${site.name}`,
     termsProfile: "public-api",
     description,
+    descriptionFormat: "text",
     sourceTags,
     relevanceOnlyParts: [query],
     employmentType: cleanText(data.employment_type)

@@ -49,6 +49,8 @@ export type JobCandidate = {
   attributionLabel: string;
   termsProfile: TermsProfile;
   description?: string;
+  // Already-decoded provider text must not be parsed as HTML again.
+  descriptionFormat?: "html" | "text";
   sourceTags?: string[];
   haystackParts?: unknown[];
   // Provider search evidence can admit a listing but must not supply published metadata.
@@ -73,7 +75,9 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
   const location = rawLocation || "Unknown";
   const mapLocation = resolveJobMapLocation(location);
   const sourceTags = (candidate.sourceTags ?? []).map(cleanText).filter(Boolean);
-  const description = stripHtml(candidate.description ?? "");
+  const description = candidate.descriptionFormat === "text"
+    ? candidate.description ?? ""
+    : stripHtml(candidate.description ?? "");
   const haystack = normalizeSearchText(
     [
       title,
@@ -118,7 +122,7 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
     attributionLabel: candidate.attributionLabel,
     termsProfile: candidate.termsProfile,
     summary: summarize(description),
-    description: normalizeDescription(description),
+    description: normalizeDescription(description, "text"),
     tags: normalizeTags(sourceTags, tools, platforms),
     matchReasons,
     tools,
@@ -547,8 +551,8 @@ export function summarize(value: string) {
   return `${trimToWordBoundary(compact, 257)}...`;
 }
 
-export function normalizeDescription(value: string | undefined) {
-  const formatted = cleanMultilineText(stripHtml(value ?? ""));
+export function normalizeDescription(value: string | undefined, format: "html" | "text" = "html") {
+  const formatted = cleanMultilineText(format === "text" ? value ?? "" : stripHtml(value ?? ""));
   const compact = cleanText(formatted);
 
   if (!formatted || compact.length < descriptionMinLength) {

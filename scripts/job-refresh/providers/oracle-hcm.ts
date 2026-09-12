@@ -64,7 +64,7 @@ async function fetchOracleJobs(url: string, fetchedAt: Date): Promise<Job[]> {
       searchUrl.searchParams.set("expand", "requisitionList");
       searchUrl.searchParams.set("finder", `findReqs;siteNumber=${site.number},keyword=${query},limit=${pageSize},offset=${page * pageSize}`);
       const payload = await requestItems(searchUrl, deadline);
-      const result = payload[0];
+      const result = payload?.[0];
       if (!isRecord(result) || !Array.isArray(result.requisitionList)
         || typeof result.TotalJobsCount !== "number") {
         throw new Error("Oracle HCM search did not include requisitionList and TotalJobsCount");
@@ -89,7 +89,7 @@ async function fetchOracleJobs(url: string, fetchedAt: Date): Promise<Job[]> {
     detailUrl.searchParams.set("finder", `ById;Id=${id}`);
     const payload = await requestItems(detailUrl, deadline, { allowMissing: true });
     // A requisition can close between search and detail requests.
-    if (payload.length === 0) continue;
+    if (payload === null) continue;
     const detail = payload.find((item) => isRequisition(item) && item.Id === id);
     if (!isRequisition(detail)) throw new Error(`Oracle HCM missing detail for ${id}`);
     const job = normalizeOracleRequisition(detail, fetchedAt);
@@ -98,7 +98,7 @@ async function fetchOracleJobs(url: string, fetchedAt: Date): Promise<Job[]> {
   return jobs;
 }
 
-async function requestItems(url: URL, deadline: number, { allowMissing = false } = {}): Promise<unknown[]> {
+async function requestItems(url: URL, deadline: number, { allowMissing = false } = {}): Promise<unknown[] | null> {
   const remainingMs = deadline - Date.now();
   if (remainingMs <= 0) throw new Error("Oracle HCM exceeded the 60 second provider deadline");
   const response = await fetch(url, {
@@ -106,7 +106,7 @@ async function requestItems(url: URL, deadline: number, { allowMissing = false }
     signal: AbortSignal.timeout(Math.min(20_000, remainingMs))
   });
   if (Date.now() >= deadline) throw new Error("Oracle HCM exceeded the 60 second provider deadline");
-  if (allowMissing && (response.status === 404 || response.status === 410)) return [];
+  if (allowMissing && (response.status === 404 || response.status === 410)) return null;
   if (!response.ok) throw new Error(`Oracle HCM request failed: ${response.status}`);
   const body: unknown = await response.json();
   if (Date.now() >= deadline) throw new Error("Oracle HCM exceeded the 60 second provider deadline");
@@ -118,7 +118,14 @@ async function requestItems(url: URL, deadline: number, { allowMissing = false }
 
 function normalizeOracleRequisition(raw: OracleRequisition, fetchedAt: Date): Job | null {
   const postedAt = parseDateLike(raw.ExternalPostedStartDate);
-  const closesAt = parseDateLike(raw.ExternalPostedEndDate);
+  const closingDate = raw.ExternalPostedEndDate;
+  if (closingDate != null && typeof closingDate !== "string") {
+    throw new Error(`Oracle HCM invalid closing date for ${raw.Id}`);
+  }
+  const closesAt = parseDateLike(closingDate?.trim());
+  if (closingDate?.trim() && !closesAt) {
+    throw new Error(`Oracle HCM invalid closing date for ${raw.Id}`);
+  }
   const description = [raw.ExternalDescriptionStr, raw.ExternalResponsibilitiesStr, raw.ExternalQualificationsStr]
     .map((value) => typeof value === "string" ? stripHtml(value).trim() : "").filter(Boolean).join("\n\n");
   // Never manufacture publication dates or replace unavailable employer details with search snippets.
@@ -146,6 +153,7 @@ function normalizeOracleRequisition(raw: OracleRequisition, fetchedAt: Date): Jo
     attributionLabel: site.company,
     termsProfile: "public-api",
     description,
+    descriptionFormat: "text",
     employmentType: normalizeEmploymentTypeLabel(raw.JobSchedule)
   });
   // Preserve the actual closing timestamp independently of feed freshness.

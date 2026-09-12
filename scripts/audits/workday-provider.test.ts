@@ -359,7 +359,7 @@ for (const suffix of ["/jobs", "/jobs/", "/jobs///"]) {
   });
 }
 
-for (const malformed of [{ additionalLocations: 42, location: "Chicago" }, { jobDescription: { text: "Intune" } }]) {
+for (const malformed of [{ additionalLocations: 42, location: "Chicago" }, { additionalLocations: "New York", location: "Chicago" }, { additionalLocations: ["New York", 42], location: "Chicago" }, { jobDescription: { text: "Intune" } }]) {
   test(`Workday malformed detail ${Object.keys(malformed)[0]} rejects as an incomplete snapshot`, async (t) => {
     assert.ok(workdayProvider);
     const originalSites = process.env.JOB_WORKDAY_SITES;
@@ -468,4 +468,22 @@ test("Workday legacy search-only sites continue filtering malformed entries", as
   t.mock.method(globalThis, "fetch", async () => Response.json({ jobPostings: [detailPosting, { unexpected: true }] }));
   const jobs = await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
   assert.equal(jobs.filter(Boolean).length, 1);
+});
+
+test("Workday preserves literal encoded placeholders through detail normalization", async (t) => {
+  assert.ok(workdayProvider);
+  const originalSites = process.env.JOB_WORKDAY_SITES;
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
+  t.after(() => {
+    if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+    else process.env.JOB_WORKDAY_SITES = originalSites;
+  });
+  const jobDescription = "<p>Manage Intune endpoints using &#60;device&#62; placeholders in PowerShell automation. Build secure endpoint onboarding workflows and maintain deployment documentation for enterprise devices.</p>".repeat(3);
+  t.mock.method(globalThis, "fetch", async (_input: unknown, init?: RequestInit) => init?.method === "POST"
+    ? Response.json({ jobPostings: [detailPosting] })
+    : Response.json({ jobPostingInfo: { ...validDetail, jobDescription } }));
+  const [job] = await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
+  assert.ok(job);
+  assert.match(job.description ?? "", /<device>/);
+  assert.doesNotMatch(job.description ?? "", /<p>/);
 });

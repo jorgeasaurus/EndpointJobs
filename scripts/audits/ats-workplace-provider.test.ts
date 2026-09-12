@@ -107,3 +107,17 @@ test("Greenhouse preserves original publication dates and falls back for unavail
     assert.equal(jobs.find((job) => job!.sourceUrl.endsWith(`/${id}`))!.postedAt, "2026-09-11T20:37:10.000Z");
   }
 });
+
+test("Greenhouse preserves encoded template placeholders through provider and job normalization", async (t) => {
+  t.mock.method(globalThis, "fetch", async () => Response.json({ jobs: [{
+    id: 1, title: "Endpoint Engineer", location: { name: "Boston, MA" },
+    absolute_url: "https://job-boards.greenhouse.io/test/jobs/templates",
+    updated_at: "2026-09-11T00:00:00Z",
+    content: `&lt;p&gt;Manage Intune &#60;device&#62; and &#x3c;policy&#x3e; templates.&lt;/p&gt;&lt;p&gt;${"Automate Windows endpoint deployment and compliance. ".repeat(12)}&lt;/p&gt;`
+  }] }));
+  const provider = atsBoardProviders.find((provider) => provider.id === "greenhouse")!;
+  const [job] = await provider.fetchJobs({ url: provider.defaultUrl, fetchedAt });
+  assert.ok(job?.summary.includes("<device> and <policy>"));
+  assert.ok(job?.description?.includes("<device> and <policy>"));
+  assert.ok(!job?.description?.includes("<p>"));
+});
