@@ -89,7 +89,7 @@ Career-board defaults include Greenhouse boards for Jamf, Automox, Tanium, Okta,
 
 Additional employer defaults: Greenhouse (`archer56`, `drweng`, `obsidiansecurity`, `later`, `snorkelai`); Ashby (`applied`, `radiant-industries`); Workday (SC Johnson, U.S. Bank, IFF, Greenberg Traurig, Morgan Stanley, Tempus AI); Oracle HCM (Florida Blue).
 
-Oracle HCM uses Florida Blue's public API at `https://fa-etum-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/latest`; `JOB_ORACLEHCM_API_URL` overrides that API base, not the employer/site identity. Searches cover macOS, Jamf, Intune, and endpoint; employer publication and closing dates determine eligibility.
+Oracle HCM uses Florida Blue's public API at `https://fa-etum-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/latest`; `JOB_ORACLEHCM_API_URL` overrides that API base, not the employer/site identity. Searches cover macOS, Jamf, Intune, and endpoint; employer publication and closing dates determine eligibility. A 60-second provider deadline and 50-detail limit abort incomplete refreshes; public application links always use the employer host.
 
 Workday overrides use `JOB_WORKDAY_SITES='Company|https://host/wday/cxs/tenant/site/jobs|Endpoint;Intune|true'` (separate sites with `;;`). The optional fourth field controls detail fetching: `true` enables it, `false` disables it, and omission inherits the matching default site's setting.
 

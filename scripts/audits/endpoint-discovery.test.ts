@@ -18,8 +18,10 @@ test("IT platform and lead specialist roles require endpoint responsibilities", 
 });
 
 test("trading systems scripting does not imply employee endpoint ownership", () => {
-  for (const title of ["Options Trading Systems Engineer", "Trade Systems Engineer", "Trading Systems Engineer (Event Driven Trading)"]) {
+  for (const title of ["Options Trading Systems Engineer", "Trade Systems Engineer", "Trading Systems Engineer (Event Driven Trading)", "Trade System Engineer", "Trading System Engineer"]) {
     assert.equal(matches(title, "Support low latency trading infrastructure with Python, Bash and PowerShell."), false);
   }
-  assert.equal(matches("Endpoint Engineer - Trading Systems", "Manage Windows desktops with Intune."), true);
+  for (const title of ["Endpoint Engineer - Trading Systems", "Endpoint Engineer - Trading System", "Endpoint Engineer - Trade Systems", "Endpoint Engineer - Trade System"]) {
+    assert.equal(matches(title, "Manage Windows desktops with Intune."), true);
+  }
 });

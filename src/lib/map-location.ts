@@ -132,6 +132,12 @@ const locationCoordinates: Coordinate[] = [
     keys: ["lafayette parish"]
   },
   { label: "Tampa, FL", latitude: 27.9506, longitude: -82.4572, keys: ["tampa"] },
+  {
+    label: "Jacksonville, FL",
+    latitude: 30.3322,
+    longitude: -81.6557,
+    keys: ["jacksonville fl", "jacksonville florida"]
+  },
   { label: "Miami, FL", latitude: 25.7617, longitude: -80.1918, keys: ["miami"] },
   {
     label: "Huntsville, AL",

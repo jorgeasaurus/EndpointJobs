@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test, { type TestContext } from "node:test";
 import { normalizeDescription, stripHtml } from "../job-refresh/shared";
-import { oracleHcmProvider } from "../job-refresh/providers/oracle-hcm";
+import { OracleHcmIncompleteSnapshotError, oracleHcmProvider } from "../job-refresh/providers/oracle-hcm";
 
 const fetchedAt = new Date("2026-09-12T12:00:00Z");
 const detail = {
@@ -116,4 +116,65 @@ test("Oracle HCM uses shared positive-integer freshness configuration", async (t
     if (original === undefined) delete process.env.JOB_STALE_DAYS;
     else process.env.JOB_STALE_DAYS = original;
   }
+});
+
+
+test("Oracle HCM API overrides preserve public application URLs and stable IDs", async (t) => {
+  const requests = installFetch(t, [detail]);
+  const [directJob] = await fetchJobs();
+  const [proxyJob] = await oracleHcmProvider.fetchJobs({ url: "https://proxy.example.test/oracle", fetchedAt });
+  assert.ok(directJob && proxyJob);
+  assert.equal(proxyJob.sourceUrl, directJob.sourceUrl);
+  assert.equal(proxyJob.applyUrl, directJob.applyUrl);
+  assert.equal(proxyJob.id, directJob.id);
+  assert.ok(requests.some((url) => url.origin === "https://proxy.example.test"));
+});
+
+test("Oracle HCM caps unique detail requests across all keyword searches", async (t) => {
+  let searches = 0;
+  let details = 0;
+  t.mock.method(globalThis, "fetch", async (input: string | URL | Request) => {
+    const url = new URL(String(input));
+    if (url.pathname.endsWith("recruitingCEJobRequisitions")) {
+      const requisitionList = Array.from({ length: 20 }, (_, index) => ({ ...detail, Id: String(searches * 20 + index) }));
+      searches += 1;
+      return Response.json({ items: [{ TotalJobsCount: 20, requisitionList }] });
+    }
+    details += 1;
+    return Response.json({ items: [detail] });
+  });
+  await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && /50 detail result bound/.test(error.message));
+  assert.equal(searches, 3);
+  assert.equal(details, 0);
+});
+
+test("Oracle HCM stops the provider when cumulative request time exceeds its deadline", async (t) => {
+  let now = 0;
+  let requests = 0;
+  t.mock.method(Date, "now", () => now);
+  t.mock.method(globalThis, "fetch", async () => {
+    requests += 1;
+    now += 16_000;
+    return Response.json({ items: [{ TotalJobsCount: 1, requisitionList: [detail] }] });
+  });
+  await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && /provider deadline/.test(error.message));
+  assert.equal(requests, 4);
+});
+
+test("Oracle HCM deadline spans detail retrieval and discards a partial result", async (t) => {
+  let now = 0;
+  let detailRequests = 0;
+  const records = [detail, { ...detail, Id: "41901" }];
+  t.mock.method(Date, "now", () => now);
+  t.mock.method(globalThis, "fetch", async (input: string | URL | Request) => {
+    const url = new URL(String(input));
+    if (url.pathname.endsWith("recruitingCEJobRequisitions")) {
+      now += 10_000;
+      return Response.json({ items: [{ TotalJobsCount: 2, requisitionList: records }] });
+    }
+    now += 11_000;
+    return Response.json({ items: [records[detailRequests++]] });
+  });
+  await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && /provider deadline/.test(error.message));
+  assert.equal(detailRequests, 2);
 });

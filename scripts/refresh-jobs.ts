@@ -17,7 +17,7 @@ import { techmapRssProvider } from "./job-refresh/providers/techmap-rss";
 import { theirStackProvider } from "./job-refresh/providers/theirstack";
 import { fourdayweekProvider } from "./job-refresh/providers/fourdayweek";
 import { himalayasProvider } from "./job-refresh/providers/himalayas";
-import { oracleHcmProvider } from "./job-refresh/providers/oracle-hcm";
+import { oracleHcmProvider, OracleHcmIncompleteSnapshotError } from "./job-refresh/providers/oracle-hcm";
 import { usaJobsProvider } from "./job-refresh/providers/usajobs";
 import { resolveJobMapLocation } from "./job-refresh/map-location";
 import {
@@ -249,7 +249,7 @@ async function fetchConfiguredProviderJobs(
 
       console.log(`Fetched ${providerJobs.length} raw jobs from ${adapter.displayName}`);
     } catch (error) {
-      if (error instanceof WorkdayDetailError) throw error;
+      if (error instanceof WorkdayDetailError || error instanceof OracleHcmIncompleteSnapshotError) throw error;
       console.warn(`Skipping ${provider}: ${error instanceof Error ? error.message : String(error)}`);
     }
   }

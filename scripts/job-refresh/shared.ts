@@ -198,8 +198,9 @@ export function isEndpointRelevant(
     containsAlias(normalizedTitle, "application security") ||
     containsAlias(normalizedTitle, "appsec");
   const looksLikeTradingInfrastructure =
-    containsAlias(normalizedTitle, "trading systems") ||
-    containsAlias(normalizedTitle, "trade systems");
+    ["trading system", "trading systems", "trade system", "trade systems"].some((term) =>
+      containsAlias(normalizedTitle, term)
+    );
   const looksLikeSoftwareProductRole =
     containsAlias(normalizedTitle, "software engineer") ||
     containsAlias(normalizedTitle, "software development engineer") ||
@@ -561,7 +562,7 @@ export function normalizeDescription(value: string | undefined) {
 }
 
 export function stripHtml(value: string) {
-  return decodeEntities(value)
+  return decodeNumericEntities(decodeNamedEntities(value)
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/\r\n?/g, "\n")
@@ -569,7 +570,7 @@ export function stripHtml(value: string) {
     .replace(/<li[^>]*>/gi, "\n- ")
     .replace(/<\/(?:li|p|div|section|article|header|footer|h[1-6]|ul|ol|tr|table|blockquote)>/gi, "\n")
     .replace(/<(?:p|div|section|article|header|footer|h[1-6]|ul|ol|tr|table|blockquote)[^>]*>/gi, "\n")
-    .replace(/<[^>]+>/g, " ");
+    .replace(/<[^>]+>/g, " "));
 }
 
 function trimToWordBoundary(value: string, maxLength: number) {
@@ -661,15 +662,28 @@ export function cleanUrl(value: string | undefined) {
 }
 
 function decodeEntities(value: string) {
+  return decodeNumericEntities(decodeNamedEntities(value));
+}
+
+function decodeNamedEntities(value: string) {
   return value
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
     .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
     .replace(/&nbsp;/g, " ")
-    .replace(/&mdash;|&#8212;|&#x2014;/gi, "-")
-    .replace(/&ndash;|&#8211;|&#x2013;/gi, "-");
+    .replace(/&mdash;/gi, "-")
+    .replace(/&ndash;/gi, "-");
+}
+
+function decodeNumericEntities(value: string) {
+  return value.replace(/&#(x[0-9a-f]+|[0-9]+);/gi, (_, entity: string) => {
+    const isHex = entity[0].toLowerCase() === "x";
+    const codePoint = Number.parseInt(isHex ? entity.slice(1) : entity, isHex ? 16 : 10);
+    if (codePoint <= 0 || codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)) return "\uFFFD";
+    if (codePoint === 8211 || codePoint === 8212) return "-";
+    return String.fromCodePoint(codePoint);
+  });
 }
 
 export function parseDateLike(value: string | undefined) {

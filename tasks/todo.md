@@ -770,3 +770,5 @@ Corrected ATS workplace metadata, original publication dates, and Workday expiry
 ## Review
 
 Fixed Workday detail failure/timeout handling and explicit overrides, workplace metadata, Oracle canonicalization/configuration/description normalization, source documentation, and provider wiring. All 145 tests, data audit, typecheck, lint, and production build pass; the refresh integration test proves detail outages cannot replace the existing feed. Final acceptance requires a fresh Copilot review on the pushed commit with no actionable comments.
+
+Second review: fixed seven valid summary findings covering entity decoding, Oracle deadline/link handling, Jacksonville coordinates, singular trading titles, and feed source ordering. Declined the Snorkel macOS suggestion: cached and live employer text contains no macOS reference; Jamf/Apple Business Manager alone does not establish the platform. All 153 tests, data audit, typecheck, lint, and build pass before requesting another review.
