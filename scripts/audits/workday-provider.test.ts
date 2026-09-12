@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import type { Job } from "../../src/types/job";
 
-import { companyAtsProviders } from "../job-refresh/providers/company-ats";
+import { companyAtsProviders, WorkdayDetailError } from "../job-refresh/providers/company-ats";
 import { defaultWorkdaySites } from "../job-refresh/providers/workday-sites";
 
 const workdayProvider = companyAtsProviders.find((provider) => provider.id === "workday");
@@ -178,5 +179,116 @@ test("Workday publishes genuine bullet evidence without the search term", async 
   } finally {
     globalThis.fetch = originalFetch;
     process.env = originalEnv;
+  }
+});
+
+const detailPosting = {
+  title: "Endpoint Engineer",
+  externalPath: "/job/Chicago/Endpoint-Engineer_R123",
+  postedOn: "Posted Today"
+};
+const validDetail = { startDate: "2026-09-11", title: "Endpoint Engineer", jobDescription: "Manage Microsoft Intune devices." };
+
+for (const failure of ["network", "429", "500", "invalid-json", "missing-detail", "invalid-date"] as const) {
+  test(`Workday rejects the entire snapshot on ${failure} detail failures across sites and queries`, async () => {
+    assert.ok(workdayProvider);
+    const originalFetch = globalThis.fetch;
+    const originalSites = process.env.JOB_WORKDAY_SITES;
+    process.env.JOB_WORKDAY_SITES = "First|https://first.example/wday/cxs/first/Careers/jobs|Endpoint;Intune|true;;Second|https://second.example/wday/cxs/second/Careers/jobs|Endpoint;Intune|true";
+    let detailRequests = 0;
+    let searchRequests = 0;
+    globalThis.fetch = async (input, init) => {
+      if (init?.method === "POST") {
+        searchRequests += 1;
+        return Response.json({ jobPostings: [{ ...detailPosting, externalPath: `${detailPosting.externalPath}-${searchRequests}` }] });
+      }
+      detailRequests += 1;
+      if (String(input).includes("first.example")) return Response.json({ jobPostingInfo: validDetail });
+      if (failure === "network") throw new TypeError("network failed");
+      if (failure === "429" || failure === "500") return new Response(null, { status: Number(failure) });
+      if (failure === "invalid-json") return new Response("invalid json");
+      return Response.json(failure === "missing-detail" ? {} : { jobPostingInfo: { startDate: "invalid" } });
+    };
+    try {
+      await assert.rejects(workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") }), WorkdayDetailError);
+      assert.equal(searchRequests, 3, "Stops on the failed detail despite already completed queries and sites");
+      assert.equal(detailRequests, 3);
+    } finally {
+      globalThis.fetch = originalFetch;
+      if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+      else process.env.JOB_WORKDAY_SITES = originalSites;
+    }
+  });
+}
+
+test("Workday treats 404 and 410 details as closed postings and continues", async () => {
+  assert.ok(workdayProvider);
+  const originalFetch = globalThis.fetch;
+  const originalSites = process.env.JOB_WORKDAY_SITES;
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
+  globalThis.fetch = async (input, init) => {
+    if (init?.method === "POST") return Response.json({ jobPostings: [404, 410, 200].map((status) => ({ ...detailPosting, externalPath: `${detailPosting.externalPath}-${status}` })) });
+    const status = Number(String(input).split("-").at(-1));
+    return status === 200 ? Response.json({ jobPostingInfo: validDetail }) : new Response(null, { status });
+  };
+  try {
+    const jobs = await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
+    assert.equal(jobs.filter(Boolean).length, 1);
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+    else process.env.JOB_WORKDAY_SITES = originalSites;
+  }
+});
+
+test("Workday bounds detail requests and propagates timeouts", async (t) => {
+  assert.ok(workdayProvider);
+  const originalSites = process.env.JOB_WORKDAY_SITES;
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint;Intune|true";
+  const controller = new AbortController();
+  const timeoutError = new DOMException("Detail timed out", "TimeoutError");
+  controller.abort(timeoutError);
+  const timeout = t.mock.method(AbortSignal, "timeout", (milliseconds: number) => {
+    assert.ok(milliseconds > 0 && milliseconds <= 30_000);
+    return controller.signal;
+  });
+  t.mock.method(globalThis, "fetch", async (_input: unknown, init?: RequestInit) => {
+    if (init?.method === "POST") return Response.json({ jobPostings: [detailPosting] });
+    assert.equal(init?.signal, controller.signal);
+    init?.signal?.throwIfAborted();
+    return Response.json({ jobPostingInfo: validDetail });
+  });
+  try {
+    await assert.rejects(workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") }), (error) => error instanceof WorkdayDetailError && error.cause === timeoutError);
+    assert.equal(timeout.mock.callCount(), 1);
+  } finally {
+    if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+    else process.env.JOB_WORKDAY_SITES = originalSites;
+  }
+});
+
+test("Workday detail overrides honor explicit false and inherit defaults only when omitted", async () => {
+  assert.ok(workdayProvider);
+  const site = defaultWorkdaySites.find((site) => "fetchDetails" in site && site.fetchDetails);
+  assert.ok(site);
+  const originalFetch = globalThis.fetch;
+  const originalSites = process.env.JOB_WORKDAY_SITES;
+  let detailRequests = 0;
+  globalThis.fetch = async (_input, init) => {
+    if (init?.method === "POST") return Response.json({ jobPostings: [detailPosting] });
+    detailRequests += 1;
+    return Response.json({ jobPostingInfo: validDetail });
+  };
+  try {
+    for (const [override, expected] of [["|false", 0], ["", 1], ["|true", 2]] as const) {
+      process.env.JOB_WORKDAY_SITES = `${site.name}|${site.url}|Endpoint${override}`;
+      const jobs: Array<Job | null> = await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
+      assert.equal(jobs.filter(Boolean).length, 1);
+      assert.equal(detailRequests, expected);
+    }
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+    else process.env.JOB_WORKDAY_SITES = originalSites;
   }
 });

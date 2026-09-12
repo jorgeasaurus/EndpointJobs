@@ -9,6 +9,7 @@ import {
   getCsvConfig,
   getPositiveInteger,
   getString,
+  inferWorkplace,
   normalizeEmploymentTypeLabel,
   stripHtml,
 } from "../shared";
@@ -491,7 +492,11 @@ function normalizeGreenhouseJob(raw: GreenhouseJob, board: string, fetchedAt: Da
     title,
     company,
     location,
-    workplace: getLinkedInWorkplaceTag(description),
+    workplace: getGreenhouseLocationWorkplace(location)
+      ?? getLinkedInWorkplaceTag(description)
+      ?? inferWorkplace(location, [title, company, ...sourceTags, description]
+        .join(" ")
+        .replace(/\bExchange\s*\((?:on[ -]premis(?:e|es)|online|server|hybrid|[\s,/-])+\)/gi, "Exchange")),
     postedAt,
     fetchedAt,
     staleAfter,
@@ -608,6 +613,13 @@ function normalizeAshbyWorkplace(value: string | undefined) {
     case "remote": return "Remote";
     default: return undefined;
   }
+}
+
+function getGreenhouseLocationWorkplace(location: string) {
+  if (/\bon[\s-]?site\b/i.test(location)) return "On-site";
+  if (/\bhybrid\b/i.test(location)) return "Hybrid";
+  if (/\bremote\b/i.test(location)) return "Remote";
+  return undefined;
 }
 
 function getLinkedInWorkplaceTag(description: string) {

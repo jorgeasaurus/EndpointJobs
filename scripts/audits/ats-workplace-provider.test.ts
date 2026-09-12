@@ -51,6 +51,47 @@ test("Greenhouse employer workplace tags override generic company remote hiring 
   }
 });
 
+test("Greenhouse location workplace markers override incidental description text and hiring tags", async (t) => {
+  const locations = [
+    ["New York City, NY (Hybrid); San Francisco, CA (Hybrid)", "Hybrid"],
+    ["United States (Remote)", "Remote"],
+    ["Boston, MA (On-site)", "On-site"]
+  ];
+  t.mock.method(globalThis, "fetch", async () => Response.json({ jobs: locations.map(([location], index) => ({
+    id: index + 1, title: "Endpoint Engineer", location: { name: location },
+    absolute_url: `https://job-boards.greenhouse.io/test/jobs/${index}`,
+    updated_at: "2026-09-11T00:00:00Z",
+    content: `${description} <p>#LI-Remote</p> For select positions, we hire fully remote candidates.`
+  })) }));
+  const provider = atsBoardProviders.find((provider) => provider.id === "greenhouse")!;
+  const jobs = (await provider.fetchJobs({ url: provider.defaultUrl, fetchedAt })).filter(Boolean);
+  for (const [index, [location, workplace]] of locations.entries()) {
+    const job = jobs.find((job) => job!.sourceUrl.endsWith(`/${index}`))!;
+    assert.equal(job.location, location);
+    assert.equal(job.workplace, workplace);
+  }
+});
+
+test("Greenhouse distinguishes Exchange topology from hybrid work arrangements", async (t) => {
+  const content = "Manage Intune endpoints and Exchange (on-premise, Online, hybrid). Experience with Exchange (Server/Online/Hybrid).";
+  t.mock.method(globalThis, "fetch", async () => Response.json({ jobs: [
+    ["topology", content],
+    ["arrangement", `${content} This role offers hybrid work.`],
+    ["tag", `${content} #LI-Hybrid`]
+  ].map(([id, content]) => ({
+    id, title: "Systems Engineer", location: { name: "Chicago, IL" }, content,
+    absolute_url: `https://job-boards.greenhouse.io/test/jobs/${id}`,
+    updated_at: "2026-09-11T00:00:00Z"
+  })) }));
+  const provider = atsBoardProviders.find((provider) => provider.id === "greenhouse")!;
+  const jobs = (await provider.fetchJobs({ url: provider.defaultUrl, fetchedAt })).filter(Boolean);
+  for (const [id, workplace] of [["topology", "On-site"], ["arrangement", "Hybrid"], ["tag", "Hybrid"]]) {
+    const job = jobs.find((job) => job!.sourceUrl.endsWith(`/${id}`))!;
+    assert.equal(job.workplace, workplace);
+    assert.ok(job.summary.includes("Exchange (Server/Online/Hybrid)"));
+  }
+});
+
 test("Greenhouse preserves original publication dates and falls back for unavailable or invalid dates", async (t) => {
   t.mock.method(globalThis, "fetch", async () => Response.json({ jobs: [
     { id: 1, first_published: "2026-06-03T09:50:05-04:00" },

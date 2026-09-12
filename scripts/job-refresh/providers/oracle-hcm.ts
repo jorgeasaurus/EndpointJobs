@@ -4,6 +4,7 @@ import {
   addDays,
   buildStableJobId,
   cleanText,
+  getJobStaleDays,
   normalizeEmploymentTypeLabel,
   parseDateLike,
   stripHtml,
@@ -90,11 +91,10 @@ function normalizeOracleRequisition(raw: OracleRequisition, baseUrl: string, fet
   const postedAt = parseDateLike(raw.ExternalPostedStartDate);
   const closesAt = parseDateLike(raw.ExternalPostedEndDate);
   const description = [raw.ExternalDescriptionStr, raw.ExternalResponsibilitiesStr, raw.ExternalQualificationsStr]
-    .map((value) => typeof value === "string" ? stripHtml(value) : "").filter(Boolean).join("\n\n");
+    .map((value) => typeof value === "string" ? stripHtml(value).trim() : "").filter(Boolean).join("\n\n");
   // Never manufacture publication dates or replace unavailable employer details with search snippets.
   if (!postedAt || !description || new Date(postedAt) > fetchedAt) return null;
-  const configuredDays = Number(process.env.JOB_STALE_DAYS ?? 45);
-  const staleDays = Number.isFinite(configuredDays) && configuredDays > 0 ? configuredDays : 45;
+  const staleDays = getJobStaleDays();
   const freshnessEnd = addDays(new Date(postedAt), staleDays).toISOString();
   const staleAfter = closesAt && closesAt < freshnessEnd ? closesAt : freshnessEnd;
   if (new Date(staleAfter) <= fetchedAt) return null;
@@ -119,8 +119,8 @@ function normalizeOracleRequisition(raw: OracleRequisition, baseUrl: string, fet
     description,
     employmentType: normalizeEmploymentTypeLabel(raw.JobSchedule)
   });
-  // Preserve the complete employer text and actual closing timestamp independently of feed freshness.
-  return job ? { ...job, description, ...(closesAt ? { expiresAt: closesAt } : {}) } : null;
+  // Preserve the actual closing timestamp independently of feed freshness.
+  return job ? { ...job, ...(closesAt ? { expiresAt: closesAt } : {}) } : null;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

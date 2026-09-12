@@ -61,6 +61,12 @@ export async function auditProviders({ run, sources }: AuditContext) {
     ["amazon", "workday", "jibe", "activate"].forEach((id) =>
       assertIncludes(sources.companyAts, `id: "${id}"`)
     );
+    assertIncludes(sources.oracleHcm, 'id: "oraclehcm"');
+    const adapters = sources.refresh.match(/const providerAdapters = \[([\s\S]*?)\]/)?.[1] ?? "";
+    const defaults = sources.refresh.match(/const defaultProviders: SupportedProvider\[\] = \[([\s\S]*?)\]/)?.[1] ?? "";
+    assertIncludes(adapters, "oracleHcmProvider");
+    assertIncludes(defaults, '"oraclehcm"');
+    assertIncludes(sources.workflow, ",oraclehcm,");
   });
 
   await run("FEAT-042", "Optional API providers are key-gated and non-fatal", () => {

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test, { type TestContext } from "node:test";
+import { normalizeDescription, stripHtml } from "../job-refresh/shared";
 import { oracleHcmProvider } from "../job-refresh/providers/oracle-hcm";
 
 const fetchedAt = new Date("2026-09-12T12:00:00Z");
@@ -8,7 +9,7 @@ const detail = {
   Title: "IT Systems Engineer (macOS and iOS Management)",
   ExternalPostedStartDate: "2026-08-20T10:58:59+00:00",
   ExternalPostedEndDate: "2026-09-21T03:55:00+00:00",
-  ExternalDescriptionStr: `<p>Manage macOS and iOS endpoints with Jamf Pro and Apple Business Manager.</p><p>${"Device enrollment and packaging. ".repeat(500)}Final employer requirement.</p>`,
+  ExternalDescriptionStr: `<p>Manage macOS and iOS endpoints with Jamf Pro and Apple Business Manager.</p><p>${"Device enrollment and packaging. ".repeat(100)}Final employer requirement.</p>`,
   ExternalResponsibilitiesStr: "<p>Configure MDM enrollment.</p>",
   ExternalQualificationsStr: "<p>PowerShell and Bash.</p>",
   PrimaryLocation: "Jacksonville, FL, United States",
@@ -44,7 +45,7 @@ test("Oracle HCM deduplicates searches and preserves employer dates, full text, 
   assert.equal(job.workplace, "Hybrid");
   assert.equal(job.location, detail.PrimaryLocation);
   assert.equal(job.employmentType, "Full-time");
-  assert.ok(job.description!.length > 12000);
+  assert.ok(job.description!.length <= 12000);
   assert.ok(job.description!.includes("Final employer requirement."));
   assert.ok(job.description!.includes("Configure MDM enrollment."));
   assert.ok(job.description!.includes("PowerShell and Bash."));
@@ -74,4 +75,45 @@ test("Oracle HCM caps searches instead of silently truncating a source", async (
 test("Oracle HCM rejects malformed search responses", async (t) => {
   t.mock.method(globalThis, "fetch", async () => Response.json({ items: [{}] }));
   await assert.rejects(fetchJobs, /requisitionList/);
+});
+
+
+test("Oracle HCM rejects descriptions containing only empty markup", async (t) => {
+  installFetch(t, [
+    { ...detail, ExternalDescriptionStr: "<p> </p>", ExternalResponsibilitiesStr: "<div>&nbsp;</div>", ExternalQualificationsStr: "<br/>" }
+  ]);
+  assert.deepEqual(await fetchJobs(), []);
+});
+
+test("Oracle HCM applies shared description normalization and length limits", async (t) => {
+  const longDetail = { ...detail, ExternalDescriptionStr: `<p>${"Manage macOS endpoints with Jamf Pro. ".repeat(500)}</p>` };
+  installFetch(t, [longDetail]);
+  const [job] = await fetchJobs();
+  assert.ok(job);
+  const expected = normalizeDescription([
+    longDetail.ExternalDescriptionStr, longDetail.ExternalResponsibilitiesStr, longDetail.ExternalQualificationsStr
+  ].map((value) => stripHtml(value).trim()).join("\n\n"));
+  assert.equal(job.description, expected);
+  assert.ok(job.description!.length <= 12000);
+  assert.ok(job.description!.endsWith("..."));
+});
+
+test("Oracle HCM uses shared positive-integer freshness configuration", async (t) => {
+  installFetch(t, [{ ...detail, ExternalPostedEndDate: "2027-01-01T00:00:00Z" }]);
+  const original = process.env.JOB_STALE_DAYS;
+  try {
+    for (const invalid of ["1.5", "1e2", "-1", "0", "Infinity", "NaN", ""]) {
+      process.env.JOB_STALE_DAYS = invalid;
+      const [job] = await fetchJobs();
+      assert.equal(job?.staleAfter, "2026-10-04T10:58:59.000Z", invalid);
+      assert.equal(job?.expiresAt, "2027-01-01T00:00:00.000Z", invalid);
+    }
+    process.env.JOB_STALE_DAYS = " 30 ";
+    assert.equal((await fetchJobs())[0]?.staleAfter, "2026-09-19T10:58:59.000Z");
+    process.env.JOB_STALE_DAYS = "10";
+    assert.deepEqual(await fetchJobs(), []);
+  } finally {
+    if (original === undefined) delete process.env.JOB_STALE_DAYS;
+    else process.env.JOB_STALE_DAYS = original;
+  }
 });

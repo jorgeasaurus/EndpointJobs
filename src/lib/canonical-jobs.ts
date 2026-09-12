@@ -6,6 +6,7 @@ const directJobSources = new Set([
   "Ashby",
   "Greenhouse",
   "Lever",
+  "Oracle HCM",
   "Recruitee",
   "SmartRecruiters",
   "USAJOBS",
