@@ -210,15 +210,13 @@ async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
       for (const job of payload) {
         if (!job.externalPath || seenPaths.has(job.externalPath)) continue;
         seenPaths.add(job.externalPath);
-        let enriched: WorkdayJob | null = job;
-        if (site.fetchDetails) {
-          try {
-            enriched = await fetchWorkdayDetail(site.url, job);
-          } catch (error) {
-            throw new WorkdayDetailError(site.name, job.externalPath, error);
-          }
+        try {
+          const enriched = site.fetchDetails ? await fetchWorkdayDetail(site.url, job) : job;
+          if (enriched) jobs.push(normalizeWorkdayJob(enriched, site, query, fetchedAt));
+        } catch (error) {
+          if (site.fetchDetails) throw new WorkdayDetailError(site.name, job.externalPath, error);
+          throw error;
         }
-        if (enriched) jobs.push(normalizeWorkdayJob(enriched, site, query, fetchedAt));
       }
       console.log(`Fetched ${payload.length} raw jobs from Workday/${site.name} query ${query}`);
     }
@@ -644,7 +642,7 @@ function getWorkdaySites(defaultUrl: string): WorkdaySite[] {
         name: cleanText(name),
         url: cleanText(url),
         fetchDetails: fetchDetails === undefined
-          ? defaultWorkdaySites.some((site) => site.url === cleanText(url) && "fetchDetails" in site && site.fetchDetails)
+          ? defaultWorkdaySites.some((site) => site.url.replace(/\/+$/, "") === cleanText(url).replace(/\/+$/, "") && "fetchDetails" in site && site.fetchDetails)
           : cleanText(fetchDetails) === "true",
         queries: queries.split(";").map(cleanText).filter(Boolean)
       };

@@ -358,3 +358,42 @@ for (const suffix of ["/jobs", "/jobs/", "/jobs///"]) {
     assert.equal(detailUrl, "https://example.com/wday/cxs/example/Careers/job/Chicago/Endpoint-Engineer_R123");
   });
 }
+
+for (const malformed of [{ additionalLocations: 42, location: "Chicago" }, { jobDescription: { text: "Intune" } }]) {
+  test(`Workday malformed detail ${Object.keys(malformed)[0]} rejects as an incomplete snapshot`, async (t) => {
+    assert.ok(workdayProvider);
+    const originalSites = process.env.JOB_WORKDAY_SITES;
+    process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
+    t.after(() => {
+      if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+      else process.env.JOB_WORKDAY_SITES = originalSites;
+    });
+    t.mock.method(globalThis, "fetch", async (_input: unknown, init?: RequestInit) => {
+      if (init?.method === "POST") return Response.json({ jobPostings: [detailPosting] });
+      return Response.json({ jobPostingInfo: { ...validDetail, ...malformed } });
+    });
+    await assert.rejects(workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") }), (error) => error instanceof WorkdayDetailError && error.cause instanceof TypeError);
+  });
+}
+
+for (const suffix of ["/", "///"]) {
+  test(`Workday inherits detail-enabled defaults for URL suffix ${suffix}`, async (t) => {
+    assert.ok(workdayProvider);
+    const site = defaultWorkdaySites.find((site) => "fetchDetails" in site && site.fetchDetails);
+    assert.ok(site);
+    const originalSites = process.env.JOB_WORKDAY_SITES;
+    process.env.JOB_WORKDAY_SITES = `${site.name}|${site.url}${suffix}|Endpoint`;
+    t.after(() => {
+      if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+      else process.env.JOB_WORKDAY_SITES = originalSites;
+    });
+    let detailRequests = 0;
+    t.mock.method(globalThis, "fetch", async (_input: unknown, init?: RequestInit) => {
+      if (init?.method === "POST") return Response.json({ jobPostings: [detailPosting] });
+      detailRequests += 1;
+      return Response.json({ jobPostingInfo: validDetail });
+    });
+    await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
+    assert.equal(detailRequests, 1);
+  });
+}

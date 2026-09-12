@@ -776,3 +776,5 @@ Second review: fixed seven valid summary findings covering entity decoding, Orac
 Third review: normalized Oracle API bases, skipped closed Oracle details, failed closed on detail-enabled Workday search outages, and stabilized IDs for the four new Workday listings. Corrected mapped totals; the repeated unsupported Snorkel claim is explained and left open. Validation: 166 tests, data audit, typecheck, lint, and production build pass; final review gate remains pending.
 
 Fourth review: bounded Workday searches to 15 seconds, normalized trailing slashes in detail URLs, restored IFF salary extraction for Hangul filler separators, and documented SchoolJobs defaults. All 172 tests, data audit, typecheck, lint, and production build pass; request another latest-head review.
+
+Fifth review: wrap malformed Workday detail normalization as an incomplete snapshot and inherit detail defaults across trailing-slash overrides. The CLI malformed-payload regression fails before the fix and passes afterward; all 177 tests, data audit, typecheck, and lint pass. Prior production build remains applicable to these ingestion-only changes.
