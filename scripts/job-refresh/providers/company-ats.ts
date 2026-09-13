@@ -1024,8 +1024,17 @@ function isWorkdayJob(value: unknown): value is WorkdayJob {
 
 function isWorkdayDetailPath(value: unknown) {
   if (typeof value !== "string" || value !== value.trim() || !value.startsWith("/job/")) return false;
+  let decodedPath: string;
+  try {
+    decodedPath = decodeURIComponent(value);
+  } catch {
+    return false;
+  }
   const parsed = new URL(value, "https://workday.invalid");
-  return parsed.pathname === value && !parsed.search && !parsed.hash;
+  return parsed.pathname === value && !parsed.search && !parsed.hash
+    && !/[?#\\]/.test(decodedPath)
+    && decodedPath.startsWith("/job/")
+    && !decodedPath.split("/").some((segment) => segment === "." || segment === "..");
 }
 
 function isActivateJob(value: unknown): value is ActivateJob {
