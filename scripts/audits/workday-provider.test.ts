@@ -414,7 +414,11 @@ for (const suffix of ["/", "///"]) {
   });
 }
 
-for (const postings of [[{ unexpected: true }], [detailPosting, { title: 42, externalPath: "/job/bad" }]]) {
+for (const postings of [
+  [{ unexpected: true }],
+  [detailPosting, { title: 42, externalPath: "/job/bad" }],
+  [{ ...detailPosting, externalPath: "job/without-leading-slash" }]
+]) {
   test("Workday rejects malformed search entries for detail-enabled sites", async (t) => {
     assert.ok(workdayProvider);
     const originalSites = process.env.JOB_WORKDAY_SITES;
