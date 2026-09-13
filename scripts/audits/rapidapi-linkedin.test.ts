@@ -129,3 +129,32 @@ test("LinkedIn searches each title against primary, Spain, and LATAM batches", a
     '"Ecuador" OR "Caribbean"'
   );
 });
+
+test("LinkedIn preserves encoded literal placeholders through normalization", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalEnv = { ...process.env };
+  process.env.RAPIDAPI_LINKEDIN_JOBS_KEY = "test-key";
+  process.env.JOB_RAPIDAPI_LINKEDIN_TITLE_FILTERS = "Endpoint Engineer";
+  process.env.JOB_RAPIDAPI_LINKEDIN_LOCATION_FILTER = "United States";
+  delete process.env.JOB_RAPIDAPI_LINKEDIN_SPAIN_LOCATION_FILTER;
+  delete process.env.JOB_RAPIDAPI_LINKEDIN_LATAM_LOCATION_FILTER;
+  process.env.JOB_RAPIDAPI_LINKEDIN_MAX_PAGES = "1";
+  globalThis.fetch = async () => Response.json([{
+    title: "Endpoint Engineer",
+    company: "Example",
+    url: "https://example.com/jobs/1",
+    location: "Remote",
+    description: `<p>Manage Intune endpoints using &#60;device&#62; placeholders.</p><p>${"Automate Windows endpoint deployment and compliance. ".repeat(12)}</p>`
+  }]);
+
+  try {
+    const [job] = await rapidApiLinkedInProvider.fetchJobs({
+      url: rapidApiLinkedInProvider.defaultUrl,
+      fetchedAt: new Date("2026-09-12T12:00:00Z")
+    });
+    assert.match(job?.description ?? "", /<device>/);
+  } finally {
+    globalThis.fetch = originalFetch;
+    restoreProcessEnv(originalEnv);
+  }
+});
