@@ -136,11 +136,15 @@ function normalizeOracleRequisition(raw: OracleRequisition, fetchedAt: Date): Jo
   const postingDate = raw.ExternalPostedStartDate?.trim();
   const postedAt = parseDateLike(postingDate);
   if (!postedAt) throw new Error(`Oracle HCM invalid posting date for ${raw.Id}`);
-  const closingDate = raw.ExternalPostedEndDate;
-  const closesAt = parseDateLike(closingDate?.trim());
-  if (closingDate?.trim() && !closesAt) {
+  const closingDate = raw.ExternalPostedEndDate?.trim();
+  const parsedClosingDate = parseDateLike(closingDate);
+  if (closingDate && !parsedClosingDate) {
     throw new Error(`Oracle HCM invalid closing date for ${raw.Id}`);
   }
+  // Date-only deadlines include the employer's full closing day.
+  const closesAt = parsedClosingDate && /^\d{4}-\d{2}-\d{2}$/.test(closingDate ?? "")
+    ? new Date(new Date(parsedClosingDate).getTime() + 86_400_000 - 1).toISOString()
+    : parsedClosingDate;
   const description = [raw.ExternalDescriptionStr, raw.ExternalResponsibilitiesStr, raw.ExternalQualificationsStr]
     .map((value) => typeof value === "string" ? stripHtml(value).trim() : "").filter(Boolean).join("\n\n");
   // Never manufacture publication dates or replace unavailable employer details with search snippets.

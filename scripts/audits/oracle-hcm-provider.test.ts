@@ -333,3 +333,25 @@ test("Oracle HCM rejects a successful detail payload with no employer descriptio
   installFetch(t, [{ ...detail, ExternalDescriptionStr: undefined, ExternalResponsibilitiesStr: null, ExternalQualificationsStr: "" }]);
   await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && /missing description/.test(error.message));
 });
+
+test("Oracle HCM keeps date-only deadlines open through their closing day", async (t) => {
+  installFetch(t, [{ ...detail, ExternalPostedEndDate: " 2026-09-12 " }]);
+  for (const now of ["2026-09-12T00:00:00.000Z", "2026-09-12T23:59:59.998Z"]) {
+    const [job] = await oracleHcmProvider.fetchJobs({ url: oracleHcmProvider.defaultUrl, fetchedAt: new Date(now) });
+    assert.ok(job);
+    assert.equal(job.expiresAt, "2026-09-12T23:59:59.999Z");
+    assert.equal(job.staleAfter, job.expiresAt);
+  }
+  for (const now of ["2026-09-12T23:59:59.999Z", "2026-09-13T00:00:00.000Z"]) {
+    assert.deepEqual(await oracleHcmProvider.fetchJobs({ url: oracleHcmProvider.defaultUrl, fetchedAt: new Date(now) }), []);
+  }
+});
+
+test("Oracle HCM preserves timestamp closing deadlines and exact expiration boundaries", async (t) => {
+  installFetch(t, [{ ...detail, ExternalPostedEndDate: "2026-09-12T08:30:00-04:00" }]);
+  const [job] = await oracleHcmProvider.fetchJobs({ url: oracleHcmProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:29:59.999Z") });
+  assert.ok(job);
+  assert.equal(job.expiresAt, "2026-09-12T12:30:00.000Z");
+  assert.equal(job.staleAfter, job.expiresAt);
+  assert.deepEqual(await oracleHcmProvider.fetchJobs({ url: oracleHcmProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:30:00.000Z") }), []);
+});

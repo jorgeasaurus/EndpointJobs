@@ -107,6 +107,7 @@ type WorkdayJob = {
 };
 
 const staleDays = getJobStaleDays();
+const workdayDetailConcurrency = 5;
 
 const defaultAmazonQueries = [
   "macOS Client Engineering",
@@ -211,20 +212,28 @@ async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
         continue;
       }
       completedQueries += 1;
-      for (const job of payload) {
-        if (!job.externalPath || seenPaths.has(job.externalPath)) continue;
+      const uniqueJobs = payload.filter((job): job is WorkdayJob & { externalPath: string } => {
+        if (!job.externalPath || seenPaths.has(job.externalPath)) return false;
         seenPaths.add(job.externalPath);
-        try {
-          const enriched = site.fetchDetails ? await fetchWorkdayDetail(site.url, job, deadline) : job;
-          assertWorkdayDeadline(deadline);
-          if (enriched) jobs.push(normalizeWorkdayJob(enriched, site, query, fetchedAt));
-        } catch (error) {
-          if (site.fetchDetails) throw new WorkdayDetailError(site.name, job.externalPath, error);
-          if (deadline !== undefined && Date.now() >= deadline) {
-            throw new WorkdayIncompleteSnapshotError(site.name, `query ${query}`, error);
+        return true;
+      });
+      for (let offset = 0; offset < uniqueJobs.length; offset += workdayDetailConcurrency) {
+        const batch = uniqueJobs.slice(offset, offset + workdayDetailConcurrency);
+        const enrichedJobs = await Promise.all(batch.map(async (job) => {
+          try {
+            const enriched = site.fetchDetails ? await fetchWorkdayDetail(site.url, job, deadline) : job;
+            assertWorkdayDeadline(deadline);
+            return enriched ? normalizeWorkdayJob(enriched, site, query, fetchedAt) : null;
+          } catch (error) {
+            if (site.fetchDetails) throw new WorkdayDetailError(site.name, job.externalPath, error);
+            if (deadline !== undefined && Date.now() >= deadline) {
+              throw new WorkdayIncompleteSnapshotError(site.name, `query ${query}`, error);
+            }
+            throw error;
           }
-          throw error;
-        }
+        }));
+        jobs.push(...enrichedJobs);
+        if (deadline !== undefined) assertWorkdayDeadline(deadline);
       }
       console.log(`Fetched ${payload.length} raw jobs from Workday/${site.name} query ${query}`);
     }
@@ -470,7 +479,8 @@ function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, 
     ? new Date(new Date(endDate).getTime() + 86_400_000 - 1).toISOString()
     : endDate;
   if (detail?.canApply === false || detail?.posted === false || (expiresAt && new Date(expiresAt) <= fetchedAt)) return null;
-  const title = cleanText(detail?.title || raw.title);
+  const detailTitle = cleanText(detail?.title ?? "");
+  const title = detailTitle || cleanText(raw.title);
   const company = site.name;
   const sourceJobUrl = buildWorkdayJobUrl(site.url, raw.externalPath);
 
@@ -482,7 +492,8 @@ function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, 
   const location = detail?.location
     ? [detail.location, ...(detail.additionalLocations ?? [])].join("; ")
     : getWorkdayLocation(raw, bulletFields);
-  const description = detail?.jobDescription ? stripHtml(detail.jobDescription) : bulletFields.join(" ");
+  const detailDescription = detail?.jobDescription ? stripHtml(detail.jobDescription).trim() : "";
+  const description = detailDescription || bulletFields.join(" ");
   const haystack = normalizeSearchText([title, company, location, bulletFields.join(" "), description, detail?.remoteType].join(" "));
   const postedAt = parseDateLike(detail?.startDate) ?? parseWorkdayPostedOn(raw.postedOn, fetchedAt) ?? fetchedAt.toISOString();
   if (detail && new Date(postedAt) > fetchedAt) return null;

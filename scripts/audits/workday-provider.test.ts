@@ -57,6 +57,24 @@ test("Workday details preserve original dates, qualify generic titles, and exclu
   }
 });
 
+test("Workday detail text falls back when cleaned fields are empty", async () => {
+  assert.ok(workdayProvider);
+  const originalFetch = globalThis.fetch;
+  const originalEnv = { ...process.env };
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/External/jobs|Endpoint|true";
+  globalThis.fetch = async (_input, init) => init?.method === "POST"
+    ? Response.json({ jobPostings: [{ title: "Endpoint Administrator", externalPath: "/job/Example/Search-title", postedOn: "Posted Today", bulletFields: ["Manage enterprise endpoints with Intune and Jamf. ".repeat(12)] }] })
+    : Response.json({ jobPostingInfo: { title: "   ", jobDescription: "   ", startDate: "2026-09-11", canApply: true } });
+  try {
+    const [job] = await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
+    assert.equal(job?.title, "Endpoint Administrator");
+    assert.match(job?.description ?? "", /Manage enterprise endpoints/);
+  } finally {
+    globalThis.fetch = originalFetch;
+    process.env = originalEnv;
+  }
+});
+
 test("Workday defaults include GEICO's focused endpoint searches", () => {
   assert.deepEqual(
     defaultWorkdaySites.find((site) => site.name === "GEICO"),
