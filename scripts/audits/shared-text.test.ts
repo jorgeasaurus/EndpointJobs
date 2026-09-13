@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { cleanText, stripHtml, toEndpointJob } from "../job-refresh/shared";
+import { cleanText, parseStrictIsoDate, stripHtml, toEndpointJob } from "../job-refresh/shared";
+
+test("Strict ISO dates reject host-dependent timestamps", () => {
+  assert.equal(parseStrictIsoDate("2026-09-12"), "2026-09-12T00:00:00.000Z");
+  assert.equal(parseStrictIsoDate("2026-09-12T12:00:00Z"), "2026-09-12T12:00:00.000Z");
+  assert.equal(parseStrictIsoDate("2026-09-12T08:00:00-04:00"), "2026-09-12T12:00:00.000Z");
+  assert.equal(parseStrictIsoDate("2026-09-12T12:00:00"), undefined);
+});
 
 test("HTML text decodes decimal and hexadecimal numeric character references", () => {
   assert.equal(stripHtml("10&#43; years; C&#x2b;&#X2B;; caf&#233;; &#x1F680;"), "10+ years; C++; café; \u{1F680}");

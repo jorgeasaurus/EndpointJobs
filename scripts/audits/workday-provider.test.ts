@@ -556,6 +556,21 @@ test("Workday permits null optional detail fields", async (t) => {
   assert.equal(jobs.filter(Boolean).length, 1);
 });
 
+test("Workday trims a date-only closing date before expanding its deadline", async (t) => {
+  assert.ok(workdayProvider);
+  const originalSites = process.env.JOB_WORKDAY_SITES;
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
+  t.after(() => {
+    if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+    else process.env.JOB_WORKDAY_SITES = originalSites;
+  });
+  t.mock.method(globalThis, "fetch", async (_input: unknown, init?: RequestInit) => init?.method === "POST"
+    ? Response.json({ jobPostings: [detailPosting] })
+    : Response.json({ jobPostingInfo: { ...validDetail, endDate: " 2026-09-12 " } }));
+  const jobs = await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
+  assert.equal(jobs[0]?.expiresAt, "2026-09-12T23:59:59.999Z");
+});
+
 test("Workday closes a posting at its exact expiry instant", async (t) => {
   assert.ok(workdayProvider);
   const originalSites = process.env.JOB_WORKDAY_SITES;

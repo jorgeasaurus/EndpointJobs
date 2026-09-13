@@ -706,6 +706,7 @@ export function parseStrictIsoDate(value: string | undefined) {
 
   const calendarDate = /^(\d{4})-(\d{2})-(\d{2})(?:$|T)/.exec(normalized);
   if (!calendarDate) return undefined;
+  if (normalized.includes("T") && !/(?:Z|[+-]\d{2}:\d{2})$/i.test(normalized)) return undefined;
   const [, year, month, day] = calendarDate;
   const candidate = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
   if (candidate.getUTCFullYear() !== Number(year)
