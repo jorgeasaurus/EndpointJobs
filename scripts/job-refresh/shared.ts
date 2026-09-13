@@ -700,6 +700,21 @@ export function parseDateLike(value: string | undefined) {
   return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
 }
 
+export function parseStrictIsoDate(value: string | undefined) {
+  const normalized = value?.trim();
+  if (!normalized) return undefined;
+
+  const calendarDate = /^(\d{4})-(\d{2})-(\d{2})(?:$|T)/.exec(normalized);
+  if (!calendarDate) return undefined;
+  const [, year, month, day] = calendarDate;
+  const candidate = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+  if (candidate.getUTCFullYear() !== Number(year)
+    || candidate.getUTCMonth() !== Number(month) - 1
+    || candidate.getUTCDate() !== Number(day)) return undefined;
+
+  return parseDateLike(normalized);
+}
+
 function normalizeIdPart(value: string) {
   return normalizeSearchText(value)
     .replace(/[^a-z0-9]+/g, "-")

@@ -7,7 +7,7 @@ import { defaultWorkdaySites } from "../job-refresh/providers/workday-sites";
 
 const workdayProvider = companyAtsProviders.find((provider) => provider.id === "workday");
 
-test("Workday details preserve original dates, qualify generic titles, and exclude closed postings", async () => {
+test("Workday details preserve original dates, qualify generic titles, and exclude closed or stale postings", async () => {
   assert.ok(workdayProvider);
   const originalFetch = globalThis.fetch;
   const originalSites = process.env.JOB_WORKDAY_SITES;
@@ -38,15 +38,13 @@ test("Workday details preserve original dates, qualify generic titles, and exclu
   try {
     const jobs = (await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") })).filter((job) => job !== null);
     assert.equal(detailRequests, details.length, "Details are fetched once across overlapping queries");
-    assert.equal(jobs.length, 4);
-    assert.equal(jobs[0].postedAt, "2026-04-13T00:00:00.000Z");
-    assert.equal(jobs[0].expiresAt, "2026-09-21T23:59:59.999Z");
-    assert.equal(jobs[1].expiresAt, "2026-09-12T23:59:59.999Z");
+    assert.equal(jobs.length, 3);
+    assert.equal(jobs[0].postedAt, "2026-09-11T00:00:00.000Z");
+    assert.equal(jobs[0].expiresAt, "2026-09-12T23:59:59.999Z");
     assert.equal(jobs[0].staleAfter, jobs[0].expiresAt);
-    assert.equal(jobs[1].staleAfter, jobs[1].expiresAt);
     assert.equal(jobs[0].employmentType, "Full-time");
+    assert.equal(jobs[1].workplace, "Hybrid");
     assert.equal(jobs[2].workplace, "Hybrid");
-    assert.equal(jobs[3].workplace, "Hybrid");
     assert.match(jobs[0].description ?? "", /Microsoft Intune/);
     assert.ok(jobs[0].tools.includes("Intune"));
     assert.equal(jobs[0].location, "Chicago, IL");
@@ -207,7 +205,7 @@ const detailPosting = {
 };
 const validDetail = { startDate: "2026-09-11", title: "Endpoint Engineer", jobDescription: "Manage Microsoft Intune devices." };
 
-for (const failure of ["network", "429", "500", "invalid-json", "missing-detail", "invalid-date"] as const) {
+for (const failure of ["network", "429", "500", "invalid-json", "missing-detail", "invalid-date", "impossible-date"] as const) {
   test(`Workday rejects the entire snapshot on ${failure} detail failures across sites and queries`, async () => {
     assert.ok(workdayProvider);
     const originalFetch = globalThis.fetch;
@@ -225,7 +223,7 @@ for (const failure of ["network", "429", "500", "invalid-json", "missing-detail"
       if (failure === "network") throw new TypeError("network failed");
       if (failure === "429" || failure === "500") return new Response(null, { status: Number(failure) });
       if (failure === "invalid-json") return new Response("invalid json");
-      return Response.json(failure === "missing-detail" ? {} : { jobPostingInfo: { startDate: "invalid" } });
+      return Response.json(failure === "missing-detail" ? {} : { jobPostingInfo: { startDate: failure === "impossible-date" ? "2026-02-30" : "invalid" } });
     };
     try {
       await assert.rejects(workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") }), WorkdayDetailError);
@@ -430,7 +428,7 @@ for (const postings of [[{ unexpected: true }], [detailPosting, { title: 42, ext
   });
 }
 
-for (const endDate of ["invalid", 42, "", null]) {
+for (const endDate of ["invalid", "2026-02-30", 42, "", "   ", null]) {
   test(`Workday validates a present closing date: ${JSON.stringify(endDate)}`, async (t) => {
     assert.ok(workdayProvider);
     const originalSites = process.env.JOB_WORKDAY_SITES;
@@ -443,10 +441,25 @@ for (const endDate of ["invalid", 42, "", null]) {
       ? Response.json({ jobPostings: [detailPosting] })
       : Response.json({ jobPostingInfo: { ...validDetail, endDate } }));
     const result = workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
-    if (endDate === "" || endDate === null) assert.equal((await result).filter(Boolean).length, 1);
+    if ((typeof endDate === "string" && !endDate.trim()) || endDate === null) assert.equal((await result).filter(Boolean).length, 1);
     else await assert.rejects(result, WorkdayDetailError);
   });
 }
+
+test("Workday detail freshness is anchored to the employer publication date", async (t) => {
+  assert.ok(workdayProvider);
+  const originalSites = process.env.JOB_WORKDAY_SITES;
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
+  t.after(() => {
+    if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+    else process.env.JOB_WORKDAY_SITES = originalSites;
+  });
+  t.mock.method(globalThis, "fetch", async (_input: unknown, init?: RequestInit) => init?.method === "POST"
+    ? Response.json({ jobPostings: [detailPosting] })
+    : Response.json({ jobPostingInfo: { ...validDetail, startDate: "2026-07-01" } }));
+  const jobs = await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
+  assert.equal(jobs.filter(Boolean).length, 0);
+});
 
 test("Workday shares one deadline across searches and details and caps the final request", async (t) => {
   assert.ok(workdayProvider);

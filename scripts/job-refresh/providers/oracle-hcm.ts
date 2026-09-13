@@ -6,7 +6,7 @@ import {
   cleanText,
   getJobStaleDays,
   normalizeEmploymentTypeLabel,
-  parseDateLike,
+  parseStrictIsoDate,
   stripHtml,
   toEndpointJob
 } from "../shared";
@@ -134,10 +134,10 @@ function normalizeOracleRequisition(raw: OracleRequisition, fetchedAt: Date): Jo
     }
   }
   const postingDate = raw.ExternalPostedStartDate?.trim();
-  const postedAt = parseDateLike(postingDate);
+  const postedAt = parseStrictIsoDate(postingDate);
   if (!postedAt) throw new Error(`Oracle HCM invalid posting date for ${raw.Id}`);
   const closingDate = raw.ExternalPostedEndDate?.trim();
-  const parsedClosingDate = parseDateLike(closingDate);
+  const parsedClosingDate = parseStrictIsoDate(closingDate);
   if (closingDate && !parsedClosingDate) {
     throw new Error(`Oracle HCM invalid closing date for ${raw.Id}`);
   }

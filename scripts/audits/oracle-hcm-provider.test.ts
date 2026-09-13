@@ -302,6 +302,13 @@ test("Oracle HCM rejects a malformed nonempty posting date", async (t) => {
   await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && /invalid posting date/.test(error.message));
 });
 
+for (const [field, message] of [["ExternalPostedStartDate", "posting date"], ["ExternalPostedEndDate", "closing date"]] as const) {
+  test(`Oracle HCM rejects an impossible ${message}`, async (t) => {
+    installFetch(t, [{ ...detail, [field]: "2026-02-30" }]);
+    await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && error.message.includes(`invalid ${message}`));
+  });
+}
+
 test("Oracle HCM permits null optional metadata without coercion", async (t) => {
   installFetch(t, [{ ...detail, ExternalResponsibilitiesStr: null, ExternalQualificationsStr: null, PrimaryLocation: null, WorkplaceType: null, JobSchedule: null }]);
   const jobs = await fetchJobs();

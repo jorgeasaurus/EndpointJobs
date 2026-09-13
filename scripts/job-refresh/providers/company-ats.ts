@@ -15,6 +15,7 @@ import {
   normalizeEmploymentTypeLabel,
   normalizeSearchText,
   parseDateLike,
+  parseStrictIsoDate,
   stripHtml
 } from "../shared";
 
@@ -360,7 +361,7 @@ async function fetchWorkdayDetail(siteUrl: string, job: WorkdayJob, deadline?: n
   const detail = payload && typeof payload === "object"
     ? (payload as { jobPostingInfo?: WorkdayJob["detail"] }).jobPostingInfo
     : undefined;
-  if (!detail || typeof detail !== "object" || typeof detail.startDate !== "string" || !parseDateLike(detail.startDate)) {
+  if (!detail || typeof detail !== "object" || typeof detail.startDate !== "string" || !parseStrictIsoDate(detail.startDate)) {
     throw new Error("Workday detail did not include a valid job posting date");
   }
   for (const field of ["title", "jobDescription", "location", "remoteType", "timeType", "endDate"] as const) {
@@ -373,15 +374,15 @@ async function fetchWorkdayDetail(siteUrl: string, job: WorkdayJob, deadline?: n
       throw new TypeError(`Workday detail ${field} must be a boolean`);
     }
   }
-  if (detail.endDate != null && detail.endDate !== ""
-    && (typeof detail.endDate !== "string" || !parseDateLike(detail.endDate))) {
+  const closingDate = detail.endDate?.trim();
+  if (closingDate && !parseStrictIsoDate(closingDate)) {
     throw new Error("Workday detail included an invalid closing date");
   }
   if (detail.additionalLocations != null && (!Array.isArray(detail.additionalLocations)
     || detail.additionalLocations.some((location) => typeof location !== "string"))) {
     throw new TypeError("Workday detail locations must be an array of strings");
   }
-  return { ...job, detail };
+  return { ...job, detail: { ...detail, startDate: detail.startDate.trim(), endDate: closingDate || undefined } };
 }
 
 async function fetchActivateSearch(url: string, query: string, siteName: string) {
@@ -474,8 +475,9 @@ function normalizeAmazonJob(raw: AmazonJob, fetchedAt: Date): Job | null {
 
 function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, fetchedAt: Date): Job | null {
   const detail = raw.detail;
-  const endDate = detail?.endDate ? parseDateLike(detail.endDate) : undefined;
-  const expiresAt = endDate && /^\d{4}-\d{2}-\d{2}$/.test(detail?.endDate ?? "")
+  const closingDate = detail?.endDate?.trim();
+  const endDate = parseStrictIsoDate(closingDate);
+  const expiresAt = endDate && /^\d{4}-\d{2}-\d{2}$/.test(closingDate ?? "")
     ? new Date(new Date(endDate).getTime() + 86_400_000 - 1).toISOString()
     : endDate;
   if (detail?.canApply === false || detail?.posted === false || (expiresAt && new Date(expiresAt) <= fetchedAt)) return null;
@@ -495,10 +497,11 @@ function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, 
   const detailDescription = detail?.jobDescription ? stripHtml(detail.jobDescription).trim() : "";
   const description = detailDescription || bulletFields.join(" ");
   const haystack = normalizeSearchText([title, company, location, bulletFields.join(" "), description, detail?.remoteType].join(" "));
-  const postedAt = parseDateLike(detail?.startDate) ?? parseWorkdayPostedOn(raw.postedOn, fetchedAt) ?? fetchedAt.toISOString();
+  const postedAt = parseStrictIsoDate(detail?.startDate) ?? parseWorkdayPostedOn(raw.postedOn, fetchedAt) ?? fetchedAt.toISOString();
   if (detail && new Date(postedAt) > fetchedAt) return null;
-  const freshnessEnd = addDays(fetchedAt, staleDays).toISOString();
+  const freshnessEnd = addDays(detail ? new Date(postedAt) : fetchedAt, staleDays).toISOString();
   const staleAfter = expiresAt && expiresAt < freshnessEnd ? expiresAt : freshnessEnd;
+  if (new Date(staleAfter) <= fetchedAt) return null;
 
   const job = toEndpointJob({
     id: site.fetchDetails
