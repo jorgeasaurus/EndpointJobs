@@ -578,17 +578,21 @@ export function stripHtml(value: string) {
     .replace(/<[^>]+>/g, " "));
 }
 
-const htmlElementNames = new Set(`a abbr address area article aside audio b base bdi bdo blockquote body br button
+const markupElementNames = new Set(`a abbr address area article aside audio b base bdi bdo blockquote body br button
   canvas caption cite code col colgroup data datalist dd del details dfn dialog div dl dt em embed fieldset
   figcaption figure footer form h1 h2 h3 h4 h5 h6 head header hgroup hr html i iframe img input ins kbd
   label legend li link main map mark menu meta meter nav noscript object ol optgroup option output p picture
   pre progress q rp rt ruby s samp script search section select slot small source span strong style sub summary
   sup table tbody td template textarea tfoot th thead time title tr track u ul var video wbr acronym applet
-  basefont big center dir font frame frameset marquee nobr noembed noframes param plaintext rb rtc strike tt xmp`
+  basefont big center dir font frame frameset marquee nobr noembed noframes param plaintext rb rtc strike tt xmp
+  svg g path circle ellipse line polyline polygon rect text defs use symbol clippath mask pattern lineargradient
+  radialgradient stop foreignobject math mi mn mo ms mtext mrow mfrac msqrt mroot mstyle merror mpadded mphantom
+  mfenced menclose msub msup msubsup munder mover munderover mmultiscripts mtable mtr mtd semantics annotation
+  annotation-xml`
   .split(/\s+/));
 
 function protectEscapedPlaceholders(value: string) {
-  return value.replace(/&lt;(\/?)([a-z][\w-]*)&gt;/gi, (encoded, closing: string, name: string) => htmlElementNames.has(name.toLowerCase())
+  return value.replace(/&lt;(\/?)([a-z][\w-]*)&gt;/gi, (encoded, closing: string, name: string) => markupElementNames.has(name.toLowerCase()) || name.includes("-")
     ? encoded
     : `&#60;${closing}${name}&#62;`);
 }
