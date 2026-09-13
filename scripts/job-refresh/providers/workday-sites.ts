@@ -2,6 +2,7 @@ export type WorkdaySite = {
   name: string;
   url: string;
   queries: readonly string[];
+  fetchDetails?: boolean;
 };
 
 export const defaultWorkdaySites = [
@@ -175,5 +176,41 @@ export const defaultWorkdaySites = [
     name: "GEICO",
     url: "https://geico.wd1.myworkdayjobs.com/wday/cxs/geico/External/jobs",
     queries: ["Endpoint", "Intune"]
+  },
+  {
+    name: "SC Johnson",
+    fetchDetails: true,
+    url: "https://scj.wd5.myworkdayjobs.com/wday/cxs/scj/External_Career_Site/jobs",
+    queries: ["Endpoint"]
+  },
+  {
+    name: "U.S. Bank",
+    fetchDetails: true,
+    url: "https://usbank.wd1.myworkdayjobs.com/wday/cxs/usbank/US_Bank_Careers/jobs",
+    queries: ["Intune"]
+  },
+  {
+    name: "IFF",
+    fetchDetails: true,
+    url: "https://iff.wd5.myworkdayjobs.com/wday/cxs/iff/iff_careers/jobs",
+    queries: ["Endpoint"]
+  },
+  {
+    name: "Greenberg Traurig",
+    fetchDetails: true,
+    url: "https://gtlaw.wd1.myworkdayjobs.com/wday/cxs/gtlaw/GTLAW/jobs",
+    queries: ["Endpoint"]
+  },
+  {
+    name: "Morgan Stanley",
+    fetchDetails: true,
+    url: "https://ms.wd5.myworkdayjobs.com/wday/cxs/ms/External/jobs",
+    queries: ["Windows Infrastructure", "Endpoint"]
+  },
+  {
+    name: "Tempus AI",
+    fetchDetails: true,
+    url: "https://tempus.wd5.myworkdayjobs.com/wday/cxs/tempus/Tempus_Careers/jobs",
+    queries: ["Endpoint"]
   }
 ] as const satisfies readonly WorkdaySite[];

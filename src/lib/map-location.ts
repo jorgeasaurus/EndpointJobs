@@ -102,6 +102,12 @@ const locationCoordinates: Coordinate[] = [
     keys: ["denver", "westminster", "fort collins", "jacks cabin gunnison"]
   },
   {
+    label: "Irving, TX",
+    latitude: 32.814,
+    longitude: -96.9489,
+    keys: ["irving tx", "irving texas"]
+  },
+  {
     label: "Dallas, TX",
     latitude: 32.7767,
     longitude: -96.797,
@@ -132,6 +138,12 @@ const locationCoordinates: Coordinate[] = [
     keys: ["lafayette parish"]
   },
   { label: "Tampa, FL", latitude: 27.9506, longitude: -82.4572, keys: ["tampa"] },
+  {
+    label: "Jacksonville, FL",
+    latitude: 30.3322,
+    longitude: -81.6557,
+    keys: ["jacksonville fl", "jacksonville florida"]
+  },
   { label: "Miami, FL", latitude: 25.7617, longitude: -80.1918, keys: ["miami"] },
   {
     label: "Huntsville, AL",
@@ -636,6 +648,14 @@ export function hasGermanLocationEvidence(
 }
 
 export function resolveJobMapLocation(location: string): JobMapLocation | undefined {
+  for (const part of location.split(";")) {
+    const resolved = resolveSingleJobMapLocation(part);
+    if (resolved) return resolved;
+  }
+  return undefined;
+}
+
+function resolveSingleJobMapLocation(location: string): JobMapLocation | undefined {
   const normalized = normalizeLocation(location);
 
   if (!normalized || /^\d+ locations$/.test(normalized)) {

@@ -160,6 +160,21 @@ export async function auditMaps({ feed, run, sources }: AuditContext) {
   await run("FEAT-069", "Map location resolver maps known places and skips ambiguous rows", () => {
     assertEqual(resolveJobMapLocation("San Francisco, CA")?.label, "San Francisco, CA");
     assertEqual(resolveJobMapLocation("Mooresville, NC")?.label, "Mooresville, NC");
+    const irving = resolveJobMapLocation("Irving, TX; Atlanta, GA; Charlotte, NC; Chicago, IL");
+    assertEqual(irving?.label, "Irving, TX");
+    assertEqual(irving?.latitude, 32.814);
+    assertEqual(irving?.longitude, -96.9489);
+    assertEqual(resolveJobMapLocation("Atlanta, GA; Irving, TX")?.label, "Atlanta, GA");
+    assertEqual(resolveJobMapLocation("Irving, Texas")?.label, "Irving, TX");
+    assertEqual(resolveJobMapLocation("Irving, NY"), undefined);
+    for (const location of ["Jacksonville, FL, United States", "Jacksonville, Florida"]) {
+      const resolved = resolveJobMapLocation(location);
+      assertEqual(resolved?.label, "Jacksonville, FL");
+      assertEqual(resolved?.latitude, 30.3322);
+      assertEqual(resolved?.longitude, -81.6557);
+    }
+    assertEqual(resolveJobMapLocation("Jacksonville, NC, United States")?.label, "United States");
+    assertEqual(resolveJobMapLocation("Jacksonville"), undefined);
     assertEqual(resolveJobMapLocation("Berlin, Germany")?.label, "Berlin, Germany");
     assertEqual(resolveJobMapLocation("Berlin, DE")?.label, "Berlin, Germany");
     assertEqual(hasGermanLocationEvidence("Dresden, DE"), true);

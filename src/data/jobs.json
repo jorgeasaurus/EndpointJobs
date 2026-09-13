@@ -1,10 +1,532 @@
 {
-  "updatedAt": "2026-09-12T11:22:30.855Z",
+  "updatedAt": "2026-09-12T22:20:10.018Z",
   "source": {
-    "name": "Remotive + Arbeitnow + Jobicy + Remote OK + Greenhouse + Lever + The Muse + Ashby + Amazon Jobs + Workday + Jibe + Activate + SmartRecruiters + Recruitee + SchoolJobs + Curated Jobs + Adzuna + SerpAPI Google Jobs + RapidAPI Daily International Jobs + AI Dev Board + Himalayas + 4 Day Week",
+    "name": "Remotive + Arbeitnow + Jobicy + Remote OK + Greenhouse + Lever + The Muse + Ashby + Amazon Jobs + Workday + Oracle HCM + Jibe + Activate + SmartRecruiters + Recruitee + SchoolJobs + Curated Jobs + Adzuna + SerpAPI Google Jobs + RapidAPI Daily International Jobs + AI Dev Board + Himalayas + 4 Day Week",
     "url": "https://github.com/jorgeasaurus/EndpointJobs"
   },
   "jobs": [
+    {
+      "id": "ashby-radiant-industries-44491ec2-be9c-481e-a1d7-fe631abf1501",
+      "title": "Senior System Administrator",
+      "company": "Radiant Industries",
+      "location": "El Segundo, CA",
+      "workplace": "On-site",
+      "postedAt": "2026-09-12T00:22:43.201Z",
+      "fetchedAt": "2026-09-12T22:10:43.800Z",
+      "staleAfter": "2026-10-27T22:10:43.800Z",
+      "expiresAt": "2026-10-27T22:10:43.800Z",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/radiant-industries/44491ec2-be9c-481e-a1d7-fe631abf1501",
+      "applyUrl": "https://jobs.ashbyhq.com/radiant-industries/44491ec2-be9c-481e-a1d7-fe631abf1501/application",
+      "attributionLabel": "Ashby / Radiant Industries",
+      "termsProfile": "public-api",
+      "summary": "ABOUT RADIANT Radiant is an El Segundo, CA-based startup building the world’s first mass-produced, portable nuclear microreactors. The company’s first reactor, Kaleidos, is a 1-megawatt, fail-safe microreactor that can be transported anywhere power is...",
+      "description": "ABOUT RADIANT\n\nRadiant is an El Segundo, CA-based startup building the world’s first mass-produced, portable nuclear microreactors. The company’s first reactor, Kaleidos, is a 1-megawatt, fail-safe microreactor that can be transported anywhere power is needed and run for up to 5 years without refueling. Portable nuclear power with rapid-deploy capability can replace similar-sized diesel generators and provide critical asset support for hospitals, data centers, remote sites, and military bases. Radiant’s unique, practical approach to nuclear development leverages modern software engineering to rapidly deliver safe, factory-built microreactors that use existing, well-qualified materials. Founded in 2020, Radiant is on track to test its first reactor at the Idaho National Laboratory this summer, with initial customer deliveries beginning in 2028.\n\nABOUT THE ROLE:\n\nRadiant is seeking a Senior Systems Administrator to own the systems that keep the company running day-to-day within Microsoft 365 GCC High. You'll own the tenant, build our identity and access automation from the ground up in an Entra-native environment with no on-prem Active Directory or Group Policy, and manage the endpoint, email security, and SaaS infrastructure the business runs on. You'll implement and evidence the technical controls behind our CMMC assessment as part of the normal job, not a detour. This is a high-ownership seat in an interdisciplinary environment, advancing milestones toward commercializing the first mass-produced nuclear reactor.\n\nRESPONSIBILITIES AND DUTIES:\n\n- Own Microsoft 365 GCC High: Exchange Online, SharePoint, Teams, and the tenant configuration underneath them; be the authority on what's possible in this cloud and what has to be built in-house\n\n- Own Entra end-to-end: conditional access, privileged access, app registrations, and single sign-on\n\n- Build the IAM automation layer, the centerpiece of the role: joiner/mover/leaver lifecycle, entitlements driven by HR data, provisioning through Graph and SCIM, and access reviews that run themselves\n\n- Own Windows and endpoint management through Intune, Autopilot, compliance policy, and update rings across the fleet, with no Group Policy underneath\n\n- Own email security and information protection: Defender for Office, mail flow and anti-phishing posture, and Purview for DLP, labeling, and retention in an environment handling CUI\n\n- Own SaaS administration and integration across the business application portfolio, including Box and Slack; some running today, some a project waiting for an owner\n\n- Own the workloads, services, and licensing infrastructure running in AWS, in constant contact with the IT DevOps engineer who owns the account layer\n\n- Take new platform projects from idea to deployed, integrated, and documented\n\n- Implement and evidence the technical controls in these areas for the CMMC assessment ahead, as normal work rather than a detour\n\nREQUIRED QUALIFICATIONS AND SKILLS:\n\n- Bachelor's degree in Information Technology, Computer Engineering, Cybersecurity, or a similar field (4 years of work experience in lieu of a degree)\n\n- 7+ years administering and engineering production systems\n\n- Deep, hands-on experience across the responsibilities above: GCC High tenant administration, Entra, self-built IAM automation, Intune without Group Policy, email security and Purview, and SaaS/AWS administration\n\n- Solid networking fundamentals: VLANs, routing, firewall policy, DNS/DHCP, VPN, wireless\n\n- Treats compliance control implementation and evidence collection as normal work\n\n- Service is the job; tier-1 handles day-to-day support, but nobody's too senior to help the person at their desk\n\nDESIRED QUALIFICATIONS AND SKILLS:\n\n- Purview depth: DLP, sensitivity labeling, retention, or eDiscovery\n\n- CMMC or NIST 800-171 exposure; leading an assessment is not required\n\n- Stood up identity governance tooling: Entra ID Governance, SailPoint, Okta Workflows, or equivalent\n\n- Automation experience with PowerShell, Python, Microsoft Graph, and infrastructure as code (Terraform, Bicep, or similar)\n\n- Written and maintained PowerShell modules other people use, not just scripts\n\n- Deployed Box, Slack, or comparable platforms into a regulated environment and handled the data boundary questions\n\nADDITIONAL REQUIREMENTS\n\n- Must be willing to work extended hours and weekends as necessary to accomplish our mission.\n\n- Must work 100% onsite at El Segundo HQ.\n\nBENEFITS AND PERKS\n\n- Stock: Substantial incentive stock plan for all full-time employees.\n\n- Medical: 100% up to base silver level plan for employee + 50% dependents, offers up to Platinum plans.\n\n- One Medical: Sponsored memberships for employees and their dependents.\n\n- Vision: 100% top tier plan coverage + 50% for dependents.\n\n- Dental: 100% top tier plan coverage, orthodontia extra, 50% for dependents.\n\n- Voluntary life, accident, hospital, critical illness, commuter and FSA/HSA are offered as employee contributed benefits.\n\n- 8-weeks of paid parental leave for all parents. Additional paid pregnancy leave for CA employees.\n\n- Daily catered lunch. Free snacks and drinks.\n\n- Flexible PTO policy. Remote workday allocation.\n\n- Company and team-bonding events, happy hours and in-person camaraderie.\n\n- Beautiful El Segundo headquarters close to the Pacific Ocean.\n\nTotal Compensation and Benefits\nRadiant compensates people for impact and invests in those who continue to raise the bar. Radiant’s new hire compensation package includes base salary, substantial equity grants, and comprehensive health benefits. Total compensation and level are determined through a rigorous evaluation of interview performance, experience, education, and qualifications, and are designed to support continued growth as scope, responsibility, and impact expand at Radiant.\n\nThe best of today’s advanced reactor builders don’t wait for job postings. They join the winning team. If that’s you, contact us directly for immediate opportunities: recruiting@radiantnuclear.com.\n\nWe are an equal opportunity employer and all qualified applicants will receive consideration for employment without regard to race, color, religion, sex, sexual orientation, gender identity or expression, pregnancy, age, national origin, disability status, genetic information, protected veteran status, or any other characteristic protected by law.\n\nThis position involves access to technology that is subject to U.S. export controls. Any job offer made will be contingent upon the applicant’s capacity to serve in compliance with U.S. export controls.",
+      "tags": [
+        "Windows",
+        "Intune",
+        "Okta",
+        "Entra ID",
+        "Autopilot",
+        "PowerShell",
+        "Defender",
+        "Engineering",
+        "IT Infrastructure",
+        "FullTime",
+        "OnSite"
+      ],
+      "matchReasons": [
+        "Intune + Autopilot",
+        "Endpoint engineering",
+        "PowerShell automation",
+        "Compliance evidence",
+        "Windows platform"
+      ],
+      "tools": [
+        "Intune",
+        "Okta",
+        "Entra ID",
+        "Autopilot",
+        "PowerShell",
+        "Defender"
+      ],
+      "platforms": [
+        "Windows"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "Los Angeles, CA",
+        "latitude": 34.0522,
+        "longitude": -118.2437
+      }
+    },
+    {
+      "id": "greenhouse-drweng-8180036",
+      "title": "Systems Engineer - Microsoft",
+      "company": "DRW",
+      "location": "Chicago",
+      "workplace": "On-site",
+      "postedAt": "2026-09-11T19:44:11.000Z",
+      "fetchedAt": "2026-09-12T22:10:42.388Z",
+      "staleAfter": "2026-10-27T22:10:42.388Z",
+      "expiresAt": "2026-10-27T22:10:42.388Z",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/drweng/jobs/8180036",
+      "applyUrl": "https://job-boards.greenhouse.io/drweng/jobs/8180036",
+      "attributionLabel": "Greenhouse / DRW",
+      "termsProfile": "public-api",
+      "summary": "DRW is a diversified trading firm with over 3 decades of experience bringing sophisticated technology and exceptional people together to operate in markets around the world. We value autonomy and the ability to quickly pivot to capture opportunities, so...",
+      "description": "DRW is a diversified trading firm with over 3 decades of experience bringing sophisticated technology and exceptional people together to operate in markets around the world. We value autonomy and the ability to quickly pivot to capture opportunities, so we operate using our own capital and trading at our own risk.\n\nHeadquartered in Chicago with offices throughout the U.S., Canada, Europe, and Asia, we trade a variety of asset classes including Fixed Income, ETFs, Equities, FX, Commodities and Energy across all major global markets. We have also leveraged our expertise and technology to expand into three non-traditional strategies: real estate, venture capital and cryptoassets.\n\nWe operate with respect, curiosity and open minds. The people who thrive here share our belief that it’s not just what we do that matters–it's how we do it. DRW is a place of high expectations, integrity, innovation and a willingness to challenge consensus.\n\nOur philosophy:\n\n- We believe in relentless automation of repetitive tasks.\n\n- We have the curiosity and drive to dig deep and find creative solutions.\n\n- We believe our goal is to find the right solution rather than always being right.\n\n- We provide exceptional customer service to our teams and trading desks.\n\n- We care more that the right thing is done than about rigid job descriptions or boundaries.\n\nWhat you’ll do:\n\n- Administer core Microsoft services: Active Directory, DNS, DHCP, Group Policy, Exchange (on-premise, Online, hybrid).\n\n- Deploy, maintain and support Windows Server environments (2016–2025).\n\n- Support Microsoft cloud services (Entra ID, OneDrive, Copilot, Microsoft 365 services).\n\n- Configure single sign on and federation (SAML, OAuth/OIDC, SCIM).\n\n- Triage and resolve tickets from the operations queue; respond to critical production incidents.\n\n- Implement planned and ad hoc changes in accordance with firmwide change management processes.\n\n- Maintain clear system documentation and capture specialized configurations as repeatable runbooks.\n\n- Participate in a global support team with on call rotation and occasional weekend maintenance.\n\nYour background:\n\n- Experience managing Windows Server infrastructure in high visibility, mission critical environments.\n\n- Experience administering Windows Server services: Active Directory, Group Policy, DNS, DHCP, Failover Clustering.\n\n- Experience with Entra ID, Exchange (Server/Online/Hybrid) and MECM (SCCM) is preferred.\n\n- You can use scripts (e.g. PowerShell, Python) to automate routine administrative tasks.\n\n- Knowledge of networking fundamentals, server hardware and VM deployments.\n\n- Strong written and verbal communication skills. You can work across teams and have evidence-based discussions on technical and operational topics.\n\n- You are eager to learn, collaborate, and find solutions under interesting constraints.\n\nBonus points if you have:\n\n- Experience with Splunk, Grafana, Alertmanager, Prometheus.\n\n- Familiarity with DevOps/CI CD and IaC practices, containerization and Kubernetes.\n\n- Prior experience in the trading or financial services industry.\n\nThe annual base salary range for this position is $120,000 to $160,000 depending on the candidate’s experience, qualifications, and relevant skill set. The position is also eligible for an annual discretionary bonus. In addition, DRW offers a comprehensive suite of employee benefits including group medical, pharmacy, dental and vision insurance, 401k (with discretionary employer match), short and long-term disability, life and AD&D insurance, health savings accounts, and flexible spending accounts.\n\nFor more information about DRW's processing activities and our use of job applicants' data, please view our Privacy Notice at https://drw.com/privacy-notice .\n\nCalifornia residents, please review the California Privacy Notice for information about certain legal rights at https://drw.com/california-privacy-notice .\n\n[#LI-SK1]",
+      "tags": [
+        "Windows",
+        "SCCM",
+        "Entra ID",
+        "PowerShell",
+        "IO - Enterprise Systems",
+        "Chicago",
+        "Chicago, IL, United States"
+      ],
+      "matchReasons": [
+        "SCCM/MECM",
+        "PowerShell automation",
+        "Windows platform"
+      ],
+      "tools": [
+        "SCCM",
+        "Entra ID",
+        "PowerShell"
+      ],
+      "platforms": [
+        "Windows"
+      ],
+      "roleFamily": "Systems Administration",
+      "seniority": "Mid",
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "Chicago, IL",
+        "latitude": 41.8781,
+        "longitude": -87.6298
+      },
+      "salary": {
+        "min": 120000,
+        "max": 160000,
+        "currency": "USD",
+        "label": "$120k-$160k"
+      }
+    },
+    {
+      "id": "workday-sc-johnson--a1f411a969",
+      "title": "Associate Manager, Modern Endpoint Engineer",
+      "company": "SC Johnson",
+      "location": "USA - WI - Racine",
+      "workplace": "Hybrid",
+      "postedAt": "2026-09-11T00:00:00.000Z",
+      "fetchedAt": "2026-09-12T22:10:24.854Z",
+      "staleAfter": "2026-10-27T22:10:24.854Z",
+      "expiresAt": "2026-10-31T23:59:59.999Z",
+      "source": "Workday",
+      "sourceUrl": "https://scj.wd5.myworkdayjobs.com/External_Career_Site/job/USA---WI---Racine/Associate-Manager--Modern-Endpoint-Engineer_33497",
+      "applyUrl": "https://scj.wd5.myworkdayjobs.com/External_Career_Site/job/USA---WI---Racine/Associate-Manager--Modern-Endpoint-Engineer_33497",
+      "attributionLabel": "Workday / SC Johnson",
+      "termsProfile": "public-api",
+      "summary": "SC Johnson has been leading with purpose for 140 years, building high-quality products and iconic brands found in homes, schools and businesses in virtually every country worldwide – including OFF!®, Raid®, Glade®, Windex®, Scrubbing Bubbles®, Ziploc®,...",
+      "description": "SC Johnson has been leading with purpose for 140 years, building high-quality products and iconic brands found in homes, schools and businesses in virtually every country worldwide – including OFF!®, Raid®, Glade®, Windex®, Scrubbing Bubbles®, Ziploc®, Mrs. Meyer’s Clean Day®, method®, Autan®, Baygon®, Mr Muscle®, Duck®, Lysoform® and more.\n\nThe 13,000 people of our global, fifth-generation family company are committed to making the world a better place today and for future generations.\n\nABOUT THE ROLE\n\nAs the Associate Manager, Modern Endpoint Engineer, you will drive modernization and technical direction for a highly visible endpoint platform, ensuring solutions meet business needs while balancing security, supportability, and end-user experience. This role also owns key architecture deliverables within the Endpoint space.\n\nThe role combines deep hands-on engineering expertise with accountability for architecture governance, operating model discipline, and design quality—ensuring solutions are scalable, aligned to standards, and consistently executed.\n\nYou will partner closely with the Endpoint Manager and engineering team to drive roadmap alignment, solution design, and execution across Windows, macOS, and mobile platforms.\n\nThis role works cross-functionally—particularly with InfoSec (GIS)—to integrate modern deployment solutions and cloud-first strategies, supporting project delivery, M&A activity, and ongoing operational needs.\n\nKEY RESPONSIBILITIES\n\n-\nLead endpoint solutioning across Windows, macOS, and mobile, combining hands-on engineering expertise with conceptual and logical architecture design\n\n-\nDefine and enforce endpoint architecture governance, including standards, templates, checklists, policies, and quality frameworks\n\n-\nDefine and manage endpoint roadmap, including feature prioritization, vendor insights, roadmap cadence, and improvement of project submission and resource estimation quality\n\n-\nPartner with engineering teams to validate feasibility, guide PoCs, and ensure solutions align with architecture standards and enterprise design expectations\n\n-\nDevelop and maintain deep expertise in the endpoint ecosystem, including hardware, OS, applications, security, and end-user experience considerations\n\n-\nSet and monitor MSP standards, SLAs/XLAs, and performance metrics while ensuring adherence to security policies and infrastructure management processes\n\n-\nGuide teams on architecture practices and collaborate across teams to drive consistent execution, continuous improvement, and resolution of complex technical issues, including leading major incident response, engaging vendors, and providing on-call support as needed\n\nREQUIRED EXPERIENCE YOU’LL BRING\n\n-\nUniversity Degree and 5+ years of relevant experience\n\n-\n5+ years of experience in the Endpoint and Desktop Management space including but not limited to systems design, implementation and support.\n\n-\nStrong understanding of Modern Device Management concepts, the Digital Workspace Industry direction, Enterprise sized Endpoint ecosystem use cases, including Windows OS, Mac OS, and Mobile concepts.\n\n-\nMinimum 2 years of demonstrated experience in two or more of the following:\n\n-\nAdministration, configuration and design for Modern Endpoint Management (Microsoft Intune, JAMF)\n\n-\nExperience working with at least two of the following: Active Directory, Microsoft Azure AD, SCCM, GPO, or CPC\n\n-\nQualified candidates must be legally authorized to work in the United States without the need for current or future sponsorship for full-time employment.\n\nPREFERRED EXPERIENCES AND SKILLS\n\n•Transformative experience with Endpoint services in medium to large sized company.\n\n•Experience in mergers and acquisitions work.\n\n•Proven track record of a cross team collaborative approach\n\n•Experience with Microsoft Office 365\n\n•Strong problem-solving skills and the ability to overcome difficult challenges\n\n•Strong interpersonal and team building skills\n\n•Microsoft and/or Intune certifications are a plus\n\nJOB REQUIREMENTS\n\n-\nFull Time- regular schedule for corporate\n\n-\nRemote work available once a week after 90-day onboarding period.\n\n-\nThis role is not eligible for relocation\n\nBENEFITS AND PERKS\n\nSC Johnson’s total compensation packages are at or above industry levels. In addition to salary, total packages may include bonuses, long-term incentives, matching 401(k) contributions and profit sharing based on company profitability, job level and years of service. As a family company, we’re committed to providing benefits such as subsidized health care plans, maternity/paternity/adoption leave, flexible work arrangements, vacation purchase options, recreation and fitness centers, childcare, counseling services and more.\n\nInclusion & Diversity\n\nWe’re a global business, with people from every culture, ethnicity, race, religion, gender identity, sexual orientation, age and ability. We recognize the breadth of human experience, and we work to celebrate it. It is our goal to build a diverse, inclusive and supportive work environment where all people can thrive.\n\nWe’re committed to ongoing efforts that help us attract, hire, and retain diverse talent who want to build a positive, inclusive environment. Read more about our ongoing initiatives at https://jobs.scjohnson.com/inclusion .\n\nBetter Together\n\nAt SC Johnson, we believe people achieve their best when they collaborate and work together in person. We value connection to strengthen teamwork, accelerate problem solving, and drive innovation.\n\nEqual Opportunity Employer\n\nThe policy of the Company is to ensure equal opportunity for all qualified applicants and employees without regard to race, color, religion, gender, marital status, sexual orientation, national origin, ancestry, age, gender identity, gender expression, disability, citizenship, pregnancy, veteran status, membership in any active or reserve component of the U.S. or state military forces, genetic history or information or any other category protected by law.\n\nAccommodation Requests\n\nIf you are an individual with a disability and you need an accommodation or other assistance during the application process, please call our Human Resources department at 262-260-3343 or email your request to SCJHR@scj.com . All qualified applicants are encouraged to apply. Download the EEO Know Your Rights poster for more information.",
+      "tags": [
+        "macOS",
+        "Windows",
+        "Jamf",
+        "Intune",
+        "SCCM",
+        "Entra ID",
+        "33497"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "SCCM/MECM",
+        "Endpoint engineering",
+        "Device management",
+        "Desktop engineering"
+      ],
+      "tools": [
+        "Jamf",
+        "Intune",
+        "SCCM",
+        "Entra ID"
+      ],
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "roleFamily": "Windows Platform",
+      "seniority": "Manager",
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "United States",
+        "latitude": 39.8283,
+        "longitude": -98.5795
+      }
+    },
+    {
+      "id": "workday-u-s-bank--ee4d8e7380",
+      "title": "Senior Microsoft Intune Engineer",
+      "company": "U.S. Bank",
+      "location": "Irving, TX; Atlanta, GA; Hopkins, MN; Charlotte, NC; Chicago, IL; Cincinnati, OH; Minneapolis, MN; Saint Paul, MN",
+      "workplace": "On-site",
+      "postedAt": "2026-09-11T00:00:00.000Z",
+      "fetchedAt": "2026-09-12T22:10:24.854Z",
+      "staleAfter": "2026-09-21T23:59:59.999Z",
+      "expiresAt": "2026-09-21T23:59:59.999Z",
+      "source": "Workday",
+      "sourceUrl": "https://usbank.wd1.myworkdayjobs.com/US_Bank_Careers/job/Irving-TX/Senior-Windows-Endpoint-Engineer_2026-0025708",
+      "applyUrl": "https://usbank.wd1.myworkdayjobs.com/US_Bank_Careers/job/Irving-TX/Senior-Windows-Endpoint-Engineer_2026-0025708",
+      "attributionLabel": "Workday / U.S. Bank",
+      "termsProfile": "public-api",
+      "summary": "At U.S. Bank, we’re on a journey to do our best. Helping the customers and businesses we serve to make better and smarter financial decisions and enabling the communities we support to grow and succeed. We believe it takes all of us to bring our shared...",
+      "description": "At U.S. Bank, we’re on a journey to do our best. Helping the customers and businesses we serve to make better and smarter financial decisions and enabling the communities we support to grow and succeed. We believe it takes all of us to bring our shared ambition to life, and each person is unique in their potential. A career with U.S. Bank gives you a wide, ever-growing range of opportunities to discover what makes you thrive at every stage of your career. Try new things, learn new skills and discover what you excel at—all from Day One.\n\nJob Description\n\nThis position is not eligible for visa sponsorship.\n\nLocation expectations:\nThis role requires working from a U.S. Bank location three (3) or more days per week.\n\nU.S. Bank is seeking a Senior Microsoft Intune Engineer to join the Windows Platform & Solutions Engineering team within Employee Technology Experience. This team is responsible for the enterprise platforms used to manage Windows devices across the bank, including modern device management, application deployment, software distribution, operating system lifecycle management, automation, and endpoint modernization.\n\nThis person will serve as a senior technical expert for Microsoft Intune and cloud-first Windows device management. They will lead the design, implementation, enhancement, and support of modern endpoint management capabilities while partnering with engineering, operations, architecture, and other technology teams. The successful candidate will bring deep, hands-on Intune experience and the ability to independently lead complex initiatives from technical design through implementation and operational adoption.\n\nMain Responsibilities:\n\n- Engineer, administer, and enhance Microsoft Intune in a large enterprise environment\n\n- Lead Intune implementation, migration, and endpoint modernization initiatives\n\n- Design and implement cloud-first Windows device management solutions\n\n- Develop and manage device configuration, compliance, application, and update policies\n\n- Support Windows Autopilot and modern device provisioning capabilities\n\n- Integrate Intune with Microsoft Entra ID, Conditional Access, and related Microsoft technologies\n\n- Support the transition from Microsoft Configuration Manager to modern cloud-based endpoint management\n\n- Troubleshoot complex device enrollment, policy, application deployment, software update, and endpoint-management issues\n\n- Develop PowerShell automation and remediation solutions that improve efficiency and platform reliability\n\n- Provide senior engineering guidance and best-practice recommendations for Windows endpoint management\n\n- Partner with operations teams to implement and operationalize new platform capabilities\n\n- Participate in enterprise endpoint-management projects, platform upgrades, and technology implementations\n\n- Create and maintain technical documentation, engineering standards, and solution designs\n\n- Serve as a senior technical resource and escalation point for Microsoft Intune and modern Windows management\n\nMust Have Skills:\n\n- 5–7+ years of hands-on Microsoft Intune experience\n\n- Deep experience engineering and administering Intune in an enterprise environment\n\n- Experience leading Intune implementations, migrations, or modernization initiatives\n\n- Windows Autopatch/Windows Update for Business\n\n- Strong cloud-first Windows device management experience\n\n- Experience designing and implementing device configuration, compliance, application, and update policies\n\n- Experience with Windows Autopilot and modern device provisioning\n\n- Experience integrating Intune with Microsoft Entra ID and Conditional Access\n\n- Experience supporting large-scale, complex Windows endpoint environments\n\n- Strong Windows operating system and endpoint-management troubleshooting skills\n\n- Hands-on PowerShell scripting and automation experience\n\n- Ability to independently lead complex technical initiatives from design through implementation\n\n- Experience partnering across engineering, architecture, operations, and support teams\n\n- Strong communication skills with the ability to explain technical decisions and influence stakeholders\n\nNice to Have Skills:\n\n- Microsoft Configuration Manager, including co-management and workload-transition experience\n\n- Experience migrating Windows management capabilities from traditional on-premises tools to Intune\n\n- Experience with enterprise application packaging and deployment\n\n- Power BI reporting and analytics\n\n- Endpoint security and configuration-baseline experience\n\n- Experience integrating endpoint platforms with other enterprise technologies\n\n- Technical design and architecture documentation experience\n\n- Experience working in a regulated or highly complex enterprise environment\n\nIf there’s anything we can do to accommodate a disability during any portion of the application or hiring process, please refer to our disability accommodations for applicants .\n\nBenefits:\n\nOur approach to benefits and total rewards considers our team members’ whole selves and what may be needed to thrive in and outside work. That's why our benefits are designed to help you and your family boost your health, protect your financial security and give you peace of mind. Our benefits include the following:\n\n-\nHealthcare (medical, dental, vision)\n\n-\nBasic term and optional term life insurance\n\n-\nShort-term and long-term disability\n\n-\nPregnancy disability and parental leave\n\n-\n401(k) and employer-funded retirement plan\n\n-\nPaid vacation (from two to five weeks depending on salary grade and tenure)\n\n-\nUp to 11 paid holiday opportunities\n\n-\nAdoption assistance\n\n-\nSick and Safe Leave accruals of one hour for every 30 worked, up to 80 hours per calendar year unless otherwise provided by law\n\nReview our full benefits available by employment status here .\n\nU.S. Bank is an equal opportunity employer. We consider all qualified applicants without regard to race, religion, color, sex, national origin, age, sexual orientation, gender identity, disability or veteran status, and other factors protected under applicable law.\n\nE-Verify\n\nU.S. Bank participates in the U.S. Department of Homeland Security E-Verify program in all facilities located in the United States and certain U.S. territories. The E-Verify program is an Internet-based employment eligibility verification system operated by the U.S. Citizenship and Immigration Services. Learn more about the E-Verify program .\n\nThe salary range reflects figures based on the primary location, which is listed first. The actual range for the role may differ based on the location of the role. In addition to salary, U.S. Bank offers a comprehensive benefits package, including incentive and recognition programs, equity stock purchase 401(k) contribution and pension (all benefits are subject to eligibility requirements). Pay Range: $111,605.00 - $131,300.00\n\nU.S. Bank will consider qualified applicants with arrest or conviction records for employment. U.S. Bank conducts background checks consistent with applicable local laws, including the Los Angeles County Fair Chance Ordinance and the California Fair Chance Act as well as the San Francisco Fair Chance Ordinance. U.S. Bank is subject to, and conducts background checks consistent with the requirements of Section 19 of the Federal Deposit Insurance Act (FDIA). In addition, certain positions may also be subject to the requirements of FINRA, NMLS registration, Reg Z, Reg G, OFAC, the NFA, the FCPA, the Bank Secrecy Act, the SAFE Act, and/or federal guidelines applicable to an agreement, such as those related to ethics, safety, or operational procedures.\n\nApplicants must be able to comply with U.S. Bank policies and procedures including the Code of Ethics and Business Conduct and related workplace conduct and safety policies.\n\nPosting may be closed earlier due to high volume of applicants.",
+      "tags": [
+        "Windows",
+        "Intune",
+        "SCCM",
+        "Entra ID",
+        "Autopilot",
+        "PowerShell",
+        "2026-0025708"
+      ],
+      "matchReasons": [
+        "Intune + Autopilot",
+        "SCCM/MECM",
+        "Endpoint engineering",
+        "Device management",
+        "PowerShell automation"
+      ],
+      "tools": [
+        "Intune",
+        "SCCM",
+        "Entra ID",
+        "Autopilot",
+        "PowerShell"
+      ],
+      "platforms": [
+        "Windows"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "Irving, TX",
+        "latitude": 32.814,
+        "longitude": -96.9489
+      },
+      "salary": {
+        "min": 111605,
+        "max": 131300,
+        "currency": "USD",
+        "label": "$112k-$131k"
+      }
+    },
+    {
+      "id": "workday-iff--436876cf39",
+      "title": "Endpoint Engineering Lead",
+      "company": "IFF",
+      "location": "USA, Union Bch (Off)",
+      "workplace": "Hybrid",
+      "postedAt": "2026-09-11T00:00:00.000Z",
+      "fetchedAt": "2026-09-12T22:10:24.854Z",
+      "staleAfter": "2026-10-27T22:10:24.854Z",
+      "expiresAt": "2026-10-30T23:59:59.999Z",
+      "source": "Workday",
+      "sourceUrl": "https://iff.wd5.myworkdayjobs.com/iff_careers/job/USA-Union-Bch-Off/Endpoint-Engineering-Lead_R20441",
+      "applyUrl": "https://iff.wd5.myworkdayjobs.com/iff_careers/job/USA-Union-Bch-Off/Endpoint-Engineering-Lead_R20441",
+      "attributionLabel": "Workday / IFF",
+      "termsProfile": "public-api",
+      "summary": "Job Summary Ready to shape the future of the digital workplace and deliver a seamless technology experience for employees around the globe? IFF is a global leader in food ingredients, flavors, fragrances, and health & biosciences. We deliver sustainable...",
+      "description": "Job Summary\nReady to shape the future of the digital workplace and deliver a seamless technology experience for employees around the globe?\n\nIFF is a global leader in food ingredients, flavors, fragrances, and health & biosciences. We deliver sustainable innovations that elevate everyday products.\n\nFood Ingredients: Innovating improved nutritional profiles, better taste and texture, and greater cost efficiency to meet the needs of global food and beverage manufacturers.\n\nThe role is based in St. Louis, Missouri or Union Beach, New Jersey, with consideration for a U.S.-based hybrid work arrangement. Be part of a strategic, solution-oriented, collaborative team where together we can achieve greatness and make a real impact. Your potential is our inspiration.\nWhere You'll Make a Difference\n\n- Define and execute the global endpoint management strategy and roadmap supporting approximately 6,000 employees.\n\n- Establish standards, policies, and lifecycle management practices for endpoint technologies.\n\n- Lead Windows 11, Microsoft Intune, Endpoint Manager, Autopilot, and Entra ID environments.\n\n- Drive automation and operational efficiency through PowerShell and modern management practices.\n\n- Own the strategy and effectiveness of the Virtual Desktop Infrastructure (VDI) platform.\n\n- Partner with security, infrastructure, service management, and regional IT teams.\n\n- Oversee vendor relationships, service level agreements (SLAs), and key performance indicators (KPIs).\n\n- Lead endpoint modernization, refresh programs, and business transformation activities.\n\n- Govern enterprise mobile device management and print services globally.\n\nWhat Makes You the Right Fit\n\n- Bachelor's degree in Computer Science, Information Technology, Engineering, or related field.\n\n- 8+ years of experience managing enterprise endpoint technologies.\n\n- Deep expertise in Windows endpoint engineering and device management.\n\n- Advanced knowledge of Intune, Endpoint Manager, Autopilot, Entra ID, and Microsoft 365.\n\n- Experience supporting Citrix Virtual Desktop Infrastructure environments.\n\n- Strong understanding of endpoint security, compliance, and Zero Trust principles.\n\n- Experience managing iOS and Android mobile device platforms.\n\n- Demonstrated success managing vendors and outsourced providers.\n\n- Strong communication, stakeholder management, analytical, and problem-solving skills.\n\nHow Would You Stand Out?\n\n- Experience with Windows 365 and Azure Virtual Desktop.\n\n- Knowledge of ITIL service management practices and enterprise print solutions.\n\n- Experience leading large-scale workplace transformation initiatives.\n\nWhy Choose Us?\n\n- Competitive Benefits (US): Competitive compensation, annual incentive opportunities, and comprehensive health and wellness programs. Our benefit package includes medical, dental, vision, 401(k), vacation, holidays, 16 weeks paid parental leave (maternity/paternity), and an annual bonus plan. IFF was also recognized by Newsweek as one of America's Greatest Workplaces for Perks & Benefits.\n\n- Diversity & Inclusion (US): IFF has been recognized previously in the US on the Disability Equality Index® – Best Place to Work for Disability Inclusion\n\n- Innovation: Gain exposure to cutting-edge technologies and trailblazing advancements in food ingredients solutions and protection. Meaningful work helping advance solutions for the food ingredients industry.\n\n- Global Collaboration: Be part of a global organization that values innovation, creativity, and collaborating amongst our diverse, cross-functional teams.\n\n- Sustainability: Contribute to solutions that support a safer, healthier, and more sustainable world. IFF was recognized on the Forbes Net Zero Leaders 2026 list within the chemicals/materials sector.\n\nFor your awareness, IFF has announced its intention to sell its Food Ingredients Business to CVC Capital Partners. The sale is currently expected to close in the first half of 2027, pending regulatory approvals and other customary closing conditions. ​ The Food Ingredient business unit will remain part of IFF until close and, at such time, will transition to CVC Capital Partners. By applying for this position, candidates acknowledge awareness that the role is part of the Food Ingredient business unit and has been identified to transition to CVC Capital Partners.\n\nWe are a global leader in taste, scent, and nutrition, offering our customers a broader range of natural solutions and accelerating our growth strategy. At IFF, we believe that your uniqueness unleashes our potential. We value the diverse mosaic of the ethnicity, national origin, race, age, sex, or veteran status. We strive for an inclusive workplace that allows each of our colleagues to bring their authentic self to work regardless of their religion, gender identity & expression, sexual orientation, or disability.\n\nVisit IFF.com/careers/workplace-diversity-and-inclusion to learn more\n\nSalary Ranges:\n\n97,916.00ㅤ-ㅤ139,880.00ㅤUSD",
+      "tags": [
+        "Windows",
+        "iOS",
+        "Android",
+        "Intune",
+        "Entra ID",
+        "Autopilot",
+        "PowerShell",
+        "R20441"
+      ],
+      "matchReasons": [
+        "Intune + Autopilot",
+        "Endpoint engineering",
+        "Device management",
+        "PowerShell automation",
+        "Endpoint security"
+      ],
+      "tools": [
+        "Intune",
+        "Entra ID",
+        "Autopilot",
+        "PowerShell"
+      ],
+      "platforms": [
+        "Windows",
+        "iOS",
+        "Android"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Lead",
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "United States",
+        "latitude": 39.8283,
+        "longitude": -98.5795
+      },
+      "salary": {
+        "min": 97916,
+        "max": 139880,
+        "currency": "USD",
+        "label": "$98k-$140k"
+      }
+    },
+    {
+      "id": "workday-tempus-ai--2a0ded0485",
+      "title": "Senior Endpoint Systems Engineer (HYBRID: Chicago)",
+      "company": "Tempus AI",
+      "location": "Chicago",
+      "workplace": "Hybrid",
+      "postedAt": "2026-09-03T00:00:00.000Z",
+      "fetchedAt": "2026-09-12T22:10:24.854Z",
+      "staleAfter": "2026-10-27T22:10:24.854Z",
+      "expiresAt": "2026-10-27T22:10:24.854Z",
+      "source": "Workday",
+      "sourceUrl": "https://tempus.wd5.myworkdayjobs.com/Tempus_Careers/job/Chicago/Senior-Endpoint-Systems-Engineer--HYBRID--Chicago-_JR202600672-1",
+      "applyUrl": "https://tempus.wd5.myworkdayjobs.com/Tempus_Careers/job/Chicago/Senior-Endpoint-Systems-Engineer--HYBRID--Chicago-_JR202600672-1",
+      "attributionLabel": "Workday / Tempus AI",
+      "termsProfile": "public-api",
+      "summary": "Passionate about precision medicine and advancing the healthcare industry? Recent advancements in underlying technology have finally made it possible for AI to impact clinical care in a meaningful way. Tempus' proprietary platform connects an entire...",
+      "description": "Passionate about precision medicine and advancing the healthcare industry?\n\nRecent advancements in underlying technology have finally made it possible for AI to impact clinical care in a meaningful way. Tempus' proprietary platform connects an entire ecosystem of real-world evidence to deliver real-time, actionable insights to physicians, providing critical information about the right treatments for the right patients, at the right time.\n\nLocation: Hybrid: Chicago (3 days on-site)\n\nPosition Overview:\n\nWe are seeking a highly skilled and strategic Senior Endpoint Systems Engineer to join our IT team. In this role, you will serve as the primary architect and technical lead for the health, security, compliance, and lifecycle management of our global endpoint fleet.\nOur environment features a balanced mix of both Windows and macOS devices. We need a senior professional with deep, dual-platform expertise who can design scalable deployment workflows, architect robust endpoint security configurations, and optimize our enterprise toolset—specifically Microsoft Intune, Jamf Pro, and Workspace ONE . As a senior member of the team, you will drive technical strategy, lead complex integration projects, and mentor junior IT staff to ensure a seamless and secure digital employee experience.\n\nKey Responsibilities:\n\n- Enterprise MDM Architecture: Architect, optimize, and maintain our global Unified Endpoint Management (UEM) infrastructure using Microsoft Intune, Jamf Pro, and VMware Workspace ONE .\n\n- Strategic Fleet Engineering: Design and scale automated deployment, provisioning, and configuration management workflows for a balanced fleet of Windows 10/11 and macOS hardware.\n\n- Modern Provisioning & Lifecycle: Standardize and evolve modern deployment frameworks utilizing Windows Autopilot , Apple Business Manager (ABM) , and Automated Device Enrollment to achieve zero-touch provisioning.\n\n- Advanced Scripting & Automation: Develop, test, and maintain robust code repositories ( PowerShell for Windows; Bash/Zsh/Python for macOS) to automate complex administrative tasks, custom reporting, and API integrations.\n\n- Security & Compliance Governance: Partner closely with the Security team to engineer and enforce endpoint security baselines (e.g., CIS Benchmarks), disk encryption protocols (BitLocker, FileVault), and EDR/antivirus agent deployments.\n\n- Identity & Access Architecture: Lead the integration of endpoint platforms with enterprise identity and access management (IAM) systems (e.g., Entra ID, Okta), including modern single sign-on (SSO) extensions.\n\n- Tier 3/4 Escalation & Mentorship: Act as the highest tier of technical escalation for complex endpoint, OS, and software issues. Provide mentorship, guidance, and technical training to Tier 1/2 service desk and junior systems administrators.\n\n- Roadmapping & Documentation: Maintain a forward-looking roadmap for endpoint technologies, evaluate emerging tools, and author authoritative architectural diagrams and standard operating procedures (SOPs).\n\nRequired Skills & Qualifications:\n\n- Experience: 5–8+ years of dedicated experience in endpoint engineering, systems administration, or infrastructure architecture within an enterprise environment.\n\n- Dual-Platform Mastery: Comprehensive, expert-level knowledge of both Windows and macOS operating systems, system internals, and enterprise deployment methodologies.\n\n- Enterprise Tooling Expertise: Deep hands-on engineering experience configuring and managing Microsoft Intune, Jamf Pro, and Workspace ONE at scale.\n\n- Advanced Scripting: Strong proficiency in PowerShell and Bash/Zsh (Python or Swift is a significant plus) for advanced automation, custom scripts, and utilizing MDM APIs.\n\n- Leadership & Communication: Proven ability to lead projects independently, collaborate across multi-functional engineering teams, and explain complex technical concepts to non-technical stakeholders.\n\n$130,000-$145,000 annually\n\nThe expected salary range may vary for other locations. Actual salary may vary based on qualifications and experience. Tempus offers a full range of benefits, which may include incentive compensation, restricted stock units, medical and other benefits depending on the position.\n\nWe are an equal opportunity employer. We do not discriminate on the basis of race, religion, color, national origin, gender, sexual orientation, age, marital status, veteran status, or disability status.",
+      "tags": [
+        "macOS",
+        "Windows",
+        "Jamf",
+        "Intune",
+        "Workspace ONE",
+        "Okta",
+        "Entra ID",
+        "Autopilot",
+        "PowerShell",
+        "JR202600672"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "Intune + Autopilot",
+        "Endpoint engineering",
+        "MDM",
+        "UEM"
+      ],
+      "tools": [
+        "Jamf",
+        "Intune",
+        "Workspace ONE",
+        "Okta",
+        "Entra ID",
+        "Autopilot",
+        "PowerShell"
+      ],
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "Chicago, IL",
+        "latitude": 41.8781,
+        "longitude": -87.6298
+      },
+      "salary": {
+        "min": 130000,
+        "max": 145000,
+        "currency": "USD",
+        "label": "$130k-$145k"
+      }
+    },
+    {
+      "id": "greenhouse-snorkelai-6150440004",
+      "title": "Senior IT Platform and Automation Engineer",
+      "company": "Snorkel AI",
+      "location": "New York City, NY (Hybrid); San Francisco, CA (Hybrid)",
+      "workplace": "Hybrid",
+      "postedAt": "2026-08-21T18:28:13.000Z",
+      "fetchedAt": "2026-09-12T22:10:42.388Z",
+      "staleAfter": "2026-10-27T22:10:42.388Z",
+      "expiresAt": "2026-10-27T22:10:42.388Z",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/snorkelai/jobs/6150440004",
+      "applyUrl": "https://job-boards.greenhouse.io/snorkelai/jobs/6150440004",
+      "attributionLabel": "Greenhouse / Snorkel AI",
+      "termsProfile": "public-api",
+      "summary": "About Snorkel At Snorkel, we believe meaningful AI doesn’t start with the model, it starts with the data. We’re on a mission to help enterprises transform expert knowledge into specialized AI at scale. The AI landscape has gone through incredible changes...",
+      "description": "About Snorkel\n\nAt Snorkel, we believe meaningful AI doesn’t start with the model, it starts with the data.\n\nWe’re on a mission to help enterprises transform expert knowledge into specialized AI at scale. The AI landscape has gone through incredible changes since 2015, when Snorkel started as a research project in the Stanford AI Lab, to the generative AI breakthroughs of today. But one thing has remained constant: the data you use to build AI is the key to achieving differentiation, high performance, and production-ready systems. We work with some of the world’s largest organizations to empower scientists, engineers, financial experts, product creators, journalists, and more to build custom AI with their data faster than ever before. Excited to help us redefine how AI is built? Apply to be the newest Snorkeler!\n\nJob Description\n\nWe're seeking a Senior IT Platform & Automation Engineer who treats internal infrastructure like a product—not a firefighting exercise. This is not a traditional helpdesk or \"break-fix\" role. You'll be the architect behind our internal employee experience, acting as the connective tissue between our office network, collaboration services, security stack, and core business systems (People Tech, CRM, and Engineering tools).\n\nIf you prefer writing Python scripts over manually resetting passwords, and if you get excited about connecting Claude AI to Greenhouse via custom Slack workflows, we want to talk to you.\n\nThis role is NOT:\n\n- A traditional helpdesk position. You won't be resetting passwords or shipping laptops.\n\n- A pure networking role. You'll touch networks, but automation is the priority.\n\n- A machine learning engineer role. You'll experiment with AI, but you won't build vector databases or train models.\n\nWhat You will Do\n\nIdentity, Endpoint & Network (The Foundation)\n\n- Identity & Access Management: Own our IdP (Okta/Auth0). Implement and automate SSO, MFA enforcement, and SCIM provisioning across all SaaS tools. Enforce zero-trust principles everywhere.\n\n- Endpoint Lifecycle: Own the full hardware and MDM lifecycle. Automate device provisioning, configuration, and secure deployment using Jamf and Intune. Build zero-touch onboarding workflows. (Note: You will own the automation and security profiles; physical device shipping/fulfillment is handled by our IT Ops coordinators.)\n\n- Network Engineering: Design, deploy, and maintain high-availability office networking (cloud-managed switching/routing, Wi-Fi) and secure remote access solutions (ZTNA/VPN) for a hybrid workforce. We prioritize automation-first engineers.\n\nCustom Integrations & Automation (The Builder Work)\n\n- API Integrations: Architect and build custom integrations between our core SaaS stack—syncing data between Okta, Greenhouse, Notion, and our CRM to eliminate manual data entry.\n\n- Workflow Orchestration: Own our internal automation layer. We currently use a mix of lightweight no-code tools (Zapier, App Script, AppSheet) and custom Python. We're actively phasing out low-code for mission-critical paths—you'll have permission to replace them with proper code. To be clear: this is a coding-heavy role. You'll spend the majority of your time writing code, not clicking in UIs. The no-code tools are placeholders—we expect you to replace or maintain them.\n\n- Internal Tooling: Build and maintain internal dashboards and Slack apps that give employees self-service access to IT, HR, and facilities requests.\n\nAI & LLM Experimentation (The Innovation Work)\n\n- AI Integrations: Review and assess connectors (MCP) if available. Otherwise, build lightweight API wrappers and prompt engineering pipelines to connect LLMs (Claude, OpenAI) to internal tools like Slack and Notion.\n\n- R&D Time: Dedicated time each sprint to experiment with new AI models and identify productivity gains for the company.\n\nSecurity Automation & Compliance (The Glue)\n\n- Security Scripting: Write robust scripts (Python, Bash, PowerShell) to automate security monitoring, endpoint patch management, and compliance reporting.\n\n- Alert Correlation: Architect centralized alerting pipelines by integrating EDR/SIEM webhooks into Slack via native integrations (CrowdStrike), filtering noise and surfacing only actionable security anomalies.\n\n- Compliance Automation: Create automated audit trails, access reviews, and reporting to support SOC2 / ISO compliance efforts—no more manual spreadsheet work.\n\nTech Stack Summary: Python, Okta/Azure AD, Jamf/Intune, Slack API, Greenhouse API, Notion API, Claude/OpenAI APIs, CrowdStrike, Meraki/cloud-networking, Google Workspace + GAM, Jira.\n\nWho You Are\n\nFoundation (Must-Have Baseline)\n\n- Experience: 4+ years in IT Engineering, Systems Engineering, or Platform roles with a heavy emphasis on automation and APIs.\n\n- Coding Proficiency: Advanced Python or JavaScript/Node.js. You treat your scripts like software—git, CI/CD, testing, and documentation are non-negotiable. Our current automation stack is built on Python. Familiarity with either is sufficient—we don't expect you to know both.\n\n- API Fluency: Proven experience building custom integrations using REST/GraphQL APIs. You know how to read documentation, handle OAuth2, and parse JSON in your sleep.\n\n- IdP & MDM Experience: Hands-on experience with Okta or Azure AD (SCIM, Workflows, automation) AND at least one MDM solution (Jamf and Intune).\n\n- Security-First Mindset: You understand least privilege, automated patching, and think about security in every integration you build.\n\nPrimary Focus Areas (Where You'll Spend Most of Your Time)\n\n- Core: Identity & Workflow Automation (Okta, SCIM, custom scripting)\n\n- Core: Endpoint Management & security ops related (MDM, zero-touch deployment, patching)\n\n- Secondary: Networking (TCP/IP, VLANs, Wi-Fi, VPN/ZTNA—enough to troubleshoot and configure, not necessarily design from scratch)\n\nWe prioritize automation-first engineers who can learn networking depth on the job. If you're a networking rockstar who's also strong on MDM and automation, even better.\n\nHigh-Value Differentiators (Stand Out From the Crowd)\n\n- Direct experience with Okta, People Tech (Rippling and Greenhouse), Notion, or Slack APIs\n\n- Hands-on experience building with LLM APIs (Anthropic Claude, OpenAI) for internal tools\n\n- Familiarity with Infrastructure as Code (Terraform)\n\n- Experience preparing IT systems for SOC2 or ISO 27001 audits\n\n- Experience with Google Workspace administration and GAM\n\n- Experience with zero-touch deployment workflows (Apple Business Manager, Windows Autopilot)\n\nActual compensation will be determined based on factors including skills, qualifications, experience, and geographic location.\n\nSalary range(s) for this role\n\n$150,000 - $220,000 USD\n\nBe Your Best at Snorkel\n\nJoining Snorkel AI means becoming part of a company that has market proven solutions, robust funding, and is scaling rapidly—offering a unique combination of stability and the excitement of high growth. As a member of our team, you’ll have meaningful opportunities to shape priorities and initiatives, influence key strategic decisions, and directly impact our ongoing success. Whether you’re looking to deepen your technical expertise, explore leadership opportunities, or learn new skills across multiple functions, you’re fully supported in building your career in an environment designed for growth, learning, and shared success.\n\nSnorkel AI is proud to be an Equal Employment Opportunity employer and is committed to building a team that represents a variety of backgrounds, perspectives, and skills. Snorkel AI embraces diversity and provides equal employment opportunities to all employees and applicants for employment. Snorkel AI prohibits discrimination and harassment of any type on the basis of race, color, religion, age, sex, national origin, disability status, genetics, protected veteran status, sexual orientation, gender identity or expression, or any other characteristic protected by federal, state, or local law. All employment is decided on the basis of qualifications, performance, merit, and business need.\n\nWe will ensure that individuals with disabilities are provided reasonable accommodation to participate in the job application or interview process, to perform essential job functions, and to receive other benefits and privileges of employment. Please contact us to request accommodation.",
+      "tags": [
+        "Windows",
+        "Jamf",
+        "Intune",
+        "Okta",
+        "Google Workspace",
+        "Entra ID",
+        "Autopilot",
+        "PowerShell",
+        "312 - Engineering",
+        "New York City",
+        "New York, New York, United States",
+        "San Francisco"
+      ],
+      "matchReasons": [
+        "Intune + Autopilot",
+        "Endpoint engineering",
+        "MDM",
+        "PowerShell automation",
+        "Endpoint security"
+      ],
+      "tools": [
+        "Jamf",
+        "Intune",
+        "Okta",
+        "Google Workspace",
+        "Entra ID",
+        "Autopilot",
+        "PowerShell"
+      ],
+      "platforms": [
+        "Windows"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "New York, NY",
+        "latitude": 40.7128,
+        "longitude": -74.006
+      },
+      "salary": {
+        "min": 150000,
+        "max": 220000,
+        "currency": "USD",
+        "label": "$150k-$220k"
+      }
+    },
+    {
+      "id": "oraclehcm-floridablue-41900-d6a67f6e2b",
+      "title": "IT Systems Engineer (macOS and iOS Management)",
+      "company": "Florida Blue",
+      "location": "Jacksonville, FL, United States",
+      "mapLocation": {
+        "label": "Jacksonville, FL",
+        "latitude": 30.3322,
+        "longitude": -81.6557
+      },
+      "workplace": "Hybrid",
+      "postedAt": "2026-08-20T10:58:59.000Z",
+      "fetchedAt": "2026-09-12T22:07:19.207Z",
+      "staleAfter": "2026-09-21T03:55:00.000Z",
+      "expiresAt": "2026-09-21T03:55:00.000Z",
+      "source": "Oracle HCM",
+      "sourceUrl": "https://fa-etum-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/floridablue/job/41900",
+      "applyUrl": "https://fa-etum-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/floridablue/job/41900",
+      "attributionLabel": "Florida Blue",
+      "termsProfile": "public-api",
+      "summary": "IT Systems Engineers are responsible for monitoring, installation, configuration, administration, troubleshooting and maintenance of technology solutions. IT Systems Engineers provide technical support, troubleshoot problem and perform...",
+      "description": "IT Systems Engineers are responsible for monitoring, installation, configuration, administration, troubleshooting and maintenance of technology solutions. IT Systems Engineers provide technical support, troubleshoot problem and perform scripting/programming to ensure stable and efficient operation of technology solutions.\n\nImportant To Know\n\n-\nThis position is a hybrid work arrangement that combines in-office engagement at our corporate office in Jacksonville, FL, days and times are determined and based on the requirements of the business.\n\n-\nIdeal candidates live within 50 miles of Jacksonville, FL and open to relocation\n\n-\nA technical review will be part of the interview process\n\nWhat You Will Be Doing\n\n-\nPerforms installation, monitoring, testing, configuration, migration, maintenance and troubleshooting of assigned technology\n\n-\nManages system/application environment and ongoing operations\n\n-\nEnsures that the technologies are updated with current, stable, and compliant architecture and applications that meet enterprise standards\n\n-\nResearches, designs, implements and tests technology solutions\n\n-\nProactively monitors and reports performance and utilization of assigned technologies\n\n-\nTroubleshoots software and/or hardware issues/failures\n\n-\nResolves alerts and performs remediation activities\n\n-\nManages problem or escalated tickets and tasks and out of cycle requests from systems/software owners\n\n-\nCollects and presents data for reporting and planning\n\n-\nAssists with developing tactical strategies, processes and procedures related to systems/application administration\n\n-\nDetermines migration and upgrade impacts and diagnose/resolve complex technology/application errors\n\n-\nCollaborates with IT and business area partners on work groups and initiatives\n\n-\nDetermines best course of action for meeting business needs\n\n-\nMay provide input into infrastructure architecture designs\n\n-\nWrites programming/scripting\n\n-\nMay participate in Disaster Recovery planning and exercises\n\n-\nEnsures execution and alignment to architectural standards and blueprints\n\n-\nMay contribute input to infrastructure architecture\n\n-\nPerforms on-call activities as needed for the environment and technologies\n\nWhat We Require\n\n-\nPrior experience working in healthcare, health insurance or financial environments as it relates to HIPAA, PCI, SOC2, HITRUST and CMS Compliance\n\n-\n4 or more years demonstrated proficiency and experience in design, implementation, monitoring and troubleshooting technology or equivalent combination of transferrable experience and education\n\n-\nBachelor's degree in an IT related field or equivalent work experience\n\n-\nExtensive working knowledge of multiple technologies and their interfaces and integration\n\n-\nCompetent working in one or more environments highly integrated with an operating system\n\n-\nExtensive experience implementing and administering/managing technical solutions in major, large-scale system implementations\n\n-\nHigh critical thinking skills to evaluate alternatives and present solutions that are consistent with business objectives and strategy\n\n-\nAbility to manage tasks independently and take ownership of responsibilities\n\n-\nAbility to learn from mistakes and apply constructive feedback to improve performance\n\n-\nAbility to communicate technical information clearly and articulately\n\n-\nAbility to adapt to a rapidly changing environment\n\nWhat We Prefer\n\n-\nWorking knowledge and experience managing JAMF Pro for device enrollment, configuration profiles, smart groups, patch management and policy deployment\n\n-\nFamiliarity with Apple Business Manager, Automated Device Enrollment (ADE), and Apple's Volume Purchase Program (VPP)\n\n-\nExperience with macOS imaging, packaging (PKG/DMG) and software deployment tools\n\n-\nUnderstanding of zero-touch deployment and MDM enrollment workflows for Mac, iOS and iPadOS devices\n\n-\nMultiple Site support\n\n-\nConfidence supporting a large-scale user population across multiple sites\n\n-\nSolid knowledge and experience with implementing and supporting Microsoft Windows Servers, Active Directory, LDAP, Group Policies, Permissions and applying Security Templates\n\n-\nSupport and administration for Windows Server 2022 and Server 2025\n\n-\nExperience in vSphere 7.x & 8.x Administration and Support\n\n-\nKnowledge and understanding of HCI and SDS platforms\n\n-\nInstallation, management and administration of SSL Certificates leveraging JAMF Pro as well as external enterprise tools\n\n-\nWorking knowledge of SSL/TLS protocols, standards and methodologies\n\n-\nStrong knowledge of network routing, switching and firewall policies, protocols and standards\n\n-\nStrong PowerShell scripting experience; working knowledge of Bash/shell scripting for macOS automation\n\n-\nStrong knowledge of Apple device implementation and management in a clinic environment\n\n-\nEvaluates current procedures and processes for accomplishing department objectives and continuously develops and implements improved practices\n\n-\nResponsible for proper escalation, communications, and management of production system problems\n\n-\nContact vendors for problem and incident resolution\n\nGeneral Physical Demands\n\n-\nExerting up to 10 pounds of force occasionally to move objects.\n\n-\nJobs are sedentary if traversing activities are required only occasionally.\n\nWhat We Offer\nAs a Florida Blue employee, you will be at the heart of GuideWell’s vision – to lead the nation in transforming health through compassionate, connected, and technology-enabled care that delivers personalized value and empowered living.\n\nTo support your wellbeing, comprehensive benefits are offered. As an employee, you will have access to:\n\n- Medical, dental, vision, life and global travel health insurance\n\n- Income protection benefits: life insurance, short- and long-term disability programs\n\n- Leave programs to support personal circumstances\n\n- Retirement Savings Plan including employer match\n\n- Paid time off, volunteer time off, 10 holidays and 2 well-being days\n\n- Additional voluntary benefits available; and a comprehensive wellness program\n\nEmployee benefits are designed to align with federal and state employment laws. Benefits may vary based on the state in which work is performed. Benefits for intern, part-time and seasonal employees may differ.\n\nTo support your financial wellbeing, we offer competitive pay as well as opportunities for incentive or commission compensation. We also conduct regular annual reviews with pay for performance considerations for base pay increases.\n\nTypical Annualized Offer/Hiring Range: $84,500 - $105,600\n\nAnnualized Salary Range: $84,500 - $137,300\n\nFinal pay will be determined with consideration of market competitiveness, internal equity, and the job-related knowledge, skills, training, and experience you bring.\n\nWe are an Equal Employment Opportunity employer committed to cultivating a work experience where everyone feels like they belong and can perform at their best in pursuit of our mission. All qualified applicants will receive consideration for employment.",
+      "tags": [
+        "macOS",
+        "Windows",
+        "iOS",
+        "Jamf",
+        "PowerShell"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "MDM",
+        "PowerShell automation",
+        "App packaging",
+        "Compliance evidence"
+      ],
+      "tools": [
+        "Jamf",
+        "PowerShell"
+      ],
+      "platforms": [
+        "macOS",
+        "Windows",
+        "iOS"
+      ],
+      "roleFamily": "Systems Administration",
+      "seniority": "Mid",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 84500,
+        "max": 105600,
+        "currency": "USD",
+        "label": "$85k-$106k"
+      }
+    },
+    {
+      "id": "oraclehcm-floridablue-41901-fbed7fb84d",
+      "title": "Sr IT Systems Engineer (macOS and iOS Management)",
+      "company": "Florida Blue",
+      "location": "Jacksonville, FL, United States",
+      "mapLocation": {
+        "label": "Jacksonville, FL",
+        "latitude": 30.3322,
+        "longitude": -81.6557
+      },
+      "workplace": "Hybrid",
+      "postedAt": "2026-08-20T10:43:54.000Z",
+      "fetchedAt": "2026-09-12T22:07:19.207Z",
+      "staleAfter": "2026-09-21T03:55:00.000Z",
+      "expiresAt": "2026-09-21T03:55:00.000Z",
+      "source": "Oracle HCM",
+      "sourceUrl": "https://fa-etum-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/floridablue/job/41901",
+      "applyUrl": "https://fa-etum-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/floridablue/job/41901",
+      "attributionLabel": "Florida Blue",
+      "termsProfile": "public-api",
+      "summary": "IT Systems Engineers are responsible for monitoring, installation, configuration, administration, troubleshooting and maintenance of technology solutions. They provide technical support, perform scripting/programming to ensure stable and efficient...",
+      "description": "IT Systems Engineers are responsible for monitoring, installation, configuration, administration, troubleshooting and maintenance of technology solutions. They provide technical support, perform scripting/programming to ensure stable and efficient operation of technology solutions\n\nImportant To Know\n\n-\nThis position is a hybrid work arrangement that combines in-office engagement at our corporate office in Jacksonville, FL, days and times are determined and based on the requirements of the business.\n\n-\nIdeal candidates live within 50 miles of Jacksonville, FL and open to relocation\n\n-\nA technical review will be part of the interview process\n\nWhat You Will Be Doing\n\n-\nPerforms installation, monitoring, testing, configuration, migration, maintenance and troubleshooting of assigned technology\n\n-\nManages system/application environment and ongoing operations\n\n-\nEnsures that the technologies are updated with current, stable, and compliant architecture and applications that meet enterprise standards\n\n-\nResearches, designs, implements and tests technology solutions\n\n-\nProactively monitors and reports performance and utilization of assigned technologies\n\n-\nTroubleshoots software and/or hardware issues/failures\n\n-\nResolves alerts and performs remediation activities\n\n-\nManages problem or escalated tickets and tasks and out of cycle requests from systems/software owners\n\n-\nCollects and presents data for reporting and planning\n\n-\nAssists with developing tactical strategies, processes and procedures related to systems/application administration\n\n-\nDetermines migration and upgrade impacts and diagnose/resolve complex technology/application errors\n\n-\nCollaborates with IT and business area partners on work groups and initiatives\n\n-\nDetermines best course of action for meeting business needs\n\n-\nMay provide input into infrastructure architecture designs\n\n-\nWrites programming/scripting\n\n-\nMay participate in Disaster Recovery planning and exercises\n\n-\nEnsures execution and alignment to architectural standards and blueprints\n\n-\nMay contribute input to infrastructure architecture\n\n-\nPerforms on-call activities as needed for the environment and technologies\n\nWhat We Require\n\n-\n5 years managing and supporting Apple macOS, iOS and iPadOS devices in an enterprise environment\n\n-\nPrior experience working in healthcare, health insurance or financial environments as it relates to HIPAA, PCI, SOC2, HITRUST and CMS Compliance\n\n-\nBachelor's degree in an IT related field or equivalent work experience\n\n-\nExtensive working knowledge of multiple technologies and their interfaces and integration\n\n-\nCompetent working in one or more environments highly integrated with an operating system\n\n-\nExtensive experience implementing and administering/managing technical solutions in major, large-scale system implementations\n\n-\nHigh critical thinking skills to evaluate alternatives and present solutions that are consistent with business objectives and strategy\n\n-\nAbility to manage tasks independently and take ownership of responsibilities\n\n-\nAbility to learn from mistakes and apply constructive feedback to improve performance\n\n-\nAbility to communicate technical information clearly and articulately\n\n-\nAbility to adapt to a rapidly changing environment\n\nWhat We Prefer\n\n-\nJAMF Certified Administrator or higher-level JAMF certification required\n\n-\nAdvanced working knowledge and experience managing JAMF Pro, including policies, configuration profiles, smart groups, patch management, extension attributes and API/scripted automation\n\n-\nAdvanced experience with Apple Business Manager, Automated Device Enrollment (ADE), and Apple's Volume Purchase Program (VPP)\n\n-\nAdvanced experience with macOS imaging, packaging (PKG/DMG), Jamf Composer and scripted software deployment\n\n-\nDesign and administration of zero-touch deployment and MDM enrollment workflows for Mac, iOS and iPadOS devices\n\n-\nExperience implementing Declarative Device Management (DDM) alongside traditional MDM payloads\n\n-\nStrong knowledge of macOS security and compliance baselines (FileVault, Gatekeeper, System Integrity Protection, CIS benchmarks)\n\n-\nExperience integrating Apple devices with identity/SSO providers such as Okta or Microsoft Entra ID, including Platform SSO\n\n-\nExperience with patch and software deployment automation using AutoPkg, Installomator, or Munki\n\n-\nExperience deploying and maintaining endpoint security/EDR agents on macOS\n\n-\nExperience with Apple Configurator for supervised device workflows\n\n-\nMultiple Site support\n\n-\nConfidence supporting 10,000 plus user site/sites\n\n-\nWorking knowledge of Active Directory and LDAP as they relate to device binding and authentication integration\n\n-\nInstallation, management and administration of SSL Certificates leveraging JAMF Pro as well as external enterprise tools\n\n-\nWorking knowledge of SSL/TLS protocols, standards and methodologies\n\n-\nWorking knowledge of networking fundamentals as they relate to endpoint deployment, including VPN, 802.1x, proxy, and DNS/DHCP for zero-touch enrollment\n\n-\nStrong PowerShell and Bash/shell scripting experience, including JAMF API scripting for automation\n\n-\nStrong knowledge of Apple device implementation and management in a clinic environment\n\n-\nEvaluates current procedures and processes for accomplishing department objectives and continuously develops and implements improved practices\n\n-\nResponsible for proper escalation, communications, and management of production system problems\n\n-\nContact vendors for problem and incident resolution\n\nGeneral Physical Demands\n\n-\nExerting up to 10 pounds of force occasionally to move objects.\n\n-\nJobs are sedentary if traversing activities are required only occasionally.\n\nWhat We Offer\nAs a Florida Blue employee, you will be at the heart of GuideWell’s vision – to lead the nation in transforming health through compassionate, connected, and technology-enabled care that delivers personalized value and empowered living.\n\nTo support your wellbeing, comprehensive benefits are offered. As an employee, you will have access to:\n\n- Medical, dental, vision, life and global travel health insurance\n\n- Income protection benefits: life insurance, short- and long-term disability programs\n\n- Leave programs to support personal circumstances\n\n- Retirement Savings Plan including employer match\n\n- Paid time off, volunteer time off, 10 holidays and 2 well-being days\n\n- Additional voluntary benefits available; and a comprehensive wellness program\n\nEmployee benefits are designed to align with federal and state employment laws. Benefits may vary based on the state in which work is performed. Benefits for intern, part-time and seasonal employees may differ.\n\nTo support your financial wellbeing, we offer competitive pay as well as opportunities for incentive or commission compensation. We also conduct regular annual reviews with pay for performance considerations for base pay increases.\n\nTypical Annualized Offer/Hiring Range: $100,400 - $125,500\n\nAnnualized Salary Range: $100,400 - $163,200\n\nFinal pay will be determined with consideration of market competitiveness, internal equity, and the job-related knowledge, skills, training, and experience you bring.\n\nWe are an Equal Employment Opportunity employer committed to cultivating a work experience where everyone feels like they belong and can perform at their best in pursuit of our mission. All qualified applicants will receive consideration for employment.",
+      "tags": [
+        "macOS",
+        "iOS",
+        "Jamf",
+        "Okta",
+        "Entra ID",
+        "PowerShell"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "Endpoint engineering",
+        "MDM",
+        "Device management",
+        "PowerShell automation"
+      ],
+      "tools": [
+        "Jamf",
+        "Okta",
+        "Entra ID",
+        "PowerShell"
+      ],
+      "platforms": [
+        "macOS",
+        "iOS"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 100400,
+        "max": 125500,
+        "currency": "USD",
+        "label": "$100k-$126k"
+      }
+    },
     {
       "id": "adzuna-5880833945",
       "title": "Workplace Engineer 80-100%",
@@ -25232,7 +25754,12 @@
       ],
       "roleFamily": "Device Compliance",
       "seniority": "Manager",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "Jacksonville, FL",
+        "latitude": 30.3322,
+        "longitude": -81.6557
+      }
     },
     {
       "id": "serpapi-kelly-united-states-enterprise-mac-engineer-kandji-security-automation-3fd6fa27b2",
@@ -27071,7 +27598,12 @@
       ],
       "roleFamily": "Device Compliance",
       "seniority": "Mid",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "Jacksonville, FL",
+        "latitude": 30.3322,
+        "longitude": -81.6557
+      }
     },
     {
       "id": "serpapi-common-app-united-states-digital-workplace-engineer-us-based-remote-opportunity-f2331f6167",
@@ -39121,7 +39653,12 @@
       ],
       "roleFamily": "Windows Platform",
       "seniority": "Mid",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "Irving, TX",
+        "latitude": 32.814,
+        "longitude": -96.9489
+      }
     },
     {
       "id": "serpapi-highbrow-llc-frisco-tx-jamf-engineer-a7ea78fffc",
@@ -39325,7 +39862,12 @@
       ],
       "roleFamily": "Windows Platform",
       "seniority": "Senior",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "Jacksonville, FL",
+        "latitude": 30.3322,
+        "longitude": -81.6557
+      }
     },
     {
       "id": "serpapi-spacex-united-states-senior-endpoint-engineer-jamf-intune-ai-automation-ad7ca43987",

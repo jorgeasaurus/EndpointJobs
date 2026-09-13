@@ -749,3 +749,38 @@ Round-22 verification: title-change regression failed before the fix; all 114 te
 Round 1 findings: (1) stale-day parsing and deadline policy are duplicated across provider boundaries with divergent invalid-value behavior; centralize validation and remove redundant default deadlines. (2) AuditToggleButton casts away the production props contract; delete the alias and pass required children through the real component props. Frontend and domain/route reviews found no blockers.
 
 Final review: three rounds, zero remaining findings. JSX audit renderings remove the cast without violating children-prop lint rules; staged rename restored complete React Doctor maintainability scanning. Validation: npm test (118), audit:data (71), lint, typecheck, PowerShell build.ps1 -Task CI (14 Pester tests plus analysis/build), diff --check, and full React Doctor 0.5.5/0.9.13 (100/100, no skipped checks) pass. Clean: yes.
+# LinkedIn company-source expansion
+
+- [x] Inspect the open past-24-hours LinkedIn results and identify missing employers.
+- [x] Verify direct employer sources and add supported recurring coverage.
+- [x] Merge verified relevant listings into the feed and run focused validation.
+
+## Review
+
+Reviewed 75 LinkedIn results; added 14 recurring sources: Archer, DRW, Obsidian Security, Later, Snorkel AI, Applied Intuition, Radiant Industries, SC Johnson, U.S. Bank, IFF, Greenberg Traurig, Morgan Stanley, Tempus AI, and Florida Blue. Imported 9 verified jobs from 8 employers (882 → 891 active; 477 → 490 mapped against refreshed main), preserving original dates and excluding older reposts from this batch.
+
+Corrected ATS workplace metadata, original publication dates, and Workday expiry handling; added Oracle HCM support and narrow endpoint relevance rules. Tests, data audit, typecheck, lint, production build, and local rendered listings verified before rebasing. Against refreshed main: 128 tests, data audit, typecheck, lint, and production build pass; version bumped to 0.1.15 for the PR.
+
+# PR 53 Copilot review loop
+
+- [x] Capture review state for dbdcfb0 (one completed review, six unresolved threads).
+- [x] Fix actionable review feedback and verify regressions.
+- [x] Push fixes, resolve handled threads, and request a fresh review of the final commit.
+
+## Review
+
+Fixed Workday detail failure/timeout handling and explicit overrides, workplace metadata, Oracle canonicalization/configuration/description normalization, source documentation, and provider wiring. All 145 tests, data audit, typecheck, lint, and production build pass; the refresh integration test proves detail outages cannot replace the existing feed. Final acceptance requires a fresh Copilot review on the pushed commit with no actionable comments.
+
+Second review: fixed seven valid summary findings covering entity decoding, Oracle deadline/link handling, Jacksonville coordinates, singular trading titles, and feed source ordering. Declined the Snorkel macOS suggestion: cached and live employer text contains no macOS reference; Jamf/Apple Business Manager alone does not establish the platform. All 153 tests, data audit, typecheck, lint, and build pass before requesting another review.
+
+Third review: normalized Oracle API bases, skipped closed Oracle details, failed closed on detail-enabled Workday search outages, and stabilized IDs for the four new Workday listings. Corrected mapped totals; the repeated unsupported Snorkel claim is explained and left open. Validation: 166 tests, data audit, typecheck, lint, and production build pass; final review gate remains pending.
+
+Fourth review: bounded Workday searches to 15 seconds, normalized trailing slashes in detail URLs, restored IFF salary extraction for Hangul filler separators, and documented SchoolJobs defaults. All 172 tests, data audit, typecheck, lint, and production build pass; request another latest-head review.
+
+Fifth review: wrap malformed Workday detail normalization as an incomplete snapshot and inherit detail defaults across trailing-slash overrides. The CLI malformed-payload regression fails before the fix and passes afterward; all 177 tests, data audit, typecheck, and lint pass. Prior production build remains applicable to these ingestion-only changes.
+
+Sixth review: reject malformed Workday/Oracle search entries, validate Workday closing dates, enforce a shared 120-second Workday deadline, and audit all 14 new source defaults. Declined the Oracle 41901 Windows claim: stored/live text has no Windows reference and current normalized metadata matches. All 192 tests, data audit, typecheck, and lint pass; prior production build remains applicable.
+
+Seventh review: distinguish closed Oracle details from malformed empty success, reject invalid Oracle closing dates and Workday location arrays, and preserve literal placeholders across HTML/text normalization. Repeated Snorkel/Oracle platform claims remain unsupported by source evidence. All 202 tests, data audit, typecheck, lint, and production build pass.
+
+Eighth review: validate remaining Workday/Oracle payload types and Oracle counts/pages, reject exact-boundary Workday expiry, and honor primary location order with Irving coordinates. Corrected U.S. Bank and backfilled one Irving record (490 mapped). All 242 tests, data audit, typecheck, lint, and production build pass.

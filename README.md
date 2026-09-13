@@ -50,7 +50,7 @@ The refresh script keeps the site cheap to host: there is no database, queue, or
 
 Broader aggregator scanning includes Endpoint/UEM/security vendors and enterprise employers such as Kandji, Fleet, NinjaOne, Addigy, Mosyle, CrowdStrike, SentinelOne, Palo Alto Networks, 1Password, Bitwarden, BeyondTrust, Apple, Microsoft, Adobe, Salesforce, ServiceNow, Block, Capital One, Bloomberg, and Netflix. Search defaults also include client platform, client infrastructure, employee experience, digital workplace, corporate engineering, enterprise engineering, device trust, zero-touch, IT systems engineer, and tech operations language.
 
-Current default public providers: Remotive, Arbeitnow, Jobicy, Remote OK, Greenhouse, Lever, The Muse, Ashby, Amazon Jobs, Workday, Jibe, Activate, SmartRecruiters, Recruitee, Curated Jobs, Himalayas, and 4 Day Week.
+Current default public providers: Remotive, Arbeitnow, Jobicy, Remote OK, Greenhouse, Lever, The Muse, Ashby, Amazon Jobs, Workday, Oracle HCM, Jibe, Activate, SmartRecruiters, Recruitee, SchoolJobs, Curated Jobs, Himalayas, and 4 Day Week.
 
 Optional configured providers: Workable, Techmap RSS, Adzuna, TheirStack, SerpAPI Google Jobs, RapidAPI Daily International Jobs, RapidAPI LinkedIn Job Search, USAJOBS, and AI Dev Board.
 
@@ -79,13 +79,19 @@ npm run dev
 npm run jobs:refresh
 ```
 
-Use `JOB_PROVIDERS=remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,jibe,activate,smartrecruiters,recruitee,schooljobs,curated,techmaprss,adzuna,theirstack,serpapi,rapidapi,rapidapilinkedin,usajobs,aidevboard,himalayas,fourdayweek` to choose sources.
+Use `JOB_PROVIDERS=remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,oraclehcm,jibe,activate,smartrecruiters,recruitee,schooljobs,curated,techmaprss,adzuna,theirstack,serpapi,rapidapi,rapidapilinkedin,usajobs,aidevboard,himalayas,fourdayweek` to choose sources.
 
 Single-provider legacy mode still works with `JOB_PROVIDER=remoteok` and `JOB_API_URL=https://remoteok.com/api`.
 
-Override individual URLs with `JOB_REMOTIVE_API_URL`, `JOB_ARBEITNOW_API_URL`, `JOB_JOBICY_API_URL`, `JOB_REMOTEOK_API_URL`, `JOB_GREENHOUSE_API_URL`, `JOB_LEVER_API_URL`, `JOB_MUSE_API_URL`, `JOB_ASHBY_API_URL`, `JOB_WORKABLE_API_URL`, `JOB_AMAZON_API_URL`, `JOB_WORKDAY_API_URL`, `JOB_JIBE_API_URL`, `JOB_ACTIVATE_API_URL`, `JOB_SMARTRECRUITERS_API_URL`, `JOB_RECRUITEE_API_URL`, `JOB_SCHOOLJOBS_API_URL`, `JOB_TECHMAP_RSS_API_URL`, `JOB_ADZUNA_API_URL`, `JOB_THEIRSTACK_API_URL`, `JOB_SERPAPI_API_URL`, `JOB_RAPIDAPI_API_URL`, `JOB_RAPIDAPILINKEDIN_API_URL`, `JOB_USAJOBS_API_URL`, `JOB_AIDEVBOARD_API_URL`, `JOB_HIMALAYAS_API_URL`, or `JOB_FOURDAYWEEK_API_URL`.
+Override individual URLs with `JOB_REMOTIVE_API_URL`, `JOB_ARBEITNOW_API_URL`, `JOB_JOBICY_API_URL`, `JOB_REMOTEOK_API_URL`, `JOB_GREENHOUSE_API_URL`, `JOB_LEVER_API_URL`, `JOB_MUSE_API_URL`, `JOB_ASHBY_API_URL`, `JOB_WORKABLE_API_URL`, `JOB_AMAZON_API_URL`, `JOB_WORKDAY_API_URL`, `JOB_ORACLEHCM_API_URL`, `JOB_JIBE_API_URL`, `JOB_ACTIVATE_API_URL`, `JOB_SMARTRECRUITERS_API_URL`, `JOB_RECRUITEE_API_URL`, `JOB_SCHOOLJOBS_API_URL`, `JOB_TECHMAP_RSS_API_URL`, `JOB_ADZUNA_API_URL`, `JOB_THEIRSTACK_API_URL`, `JOB_SERPAPI_API_URL`, `JOB_RAPIDAPI_API_URL`, `JOB_RAPIDAPILINKEDIN_API_URL`, `JOB_USAJOBS_API_URL`, `JOB_AIDEVBOARD_API_URL`, `JOB_HIMALAYAS_API_URL`, or `JOB_FOURDAYWEEK_API_URL`.
 
 Career-board defaults include Greenhouse boards for Jamf, Automox, Tanium, Okta, PlayStation, Verkada, Anthropic, DoorDash, Commvault, Kaseya, Kymera, Databricks, Zscaler, Samsara, Scale AI, Wiz, Stripe, SpaceX, Robinhood, Box, Datadog, Elastic, Lyft, Instacart, Anduril, Asana, MongoDB, Brex, Figma, Airbnb, Discord, Reddit, Rubrik, Dropbox, Affirm, Duolingo, GitLab, Coinbase, Canonical, Pinterest, Block, and Roblox; Lever companies JumpCloud, Brighton Jones, Hermeus, Omnidian, and WHOOP; Ashby boards 1Password, Docker, Cursor, Perplexity, OpenAI, Cohere, ElevenLabs, Watershed, Suno, and Voleon; targeted Workday, Amazon, Jibe, and Activate searches; SmartRecruiters company identifiers `Continental` and `BoschGroup`; German and Swiss Recruitee accounts; and five Muse pages.
+
+Additional employer defaults: Greenhouse (`archer56`, `drweng`, `obsidiansecurity`, `later`, `snorkelai`); Ashby (`applied`, `radiant-industries`); Workday (SC Johnson, U.S. Bank, IFF, Greenberg Traurig, Morgan Stanley, Tempus AI); Oracle HCM (Florida Blue).
+
+Oracle HCM uses Florida Blue's public API at `https://fa-etum-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/latest`; `JOB_ORACLEHCM_API_URL` overrides that API base, not the employer/site identity. Searches cover macOS, Jamf, Intune, and endpoint; employer publication and closing dates determine eligibility. A 60-second provider deadline and 50-detail limit abort incomplete refreshes; public application links always use the employer host.
+
+Workday overrides use `JOB_WORKDAY_SITES='Company|https://host/wday/cxs/tenant/site/jobs|Endpoint;Intune|true'` (separate sites with `;;`). The optional fourth field controls detail fetching: `true` enables it, `false` disables it, and omission inherits the matching default site's setting. Detail-enabled sites abort the refresh on search/detail failures and use the employer path for stable IDs; closed details (404/410) are skipped. Runs with detail-enabled sites share a 120-second Workday deadline across searches and details; malformed searches or malformed supplied closing dates abort the snapshot.
 
 Workable uses `JOB_WORKABLE_ACCOUNTS=slug` or `Display Name|slug` entries, with optional `JOB_WORKABLE_DETAIL_API_URL` for v1 detail overrides.
 

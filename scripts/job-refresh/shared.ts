@@ -49,6 +49,8 @@ export type JobCandidate = {
   attributionLabel: string;
   termsProfile: TermsProfile;
   description?: string;
+  // Already-decoded provider text must not be parsed as HTML again.
+  descriptionFormat?: "html" | "text";
   sourceTags?: string[];
   haystackParts?: unknown[];
   // Provider search evidence can admit a listing but must not supply published metadata.
@@ -73,7 +75,9 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
   const location = rawLocation || "Unknown";
   const mapLocation = resolveJobMapLocation(location);
   const sourceTags = (candidate.sourceTags ?? []).map(cleanText).filter(Boolean);
-  const description = stripHtml(candidate.description ?? "");
+  const description = candidate.descriptionFormat === "text"
+    ? candidate.description ?? ""
+    : stripHtml(candidate.description ?? "");
   const haystack = normalizeSearchText(
     [
       title,
@@ -118,7 +122,7 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
     attributionLabel: candidate.attributionLabel,
     termsProfile: candidate.termsProfile,
     summary: summarize(description),
-    description: normalizeDescription(description),
+    description: normalizeDescription(description, "text"),
     tags: normalizeTags(sourceTags, tools, platforms),
     matchReasons,
     tools,
@@ -170,6 +174,8 @@ export function isEndpointRelevant(
     "client infrastructure",
     "device fleet",
     "device trust",
+    "device management",
+    "digital workplace",
     "zero-touch",
     "zero touch",
     "m365",
@@ -195,6 +201,10 @@ export function isEndpointRelevant(
   const looksLikeApplicationSecurity =
     containsAlias(normalizedTitle, "application security") ||
     containsAlias(normalizedTitle, "appsec");
+  const looksLikeTradingInfrastructure =
+    ["trading system", "trading systems", "trade system", "trade systems"].some((term) =>
+      containsAlias(normalizedTitle, term)
+    );
   const looksLikeSoftwareProductRole =
     containsAlias(normalizedTitle, "software engineer") ||
     containsAlias(normalizedTitle, "software development engineer") ||
@@ -221,6 +231,7 @@ export function isEndpointRelevant(
     looksLikeSapDataManagement ||
     (looksLikeFrontlineSupport && !hasEndpointTitle) ||
     (looksLikeApplicationSecurity && !hasEndpointTitle) ||
+    (looksLikeTradingInfrastructure && !hasEndpointTitle) ||
     (looksLikeSoftwareProductRole && !hasClientEngineeringTitle)
   ) {
     return false;
@@ -447,7 +458,8 @@ export function normalizeSalary(min?: number, max?: number) {
 }
 
 export function extractSalaryFromText(value: string | undefined): Job["salary"] | undefined {
-  const text = cleanText(stripHtml(value ?? ""));
+  // Some ATS salary ranges use Hangul filler as an invisible separator.
+  const text = cleanText(stripHtml(value ?? "").replace(/\u3164/g, " "));
 
   if (!text) {
     return undefined;
@@ -539,8 +551,8 @@ export function summarize(value: string) {
   return `${trimToWordBoundary(compact, 257)}...`;
 }
 
-export function normalizeDescription(value: string | undefined) {
-  const formatted = cleanMultilineText(stripHtml(value ?? ""));
+export function normalizeDescription(value: string | undefined, format: "html" | "text" = "html") {
+  const formatted = cleanMultilineText(format === "text" ? value ?? "" : stripHtml(value ?? ""));
   const compact = cleanText(formatted);
 
   if (!formatted || compact.length < descriptionMinLength) {
@@ -555,7 +567,7 @@ export function normalizeDescription(value: string | undefined) {
 }
 
 export function stripHtml(value: string) {
-  return decodeEntities(value)
+  return decodeNumericEntities(decodeNamedEntities(value)
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/\r\n?/g, "\n")
@@ -563,7 +575,7 @@ export function stripHtml(value: string) {
     .replace(/<li[^>]*>/gi, "\n- ")
     .replace(/<\/(?:li|p|div|section|article|header|footer|h[1-6]|ul|ol|tr|table|blockquote)>/gi, "\n")
     .replace(/<(?:p|div|section|article|header|footer|h[1-6]|ul|ol|tr|table|blockquote)[^>]*>/gi, "\n")
-    .replace(/<[^>]+>/g, " ");
+    .replace(/<[^>]+>/g, " "));
 }
 
 function trimToWordBoundary(value: string, maxLength: number) {
@@ -655,15 +667,28 @@ export function cleanUrl(value: string | undefined) {
 }
 
 function decodeEntities(value: string) {
+  return decodeNumericEntities(decodeNamedEntities(value));
+}
+
+function decodeNamedEntities(value: string) {
   return value
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
     .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
     .replace(/&nbsp;/g, " ")
-    .replace(/&mdash;|&#8212;|&#x2014;/gi, "-")
-    .replace(/&ndash;|&#8211;|&#x2013;/gi, "-");
+    .replace(/&mdash;/gi, "-")
+    .replace(/&ndash;/gi, "-");
+}
+
+function decodeNumericEntities(value: string) {
+  return value.replace(/&#(x[0-9a-f]+|[0-9]+);/gi, (_, entity: string) => {
+    const isHex = entity[0].toLowerCase() === "x";
+    const codePoint = Number.parseInt(isHex ? entity.slice(1) : entity, isHex ? 16 : 10);
+    if (codePoint <= 0 || codePoint > 0x10ffff || (codePoint >= 0xd800 && codePoint <= 0xdfff)) return "\uFFFD";
+    if (codePoint === 8211 || codePoint === 8212) return "-";
+    return String.fromCodePoint(codePoint);
+  });
 }
 
 export function parseDateLike(value: string | undefined) {
@@ -673,6 +698,21 @@ export function parseDateLike(value: string | undefined) {
 
   const parsed = new Date(value);
   return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
+}
+
+export function parseStrictIsoDate(value: string | undefined) {
+  const normalized = value?.trim();
+  if (!normalized) return undefined;
+
+  const calendarDate = /^(\d{4})-(\d{2})-(\d{2})(?:$|T)/.exec(normalized);
+  if (!calendarDate) return undefined;
+  const [, year, month, day] = calendarDate;
+  const candidate = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+  if (candidate.getUTCFullYear() !== Number(year)
+    || candidate.getUTCMonth() !== Number(month) - 1
+    || candidate.getUTCDate() !== Number(day)) return undefined;
+
+  return parseDateLike(normalized);
 }
 
 function normalizeIdPart(value: string) {
