@@ -649,14 +649,15 @@ export function hasGermanLocationEvidence(
 
 export function resolveJobMapLocation(location: string): JobMapLocation | undefined {
   for (const part of location.split(";")) {
-    const resolved = resolveSingleJobMapLocation(part);
+    const resolved = resolveSingleJobMapLocation(part, location);
     if (resolved) return resolved;
   }
   return undefined;
 }
 
-function resolveSingleJobMapLocation(location: string): JobMapLocation | undefined {
+function resolveSingleJobMapLocation(location: string, fullLocation = location): JobMapLocation | undefined {
   const normalized = normalizeLocation(location);
+  const normalizedContext = normalizeLocation(fullLocation);
 
   if (!normalized || /^\d+ locations$/.test(normalized)) {
     return undefined;
@@ -667,8 +668,10 @@ function resolveSingleJobMapLocation(location: string): JobMapLocation | undefin
   }
 
   const coordinate = searchableLocationCoordinates.find((candidate) =>
-    !isInternationalCityWithExplicitUsState(candidate.label, normalized) &&
-    candidate.normalizedKeys.some((key) => containsNormalizedLocationKey(normalized, key))
+    !isInternationalCityWithExplicitUsState(candidate.label, normalizedContext) &&
+    candidate.normalizedKeys.some((key) => containsNormalizedLocationKey(normalized, key)
+      || (containsNormalizedLocationKey(normalizedContext, key)
+        && containsNormalizedLocationKey(key, normalized)))
   );
 
   return coordinate ? toMapLocation(coordinate) : undefined;

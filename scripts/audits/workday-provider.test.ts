@@ -422,7 +422,10 @@ for (const postings of [
   [{ ...detailPosting, externalPath: "/job/../traversal" }],
   [{ ...detailPosting, externalPath: "/job/%2e%2e/encoded-traversal" }],
   [{ ...detailPosting, externalPath: "/job/..%2fencoded-separator" }],
-  [{ ...detailPosting, externalPath: "/job/%zz-malformed-escape" }]
+  [{ ...detailPosting, externalPath: "/job/%zz-malformed-escape" }],
+  [{ ...detailPosting, locationsText: {} }],
+  [{ ...detailPosting, postedOn: 42 }],
+  [{ ...detailPosting, bulletFields: ["Endpoint", 42] }]
 ]) {
   test("Workday rejects malformed search entries for detail-enabled sites", async (t) => {
     assert.ok(workdayProvider);

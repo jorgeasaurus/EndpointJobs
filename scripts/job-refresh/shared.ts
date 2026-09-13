@@ -567,7 +567,7 @@ export function normalizeDescription(value: string | undefined, format: "html" |
 }
 
 export function stripHtml(value: string) {
-  return decodeNumericEntities(decodeNamedEntities(protectEscapedPlaceholders(value))
+  return restoreEscapedPlaceholders(decodeNumericEntities(decodeNamedEntities(protectEscapedPlaceholders(value)))
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/\r\n?/g, "\n")
@@ -596,9 +596,23 @@ const markupElementNames = new Set(`a abbr address area article aside audio b ba
   .split(/\s+/));
 
 function protectEscapedPlaceholders(value: string) {
-  return value.replace(/&lt;(\/?)([a-z][\w-]*)&gt;/gi, (encoded, closing: string, name: string) => markupElementNames.has(name.toLowerCase()) || name.includes("-")
-    ? encoded
-    : `&#60;${closing}${name}&#62;`);
+  return value
+    .replace(/(?:&lt;|&#(?:x0*3c|0*60);)(\/?)([a-z][\w-]*)([^<>]*?)(?:&gt;|&#(?:x0*3e|0*62);)/gi, protectEscapedPlaceholder)
+    .replace(/&lt;|&#(?:x0*3c|0*60);/gi, "\uE002")
+    .replace(/&gt;|&#(?:x0*3e|0*62);/gi, "\uE003");
+}
+
+function protectEscapedPlaceholder(_encoded: string, closing: string, name: string, suffix: string) {
+  return markupElementNames.has(name.toLowerCase()) || name.includes("-") || Boolean(suffix.trim())
+    ? `<${closing}${name}${suffix}>`
+    : `\uE000${closing}${name}\uE001`;
+}
+
+function restoreEscapedPlaceholders(value: string) {
+  return value
+    .replace(/\uE000(\/?[a-z][\w-]*)\uE001/gi, "<$1>")
+    .replace(/\uE002/g, "<")
+    .replace(/\uE003/g, ">");
 }
 
 function trimToWordBoundary(value: string, maxLength: number) {

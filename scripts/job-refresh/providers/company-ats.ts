@@ -343,6 +343,10 @@ async function fetchWorkdaySearch(url: string, query: string, requireValidEntrie
   const postings = (json as { jobPostings: unknown[] }).jobPostings;
   if (requireValidEntries && postings.some((entry) => !isWorkdayJob(entry)
     || typeof entry.title !== "string" || !entry.title.trim()
+    || (entry.locationsText !== undefined && typeof entry.locationsText !== "string")
+    || (entry.postedOn !== undefined && typeof entry.postedOn !== "string")
+    || (entry.bulletFields !== undefined && (!Array.isArray(entry.bulletFields)
+      || entry.bulletFields.some((field) => typeof field !== "string")))
     || !isWorkdayDetailPath(entry.externalPath))) {
     throw new Error("Workday search included an invalid job posting");
   }

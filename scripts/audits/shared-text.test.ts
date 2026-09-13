@@ -22,6 +22,7 @@ test("HTML stripping handles encoded markup and preserves visible angle placehol
   assert.equal(stripHtml("&lt;figure&gt;&lt;mark&gt;Important&lt;/mark&gt;&lt;/figure&gt;").trim(), "Important");
   assert.equal(cleanText(stripHtml("&lt;svg&gt;&lt;path&gt;&lt;/path&gt;&lt;/svg&gt;&lt;math&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;/math&gt;&lt;job-card&gt;Role&lt;/job-card&gt;")), "x Role");
   assert.equal(cleanText(stripHtml("&lt;animate&gt;&lt;/animate&gt;&lt;mspace&gt;&lt;/mspace&gt;&LT;DIV&GT;Visible&LT;/DIV&GT;")), "Visible");
+  assert.equal(stripHtml("&#60;p&#62;Visible&#60;/p&#62;").trim(), "Visible");
   assert.equal(stripHtml("<script>hidden()</script><style>.hidden{}</style><p>Visible &#60;value&#62;</p>").trim(), "Visible <value>");
   assert.equal(stripHtml("Latency &#60; 10ms and throughput &#62; 20 requests; n &#60; 100 &#62; 50"), "Latency < 10ms and throughput > 20 requests; n < 100 > 50");
 });
