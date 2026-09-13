@@ -17,7 +17,9 @@ test("HTML text decodes decimal and hexadecimal numeric character references", (
 
 test("HTML stripping handles encoded markup and preserves visible angle placeholders", () => {
   assert.equal(stripHtml("<p>Use &#60;device&#62;, &#60;policy&#62; and &#x3c;value&#x3e; as literal text.</p>").trim(), "Use <device>, <policy> and <value> as literal text.");
+  assert.equal(stripHtml("<p>Use &lt;device&gt;, &lt;policy&gt; and &lt;value&gt; as literal text.</p>").trim(), "Use <device>, <policy> and <value> as literal text.");
   assert.equal(stripHtml("&lt;ul&gt;&lt;li&gt;10&#43; years&lt;/li&gt;&lt;li&gt;Manage &#60;device&#62;&lt;/li&gt;&lt;/ul&gt;").trim(), "- 10+ years\n\n- Manage <device>");
+  assert.equal(stripHtml("&lt;figure&gt;&lt;mark&gt;Important&lt;/mark&gt;&lt;/figure&gt;").trim(), "Important");
   assert.equal(stripHtml("<script>hidden()</script><style>.hidden{}</style><p>Visible &#60;value&#62;</p>").trim(), "Visible <value>");
   assert.equal(stripHtml("Latency &#60; 10ms and throughput &#62; 20 requests; n &#60; 100 &#62; 50"), "Latency < 10ms and throughput > 20 requests; n < 100 > 50");
 });

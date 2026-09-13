@@ -567,7 +567,7 @@ export function normalizeDescription(value: string | undefined, format: "html" |
 }
 
 export function stripHtml(value: string) {
-  return decodeNumericEntities(decodeNamedEntities(value)
+  return decodeNumericEntities(decodeNamedEntities(protectEscapedPlaceholders(value))
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/\r\n?/g, "\n")
@@ -576,6 +576,21 @@ export function stripHtml(value: string) {
     .replace(/<\/(?:li|p|div|section|article|header|footer|h[1-6]|ul|ol|tr|table|blockquote)>/gi, "\n")
     .replace(/<(?:p|div|section|article|header|footer|h[1-6]|ul|ol|tr|table|blockquote)[^>]*>/gi, "\n")
     .replace(/<[^>]+>/g, " "));
+}
+
+const htmlElementNames = new Set(`a abbr address area article aside audio b base bdi bdo blockquote body br button
+  canvas caption cite code col colgroup data datalist dd del details dfn dialog div dl dt em embed fieldset
+  figcaption figure footer form h1 h2 h3 h4 h5 h6 head header hgroup hr html i iframe img input ins kbd
+  label legend li link main map mark menu meta meter nav noscript object ol optgroup option output p picture
+  pre progress q rp rt ruby s samp script search section select slot small source span strong style sub summary
+  sup table tbody td template textarea tfoot th thead time title tr track u ul var video wbr acronym applet
+  basefont big center dir font frame frameset marquee nobr noembed noframes param plaintext rb rtc strike tt xmp`
+  .split(/\s+/));
+
+function protectEscapedPlaceholders(value: string) {
+  return value.replace(/&lt;(\/?)([a-z][\w-]*)&gt;/gi, (encoded, closing: string, name: string) => htmlElementNames.has(name.toLowerCase())
+    ? encoded
+    : `&#60;${closing}${name}&#62;`);
 }
 
 function trimToWordBoundary(value: string, maxLength: number) {
