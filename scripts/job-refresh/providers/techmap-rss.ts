@@ -136,6 +136,7 @@ function normalizeTechmapRssJob(raw: TechmapRssItem, feed: TechmapRssFeed, fetch
     attributionLabel: `Techmap RSS / ${feed.name}`,
     termsProfile: "partner-terms",
     description,
+    descriptionFormat: "text",
     sourceTags,
   });
 }

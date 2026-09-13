@@ -246,6 +246,8 @@ const specialistTechnicalRoleTerms = [
   "systems development manager",
   "service engineer",
   "it engineer",
+  "it platform and automation engineer",
+  "lead it specialist",
   "platform engineer",
   "client engineer",
   "client infrastructure engineer",

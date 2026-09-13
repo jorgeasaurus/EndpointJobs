@@ -27,6 +27,7 @@ const sourcePaths = {
   comparisonBrowserAudit: "scripts/audits/job-comparison-browser.mjs",
   comparisonDataAudit: "scripts/audits/job-comparison-data.ts",
   companyAts: "scripts/job-refresh/providers/company-ats.ts",
+  oracleHcm: "scripts/job-refresh/providers/oracle-hcm.ts",
   workdaySites: "scripts/job-refresh/providers/workday-sites.ts",
   workplace: "src/lib/workplace.ts",
   controls: "src/components/job-board/controls.tsx",
