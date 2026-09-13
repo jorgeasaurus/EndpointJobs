@@ -585,10 +585,14 @@ const markupElementNames = new Set(`a abbr address area article aside audio b ba
   pre progress q rp rt ruby s samp script search section select slot small source span strong style sub summary
   sup table tbody td template textarea tfoot th thead time title tr track u ul var video wbr acronym applet
   basefont big center dir font frame frameset marquee nobr noembed noframes param plaintext rb rtc strike tt xmp
-  svg g path circle ellipse line polyline polygon rect text defs use symbol clippath mask pattern lineargradient
-  radialgradient stop foreignobject math mi mn mo ms mtext mrow mfrac msqrt mroot mstyle merror mpadded mphantom
-  mfenced menclose msub msup msubsup munder mover munderover mmultiscripts mtable mtr mtd semantics annotation
-  annotation-xml`
+  svg animate animatemotion animatetransform circle clippath defs desc discard ellipse feblend fecolormatrix
+  fecomponenttransfer fecomposite feconvolvematrix fediffuselighting fedisplacementmap fedistantlight
+  fedropshadow feflood fefunca fefuncb fefuncg fefuncr fegaussianblur feimage femerge femergenode femorphology
+  feoffset fepointlight fespecularlighting fespotlight fetile feturbulence filter foreignobject g hatch hatchpath
+  image line lineargradient marker mask metadata mpath path pattern polygon polyline radialgradient rect set stop
+  switch symbol text textpath tspan use view math annotation annotation-xml maction merror mfenced mfrac mi
+  mmultiscripts mn mo mover mpadded mphantom mprescripts mroot mrow ms mspace msqrt mstyle msub msubsup msup
+  mtable mtd mtext mtr munder munderover semantics`
   .split(/\s+/));
 
 function protectEscapedPlaceholders(value: string) {
@@ -691,11 +695,11 @@ function decodeEntities(value: string) {
 
 function decodeNamedEntities(value: string) {
   return value
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&nbsp;/gi, " ")
     .replace(/&mdash;/gi, "-")
     .replace(/&ndash;/gi, "-");
 }
