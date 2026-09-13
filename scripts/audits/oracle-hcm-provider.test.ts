@@ -55,10 +55,9 @@ test("Oracle HCM deduplicates searches and preserves employer dates, full text, 
   assert.ok(requests[0].searchParams.get("finder")?.includes("siteNumber=floridablue"));
 });
 
-test("Oracle HCM excludes expired, undated, future and unrelated roles", async (t) => {
+test("Oracle HCM excludes expired, future and unrelated roles", async (t) => {
   installFetch(t, [
     { ...detail, Id: "1", ExternalPostedEndDate: "2026-09-11T00:00:00Z" },
-    { ...detail, Id: "2", ExternalPostedStartDate: undefined },
     { ...detail, Id: "3", ExternalPostedStartDate: "2026-09-13T00:00:00Z" },
     { ...detail, Id: "4", Title: "Nurse", ExternalDescriptionStr: "Patient care", ExternalResponsibilitiesStr: "", ExternalQualificationsStr: "" }
   ]);
@@ -66,7 +65,7 @@ test("Oracle HCM excludes expired, undated, future and unrelated roles", async (
 });
 
 test("Oracle HCM caps searches instead of silently truncating a source", async (t) => {
-  const requests = installFetch(t, [detail], 100);
+  const requests = installFetch(t, Array.from({ length: 25 }, (_, index) => ({ ...detail, Id: String(index) })), 100);
   await assert.rejects(fetchJobs, /exceeded the 75 result bound/);
   assert.equal(requests.length, 3);
   assert.ok(requests[2].searchParams.get("finder")?.includes("offset=50"));
@@ -82,7 +81,7 @@ test("Oracle HCM rejects descriptions containing only empty markup", async (t) =
   installFetch(t, [
     { ...detail, ExternalDescriptionStr: "<p> </p>", ExternalResponsibilitiesStr: "<div>&nbsp;</div>", ExternalQualificationsStr: "<br/>" }
   ]);
-  assert.deepEqual(await fetchJobs(), []);
+  await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && /missing description/.test(error.message));
 });
 
 test("Oracle HCM applies shared description normalization and length limits", async (t) => {
@@ -272,4 +271,65 @@ test("Oracle HCM permits absent employer closing dates and retains the freshness
   const jobs = await fetchJobs();
   assert.equal(jobs.length, 4);
   assert.ok(jobs.every((job) => job?.staleAfter === "2026-10-04T10:58:59.000Z"));
+});
+
+
+for (const total of [-1, 0.5, Number.MAX_SAFE_INTEGER + 1]) {
+  test(`Oracle HCM rejects invalid search total ${total}`, async (t) => {
+    const requests = installFetch(t, [], total);
+    await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && /TotalJobsCount/.test(error.message));
+    assert.equal(requests.length, 1);
+  });
+}
+
+for (const [field, value] of [
+  ["ExternalPostedStartDate", fetchedAt.getTime()],
+  ["ExternalDescriptionStr", 123],
+  ["ExternalResponsibilitiesStr", {}],
+  ["ExternalQualificationsStr", []],
+  ["PrimaryLocation", 42],
+  ["WorkplaceType", true],
+  ["JobSchedule", false]
+] as const) {
+  test(`Oracle HCM rejects a nonstring ${field} instead of coercing provider metadata`, async (t) => {
+    installFetch(t, [{ ...detail, [field]: value }]);
+    await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && error.message.includes(`invalid ${field}`));
+  });
+}
+
+test("Oracle HCM rejects a malformed nonempty posting date", async (t) => {
+  installFetch(t, [{ ...detail, ExternalPostedStartDate: "not-a-date" }]);
+  await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && /invalid posting date/.test(error.message));
+});
+
+test("Oracle HCM permits null optional metadata without coercion", async (t) => {
+  installFetch(t, [{ ...detail, ExternalResponsibilitiesStr: null, ExternalQualificationsStr: null, PrimaryLocation: null, WorkplaceType: null, JobSchedule: null }]);
+  const jobs = await fetchJobs();
+  assert.equal(jobs.length, 1);
+  assert.equal(jobs[0]?.location, "Unknown");
+});
+
+
+for (const [label, records, total] of [
+  ["nonempty zero-count page", [detail], 0],
+  ["missing page records", [], 1],
+  ["partially missing page records", [detail], 2]
+] as const) {
+  test(`Oracle HCM rejects ${label}`, async (t) => {
+    installFetch(t, [...records], total);
+    await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && /count did not match/.test(error.message));
+  });
+}
+
+
+for (const date of [undefined, null, "", "  "]) {
+  test(`Oracle HCM rejects missing publication date ${String(date)}`, async (t) => {
+    installFetch(t, [{ ...detail, ExternalPostedStartDate: date }]);
+    await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && /invalid posting date/.test(error.message));
+  });
+}
+
+test("Oracle HCM rejects a successful detail payload with no employer description", async (t) => {
+  installFetch(t, [{ ...detail, ExternalDescriptionStr: undefined, ExternalResponsibilitiesStr: null, ExternalQualificationsStr: "" }]);
+  await assert.rejects(fetchJobs, (error: unknown) => error instanceof OracleHcmIncompleteSnapshotError && /missing description/.test(error.message));
 });

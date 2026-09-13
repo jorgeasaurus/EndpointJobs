@@ -757,7 +757,7 @@ Final review: three rounds, zero remaining findings. JSX audit renderings remove
 
 ## Review
 
-Reviewed 75 LinkedIn results; added 14 recurring sources: Archer, DRW, Obsidian Security, Later, Snorkel AI, Applied Intuition, Radiant Industries, SC Johnson, U.S. Bank, IFF, Greenberg Traurig, Morgan Stanley, Tempus AI, and Florida Blue. Imported 9 verified jobs from 8 employers (882 → 891 active; 477 → 489 mapped against refreshed main), preserving original dates and excluding older reposts from this batch.
+Reviewed 75 LinkedIn results; added 14 recurring sources: Archer, DRW, Obsidian Security, Later, Snorkel AI, Applied Intuition, Radiant Industries, SC Johnson, U.S. Bank, IFF, Greenberg Traurig, Morgan Stanley, Tempus AI, and Florida Blue. Imported 9 verified jobs from 8 employers (882 → 891 active; 477 → 490 mapped against refreshed main), preserving original dates and excluding older reposts from this batch.
 
 Corrected ATS workplace metadata, original publication dates, and Workday expiry handling; added Oracle HCM support and narrow endpoint relevance rules. Tests, data audit, typecheck, lint, production build, and local rendered listings verified before rebasing. Against refreshed main: 128 tests, data audit, typecheck, lint, and production build pass; version bumped to 0.1.15 for the PR.
 
@@ -782,3 +782,5 @@ Fifth review: wrap malformed Workday detail normalization as an incomplete snaps
 Sixth review: reject malformed Workday/Oracle search entries, validate Workday closing dates, enforce a shared 120-second Workday deadline, and audit all 14 new source defaults. Declined the Oracle 41901 Windows claim: stored/live text has no Windows reference and current normalized metadata matches. All 192 tests, data audit, typecheck, and lint pass; prior production build remains applicable.
 
 Seventh review: distinguish closed Oracle details from malformed empty success, reject invalid Oracle closing dates and Workday location arrays, and preserve literal placeholders across HTML/text normalization. Repeated Snorkel/Oracle platform claims remain unsupported by source evidence. All 202 tests, data audit, typecheck, lint, and production build pass.
+
+Eighth review: validate remaining Workday/Oracle payload types and Oracle counts/pages, reject exact-boundary Workday expiry, and honor primary location order with Irving coordinates. Corrected U.S. Bank and backfilled one Irving record (490 mapped). All 242 tests, data audit, typecheck, lint, and production build pass.

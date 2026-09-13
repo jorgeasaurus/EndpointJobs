@@ -354,6 +354,16 @@ async function fetchWorkdayDetail(siteUrl: string, job: WorkdayJob, deadline?: n
   if (!detail || typeof detail !== "object" || typeof detail.startDate !== "string" || !parseDateLike(detail.startDate)) {
     throw new Error("Workday detail did not include a valid job posting date");
   }
+  for (const field of ["title", "jobDescription", "location", "remoteType", "timeType", "endDate"] as const) {
+    if (detail[field] != null && typeof detail[field] !== "string") {
+      throw new TypeError(`Workday detail ${field} must be a string`);
+    }
+  }
+  for (const field of ["canApply", "posted"] as const) {
+    if (detail[field] != null && typeof detail[field] !== "boolean") {
+      throw new TypeError(`Workday detail ${field} must be a boolean`);
+    }
+  }
   if (detail.endDate != null && detail.endDate !== ""
     && (typeof detail.endDate !== "string" || !parseDateLike(detail.endDate))) {
     throw new Error("Workday detail included an invalid closing date");
@@ -459,7 +469,7 @@ function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, 
   const expiresAt = endDate && /^\d{4}-\d{2}-\d{2}$/.test(detail?.endDate ?? "")
     ? new Date(new Date(endDate).getTime() + 86_400_000 - 1).toISOString()
     : endDate;
-  if (detail?.canApply === false || detail?.posted === false || (expiresAt && new Date(expiresAt) < fetchedAt)) return null;
+  if (detail?.canApply === false || detail?.posted === false || (expiresAt && new Date(expiresAt) <= fetchedAt)) return null;
   const title = cleanText(detail?.title || raw.title);
   const company = site.name;
   const sourceJobUrl = buildWorkdayJobUrl(site.url, raw.externalPath);

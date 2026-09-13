@@ -66,8 +66,13 @@ async function fetchOracleJobs(url: string, fetchedAt: Date): Promise<Job[]> {
       const payload = await requestItems(searchUrl, deadline);
       const result = payload?.[0];
       if (!isRecord(result) || !Array.isArray(result.requisitionList)
-        || typeof result.TotalJobsCount !== "number") {
-        throw new Error("Oracle HCM search did not include requisitionList and TotalJobsCount");
+        || typeof result.TotalJobsCount !== "number"
+        || !Number.isSafeInteger(result.TotalJobsCount) || result.TotalJobsCount < 0) {
+        throw new Error("Oracle HCM search did not include requisitionList and a nonnegative safe integer TotalJobsCount");
+      }
+      const expectedPageSize = Math.min(pageSize, Math.max(0, result.TotalJobsCount - page * pageSize));
+      if (result.requisitionList.length !== expectedPageSize) {
+        throw new Error("Oracle HCM search result count did not match TotalJobsCount");
       }
       for (const raw of result.requisitionList) {
         if (!isRequisition(raw)) throw new Error("Oracle HCM search included a malformed requisition");
@@ -117,11 +122,21 @@ async function requestItems(url: URL, deadline: number, { allowMissing = false }
 }
 
 function normalizeOracleRequisition(raw: OracleRequisition, fetchedAt: Date): Job | null {
-  const postedAt = parseDateLike(raw.ExternalPostedStartDate);
-  const closingDate = raw.ExternalPostedEndDate;
-  if (closingDate != null && typeof closingDate !== "string") {
-    throw new Error(`Oracle HCM invalid closing date for ${raw.Id}`);
+  const optionalTextFields = [
+    "ExternalPostedStartDate", "ExternalPostedEndDate", "ExternalDescriptionStr",
+    "ExternalResponsibilitiesStr", "ExternalQualificationsStr", "PrimaryLocation",
+    "WorkplaceType", "JobSchedule"
+  ] as const;
+  for (const field of optionalTextFields) {
+    if (raw[field] != null && typeof raw[field] !== "string") {
+      const label = field === "ExternalPostedEndDate" ? "closing date" : field;
+      throw new Error(`Oracle HCM invalid ${label} for ${raw.Id}`);
+    }
   }
+  const postingDate = raw.ExternalPostedStartDate?.trim();
+  const postedAt = parseDateLike(postingDate);
+  if (!postedAt) throw new Error(`Oracle HCM invalid posting date for ${raw.Id}`);
+  const closingDate = raw.ExternalPostedEndDate;
   const closesAt = parseDateLike(closingDate?.trim());
   if (closingDate?.trim() && !closesAt) {
     throw new Error(`Oracle HCM invalid closing date for ${raw.Id}`);
@@ -129,7 +144,8 @@ function normalizeOracleRequisition(raw: OracleRequisition, fetchedAt: Date): Jo
   const description = [raw.ExternalDescriptionStr, raw.ExternalResponsibilitiesStr, raw.ExternalQualificationsStr]
     .map((value) => typeof value === "string" ? stripHtml(value).trim() : "").filter(Boolean).join("\n\n");
   // Never manufacture publication dates or replace unavailable employer details with search snippets.
-  if (!postedAt || !description || new Date(postedAt) > fetchedAt) return null;
+  if (!description) throw new Error(`Oracle HCM missing description for ${raw.Id}`);
+  if (new Date(postedAt) > fetchedAt) return null;
   const staleDays = getJobStaleDays();
   const freshnessEnd = addDays(new Date(postedAt), staleDays).toISOString();
   const staleAfter = closesAt && closesAt < freshnessEnd ? closesAt : freshnessEnd;

@@ -102,6 +102,12 @@ const locationCoordinates: Coordinate[] = [
     keys: ["denver", "westminster", "fort collins", "jacks cabin gunnison"]
   },
   {
+    label: "Irving, TX",
+    latitude: 32.814,
+    longitude: -96.9489,
+    keys: ["irving tx", "irving texas"]
+  },
+  {
     label: "Dallas, TX",
     latitude: 32.7767,
     longitude: -96.797,
@@ -642,6 +648,14 @@ export function hasGermanLocationEvidence(
 }
 
 export function resolveJobMapLocation(location: string): JobMapLocation | undefined {
+  for (const part of location.split(";")) {
+    const resolved = resolveSingleJobMapLocation(part);
+    if (resolved) return resolved;
+  }
+  return undefined;
+}
+
+function resolveSingleJobMapLocation(location: string): JobMapLocation | undefined {
   const normalized = normalizeLocation(location);
 
   if (!normalized || /^\d+ locations$/.test(normalized)) {

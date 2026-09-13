@@ -215,9 +215,9 @@
       "seniority": "Senior",
       "employmentType": "Full-time",
       "mapLocation": {
-        "label": "Atlanta, GA",
-        "latitude": 33.749,
-        "longitude": -84.388
+        "label": "Irving, TX",
+        "latitude": 32.814,
+        "longitude": -96.9489
       },
       "salary": {
         "min": 111605,
@@ -39653,7 +39653,12 @@
       ],
       "roleFamily": "Windows Platform",
       "seniority": "Mid",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "mapLocation": {
+        "label": "Irving, TX",
+        "latitude": 32.814,
+        "longitude": -96.9489
+      }
     },
     {
       "id": "serpapi-highbrow-llc-frisco-tx-jamf-engineer-a7ea78fffc",
