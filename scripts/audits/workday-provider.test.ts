@@ -417,7 +417,9 @@ for (const suffix of ["/", "///"]) {
 for (const postings of [
   [{ unexpected: true }],
   [detailPosting, { title: 42, externalPath: "/job/bad" }],
-  [{ ...detailPosting, externalPath: "job/without-leading-slash" }]
+  [{ ...detailPosting, externalPath: "job/without-leading-slash" }],
+  [{ ...detailPosting, externalPath: " /job/leading-space" }],
+  [{ ...detailPosting, externalPath: "/job/../traversal" }]
 ]) {
   test("Workday rejects malformed search entries for detail-enabled sites", async (t) => {
     assert.ok(workdayProvider);
@@ -427,8 +429,19 @@ for (const postings of [
       if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
       else process.env.JOB_WORKDAY_SITES = originalSites;
     });
-    t.mock.method(globalThis, "fetch", async () => Response.json({ jobPostings: postings }));
-    await assert.rejects(workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") }), WorkdayIncompleteSnapshotError);
+    let detailRequests = 0;
+    t.mock.method(globalThis, "fetch", async (_input: unknown, init?: RequestInit) => {
+      if (init?.method === "POST") return Response.json({ jobPostings: postings });
+      detailRequests += 1;
+      return Response.json({ jobPostingInfo: validDetail });
+    });
+    await assert.rejects(
+      workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") }),
+      (error) => error instanceof WorkdayIncompleteSnapshotError
+        && error.cause instanceof Error
+        && error.cause.message === "Workday search included an invalid job posting"
+    );
+    assert.equal(detailRequests, 0);
   });
 }
 
