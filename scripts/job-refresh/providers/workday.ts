@@ -518,11 +518,15 @@ function getWorkdaySites(defaultUrl: string): WorkdaySite[] {
     }));
   }
 
-  return configured
+  const entries = configured
     .split(";;")
     .map((entry) => entry.trim())
-    .filter(Boolean)
-    .map((entry) => {
+    .filter(Boolean);
+  if (entries.length === 0) {
+    throw new Error("JOB_WORKDAY_SITES must include at least one site");
+  }
+
+  return entries.map((entry) => {
       const [name, url, queries, fetchDetails] = entry.split("|");
       const normalizedName = cleanText(name);
       const normalizedUrl = cleanText(url);

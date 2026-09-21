@@ -369,6 +369,30 @@ test("Workday rejects configured sites without normalized queries", async (t) =>
   );
 });
 
+for (const emptySites of [" ", ";;", " ;; ;; "]) {
+  test(`Workday rejects empty normalized site configuration ${JSON.stringify(emptySites)}`, async (t) => {
+    const originalSites = process.env.JOB_WORKDAY_SITES;
+    process.env.JOB_WORKDAY_SITES = emptySites;
+    t.after(() => {
+      if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+      else process.env.JOB_WORKDAY_SITES = originalSites;
+    });
+    t.mock.method(globalThis, "fetch", async () => {
+      throw new Error("No request expected");
+    });
+
+    await assert.rejects(
+      workdayProvider.fetchJobs({
+        url: workdayProvider.defaultUrl,
+        fetchedAt: new Date("2026-09-12T12:00:00Z"),
+      }),
+      (error) => error instanceof WorkdayIncompleteSnapshotError
+        && error.cause instanceof Error
+        && /at least one site/.test(error.cause.message),
+    );
+  });
+}
+
 test("Workday page limits use strict positive integer configuration", async (t) => {
   const originalEnv = { ...process.env };
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";

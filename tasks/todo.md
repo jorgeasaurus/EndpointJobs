@@ -905,6 +905,8 @@ Eighth review: validate remaining Workday/Oracle payload types and Oracle counts
 
 Latest review: scope the shared Workday deadline to each detail-enabled employer so the legacy crawl cannot exhaust it before direct sources run, and wrap the final post-batch deadline check as an incomplete snapshot. Regressions cover both boundaries.
 
+Follow-up review: reject empty normalized Workday site overrides as incomplete snapshots and correct the per-site deadline documentation.
+
 ## Review 16 plan
 
 - [x] Merge current `main` and preserve its refreshed feed.
