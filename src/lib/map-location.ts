@@ -649,15 +649,26 @@ export function hasGermanLocationEvidence(
 
 export function resolveJobMapLocation(location: string): JobMapLocation | undefined {
   const normalizedLocation = normalizeLocation(location);
+  const parts = location.split(";");
 
-  for (const part of location.split(";")) {
-    const resolved = resolveSingleJobMapLocation(part, normalizedLocation);
+  for (let index = 0; index < parts.length; index++) {
+    const part = parts[index];
+    const next = normalizeLocation(parts[index + 1] ?? "");
+    const stateQualifier = getUsStateSuffix(next) === next ? next : "";
+    const collisionContext = stateQualifier
+      ? `${normalizeLocation(part)} ${stateQualifier}`
+      : normalizeLocation(part);
+    const resolved = resolveSingleJobMapLocation(part, normalizedLocation, collisionContext);
     if (resolved) return resolved;
   }
   return undefined;
 }
 
-function resolveSingleJobMapLocation(location: string, normalizedFullLocation = normalizeLocation(location)): JobMapLocation | undefined {
+function resolveSingleJobMapLocation(
+  location: string,
+  normalizedFullLocation = normalizeLocation(location),
+  normalizedCollisionContext = normalizeLocation(location)
+): JobMapLocation | undefined {
   const normalized = normalizeLocation(location);
 
   if (!normalized || /^\d+ locations$/.test(normalized)) {
@@ -669,7 +680,7 @@ function resolveSingleJobMapLocation(location: string, normalizedFullLocation = 
   }
 
   const coordinate = searchableLocationCoordinates.find((candidate) =>
-    !isInternationalCityWithExplicitUsState(candidate.label, normalized, normalizedFullLocation) &&
+    !isInternationalCityWithExplicitUsState(candidate.label, normalizedCollisionContext, normalizedFullLocation) &&
     candidate.normalizedKeys.some((key) =>
       containsNormalizedLocationKey(normalized, key)
       || (containsNormalizedLocationKey(normalizedFullLocation, key)

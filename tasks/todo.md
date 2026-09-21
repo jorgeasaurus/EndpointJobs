@@ -907,6 +907,8 @@ Latest review: scope the shared Workday deadline to each detail-enabled employer
 
 Follow-up review: reject empty normalized Workday site overrides as incomplete snapshots and correct the per-site deadline documentation.
 
+Next review: apply adjacent state-only qualifiers to the current map segment's collision guard; split Valencia/CA, Santiago/CA, Lima/OH, and Bogota/NJ now reject international coordinates while independent later cities remain selectable.
+
 ## Review 16 plan
 
 - [x] Merge current `main` and preserve its refreshed feed.
