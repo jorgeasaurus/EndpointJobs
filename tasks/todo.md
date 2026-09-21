@@ -875,7 +875,7 @@ Latest verification: 288 tests, 71 data audits, scoped lint, typecheck, and diff
 
 ## Review
 
-Reviewed 75 LinkedIn results; added 14 recurring sources: Archer, DRW, Obsidian Security, Later, Snorkel AI, Applied Intuition, Radiant Industries, SC Johnson, U.S. Bank, IFF, Greenberg Traurig, Morgan Stanley, Tempus AI, and Florida Blue. Imported 9 verified jobs from 8 employers (882 → 891 active; 477 → 490 mapped against refreshed main), preserving original dates and excluding older reposts from this batch. Subsequent refresh and map backfills leave the checked-in feed at 895 active and 493 mapped.
+Reviewed 75 LinkedIn results and added 14 recurring sources: Archer, DRW, Obsidian Security, Later, Snorkel AI, Applied Intuition, Radiant Industries, SC Johnson, U.S. Bank, IFF, Greenberg Traurig, Morgan Stanley, Tempus AI, and Florida Blue. The original batch verified 9 jobs from 8 employers. A live branch refresh now contains 1,031 active jobs, including 3 direct Workday listings from SC Johnson and IFF; Oracle HCM completed with no active endpoint matches.
 
 Corrected ATS workplace metadata, original publication dates, and Workday expiry handling; added Oracle HCM support and narrow endpoint relevance rules. Tests, data audit, typecheck, lint, production build, and local rendered listings verified before rebasing. Against refreshed main: 128 tests, data audit, typecheck, lint, and production build pass; version bumped to 0.1.15 for the PR.
 
