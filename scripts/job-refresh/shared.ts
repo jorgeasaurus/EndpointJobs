@@ -34,7 +34,8 @@ const descriptionMinLength =
   Number.isFinite(configuredDescriptionMinLength) && configuredDescriptionMinLength >= 261
     ? configuredDescriptionMinLength
     : 420;
-const sponsorshipDescriptions = new WeakMap<Job, string>();
+const sponsorshipDescription = Symbol("sponsorshipDescription");
+type JobWithSponsorshipDescription = Job & { [sponsorshipDescription]?: string };
 
 export type JobCandidate = {
   id: string;
@@ -101,7 +102,7 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
   const postedAt = parseDateLike(candidate.postedAt) ?? candidate.fetchedAt.toISOString();
   const staleAfter = candidate.staleAfter ?? addDays(new Date(postedAt), staleDays).toISOString();
 
-  const job: Job = {
+  const job: JobWithSponsorshipDescription = {
     id: candidate.id,
     title,
     company,
@@ -129,14 +130,14 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
     roleFamily: candidate.roleFamily ?? inferRoleFamily(haystack, tools, platforms),
     seniority: candidate.seniority ?? inferSeniority(haystack, title),
     employmentType: cleanText(candidate.employmentType) || inferEmploymentType(haystack),
-    ...(candidate.salary ? { salary: candidate.salary } : {})
+    ...(candidate.salary ? { salary: candidate.salary } : {}),
+    [sponsorshipDescription]: description
   };
-  sponsorshipDescriptions.set(job, description);
   return job;
 }
 
 export function getSponsorshipClassificationDescription(job: Job) {
-  return sponsorshipDescriptions.get(job) ?? job.description ?? "";
+  return (job as JobWithSponsorshipDescription)[sponsorshipDescription] ?? job.description ?? "";
 }
 
 export function isEndpointRelevant(

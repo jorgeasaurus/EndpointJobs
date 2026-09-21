@@ -13,6 +13,7 @@ const defaultTimeoutMs = 8_000;
 const defaultMaxRetries = 0;
 const maxPassages = 24;
 const maxPassageLength = 1_200;
+const maxAdjacentContextLength = 256;
 const sponsorshipSignal = /\b(?:sponsorship|visas?|immigration|work authori[sz]ation|employment authori[sz]ation|work permits?|H-?1B|OPT|CPT|sponsor(?:s|ed|ing)?\s+(?:visas?|candidates?|applicants?|employees?))\b/i;
 
 type KnownStatus = Exclude<VisaSponsorship["status"], "not-stated">;
@@ -168,17 +169,14 @@ export function extractJevSponsorshipPassages(description: string) {
     .filter(Boolean);
   for (const [blockIndex, normalized] of blocks.entries()) {
     if (!sponsorshipSignal.test(normalized)) continue;
-    const precedingContext = blocks[blockIndex - 1];
-    const followingContext = blocks[blockIndex + 1];
-    const fragments = normalized.length <= maxPassageLength ? [normalized] : signalWindows(normalized);
+    const precedingContext = boundedAdjacentContext(blocks[blockIndex - 1], "preceding");
+    const followingContext = boundedAdjacentContext(blocks[blockIndex + 1], "following");
+    const contexts = [precedingContext, followingContext].filter((context): context is string => Boolean(context));
+    const fragmentLength = maxPassageLength - contexts.reduce((total, context) => total + context.length + 2, 0);
+    const fragments = normalized.length <= fragmentLength ? [normalized] : signalWindows(normalized, fragmentLength);
     for (const fragment of fragments) {
-      let passage = fragment;
-      if (precedingContext && passage.length + precedingContext.length + 2 <= maxPassageLength) {
-        passage = `${precedingContext}\n\n${passage}`;
-      }
-      if (followingContext && passage.length + followingContext.length + 2 <= maxPassageLength) {
-        passage = `${passage}\n\n${followingContext}`;
-      }
+      const passage = [precedingContext, fragment, followingContext].filter(Boolean).join("\n\n");
+      if (passage.length > maxPassageLength) return [];
       if (!passage || seen.has(passage)) continue;
       seen.add(passage);
       passages.push(passage);
@@ -188,19 +186,27 @@ export function extractJevSponsorshipPassages(description: string) {
   return passages;
 }
 
-function signalWindows(block: string) {
+function signalWindows(block: string, windowLength = maxPassageLength) {
   const matches = block.matchAll(new RegExp(sponsorshipSignal.source, "gi"));
   const windows: Array<{ start: number; end: number }> = [];
   for (const match of matches) {
     const matchIndex = match.index;
-    const context = Math.floor((maxPassageLength - match[0].length) / 2);
-    const start = Math.min(Math.max(0, matchIndex - context), block.length - maxPassageLength);
-    const window = { start, end: start + maxPassageLength };
+    const context = Math.floor((windowLength - match[0].length) / 2);
+    const start = Math.min(Math.max(0, matchIndex - context), block.length - windowLength);
+    const window = { start, end: start + windowLength };
     if (!windows.some(({ start: existingStart, end }) => existingStart === window.start && end === window.end)) {
       windows.push(window);
     }
   }
   return windows.map(({ start, end }) => block.slice(start, end).trim());
+}
+
+function boundedAdjacentContext(block: string | undefined, side: "preceding" | "following") {
+  if (!block || block.length <= maxAdjacentContextLength) return block;
+  const slice = side === "preceding"
+    ? block.slice(-maxAdjacentContextLength).replace(/^\S*\s+/, "")
+    : block.slice(0, maxAdjacentContextLength).replace(/\s+\S*$/, "");
+  return slice.trim();
 }
 
 function buildCriteria(passages: string[]) {

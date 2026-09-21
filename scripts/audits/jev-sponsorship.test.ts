@@ -8,7 +8,7 @@ import {
   extractJevSponsorshipPassages,
   type JevChoiceEvaluator
 } from "../job-refresh/jev-sponsorship";
-import { toEndpointJob } from "../job-refresh/shared";
+import { getSponsorshipClassificationDescription, toEndpointJob } from "../job-refresh/shared";
 
 const sourceUrl = "https://example.com/jobs/endpoint-engineer";
 
@@ -111,6 +111,14 @@ test("candidate extraction ignores unrelated text and bounds long passages", () 
   assert.deepEqual(extractJevSponsorshipPassages(`${precedingRestriction}\n\n${novelClaim}`), [
     `${precedingRestriction}\n\n${novelClaim}`
   ]);
+
+  const fullLengthSignalBlock = `${"Endpoint duties. ".repeat(90)} Immigration support is reviewed.`;
+  const restrictedLongPassages = extractJevSponsorshipPassages(
+    `${fullLengthSignalBlock}\n\nOnly for internal transfers.`
+  );
+  assert.ok(restrictedLongPassages.length > 0);
+  assert.ok(restrictedLongPassages.every((passage) => passage.length <= 1_200));
+  assert.ok(restrictedLongPassages.every((passage) => passage.endsWith("Only for internal transfers.")));
 });
 
 function sponsorshipClaimIsPresent(value: string) {
@@ -230,7 +238,20 @@ test("refresh hands JEV the full source description before display truncation", 
       return { choice: "case-by-case:0", confidence: 0.95, model: "jev-test" };
     }
   });
-  assert.deepEqual(result.jobs[0].visaSponsorship, {
-    status: "case-by-case", evidence, sourceUrl
+  assert.equal(result.jobs[0].visaSponsorship?.status, "case-by-case");
+  assert.equal(result.jobs[0].visaSponsorship?.sourceUrl, sourceUrl);
+  assert.match(result.jobs[0].visaSponsorship?.evidence ?? "", new RegExp(evidence));
+});
+
+test("provider clones retain the hidden sponsorship description without serializing it", () => {
+  const rawDescription = `${"Manage Intune endpoints and application deployments. ".repeat(20)}Qualified applicants may receive employer immigration support after legal review.`;
+  const job = toEndpointJob({
+    id: "clone-source", title: "Intune Endpoint Engineer", company: "Example", postedAt: "2026-09-20",
+    fetchedAt: new Date("2026-09-20"), source: "Test", sourceUrl, attributionLabel: "Test",
+    termsProfile: "public-api", description: rawDescription
   });
+  assert.ok(job);
+  const cloned = { ...job, description: undefined };
+  assert.equal(getSponsorshipClassificationDescription(cloned), rawDescription);
+  assert.ok(!JSON.stringify(cloned).includes(rawDescription));
 });
