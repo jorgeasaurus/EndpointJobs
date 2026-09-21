@@ -109,7 +109,8 @@ test("batch enrichment skips known jobs and accepts only JEV results", async () 
   const jobs: Job[] = [
     { ...base, id: "known", description: "We provide visa sponsorship.", visaSponsorship: { status: "available", evidence: "We provide visa sponsorship.", sourceUrl } },
     { ...base, id: "unknown", description: "Immigration sponsorship depends on legal review." },
-    { ...base, id: "irrelevant", description: "Manage Intune endpoints." }
+    { ...base, id: "irrelevant", description: "Manage Intune endpoints." },
+    { ...base, id: "stale-unknown", description: "We provide visa sponsorship.", visaSponsorship: { status: "not-stated" } }
   ];
   let calls = 0;
   const result = await enrichVisaSponsorshipWithJev(jobs, {
@@ -125,6 +126,25 @@ test("batch enrichment skips known jobs and accepts only JEV results", async () 
   assert.equal(result.jobs[0], jobs[0]);
   assert.equal(result.jobs[1].visaSponsorship?.status, "case-by-case");
   assert.equal(result.jobs[2], jobs[2]);
+  assert.deepEqual(result.jobs[3].visaSponsorship, {
+    status: "available", evidence: "We provide visa sponsorship.", sourceUrl
+  });
+});
+
+test("deterministic promotions persist without a JEV evaluator", async () => {
+  const job = {
+    id: "stale-unknown", title: "Endpoint Engineer", company: "Example", location: "Remote",
+    workplace: "Remote", postedAt: "2026-09-20", fetchedAt: "2026-09-20", staleAfter: "2026-11-01",
+    source: "Test", sourceUrl, attributionLabel: "Test", termsProfile: "public-api",
+    description: "We do not provide visa sponsorship.", visaSponsorship: { status: "not-stated" },
+    summary: "Endpoint role", tags: [], matchReasons: [], tools: [], platforms: [],
+    roleFamily: "Endpoint Engineering", seniority: "Mid", employmentType: "Full-time"
+  } satisfies Job;
+  const result = await enrichVisaSponsorshipWithJev([job], { evaluator: null });
+  assert.deepEqual(result.jobs[0].visaSponsorship, {
+    status: "unavailable", evidence: "We do not provide visa sponsorship.", sourceUrl
+  });
+  assert.equal(result.attempted, 0);
 });
 
 test("batch enrichment caps paid requests and reports eligible jobs left untouched", async () => {

@@ -849,3 +849,10 @@ Review: exact rules remain authoritative; deliberate ambiguity bypasses JEV. Nov
 Live backfill: 25 attempted, 12 classified, 0 failed. Stored totals: 4 case-by-case, 39 unavailable, 957 not stated; no unconditional sponsorship offers were found.
 
 Thermonuclear loop: successive review batches fixed request budgeting, long/conflicting passage extraction, hidden raw-description transport, duplicated state, deterministic ambiguity ownership, and detached novel qualifiers. The final fresh review returned zero findings. Validation: 268 tests, 71 data audits, lint, typecheck, production build, desktop/mobile sponsorship browser checks, and diff checks pass. Clean: yes.
+
+## PR #55 Copilot review loop
+
+- [x] Recompute stale `not-stated` records before JEV and persist deterministic results.
+- [x] Handle detached role restrictions and enforce a literal 50-request default cap.
+- [x] Verify 272 tests, 71 data audits, lint, typecheck, and diff checks.
+- [ ] Resolve all findings and confirm a fresh clean review on the latest head.

@@ -10,7 +10,7 @@ const defaultMinConfidence = 0.8;
 const defaultConcurrency = 4;
 const defaultMaxRequests = 50;
 const defaultTimeoutMs = 8_000;
-const defaultMaxRetries = 1;
+const defaultMaxRetries = 0;
 const maxPassages = 24;
 const maxPassageLength = 1_200;
 const sponsorshipSignal = /\b(?:sponsorship|visas?|immigration|work authori[sz]ation|employment authori[sz]ation|work permits?|H-?1B|OPT|CPT|sponsor(?:s|ed|ing)?\s+(?:visas?|candidates?|applicants?|employees?))\b/i;
@@ -39,7 +39,7 @@ export type JevSponsorshipResult = {
 };
 
 type JevOptions = {
-  evaluator?: JevChoiceEvaluator;
+  evaluator?: JevChoiceEvaluator | null;
   minConfidence?: number;
   model?: string;
 };
@@ -55,7 +55,7 @@ export async function classifyVisaSponsorshipWithJev(
   if (!deterministic.jevEligible) return { sponsorship: deterministic.sponsorship, method: "not-stated" };
 
   const passages = extractJevSponsorshipPassages(input.description);
-  const evaluator = options.evaluator ?? createDefaultEvaluator();
+  const evaluator = options.evaluator === null ? undefined : options.evaluator ?? createDefaultEvaluator();
   if (!passages.length || !evaluator) {
     return { sponsorship: deterministic.sponsorship, method: "not-stated" };
   }
@@ -113,16 +113,24 @@ export async function enrichVisaSponsorshipWithJev(
   jobs: Job[],
   options: JevOptions & { concurrency?: number; maxRequests?: number } = {}
 ) {
-  const evaluator = options.evaluator ?? createDefaultEvaluator();
-  if (!evaluator) {
-    return { jobs, classified: 0, attempted: 0, skipped: 0, failed: 0 };
+  const output = [...jobs];
+  const eligible: Array<{ job: Job; index: number }> = [];
+  for (const [index, job] of jobs.entries()) {
+    if ((job.visaSponsorship?.status ?? "not-stated") !== "not-stated") continue;
+    const description = getSponsorshipClassificationDescription(job);
+    const deterministic = analyzeVisaSponsorship(description, job.sourceUrl);
+    if (deterministic.sponsorship.status !== "not-stated") {
+      output[index] = { ...job, visaSponsorship: deterministic.sponsorship };
+    } else if (deterministic.jevEligible && sponsorshipSignal.test(description)) {
+      eligible.push({ job, index });
+    }
   }
 
-  const output = [...jobs];
-  const eligible = jobs
-    .map((job, index) => ({ job, index }))
-    .filter(({ job }) => (job.visaSponsorship?.status ?? "not-stated") === "not-stated")
-    .filter(({ job }) => sponsorshipSignal.test(getSponsorshipClassificationDescription(job)));
+  const evaluator = options.evaluator === null ? undefined : options.evaluator ?? createDefaultEvaluator();
+  if (!evaluator) {
+    return { jobs: output, classified: 0, attempted: 0, skipped: 0, failed: 0 };
+  }
+
   const maxRequests = getMaxRequests(options.maxRequests);
   const candidates = eligible.slice(0, maxRequests);
   const skipped = eligible.length - candidates.length;
@@ -142,8 +150,8 @@ export async function enrichVisaSponsorshipWithJev(
         company: current.job.company
       }, { ...options, evaluator });
       if (result.error) failed++;
-      if (result.method === "jev") {
-        classified++;
+      if (result.sponsorship.status !== "not-stated") {
+        if (result.method === "jev") classified++;
         output[current.index] = { ...current.job, visaSponsorship: result.sponsorship };
       }
     }

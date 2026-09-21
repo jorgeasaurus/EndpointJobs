@@ -82,7 +82,7 @@ jobs:
           JOB_JEV_MAX_REQUESTS: "50"
           JOB_JEV_CONCURRENCY: "4"
           JOB_JEV_TIMEOUT_MS: "8000"
-          JOB_JEV_MAX_RETRIES: "1"
+          JOB_JEV_MAX_RETRIES: "0"
           JOB_FEED_SOURCE_URL: https://github.com/jorgeasaurus/EndpointJobs
           JOB_STALE_DAYS: "45"
           JOB_MAX_RESULTS: "1000"

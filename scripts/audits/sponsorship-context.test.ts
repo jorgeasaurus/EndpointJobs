@@ -12,6 +12,8 @@ for (const description of [
   "Visa sponsorship is available.\n\nOnly for internal transfers.",
   "Visa sponsorship is available.\n\nHowever, this does not apply to this position.",
   "Visa sponsorship is available. This offer does not apply to this position.",
+  "Visa sponsorship is available. Not for this position.",
+  "Visa sponsorship is available. Unavailable for this job.",
   "No visa sponsorship. Except for internal transfers.",
   "No visa sponsorship.\n\nUnless the candidate already holds an H-1B visa.",
   "Is this role eligible for visa sponsorship? Yes. Only for internal transfers."
@@ -65,6 +67,18 @@ test("unrelated following statement does not invalidate an explicit offer", () =
   assert.deepEqual(classifyVisaSponsorship("Visa sponsorship is available. We offer health insurance.", sourceUrl), {
     status: "available", evidence: "Visa sponsorship is available.", sourceUrl
   });
+});
+
+test("eligibility questions accept role, position, and job wording", () => {
+  for (const subject of ["role", "position", "job"]) {
+    assert.deepEqual(classifyVisaSponsorship(
+      `Is this ${subject} eligible for visa sponsorship? No.`, sourceUrl
+    ), {
+      status: "unavailable",
+      evidence: `Is this ${subject} eligible for visa sponsorship? No.`,
+      sourceUrl
+    });
+  }
 });
 
 
