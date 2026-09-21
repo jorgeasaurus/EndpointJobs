@@ -241,7 +241,10 @@ async function fetchWorkdaySearch(
   ) {
     throw new Error("Workday search included an invalid job posting");
   }
-  return postings.filter(isWorkdayJob);
+  return postings.filter(
+    (entry): entry is WorkdayJob =>
+      isWorkdayJob(entry) && isWorkdayDetailPath(entry.externalPath),
+  );
 }
 
 async function fetchWorkdayDetail(

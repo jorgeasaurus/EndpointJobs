@@ -514,7 +514,14 @@ test("Workday legacy search-only sites continue filtering malformed entries", as
     if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
     else process.env.JOB_WORKDAY_SITES = originalSites;
   });
-  t.mock.method(globalThis, "fetch", async () => Response.json({ jobPostings: [detailPosting, { unexpected: true }] }));
+  t.mock.method(globalThis, "fetch", async () => Response.json({
+    jobPostings: [
+      detailPosting,
+      { unexpected: true },
+      { ...detailPosting, externalPath: "/job/%zz" },
+      { ...detailPosting, externalPath: "/job/" }
+    ]
+  }));
   const jobs = await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
   assert.equal(jobs.filter(Boolean).length, 1);
 });
