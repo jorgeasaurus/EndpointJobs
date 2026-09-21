@@ -58,6 +58,8 @@ async function fetchOracleJobs(url: string, fetchedAt: Date): Promise<Job[]> {
   const ids = new Set<string>();
   // Fail the provider on incomplete searches, rather than publishing a partial source snapshot.
   for (const query of queries) {
+    const queryIds = new Set<string>();
+    let queryTotal: number | undefined;
     for (let page = 0; page < maxPages; page += 1) {
       const searchUrl = new URL(`${apiBaseUrl}/recruitingCEJobRequisitions`);
       searchUrl.searchParams.set("onlyData", "true");
@@ -70,18 +72,31 @@ async function fetchOracleJobs(url: string, fetchedAt: Date): Promise<Job[]> {
         || !Number.isSafeInteger(result.TotalJobsCount) || result.TotalJobsCount < 0) {
         throw new Error("Oracle HCM search did not include requisitionList and a nonnegative safe integer TotalJobsCount");
       }
+      if (queryTotal !== undefined && result.TotalJobsCount !== queryTotal) {
+        throw new Error("Oracle HCM search TotalJobsCount changed during pagination");
+      }
+      queryTotal = result.TotalJobsCount;
       const expectedPageSize = Math.min(pageSize, Math.max(0, result.TotalJobsCount - page * pageSize));
       if (result.requisitionList.length !== expectedPageSize) {
         throw new Error("Oracle HCM search result count did not match TotalJobsCount");
       }
       for (const raw of result.requisitionList) {
         if (!isRequisition(raw)) throw new Error("Oracle HCM search included a malformed requisition");
+        if (queryIds.has(raw.Id)) {
+          throw new Error(`Oracle HCM query ${query} repeated requisition ${raw.Id}`);
+        }
+        queryIds.add(raw.Id);
         ids.add(raw.Id);
         if (ids.size > maxDetails) {
           throw new Error(`Oracle HCM exceeded the ${maxDetails} detail result bound`);
         }
       }
-      if ((page + 1) * pageSize >= result.TotalJobsCount) break;
+      if ((page + 1) * pageSize >= result.TotalJobsCount) {
+        if (queryIds.size !== result.TotalJobsCount) {
+          throw new Error(`Oracle HCM query ${query} unique result count did not match TotalJobsCount`);
+        }
+        break;
+      }
       if (page === maxPages - 1) {
         throw new Error(`Oracle HCM query ${query} exceeded the ${pageSize * maxPages} result bound`);
       }

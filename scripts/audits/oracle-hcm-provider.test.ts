@@ -64,11 +64,58 @@ test("Oracle HCM excludes expired, future and unrelated roles", async (t) => {
   assert.deepEqual(await fetchJobs(), []);
 });
 
-test("Oracle HCM caps searches instead of silently truncating a source", async (t) => {
-  const requests = installFetch(t, Array.from({ length: 25 }, (_, index) => ({ ...detail, Id: String(index) })), 100);
-  await assert.rejects(fetchJobs, /exceeded the 75 result bound/);
+test("Oracle HCM caps paginated searches before fetching excess details", async (t) => {
+  const requests: URL[] = [];
+  t.mock.method(globalThis, "fetch", async (input: string | URL | Request) => {
+    const url = new URL(String(input));
+    requests.push(url);
+    const finder = url.searchParams.get("finder") ?? "";
+    const offset = Number(/offset=(\d+)/.exec(finder)?.[1] ?? 0);
+    return Response.json({
+      items: [{
+        TotalJobsCount: 100,
+        requisitionList: Array.from({ length: 25 }, (_, index) => ({
+          ...detail,
+          Id: String(offset + index),
+        })),
+      }],
+    });
+  });
+  await assert.rejects(fetchJobs, /exceeded the 50 detail result bound/);
   assert.equal(requests.length, 3);
   assert.ok(requests[2].searchParams.get("finder")?.includes("offset=50"));
+});
+
+test("Oracle HCM rejects repeated requisitions within one paginated query", async (t) => {
+  t.mock.method(globalThis, "fetch", async (input: string | URL | Request) => {
+    const url = new URL(String(input));
+    const finder = url.searchParams.get("finder") ?? "";
+    const offset = Number(/offset=(\d+)/.exec(finder)?.[1] ?? 0);
+    const requisitionList = offset === 0
+      ? Array.from({ length: 25 }, (_, index) => ({ ...detail, Id: String(index) }))
+      : [{ ...detail, Id: "0" }];
+    return Response.json({ items: [{ TotalJobsCount: 26, requisitionList }] });
+  });
+
+  await assert.rejects(fetchJobs, /repeated requisition 0/);
+});
+
+test("Oracle HCM rejects changing totals within one paginated query", async (t) => {
+  t.mock.method(globalThis, "fetch", async (input: string | URL | Request) => {
+    const url = new URL(String(input));
+    const finder = url.searchParams.get("finder") ?? "";
+    const offset = Number(/offset=(\d+)/.exec(finder)?.[1] ?? 0);
+    return Response.json({
+      items: [{
+        TotalJobsCount: offset === 0 ? 26 : 27,
+        requisitionList: offset === 0
+          ? Array.from({ length: 25 }, (_, index) => ({ ...detail, Id: String(index) }))
+          : [{ ...detail, Id: "25" }, { ...detail, Id: "26" }],
+      }],
+    });
+  });
+
+  await assert.rejects(fetchJobs, /TotalJobsCount changed during pagination/);
 });
 
 test("Oracle HCM rejects malformed search responses", async (t) => {

@@ -191,6 +191,7 @@ async function fetchWorkdaySearch(
     10,
   );
   const postings: WorkdayJob[] = [];
+  const postingPaths = new Set<string>();
   let offset = 0;
   let reportedTotal: number | undefined;
 
@@ -248,6 +249,16 @@ async function fetchWorkdaySearch(
       )
     ) {
       throw new Error("Workday search included an invalid job posting");
+    }
+
+    if (requireValidEntries) {
+      for (const entry of page as WorkdayJob[]) {
+        const path = entry.externalPath as string;
+        if (postingPaths.has(path)) {
+          throw new Error(`Workday search repeated job path ${path}`);
+        }
+        postingPaths.add(path);
+      }
     }
 
     postings.push(

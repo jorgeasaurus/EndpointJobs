@@ -311,9 +311,9 @@ function normalizeRapidApiLinkedInJob(
     return null;
   }
 
-  const description = cleanText(stripHtml(
+  const description = stripHtml(
     firstFieldText(raw, rapidApiLinkedInFields.description) ?? ""
-  ));
+  );
   const location = cleanText(
     firstFieldText(raw, rapidApiLinkedInFields.location)
   );

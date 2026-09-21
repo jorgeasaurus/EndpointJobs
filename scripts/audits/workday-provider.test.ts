@@ -621,6 +621,35 @@ test("Workday paginates detail-enabled searches through the reported total", asy
   assert.equal(jobs.filter(Boolean).length, 3);
 });
 
+test("Workday rejects duplicate paths within a paginated detail query", async (t) => {
+  const originalEnv = { ...process.env };
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
+  process.env.JOB_WORKDAY_RESULTS_PER_QUERY = "2";
+  t.after(() => {
+    process.env = originalEnv;
+  });
+  t.mock.method(globalThis, "fetch", async (_input: unknown, init?: RequestInit) => {
+    if (init?.method !== "POST") throw new Error("Detail fetch should not run");
+    const { offset } = JSON.parse(String(init.body)) as { offset: number };
+    return Response.json({
+      jobPostings: offset === 0
+        ? [detailPosting, { ...detailPosting, externalPath: `${detailPosting.externalPath}-2` }]
+        : [detailPosting],
+      total: 3,
+    });
+  });
+
+  await assert.rejects(
+    workdayProvider.fetchJobs({
+      url: workdayProvider.defaultUrl,
+      fetchedAt: new Date("2026-09-12T12:00:00Z"),
+    }),
+    (error) => error instanceof WorkdayIncompleteSnapshotError
+      && error.cause instanceof Error
+      && /repeated job path/.test(error.cause.message),
+  );
+});
+
 for (const total of [undefined, -1, 0.5, 0, "1"] as const) {
   test(`Workday rejects an invalid detail-search total: ${String(total)}`, async (t) => {
     const originalSites = process.env.JOB_WORKDAY_SITES;

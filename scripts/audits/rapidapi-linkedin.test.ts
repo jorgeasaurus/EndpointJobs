@@ -153,6 +153,7 @@ test("LinkedIn preserves encoded literal placeholders through normalization", as
       fetchedAt: new Date("2026-09-12T12:00:00Z")
     });
     assert.match(job?.description ?? "", /<device>/);
+    assert.match(job?.description ?? "", /placeholders\.\n\nAutomate Windows/);
   } finally {
     globalThis.fetch = originalFetch;
     restoreProcessEnv(originalEnv);
