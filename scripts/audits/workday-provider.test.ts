@@ -2,13 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type { Job } from "../../src/types/job";
 
-import { companyAtsProviders, WorkdayDetailError, WorkdayIncompleteSnapshotError } from "../job-refresh/providers/company-ats";
+import { workdayProvider, WorkdayDetailError, WorkdayIncompleteSnapshotError } from "../job-refresh/providers/workday";
 import { defaultWorkdaySites } from "../job-refresh/providers/workday-sites";
 
-const workdayProvider = companyAtsProviders.find((provider) => provider.id === "workday");
-
 test("Workday details preserve original dates, qualify generic titles, and exclude closed or stale postings", async () => {
-  assert.ok(workdayProvider);
   const originalFetch = globalThis.fetch;
   const originalSites = process.env.JOB_WORKDAY_SITES;
   process.env.JOB_WORKDAY_SITES = "Example|https://example.wd1.myworkdayjobs.com/wday/cxs/example/Careers/jobs|Endpoint;Intune|true";
@@ -56,7 +53,6 @@ test("Workday details preserve original dates, qualify generic titles, and exclu
 });
 
 test("Workday detail text falls back when cleaned fields are empty", async () => {
-  assert.ok(workdayProvider);
   const originalFetch = globalThis.fetch;
   const originalEnv = { ...process.env };
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/External/jobs|Endpoint|true";
@@ -85,7 +81,6 @@ test("Workday defaults include GEICO's focused endpoint searches", () => {
 });
 
 test("Workday normalizes GEICO roles and sends its required language header", async () => {
-  assert.ok(workdayProvider);
 
   const originalFetch = globalThis.fetch;
   const originalEnv = { ...process.env };
@@ -136,7 +131,6 @@ test("Workday normalizes GEICO roles and sends its required language header", as
 });
 
 test("Workday search queries keep endpoint-relevant listings without publishing the query", async () => {
-  assert.ok(workdayProvider);
   const fetchedAt = new Date("2026-07-15T12:00:00.000Z");
   const posting = {
     title: "Systems Engineer",
@@ -170,7 +164,6 @@ test("Workday search queries keep endpoint-relevant listings without publishing 
 });
 
 test("Workday publishes genuine bullet evidence without the search term", async () => {
-  assert.ok(workdayProvider);
   const originalFetch = globalThis.fetch;
   const originalEnv = { ...process.env };
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/External/jobs|Intune";
@@ -207,8 +200,7 @@ const validDetail = { startDate: "2026-09-11", title: "Endpoint Engineer", jobDe
 
 for (const failure of ["network", "429", "500", "invalid-json", "missing-detail", "invalid-date", "impossible-date"] as const) {
   test(`Workday rejects the entire snapshot on ${failure} detail failures across sites and queries`, async () => {
-    assert.ok(workdayProvider);
-    const originalFetch = globalThis.fetch;
+      const originalFetch = globalThis.fetch;
     const originalSites = process.env.JOB_WORKDAY_SITES;
     process.env.JOB_WORKDAY_SITES = "First|https://first.example/wday/cxs/first/Careers/jobs|Endpoint;Intune|true;;Second|https://second.example/wday/cxs/second/Careers/jobs|Endpoint;Intune|true";
     let detailRequests = 0;
@@ -238,7 +230,6 @@ for (const failure of ["network", "429", "500", "invalid-json", "missing-detail"
 }
 
 test("Workday treats 404 and 410 details as closed postings and continues", async () => {
-  assert.ok(workdayProvider);
   const originalFetch = globalThis.fetch;
   const originalSites = process.env.JOB_WORKDAY_SITES;
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
@@ -258,7 +249,6 @@ test("Workday treats 404 and 410 details as closed postings and continues", asyn
 });
 
 test("Workday bounds detail requests and propagates timeouts", async (t) => {
-  assert.ok(workdayProvider);
   const originalSites = process.env.JOB_WORKDAY_SITES;
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint;Intune|true";
   const controller = new AbortController();
@@ -284,7 +274,6 @@ test("Workday bounds detail requests and propagates timeouts", async (t) => {
 });
 
 test("Workday detail overrides honor explicit false and inherit defaults only when omitted", async () => {
-  assert.ok(workdayProvider);
   const site = defaultWorkdaySites.find((site) => "fetchDetails" in site && site.fetchDetails);
   assert.ok(site);
   const originalFetch = globalThis.fetch;
@@ -310,7 +299,6 @@ test("Workday detail overrides honor explicit false and inherit defaults only wh
 });
 
 test("Workday detail overrides reject invalid boolean flags", async (t) => {
-  assert.ok(workdayProvider);
   const originalSites = process.env.JOB_WORKDAY_SITES;
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|treu";
   t.after(() => {
@@ -325,8 +313,7 @@ test("Workday detail overrides reject invalid boolean flags", async (t) => {
 
 for (const fetchDetails of [true, false]) {
   test(`Workday ${fetchDetails ? "rejects" : "tolerates"} search failures for ${fetchDetails ? "detail-enabled" : "legacy search-only"} sites`, async (t) => {
-    assert.ok(workdayProvider);
-    const originalSites = process.env.JOB_WORKDAY_SITES;
+      const originalSites = process.env.JOB_WORKDAY_SITES;
     process.env.JOB_WORKDAY_SITES = `First|https://first.example/wday/cxs/first/Careers/jobs|Endpoint|false;;Second|https://second.example/wday/cxs/second/Careers/jobs|Endpoint;Intune|${fetchDetails}`;
     t.after(() => {
       if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
@@ -343,7 +330,6 @@ for (const fetchDetails of [true, false]) {
 }
 
 test("Workday detail-enabled identities survive title edits at the same native path", async (t) => {
-  assert.ok(workdayProvider);
   const originalSites = process.env.JOB_WORKDAY_SITES;
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
   t.after(() => {
@@ -371,8 +357,7 @@ test("Workday detail-enabled identities survive title edits at the same native p
 
 for (const suffix of ["/jobs", "/jobs/", "/jobs///"]) {
   test(`Workday detail URLs normalize the configured ${suffix} suffix`, async (t) => {
-    assert.ok(workdayProvider);
-    const originalSites = process.env.JOB_WORKDAY_SITES;
+      const originalSites = process.env.JOB_WORKDAY_SITES;
     process.env.JOB_WORKDAY_SITES = `Example|https://example.com/wday/cxs/example/Careers${suffix}|Endpoint|true`;
     t.after(() => {
       if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
@@ -391,8 +376,7 @@ for (const suffix of ["/jobs", "/jobs/", "/jobs///"]) {
 
 for (const malformed of [{ additionalLocations: 42, location: "Chicago" }, { additionalLocations: "New York", location: "Chicago" }, { additionalLocations: ["New York", 42], location: "Chicago" }, { jobDescription: { text: "Intune" } }]) {
   test(`Workday malformed detail ${Object.keys(malformed)[0]} rejects as an incomplete snapshot`, async (t) => {
-    assert.ok(workdayProvider);
-    const originalSites = process.env.JOB_WORKDAY_SITES;
+      const originalSites = process.env.JOB_WORKDAY_SITES;
     process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
     t.after(() => {
       if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
@@ -408,8 +392,7 @@ for (const malformed of [{ additionalLocations: 42, location: "Chicago" }, { add
 
 for (const suffix of ["/", "///"]) {
   test(`Workday inherits detail-enabled defaults for URL suffix ${suffix}`, async (t) => {
-    assert.ok(workdayProvider);
-    const site = defaultWorkdaySites.find((site) => "fetchDetails" in site && site.fetchDetails);
+      const site = defaultWorkdaySites.find((site) => "fetchDetails" in site && site.fetchDetails);
     assert.ok(site);
     const originalSites = process.env.JOB_WORKDAY_SITES;
     process.env.JOB_WORKDAY_SITES = `${site.name}|${site.url}${suffix}|Endpoint`;
@@ -442,8 +425,7 @@ for (const postings of [
   [{ ...detailPosting, bulletFields: ["Endpoint", 42] }]
 ]) {
   test("Workday rejects malformed search entries for detail-enabled sites", async (t) => {
-    assert.ok(workdayProvider);
-    const originalSites = process.env.JOB_WORKDAY_SITES;
+      const originalSites = process.env.JOB_WORKDAY_SITES;
     process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
     t.after(() => {
       if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
@@ -467,8 +449,7 @@ for (const postings of [
 
 for (const endDate of ["invalid", "2026-02-30", 42, "", "   ", null]) {
   test(`Workday validates a present closing date: ${JSON.stringify(endDate)}`, async (t) => {
-    assert.ok(workdayProvider);
-    const originalSites = process.env.JOB_WORKDAY_SITES;
+      const originalSites = process.env.JOB_WORKDAY_SITES;
     process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
     t.after(() => {
       if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
@@ -484,7 +465,6 @@ for (const endDate of ["invalid", "2026-02-30", 42, "", "   ", null]) {
 }
 
 test("Workday detail freshness is anchored to the employer publication date", async (t) => {
-  assert.ok(workdayProvider);
   const originalSites = process.env.JOB_WORKDAY_SITES;
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
   t.after(() => {
@@ -499,7 +479,6 @@ test("Workday detail freshness is anchored to the employer publication date", as
 });
 
 test("Workday shares one deadline across searches and details and caps the final request", async (t) => {
-  assert.ok(workdayProvider);
   const originalSites = process.env.JOB_WORKDAY_SITES;
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint;Intune|true";
   t.after(() => {
@@ -526,7 +505,6 @@ test("Workday shares one deadline across searches and details and caps the final
 });
 
 test("Workday legacy search-only sites continue filtering malformed entries", async (t) => {
-  assert.ok(workdayProvider);
   const originalSites = process.env.JOB_WORKDAY_SITES;
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|false";
   t.after(() => {
@@ -539,7 +517,6 @@ test("Workday legacy search-only sites continue filtering malformed entries", as
 });
 
 test("Workday preserves literal encoded placeholders through detail normalization", async (t) => {
-  assert.ok(workdayProvider);
   const originalSites = process.env.JOB_WORKDAY_SITES;
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
   t.after(() => {
@@ -564,8 +541,7 @@ for (const malformed of [
   { posted: "false" }, { posted: 0 }, { posted: {} }
 ]) {
   test(`Workday rejects wrongly typed optional detail ${JSON.stringify(malformed)}`, async (t) => {
-    assert.ok(workdayProvider);
-    const originalSites = process.env.JOB_WORKDAY_SITES;
+      const originalSites = process.env.JOB_WORKDAY_SITES;
     process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
     t.after(() => {
       if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
@@ -579,7 +555,6 @@ for (const malformed of [
 }
 
 test("Workday permits null optional detail fields", async (t) => {
-  assert.ok(workdayProvider);
   const originalSites = process.env.JOB_WORKDAY_SITES;
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
   t.after(() => {
@@ -594,7 +569,6 @@ test("Workday permits null optional detail fields", async (t) => {
 });
 
 test("Workday trims a date-only closing date before expanding its deadline", async (t) => {
-  assert.ok(workdayProvider);
   const originalSites = process.env.JOB_WORKDAY_SITES;
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
   t.after(() => {
@@ -609,7 +583,6 @@ test("Workday trims a date-only closing date before expanding its deadline", asy
 });
 
 test("Workday closes a posting at its exact expiry instant", async (t) => {
-  assert.ok(workdayProvider);
   const originalSites = process.env.JOB_WORKDAY_SITES;
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
   t.after(() => {

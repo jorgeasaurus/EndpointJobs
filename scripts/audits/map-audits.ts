@@ -54,7 +54,7 @@ export async function auditMaps({ feed, run, sources }: AuditContext) {
     assertIncludes(sources.jobMapFeatures, "buildFeatureCollection");
     assertIncludes(sources.refresh, "addResolvedMapLocation");
     assertNoStaticImport(sources.jobMapLib, "./map-location", "client map should not import resolver table");
-    assertIncludes(sources.companyAts, "parseWorkdayLocationFromExternalPath");
+    assertIncludes(sources.workday, "parseWorkdayLocationFromExternalPath");
   });
 
   await run("FEAT-062", "Per-job map points preserve duplicate-coordinate jobs", () => {

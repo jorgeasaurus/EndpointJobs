@@ -4,7 +4,7 @@ import { dirname, resolve } from "node:path";
 import type { ProviderAdapter } from "./job-refresh/provider";
 import { aiDevBoardProvider } from "./job-refresh/providers/aidevboard";
 import { atsBoardProviders } from "./job-refresh/providers/ats-boards";
-import { companyAtsProviders, WorkdayIncompleteSnapshotError } from "./job-refresh/providers/company-ats";
+import { companyAtsProviders } from "./job-refresh/providers/company-ats";
 import { curatedJobProvider } from "./job-refresh/providers/curated-jobs";
 import { publicJobBoardProviders } from "./job-refresh/providers/public-job-boards";
 import { rapidApiDailyJobsProvider } from "./job-refresh/providers/rapidapi-daily-jobs";
@@ -18,6 +18,7 @@ import { theirStackProvider } from "./job-refresh/providers/theirstack";
 import { fourdayweekProvider } from "./job-refresh/providers/fourdayweek";
 import { himalayasProvider } from "./job-refresh/providers/himalayas";
 import { oracleHcmProvider, OracleHcmIncompleteSnapshotError } from "./job-refresh/providers/oracle-hcm";
+import { WorkdayIncompleteSnapshotError } from "./job-refresh/providers/workday";
 import { usaJobsProvider } from "./job-refresh/providers/usajobs";
 import { resolveJobMapLocation } from "./job-refresh/map-location";
 import {

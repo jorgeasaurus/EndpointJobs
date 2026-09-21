@@ -911,3 +911,13 @@ Eighth review: validate remaining Workday/Oracle payload types and Oracle counts
 - [x] Run the full verification suite, push fixes, and resolve the remaining review thread.
 
 Review 16: merged the latest refreshed `main` feed, restricted the legacy URL fallback to Remote OK, validated Workday detail flags case-insensitively, and scoped multi-location collision checks to the current segment while preserving `San Jose; Costa Rica`. Backfilled three newly resolvable map points. Validation: 434 tests, 71 data audits, lint, typecheck, production build, and diff checks pass.
+# PR #53 thermonuclear review
+
+- [x] Extract Workday refresh logic from the mixed provider module.
+- [x] Keep map collision guards scoped to each location segment.
+- [x] Run focused and full verification.
+- [x] Repeat strict review until no findings remain.
+
+## Review
+
+Moved Workday fetching, validation, normalization, and errors into its own provider module; `company-ats.ts` fell from 1,067 to 538 lines. Location resolution now uses each segment for state collisions while retaining bounded full-location context for labels such as San José, Costa Rica. Three strict review rounds plus an integration-validation pass completed; 434 tests, 71 data audits, lint, typecheck, production build, and diff checks pass.

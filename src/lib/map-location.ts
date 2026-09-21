@@ -648,20 +648,17 @@ export function hasGermanLocationEvidence(
 }
 
 export function resolveJobMapLocation(location: string): JobMapLocation | undefined {
+  const normalizedLocation = normalizeLocation(location);
+
   for (const part of location.split(";")) {
-    const normalizedPart = normalizeLocation(part);
-    const context = normalizedPart.includes("san jose") && hasCostaRicaContext(normalizeLocation(location))
-      ? location
-      : part;
-    const resolved = resolveSingleJobMapLocation(part, context);
+    const resolved = resolveSingleJobMapLocation(part, normalizedLocation);
     if (resolved) return resolved;
   }
   return undefined;
 }
 
-function resolveSingleJobMapLocation(location: string, fullLocation = location): JobMapLocation | undefined {
+function resolveSingleJobMapLocation(location: string, normalizedFullLocation = normalizeLocation(location)): JobMapLocation | undefined {
   const normalized = normalizeLocation(location);
-  const normalizedContext = normalizeLocation(fullLocation);
 
   if (!normalized || /^\d+ locations$/.test(normalized)) {
     return undefined;
@@ -672,17 +669,23 @@ function resolveSingleJobMapLocation(location: string, fullLocation = location):
   }
 
   const coordinate = searchableLocationCoordinates.find((candidate) =>
-    !isInternationalCityWithExplicitUsState(candidate.label, normalizedContext) &&
-    candidate.normalizedKeys.some((key) => containsNormalizedLocationKey(normalized, key)
-      || (containsNormalizedLocationKey(normalizedContext, key)
-        && containsNormalizedLocationKey(key, normalized)))
+    !isInternationalCityWithExplicitUsState(candidate.label, normalized, normalizedFullLocation) &&
+    candidate.normalizedKeys.some((key) =>
+      containsNormalizedLocationKey(normalized, key)
+      || (containsNormalizedLocationKey(normalizedFullLocation, key)
+        && containsNormalizedLocationKey(key, normalized))
+    )
   );
 
   return coordinate ? toMapLocation(coordinate) : undefined;
 }
 
-function isInternationalCityWithExplicitUsState(label: string, normalizedLocation: string) {
-  if (label === "San Jose, CA" && hasCostaRicaContext(normalizedLocation)) {
+function isInternationalCityWithExplicitUsState(
+  label: string,
+  normalizedLocation: string,
+  normalizedFullLocation = normalizedLocation
+) {
+  if (label === "San Jose, CA" && hasCostaRicaContext(normalizedFullLocation)) {
     return true;
   }
 

@@ -66,9 +66,11 @@ export async function auditProviders({ run, sources }: AuditContext) {
   });
 
   await run("FEAT-041", "Targeted company ATS providers are wired", () => {
-    ["amazon", "workday", "jibe", "activate"].forEach((id) =>
+    ["amazon", "jibe", "activate"].forEach((id) =>
       assertIncludes(sources.companyAts, `id: "${id}"`)
     );
+    assertIncludes(sources.workday, 'id: "workday"');
+    assertIncludes(sources.companyAts, "workdayProvider");
     assertIncludes(sources.oracleHcm, 'id: "oraclehcm"');
     const adapters = sources.refresh.match(/const providerAdapters = \[([\s\S]*?)\]/)?.[1] ?? "";
     const defaults = sources.refresh.match(/const defaultProviders: SupportedProvider\[\] = \[([\s\S]*?)\]/)?.[1] ?? "";
