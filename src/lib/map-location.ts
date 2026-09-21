@@ -685,7 +685,11 @@ function isInternationalCityWithExplicitUsState(
   normalizedLocation: string,
   normalizedFullLocation = normalizedLocation
 ) {
-  if (label === "San Jose, CA" && hasCostaRicaContext(normalizedFullLocation)) {
+  if (
+    label === "San Jose, CA" &&
+    hasCostaRicaContext(normalizedFullLocation) &&
+    !hasCaliforniaContext(normalizedLocation)
+  ) {
     return true;
   }
 
@@ -756,6 +760,13 @@ function hasCostaRicaContext(normalizedLocation: string) {
   return (
     containsNormalizedLocationKey(normalizedLocation, "costa rica") ||
     containsNormalizedLocationKey(normalizedLocation, "san jose cr")
+  );
+}
+
+function hasCaliforniaContext(normalizedLocation: string) {
+  return (
+    getUsStateSuffix(normalizedLocation) === "ca" ||
+    containsNormalizedLocationKey(normalizedLocation, "california")
   );
 }
 

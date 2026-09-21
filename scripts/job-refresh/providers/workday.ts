@@ -187,64 +187,85 @@ async function fetchWorkdaySearch(
     Number.isFinite(configuredLimit) && configuredLimit > 0
       ? configuredLimit
       : 10;
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      accept: "application/json",
-      "accept-language": "en-US,en;q=0.9",
-      "content-type": "application/json",
-      origin: new URL(url).origin,
-      referer: new URL(url).origin,
-      "user-agent": "Mozilla/5.0",
-    },
-    body: JSON.stringify({
-      appliedFacets: {},
-      limit,
-      offset: 0,
-      searchText: query,
-    }),
-    signal: workdayRequestSignal(deadline),
-  });
+  const postings: WorkdayJob[] = [];
+  let offset = 0;
 
-  if (!response.ok) {
-    throw new Error(
-      `Workday request failed: ${response.status} ${response.statusText}`,
+  while (true) {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "accept-language": "en-US,en;q=0.9",
+        "content-type": "application/json",
+        origin: new URL(url).origin,
+        referer: new URL(url).origin,
+        "user-agent": "Mozilla/5.0",
+      },
+      body: JSON.stringify({
+        appliedFacets: {},
+        limit,
+        offset,
+        searchText: query,
+      }),
+      signal: workdayRequestSignal(deadline),
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Workday request failed: ${response.status} ${response.statusText}`,
+      );
+    }
+
+    const json: unknown = await response.json();
+
+    if (
+      !json ||
+      typeof json !== "object" ||
+      !Array.isArray((json as { jobPostings?: unknown }).jobPostings)
+    ) {
+      throw new Error("Workday response did not include a jobPostings array");
+    }
+
+    const page = (json as { jobPostings: unknown[] }).jobPostings;
+    if (
+      requireValidEntries &&
+      page.some(
+        (entry) =>
+          !isWorkdayJob(entry) ||
+          typeof entry.title !== "string" ||
+          !entry.title.trim() ||
+          (entry.locationsText !== undefined &&
+            typeof entry.locationsText !== "string") ||
+          (entry.postedOn !== undefined && typeof entry.postedOn !== "string") ||
+          (entry.bulletFields !== undefined &&
+            (!Array.isArray(entry.bulletFields) ||
+              entry.bulletFields.some((field) => typeof field !== "string"))) ||
+          !isWorkdayDetailPath(entry.externalPath),
+      )
+    ) {
+      throw new Error("Workday search included an invalid job posting");
+    }
+
+    postings.push(
+      ...page.filter(
+        (entry): entry is WorkdayJob =>
+          isWorkdayJob(entry) && isWorkdayDetailPath(entry.externalPath),
+      ),
     );
-  }
 
-  const json: unknown = await response.json();
+    const total = (json as { total?: unknown }).total;
+    if (!requireValidEntries || total === undefined) return postings;
+    if (!Number.isInteger(total) || (total as number) < 0) {
+      throw new Error("Workday response included an invalid total");
+    }
+    if (offset + page.length >= (total as number)) return postings;
+    if (page.length === 0) {
+      throw new Error("Workday search ended before its reported total");
+    }
 
-  if (
-    !json ||
-    typeof json !== "object" ||
-    !Array.isArray((json as { jobPostings?: unknown }).jobPostings)
-  ) {
-    throw new Error("Workday response did not include a jobPostings array");
+    offset += page.length;
+    assertWorkdayDeadline(deadline);
   }
-
-  const postings = (json as { jobPostings: unknown[] }).jobPostings;
-  if (
-    requireValidEntries &&
-    postings.some(
-      (entry) =>
-        !isWorkdayJob(entry) ||
-        typeof entry.title !== "string" ||
-        !entry.title.trim() ||
-        (entry.locationsText !== undefined &&
-          typeof entry.locationsText !== "string") ||
-        (entry.postedOn !== undefined && typeof entry.postedOn !== "string") ||
-        (entry.bulletFields !== undefined &&
-          (!Array.isArray(entry.bulletFields) ||
-            entry.bulletFields.some((field) => typeof field !== "string"))) ||
-        !isWorkdayDetailPath(entry.externalPath),
-    )
-  ) {
-    throw new Error("Workday search included an invalid job posting");
-  }
-  return postings.filter(
-    (entry): entry is WorkdayJob =>
-      isWorkdayJob(entry) && isWorkdayDetailPath(entry.externalPath),
-  );
 }
 
 async function fetchWorkdayDetail(

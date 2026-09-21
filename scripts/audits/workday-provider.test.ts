@@ -507,6 +507,38 @@ test("Workday shares one deadline across searches and details and caps the final
   assert.deepEqual(timeouts, [15_000, 15_000, 15_000, 15_000, 15_000, 15_000, 15_000, 15_000, 8_000]);
 });
 
+test("Workday paginates detail-enabled searches through the reported total", async (t) => {
+  const originalEnv = { ...process.env };
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
+  process.env.JOB_WORKDAY_RESULTS_PER_QUERY = "2";
+  t.after(() => {
+    process.env = originalEnv;
+  });
+  const offsets: number[] = [];
+  let detailRequests = 0;
+  t.mock.method(globalThis, "fetch", async (_input: unknown, init?: RequestInit) => {
+    if (init?.method === "POST") {
+      const body = JSON.parse(String(init.body)) as { offset: number };
+      offsets.push(body.offset);
+      const page = body.offset === 0
+        ? [detailPosting, { ...detailPosting, externalPath: `${detailPosting.externalPath}-2` }]
+        : [{ ...detailPosting, externalPath: `${detailPosting.externalPath}-3` }];
+      return Response.json({ jobPostings: page, total: 3 });
+    }
+    detailRequests += 1;
+    return Response.json({ jobPostingInfo: validDetail });
+  });
+
+  const jobs = await workdayProvider.fetchJobs({
+    url: workdayProvider.defaultUrl,
+    fetchedAt: new Date("2026-09-12T12:00:00Z"),
+  });
+
+  assert.deepEqual(offsets, [0, 2]);
+  assert.equal(detailRequests, 3);
+  assert.equal(jobs.filter(Boolean).length, 3);
+});
+
 test("Workday legacy search-only sites continue filtering malformed entries", async (t) => {
   const originalSites = process.env.JOB_WORKDAY_SITES;
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|false";
