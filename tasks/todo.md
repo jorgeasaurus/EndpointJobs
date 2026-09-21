@@ -857,6 +857,8 @@ Thermonuclear loop: successive review batches fixed request budgeting, long/conf
 - [x] Verify 274 tests, 71 data audits, lint, typecheck, and diff checks.
 - [x] Guard detached `Not available for...` and `Not eligible for...` continuations.
 - [x] Guard qualifying sponsorship restrictions immediately before a recognized claim.
+- [x] Exclude empty-passage jobs from the JEV request budget.
+- [x] Include bounded preceding context in JEV sponsorship evidence.
 - [ ] Resolve all findings and confirm a fresh clean review on the latest head.
 
-Latest verification: 278 tests, 71 data audits, scoped lint, typecheck, and diff checks pass.
+Latest verification: 280 tests, 71 data audits, scoped lint, typecheck, and diff checks pass.

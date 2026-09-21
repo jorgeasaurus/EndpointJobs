@@ -29,7 +29,7 @@ test("deterministic claims remain authoritative and skip JEV", async () => {
 test("high-confidence JEV choice maps to exact candidate evidence", async () => {
   const evidence = "Qualified applicants may receive employer immigration support after legal review.";
   const description = `Manage Intune and Jamf.\n\n${evidence}\n\nWe offer health insurance.`;
-  const evidenceWithContext = `${evidence}\n\nWe offer health insurance.`;
+  const evidenceWithContext = `Manage Intune and Jamf.\n\n${evidence}\n\nWe offer health insurance.`;
   const result = await classifyVisaSponsorshipWithJev({ description, sourceUrl }, {
     evaluator: async (request) => {
       assert.equal(request.model, "jev-latest");
@@ -44,6 +44,19 @@ test("high-confidence JEV choice maps to exact candidate evidence", async () => 
   assert.deepEqual(result, {
     sponsorship: { status: "case-by-case", evidence: evidenceWithContext, sourceUrl },
     method: "jev", confidence: 0.91, model: "jev-1.13.0"
+  });
+});
+
+test("JEV receives preceding restriction context", async () => {
+  const description = "Only for internal transfers.\n\nQualified applicants may receive employer immigration support after legal review.";
+  const result = await classifyVisaSponsorshipWithJev({ description, sourceUrl }, {
+    evaluator: async (request) => {
+      assert.deepEqual(request.state.candidate_passages, { p0: description });
+      return { choice: "case-by-case:0", confidence: 0.95, model: "jev-test" };
+    }
+  });
+  assert.deepEqual(result.sponsorship, {
+    status: "case-by-case", evidence: description, sourceUrl
   });
 });
 
@@ -92,6 +105,12 @@ test("candidate extraction ignores unrelated text and bounds long passages", () 
     (_, index) => `Policy ${index}: immigration sponsorship is reviewed for group ${index}.`
   ).join("\n\n");
   assert.deepEqual(extractJevSponsorshipPassages(tooManySignals), []);
+
+  const precedingRestriction = "Only for internal transfers.";
+  const novelClaim = "Qualified applicants may receive employer immigration support after legal review.";
+  assert.deepEqual(extractJevSponsorshipPassages(`${precedingRestriction}\n\n${novelClaim}`), [
+    `${precedingRestriction}\n\n${novelClaim}`
+  ]);
 });
 
 function sponsorshipClaimIsPresent(value: string) {
@@ -165,6 +184,34 @@ test("batch enrichment caps paid requests and reports eligible jobs left untouch
   });
   assert.equal(result.jobs[2], jobs[2]);
   assert.equal(result.jobs[2].visaSponsorship, undefined);
+});
+
+test("batch enrichment excludes empty-passage jobs from the request budget", async () => {
+  const invalidDescription = Array.from(
+    { length: 25 },
+    (_, index) => `Policy ${index}: immigration sponsorship is reviewed for group ${index}.`
+  ).join("\n\n");
+  const jobs: Job[] = [invalidDescription, "Immigration sponsorship depends on legal review."].map((description, index) => ({
+    id: `candidate-${index}`, title: "Endpoint Engineer", company: "Example", location: "Remote",
+    workplace: "Remote", postedAt: "2026-09-20", fetchedAt: "2026-09-20", staleAfter: "2026-11-01",
+    source: "Test", sourceUrl: `${sourceUrl}/${index}`, attributionLabel: "Test", termsProfile: "public-api",
+    description, summary: "Endpoint role", tags: [], matchReasons: [], tools: [], platforms: [],
+    roleFamily: "Endpoint Engineering", seniority: "Mid", employmentType: "Full-time"
+  }));
+  let calls = 0;
+  const result = await enrichVisaSponsorshipWithJev(jobs, {
+    maxRequests: 1,
+    evaluator: async () => {
+      calls++;
+      return { choice: "case-by-case:0", confidence: 0.95, model: "jev-test" };
+    }
+  });
+  assert.equal(calls, 1);
+  assert.deepEqual({ attempted: result.attempted, classified: result.classified, skipped: result.skipped }, {
+    attempted: 1, classified: 1, skipped: 0
+  });
+  assert.equal(result.jobs[0].visaSponsorship, undefined);
+  assert.equal(result.jobs[1].visaSponsorship?.status, "case-by-case");
 });
 
 test("refresh hands JEV the full source description before display truncation", async () => {

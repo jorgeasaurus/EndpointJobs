@@ -121,7 +121,7 @@ export async function enrichVisaSponsorshipWithJev(
     const deterministic = analyzeVisaSponsorship(description, job.sourceUrl);
     if (deterministic.sponsorship.status !== "not-stated") {
       output[index] = { ...job, visaSponsorship: deterministic.sponsorship };
-    } else if (deterministic.jevEligible && sponsorshipSignal.test(description)) {
+    } else if (deterministic.jevEligible && extractJevSponsorshipPassages(description).length > 0) {
       eligible.push({ job, index });
     }
   }
@@ -168,11 +168,17 @@ export function extractJevSponsorshipPassages(description: string) {
     .filter(Boolean);
   for (const [blockIndex, normalized] of blocks.entries()) {
     if (!sponsorshipSignal.test(normalized)) continue;
-    const adjacentContext = blocks[blockIndex + 1] ? [blocks[blockIndex + 1]] : [];
+    const precedingContext = blocks[blockIndex - 1];
+    const followingContext = blocks[blockIndex + 1];
     const fragments = normalized.length <= maxPassageLength ? [normalized] : signalWindows(normalized);
     for (const fragment of fragments) {
-      const passage = [fragment, ...adjacentContext].join("\n\n");
-      if (passage.length > maxPassageLength) return [];
+      let passage = fragment;
+      if (precedingContext && passage.length + precedingContext.length + 2 <= maxPassageLength) {
+        passage = `${precedingContext}\n\n${passage}`;
+      }
+      if (followingContext && passage.length + followingContext.length + 2 <= maxPassageLength) {
+        passage = `${passage}\n\n${followingContext}`;
+      }
       if (!passage || seen.has(passage)) continue;
       seen.add(passage);
       passages.push(passage);
