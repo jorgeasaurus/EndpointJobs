@@ -151,7 +151,17 @@ async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
           }),
         );
         jobs.push(...enrichedJobs);
-        if (deadline !== undefined) assertWorkdayDeadline(deadline);
+        if (deadline !== undefined) {
+          try {
+            assertWorkdayDeadline(deadline);
+          } catch (error) {
+            throw new WorkdayIncompleteSnapshotError(
+              site.name,
+              `query ${query}`,
+              error,
+            );
+          }
+        }
       }
       console.log(
         `Fetched ${payload.length} raw jobs from Workday/${site.name} query ${query}`,

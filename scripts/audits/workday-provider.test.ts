@@ -620,6 +620,33 @@ test("Workday starts the detail deadline after legacy sites finish", async (t) =
   assert.equal(jobs.filter(Boolean).length, 2);
 });
 
+test("Workday wraps a deadline crossed after the final detail check", async (t) => {
+  const originalSites = process.env.JOB_WORKDAY_SITES;
+  process.env.JOB_WORKDAY_SITES = "Direct|https://direct.example/wday/cxs/direct/Careers/jobs|Endpoint|true";
+  t.after(() => {
+    if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+    else process.env.JOB_WORKDAY_SITES = originalSites;
+  });
+  let clockReads = 0;
+  t.mock.method(Date, "now", () => ++clockReads >= 6 ? 120_000 : 0);
+  t.mock.method(AbortSignal, "timeout", () => new AbortController().signal);
+  t.mock.method(globalThis, "fetch", async (_input: unknown, init?: RequestInit) =>
+    init?.method === "POST"
+      ? workdaySearchResponse([detailPosting])
+      : Response.json({ jobPostingInfo: validDetail }),
+  );
+
+  await assert.rejects(
+    workdayProvider.fetchJobs({
+      url: workdayProvider.defaultUrl,
+      fetchedAt: new Date("2026-09-12T12:00:00Z"),
+    }),
+    (error) => error instanceof WorkdayIncompleteSnapshotError
+      && error.cause instanceof Error
+      && /deadline/.test(error.cause.message),
+  );
+});
+
 test("Workday paginates detail-enabled searches through the reported total", async (t) => {
   const originalEnv = { ...process.env };
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
