@@ -212,7 +212,7 @@ export function isEndpointRelevant(
     containsAlias(normalizedTitle, "application security") ||
     containsAlias(normalizedTitle, "appsec");
   const looksLikeTradingInfrastructure =
-    ["trading system", "trading systems", "trade system", "trade systems"].some((term) =>
+    ["trading system", "trading systems", "trade system", "trade systems", "trading-system", "trading-systems", "trade-system", "trade-systems"].some((term) =>
       containsAlias(normalizedTitle, term)
     );
   const looksLikeSoftwareProductRole =

@@ -909,6 +909,8 @@ Follow-up review: reject empty normalized Workday site overrides as incomplete s
 
 Next review: apply adjacent state-only qualifiers to the current map segment's collision guard; split Valencia/CA, Santiago/CA, Lima/OH, and Bogota/NJ now reject international coordinates while independent later cities remain selectable.
 
+Latest review: recognize full US state names and country/ZIP suffixes in adjacent qualifiers, and reject hyphenated trading-system titles without endpoint duties.
+
 ## Review 16 plan
 
 - [x] Merge current `main` and preserve its refreshed feed.

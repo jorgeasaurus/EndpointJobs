@@ -168,6 +168,7 @@ export async function auditMaps({ feed, run, sources }: AuditContext) {
     assertEqual(resolveJobMapLocation("Berlin, Germany; Atlanta, GA")?.label, "Berlin, Germany");
     assertEqual(resolveJobMapLocation("San Jose; Costa Rica")?.label, "San José, Costa Rica");
     assertEqual(resolveJobMapLocation("San Jose; CA")?.label, "San Jose, CA");
+    assertEqual(resolveJobMapLocation("San Jose; California")?.label, "San Jose, CA");
     assertEqual(resolveJobMapLocation("San Jose, CA; Costa Rica")?.label, "San Jose, CA");
     assertEqual(resolveJobMapLocation("San Jose, California; Costa Rica")?.label, "San Jose, CA");
     assertEqual(resolveJobMapLocation("Irving, Texas")?.label, "Irving, TX");
@@ -230,6 +231,7 @@ export async function auditMaps({ feed, run, sources }: AuditContext) {
     assertEqual(resolveJobMapLocation("Valencia, Spain")?.label, "Valencia, Spain");
     assertEqual(resolveJobMapLocation("Valencia, CA"), undefined);
     assertEqual(resolveJobMapLocation("Valencia; CA"), undefined);
+    assertEqual(resolveJobMapLocation("Valencia; California"), undefined);
     assertEqual(resolveJobMapLocation("Valencia; CA; Atlanta, GA")?.label, "Atlanta, GA");
     assertEqual(resolveJobMapLocation("Sevilla, España")?.label, "Seville, Spain");
     assertEqual(resolveJobMapLocation("Seville, Spain")?.label, "Seville, Spain");
@@ -265,15 +267,20 @@ export async function auditMaps({ feed, run, sources }: AuditContext) {
     assertEqual(resolveJobMapLocation("Bogotá, Colombia")?.label, "Bogotá, Colombia");
     assertEqual(resolveJobMapLocation("Bogota, NJ"), undefined);
     assertEqual(resolveJobMapLocation("Bogota; NJ"), undefined);
+    assertEqual(resolveJobMapLocation("Bogota; New Jersey"), undefined);
+    assertEqual(resolveJobMapLocation("Bogota; NJ, United States 07603")?.label, "United States");
+    assertEqual(resolveJobMapLocation("Bogota; New Jersey, United States 07603")?.label, "United States");
     assertEqual(resolveJobMapLocation("Medellín, Colombia")?.label, "Medellín, Colombia");
     assertEqual(resolveJobMapLocation("Santiago, Chile")?.label, "Santiago, Chile");
     assertEqual(resolveJobMapLocation("Chile")?.label, "Chile");
     assertEqual(resolveJobMapLocation("Chile, NY"), undefined);
     assertEqual(resolveJobMapLocation("Santiago, CA"), undefined);
     assertEqual(resolveJobMapLocation("Santiago; CA"), undefined);
+    assertEqual(resolveJobMapLocation("Santiago; California"), undefined);
     assertEqual(resolveJobMapLocation("Lima, Perú")?.label, "Lima, Peru");
     assertEqual(resolveJobMapLocation("Lima, OH"), undefined);
     assertEqual(resolveJobMapLocation("Lima; OH"), undefined);
+    assertEqual(resolveJobMapLocation("Lima; Ohio"), undefined);
     assertEqual(resolveJobMapLocation("Peru, IN"), undefined);
     assertEqual(resolveJobMapLocation("LATAM")?.label, "Latin America");
     assertEqual(resolveJobMapLocation("Latin America, Remote")?.label, "Latin America");
