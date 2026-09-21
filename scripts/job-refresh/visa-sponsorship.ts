@@ -33,8 +33,9 @@ export function analyzeVisaSponsorship(description: string, sourceUrl: string): 
     }
     if (!matches.length) continue;
     for (const match of matches) {
+      const preceding = sponsorshipMatchText(statements[match.start - 1] ?? groups[groupIndex - 1]?.at(-1) ?? "");
       const following = sponsorshipMatchText(statements[match.end + 1] ?? groups[groupIndex + 1]?.[0] ?? "");
-      if (isQualifyingSponsorshipContinuation(following)) {
+      if (isQualifyingSponsorshipContinuation(preceding) || isQualifyingSponsorshipContinuation(following)) {
         return unresolved(false);
       }
     }

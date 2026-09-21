@@ -36,6 +36,24 @@ for (const description of [
   });
 }
 
+for (const description of [
+  "For internal transfers only. Visa sponsorship is available.",
+  "For internal transfers only.\n\nVisa sponsorship is available."
+]) {
+  test(`preceding qualification remains unknown: ${description}`, async () => {
+    assert.deepEqual(classifyVisaSponsorship(description, sourceUrl), { status: "not-stated" });
+    let called = false;
+    const result = await classifyVisaSponsorshipWithJev({ description, sourceUrl }, {
+      evaluator: async () => {
+        called = true;
+        return { choice: "available:0", confidence: 0.99, model: "jev-test" };
+      }
+    });
+    assert.equal(called, false);
+    assert.deepEqual(result.sponsorship, { status: "not-stated" });
+  });
+}
+
 for (const qualifier of [
   "Only for internal transfers.",
   "However, this does not apply to this position.",
