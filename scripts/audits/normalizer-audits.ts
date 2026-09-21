@@ -408,7 +408,7 @@ export async function auditNormalizers({ run, sources }: AuditContext) {
     );
     assertIncludes(sources.refresh, "JOB_MAX_RESULTS");
     assertIncludes(sources.refresh, "defaultMaxJobs = 1000");
-    assertIncludes(sources.workflow, 'JOB_MAX_RESULTS: "1000"');
+    assertIncludes(sources.workflow, 'JOB_MAX_RESULTS: "1500"');
     assertIncludes(sources.refresh, "limitFeedJobs");
     assertIncludes(sources.refresh, "staleAfter");
   });
