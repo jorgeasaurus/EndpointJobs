@@ -13,6 +13,8 @@ for (const description of [
   "Visa sponsorship is available.\n\nHowever, this does not apply to this position.",
   "Visa sponsorship is available. This offer does not apply to this position.",
   "Visa sponsorship is available. Not for this position.",
+  "Visa sponsorship is available. Not available for this position.",
+  "Visa sponsorship is available. Not eligible for this role.",
   "Visa sponsorship is available. Unavailable for this job.",
   "Visa sponsorship is available. Eligibility is limited to internal transfers.",
   "Visa sponsorship is available. For qualified candidates.",
