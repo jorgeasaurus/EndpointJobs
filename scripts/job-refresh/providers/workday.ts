@@ -711,12 +711,15 @@ function isWorkdayDetailPath(value: unknown) {
     return false;
   }
   const parsed = new URL(value, "https://workday.invalid");
+  const detailSegments = decodedPath.slice("/job/".length).split("/");
   return (
     parsed.pathname === value &&
     !parsed.search &&
     !parsed.hash &&
     !/[?#\\]/.test(decodedPath) &&
     decodedPath.startsWith("/job/") &&
+    detailSegments.length > 0 &&
+    detailSegments.every(Boolean) &&
     !decodedPath
       .split("/")
       .some((segment) => segment === "." || segment === "..")
