@@ -85,7 +85,7 @@ jobs:
           JOB_JEV_MAX_RETRIES: "0"
           JOB_FEED_SOURCE_URL: https://github.com/jorgeasaurus/EndpointJobs
           JOB_STALE_DAYS: "45"
-          JOB_MAX_RESULTS: "1000"
+          JOB_MAX_RESULTS: "1500"
           JOB_EXCLUDED_SOURCE_URLS: ${{ vars.JOB_EXCLUDED_SOURCE_URLS }}
 
       - name: Verify build
