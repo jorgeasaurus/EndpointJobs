@@ -22,6 +22,7 @@ import type { Job } from "@/types/job";
 
 import { MatchRecommendation } from "./match-recommendation";
 import { ToolChips } from "./tool-chips";
+import { VisaSponsorship } from "./visa-sponsorship";
 
 export function JobCard({
   compareDisabled,
@@ -92,6 +93,8 @@ export function JobCard({
           </div>
         </details>
       ) : null}
+
+      <VisaSponsorship sponsorship={job.visaSponsorship} />
 
       <MatchRecommendation reasons={job.matchReasons} />
 

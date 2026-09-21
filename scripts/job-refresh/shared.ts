@@ -18,6 +18,7 @@ import {
   type RoleFamilyInferenceRule
 } from "../../src/lib/job-taxonomy";
 import { hasExplicitOnsiteWorkplace } from "../../src/lib/workplace";
+import { classifyVisaSponsorship } from "./visa-sponsorship";
 import { resolveJobMapLocation } from "./map-location";
 
 const toolAliases = endpointToolDefinitions;
@@ -33,6 +34,7 @@ const descriptionMinLength =
   Number.isFinite(configuredDescriptionMinLength) && configuredDescriptionMinLength >= 261
     ? configuredDescriptionMinLength
     : 420;
+const sponsorshipDescriptions = new WeakMap<Job, string>();
 
 export type JobCandidate = {
   id: string;
@@ -99,7 +101,7 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
   const postedAt = parseDateLike(candidate.postedAt) ?? candidate.fetchedAt.toISOString();
   const staleAfter = candidate.staleAfter ?? addDays(new Date(postedAt), staleDays).toISOString();
 
-  return {
+  const job: Job = {
     id: candidate.id,
     title,
     company,
@@ -119,6 +121,7 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
     termsProfile: candidate.termsProfile,
     summary: summarize(description),
     description: normalizeDescription(description),
+    visaSponsorship: classifyVisaSponsorship(description, sourceUrl),
     tags: normalizeTags(sourceTags, tools, platforms),
     matchReasons,
     tools,
@@ -128,6 +131,12 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
     employmentType: cleanText(candidate.employmentType) || inferEmploymentType(haystack),
     ...(candidate.salary ? { salary: candidate.salary } : {})
   };
+  sponsorshipDescriptions.set(job, description);
+  return job;
+}
+
+export function getSponsorshipClassificationDescription(job: Job) {
+  return sponsorshipDescriptions.get(job) ?? job.description ?? "";
 }
 
 export function isEndpointRelevant(
@@ -555,14 +564,21 @@ export function normalizeDescription(value: string | undefined) {
 }
 
 export function stripHtml(value: string) {
+  let listDepth = 0;
   return decodeEntities(value)
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/\r\n?/g, "\n")
     .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<li[^>]*>/gi, "\n- ")
-    .replace(/<\/(?:li|p|div|section|article|header|footer|h[1-6]|ul|ol|tr|table|blockquote)>/gi, "\n")
-    .replace(/<(?:p|div|section|article|header|footer|h[1-6]|ul|ol|tr|table|blockquote)[^>]*>/gi, "\n")
+    .replace(/<(\/?)(ul|ol|li)\b[^>]*>/gi, (_tag, closing: string, element: string) => {
+      if (element.toLowerCase() === "li") {
+        return closing ? "\n" : `\n${"  ".repeat(Math.max(0, listDepth - 1))}- `;
+      }
+      listDepth = Math.max(0, listDepth + (closing ? -1 : 1));
+      return "\n";
+    })
+    .replace(/<\/(?:p|div|section|article|header|footer|h[1-6]|tr|table|blockquote)>/gi, "\n")
+    .replace(/<(?:p|div|section|article|header|footer|h[1-6]|tr|table|blockquote)[^>]*>/gi, "\n")
     .replace(/<[^>]+>/g, " ");
 }
 
@@ -594,10 +610,15 @@ export function cleanText(value: unknown) {
 function cleanMultilineText(value: unknown) {
   return decodeEntities(value == null ? "" : String(value))
     .replace(/\r\n?/g, "\n")
-    .replace(/[^\S\n]+/g, " ")
-    .replace(/ *\n */g, "\n")
+    .split("\n")
+    .map((line) => {
+      if (!line.trim()) return "";
+      const indentation = line.match(/^[ \t]*/)?.[0] ?? "";
+      return indentation.replace(/\t/g, "    ") + line.slice(indentation.length).replace(/[^\S\n]+/g, " ").trimEnd();
+    })
+    .join("\n")
     .replace(/\n{3,}/g, "\n\n")
-    .trim();
+    .replace(/^\n+|\n+$/g, "");
 }
 
 export function normalizeSearchText(value: string) {

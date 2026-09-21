@@ -1,3 +1,4 @@
+import { sponsorshipStatuses, type SponsorshipStatus } from "@/lib/visa-sponsorship";
 import {
   freshnessFilterDayValues,
   minimumSalaryFilterValues,
@@ -57,6 +58,12 @@ export const jobsApiQueryContract = {
     openApiName: "Workplace",
     values: ["Remote", "Hybrid", "On-site"]
   },
+  sponsorship: {
+    kind: "enum",
+    openApiName: "Sponsorship",
+    description: "Visa sponsorship stated in the listing. Missing information is not-stated; remote work does not imply sponsorship.",
+    values: sponsorshipStatuses
+  },
   salary: {
     kind: "enum",
     openApiName: "SalaryShown",
@@ -102,6 +109,7 @@ export type JobsApiAppliedFilters = {
   metroAreas: MetroAreaFilter[];
   location: string | null;
   workplace: Exclude<Workplace, "Unknown"> | null;
+  sponsorship: SponsorshipStatus | null;
   salaryShown: boolean;
   leadership: boolean;
   minSalary: Exclude<MinimumSalaryFilter, "Any"> | null;
@@ -117,7 +125,7 @@ type AppliedFilterDefinition =
   | { kind: "boolean" }
   | {
       kind: "enum";
-      query: "workplace" | "minSalary" | "seniority" | "family" | "freshness" | "sort";
+      query: "sponsorship" | "workplace" | "minSalary" | "seniority" | "family" | "freshness" | "sort";
       nullable: boolean;
     };
 
@@ -128,6 +136,7 @@ const appliedFilterDefinitions = {
   metroAreas: { kind: "multi", query: "metroAreas" },
   location: { kind: "nullableText" },
   workplace: { kind: "enum", query: "workplace", nullable: true },
+  sponsorship: { kind: "enum", query: "sponsorship", nullable: true },
   salaryShown: { kind: "boolean" },
   leadership: { kind: "boolean" },
   minSalary: { kind: "enum", query: "minSalary", nullable: true },

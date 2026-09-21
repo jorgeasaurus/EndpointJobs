@@ -1,3 +1,4 @@
+import type { SponsorshipStatus } from "./visa-sponsorship";
 import { getSalarySortValue, getSearchText, isPostedWithinDays } from "@/lib/jobs";
 import { isLeadershipTitle } from "@/lib/job-taxonomy";
 import { metroAreaMatcher, type MetroAreaFilter } from "@/lib/metro-areas";
@@ -23,6 +24,7 @@ export type JobFilters = {
   selectedTools: EndpointTool[];
   selectedMetroAreas: MetroAreaFilter[];
   workplace: "Any" | Exclude<Workplace, "Unknown">;
+  sponsorship: "Any" | SponsorshipStatus;
   salaryOnly: boolean;
   leadershipOnly: boolean;
   minimumSalary: MinimumSalaryFilter;
@@ -61,6 +63,7 @@ export function filterJobs(jobs: Job[], filters: JobFilters, now = new Date()) {
     if (selectedTools.size && !job.tools.some((value) => selectedTools.has(value))) return false;
     if (filters.selectedMetroAreas.length && !filters.selectedMetroAreas.some((metro) => metroAreaMatcher.matches(job, metro))) return false;
     if (filters.workplace !== "Any" && workplace !== filters.workplace) return false;
+    if (filters.sponsorship !== "Any" && (job.visaSponsorship?.status ?? "not-stated") !== filters.sponsorship) return false;
     if (filters.salaryOnly && typeof job.salary?.min !== "number" && typeof job.salary?.max !== "number") return false;
     if (filters.leadershipOnly && !isLeadershipJob(job)) return false;
     if (minimumSalary !== null && (job.salary?.currency !== "USD" || (job.salary.max ?? job.salary.min ?? 0) < minimumSalary)) return false;

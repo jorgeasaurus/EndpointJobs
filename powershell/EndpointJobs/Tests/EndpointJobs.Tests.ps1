@@ -34,20 +34,25 @@ Describe 'Get-EndpointJob' {
         }
 
         It 'encodes list filters using the API contract' {
-            $result = @(Get-EndpointJob -Query 'device & endpoint' -Platform macOS, Windows -Tool 'Jamf Pro', Intune -Workplace Remote -SalaryShown -Leadership -MinimumSalary 150000 -RoleFamily 'Endpoint Engineering' -Freshness 7 -Limit 50 -BaseUri 'https://example.test')
+            $result = @(Get-EndpointJob -Query 'device & endpoint' -Platform macOS, Windows -Tool 'Jamf Pro', Intune -Workplace Remote -Sponsorship available -SalaryShown -Leadership -MinimumSalary 150000 -RoleFamily 'Endpoint Engineering' -Freshness 7 -Limit 50 -BaseUri 'https://example.test')
 
             $result.id | Should -Be 'job-1'
             Should -Invoke Invoke-RestMethod -Times 1 -ParameterFilter {
-                $Uri.AbsoluteUri -eq 'https://example.test/api/jobs?q=device%20%26%20endpoint&platforms=macOS%2CWindows&tools=Jamf%2CIntune&workplace=Remote&salary=1&leadership=1&minSalary=150000&family=Endpoint%20Engineering&freshness=7&sort=newest&page=1&limit=50'
+                $Uri.AbsoluteUri -eq 'https://example.test/api/jobs?q=device%20%26%20endpoint&platforms=macOS%2CWindows&tools=Jamf%2CIntune&workplace=Remote&sponsorship=available&salary=1&leadership=1&minSalary=150000&family=Endpoint%20Engineering&freshness=7&sort=newest&page=1&limit=50'
             }
         }
 
         It 'normalizes validated filter casing to the API contract' {
-            Get-EndpointJob -Platform windows, MACOS -Workplace remote -Seniority senior -RoleFamily 'endpoint engineering' -Sort COMPANY -BaseUri 'https://example.test' | Out-Null
+            Get-EndpointJob -Platform windows, MACOS -Workplace remote -Sponsorship CASE-BY-CASE -Seniority senior -RoleFamily 'endpoint engineering' -Sort COMPANY -BaseUri 'https://example.test' | Out-Null
 
             Should -Invoke Invoke-RestMethod -Times 1 -ParameterFilter {
-                $Uri.AbsoluteUri -ceq 'https://example.test/api/jobs?platforms=Windows%2CmacOS&workplace=Remote&seniority=Senior&family=Endpoint%20Engineering&sort=company&page=1&limit=20'
+                $Uri.AbsoluteUri -ceq 'https://example.test/api/jobs?platforms=Windows%2CmacOS&workplace=Remote&sponsorship=case-by-case&seniority=Senior&family=Endpoint%20Engineering&sort=company&page=1&limit=20'
             }
+        }
+
+        It 'rejects unsupported sponsorship values before making a request' {
+            { Get-EndpointJob -Sponsorship Any -BaseUri 'https://example.test' } | Should -Throw
+            Should -Invoke Invoke-RestMethod -Times 0
         }
 
         It 'normalizes known tool casing and preserves unknown values for API validation' {

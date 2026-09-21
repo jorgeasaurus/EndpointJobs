@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test scripts/audits/*.test.ts src/components/job-board/*.test.ts",
     "jobs:refresh": "tsx scripts/refresh-jobs.ts",
+    "jobs:classify-sponsorship": "tsx scripts/backfill-sponsorship.ts",
     "docs:api": "tsx scripts/generate-openapi.ts",
     "doctor": "react-doctor",
     "video:studio": "remotion studio remotion/index.ts",
@@ -22,6 +23,7 @@
     "audit:data": "tsx scripts/audit-user-stories-data.ts"
   },
   "dependencies": {
+    "@typesafe-ai/sdk": "^0.6.0",
     "@vercel/analytics": "^2.0.1",
     "fast-xml-parser": "^5.8.0",
     "lucide-react": "^0.468.0",

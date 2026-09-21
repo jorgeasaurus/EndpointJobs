@@ -1,3 +1,4 @@
+import { sponsorshipStatuses } from "@/lib/visa-sponsorship";
 import {
   platformOptions,
   roleFamilyOptions,
@@ -25,6 +26,7 @@ const filterParams = {
   selectedTools: "tools",
   selectedMetroAreas: "metroAreas",
   workplace: "workplace",
+  sponsorship: "sponsorship",
   salaryOnly: "salary",
   leadershipOnly: "leadership",
   minimumSalary: "minSalary",
@@ -85,6 +87,7 @@ export function filterStateFromSearchParams(
     selectedTools: parseMultiFilter(searchParams.get(filterParams.selectedTools), toolOptions),
     selectedMetroAreas: parseMultiFilter(searchParams.get(filterParams.selectedMetroAreas), metroAreaOptions, "|"),
     workplace: toWorkplaceFilter(workplace ?? (searchParams.get("remote") === "1" ? "Remote" : "Any")),
+    sponsorship: toSponsorshipFilter(searchParams.get(filterParams.sponsorship) ?? "Any"),
     salaryOnly: searchParams.get(filterParams.salaryOnly) === "1",
     leadershipOnly: searchParams.get(filterParams.leadershipOnly) === "1",
     minimumSalary: toMinimumSalaryFilter(searchParams.get(filterParams.minimumSalary) ?? "Any"),
@@ -161,6 +164,7 @@ function filterStateToSearchParams(filters: FilterState) {
     selectedTools: filters.selectedTools.length === 1 ? "" : filters.selectedTools.join(","),
     selectedMetroAreas: filters.selectedMetroAreas.join("|"),
     workplace: filters.workplace === "Any" ? "" : filters.workplace,
+    sponsorship: filters.sponsorship === "Any" ? "" : filters.sponsorship,
     salaryOnly: filters.salaryOnly ? "1" : "",
     leadershipOnly: filters.leadershipOnly ? "1" : "",
     minimumSalary: filters.minimumSalary === "Any" ? "" : filters.minimumSalary,
@@ -195,4 +199,8 @@ function parseMultiFilter<T extends string>(
     .split(separator)
     .map((item) => item.trim())
     .filter((item): item is T => allowedValues.has(item)))];
+}
+
+export function toSponsorshipFilter(value: string): FilterState["sponsorship"] {
+  return sponsorshipStatuses.find((status) => status === value) ?? "Any";
 }

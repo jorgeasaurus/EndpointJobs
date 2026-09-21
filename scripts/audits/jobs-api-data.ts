@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { throws } from "node:assert/strict";
 import Ajv2020 from "ajv/dist/2020.js";
 
 import {
@@ -66,6 +67,30 @@ export async function auditJobsApiData(run: RunAudit) {
       false,
       "unsupported leadership value rejected"
     );
+
+    const sponsorshipFeed = makeFeed([
+      makeJob({ id: "sponsored", visaSponsorship: { status: "available", evidence: "We offer visa sponsorship.", sourceUrl: "https://example.com/job" } }),
+      makeJob({ id: "conditional", visaSponsorship: { status: "case-by-case", evidence: "Visa sponsorship considered case by case.", sourceUrl: "https://example.com/job" } }),
+      makeJob({ id: "unavailable", visaSponsorship: { status: "unavailable", evidence: "No visa sponsorship.", sourceUrl: "https://example.com/job" } }),
+      makeJob({ id: "unknown", visaSponsorship: { status: "not-stated" } }),
+      makeJob({ id: "legacy" })
+    ]);
+    const sponsored = queryJobs(sponsorshipFeed, new URLSearchParams("sponsorship=available"), now);
+    assertEqual(sponsored.ok && sponsored.body.data[0]?.id, "sponsored", "available sponsorship filtered");
+    assertEqual(sponsored.ok && sponsored.body.meta.total, 1, "available sponsorship total");
+    assertEqual(sponsored.ok && sponsored.body.filters.sponsorship, "available", "sponsorship applied filter");
+    assertEqual(sponsored.ok && sponsored.body.data[0]?.visaSponsorship?.evidence, "We offer visa sponsorship.", "sponsorship evidence retained");
+    assertEqual(sponsored.ok && sponsored.body.data[0]?.visaSponsorship?.sourceUrl, "https://example.com/job", "sponsorship source retained");
+    for (const status of ["case-by-case", "unavailable", "not-stated"]) {
+      const response = queryJobs(sponsorshipFeed, new URLSearchParams({ sponsorship: status }), now);
+      assertEqual(response.ok && response.body.meta.total, status === "not-stated" ? 2 : 1, `${status} sponsorship filtered including legacy jobs`);
+    }
+    for (const query of ["sponsorship=Any", "sponsorship=yes", "sponsorship=", "sponsorship=available&sponsorship=unavailable"]) {
+      assertEqual(queryJobs(sponsorshipFeed, new URLSearchParams(query), now).ok, false, `invalid sponsorship query rejected: ${query}`);
+    }
+    const allSponsorship = queryJobs(sponsorshipFeed, new URLSearchParams(), now);
+    assertEqual(allSponsorship.ok && allSponsorship.body.meta.total, 5, "omitted sponsorship does not filter");
+    assertEqual(allSponsorship.ok && allSponsorship.body.filters.sponsorship, null, "omitted sponsorship reported as null");
 
     const leadership = queryJobs(
       makeFeed([
@@ -186,6 +211,28 @@ export async function auditJobsApiData(run: RunAudit) {
       "PowerShell tool names match canonical contract"
     );
     assertSchema(specification, "#/components/schemas/JobCollection", result.body);
+    for (const job of sponsorshipFeed.jobs) {
+      assertSchema(specification, "#/components/schemas/JobResponse", createJobResponse(sponsorshipFeed, job));
+    }
+    for (const status of ["available", "case-by-case", "unavailable"]) {
+      for (const visaSponsorship of [
+        { status },
+        { status, evidence: "A statement without its source." },
+        { status, sourceUrl: "https://example.com/job" },
+        { status, evidence: "", sourceUrl: "https://example.com/job" }
+      ]) {
+        throws(() => assertSchema(specification, "#/components/schemas/Job", {
+          ...sponsorshipFeed.jobs[0], visaSponsorship
+        }), /#\/components\/schemas\/Job/, `Reject unsubstantiated ${status} status`);
+      }
+    }
+    throws(() => assertSchema(specification, "#/components/schemas/Job", {
+      ...sponsorshipFeed.jobs[0], visaSponsorship: { status: "not-stated", evidence: "Unclassified claim." }
+    }), /#\/components\/schemas\/Job/, "Unknown status carries no supporting claim");
+    if (sponsored.ok) {
+      assertSchema(specification, "#/components/schemas/JobCollection", sponsored.body);
+      assertSchema(specification, "#/components/schemas/JobResponse", createJobResponse(sponsorshipFeed, sponsorshipFeed.jobs[0]!));
+    }
     if (oneDay.ok) {
       assertSchema(specification, "#/components/schemas/JobCollection", oneDay.body);
     }

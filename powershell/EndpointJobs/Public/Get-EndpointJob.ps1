@@ -11,6 +11,8 @@ function Get-EndpointJob {
         Gets every page matching the supplied filters.
     .PARAMETER RawResponse
         Returns the API response envelope instead of individual job objects.
+    .PARAMETER Sponsorship
+        Filters by visa sponsorship stated in the listing. Missing information is not-stated.
     .PARAMETER Leadership
         Requires management, executive, or technical-lead roles.
     .EXAMPLE
@@ -48,6 +50,10 @@ function Get-EndpointJob {
 
         [Parameter(ParameterSetName = 'List')]
         [switch]$SalaryShown,
+
+        [Parameter(ParameterSetName = 'List')]
+        [ValidateSet('available', 'case-by-case', 'unavailable', 'not-stated')]
+        [string]$Sponsorship,
 
         [Parameter(ParameterSetName = 'List')]
         [switch]$Leadership,
@@ -125,6 +131,7 @@ function Get-EndpointJob {
             tools      = $Tool
             location   = $Location
             workplace  = $Workplace
+            sponsorship = $Sponsorship
             salary     = if ($SalaryShown) { '1' } else { $null }
             leadership = if ($Leadership) { '1' } else { $null }
             minSalary  = if ($PSBoundParameters.ContainsKey('MinimumSalary')) { $MinimumSalary } else { $null }
@@ -140,6 +147,7 @@ function Get-EndpointJob {
         $validatedFilters = @{
             platforms = 'Platform'
             workplace = 'Workplace'
+            sponsorship = 'Sponsorship'
             seniority = 'Seniority'
             family = 'RoleFamily'
             sort = 'Sort'

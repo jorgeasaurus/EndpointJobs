@@ -99,6 +99,7 @@ test("leadership filtering returns leadership roles only", () => {
     selectedTools: [],
     selectedMetroAreas: [],
     workplace: "Any",
+    sponsorship: "Any",
     salaryOnly: false,
     leadershipOnly: true,
     minimumSalary: "Any",
