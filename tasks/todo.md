@@ -749,3 +749,120 @@ Round-22 verification: title-change regression failed before the fix; all 114 te
 Round 1 findings: (1) stale-day parsing and deadline policy are duplicated across provider boundaries with divergent invalid-value behavior; centralize validation and remove redundant default deadlines. (2) AuditToggleButton casts away the production props contract; delete the alias and pass required children through the real component props. Frontend and domain/route reviews found no blockers.
 
 Final review: three rounds, zero remaining findings. JSX audit renderings remove the cast without violating children-prop lint rules; staged rename restored complete React Doctor maintainability scanning. Validation: npm test (118), audit:data (71), lint, typecheck, PowerShell build.ps1 -Task CI (14 Pester tests plus analysis/build), diff --check, and full React Doctor 0.5.5/0.9.13 (100/100, no skipped checks) pass. Clean: yes.
+## Visa sponsorship filter
+
+Scope: ship sponsorship status with source evidence first. Keep international applicant eligibility separate; remote work does not imply worldwide eligibility.
+
+- [x] Create `codex/visa-sponsorship-filter` and record the implementation plan.
+- [x] Add sponsorship statuses: available, case-by-case, unavailable, and not stated; store supporting excerpts and source provenance.
+- [x] Classify explicit statements during refresh before description truncation; leave missing, ambiguous, or conflicting evidence unknown.
+- [x] Backfill existing jobs from available descriptions and report classification coverage; preserve unrelated feed data.
+- [x] Add the sponsorship dropdown, active filter label, reset behavior, and shareable URL state.
+- [x] Extend shared filtering and the public API contract, response schema, and any API clients.
+- [x] Show sponsorship badges and supporting excerpts on job cards/details without implying verified applicant eligibility.
+- [x] Test positive, negative, conditional, conflicting, and missing evidence; exclude unrelated sponsorship and worldwide-office language.
+- [x] Verify UI/API filter parity, URL round trips, mobile/desktop layout, tests, lint, typecheck, and build.
+- [x] Review coverage before separately planning international application and remote hiring region filters.
+
+### Review
+
+Implemented sponsorship classification, source excerpts, UI/URL/API filters, PowerShell support, and backfill. Coverage after strict review: 12 unavailable, 988 not stated; no explicit available claims. The previously conditional listing now remains unknown because its source formatting lacks an assertion boundary. International eligibility remains deferred.
+
+Validation: 168 tests, 71 data audits, lint, typecheck, production build, and desktop/mobile sponsorship browser checks pass. PowerShell: 15 tests with installed Pester 6.2.0 (pinned 5.8.0 unavailable), ScriptAnalyzer, and module build pass. Backfill preserves unrelated fields and feed order. Independent review: no remaining blockers. All 41 full browser regression checks pass.
+
+## Sponsorship thermonuclear review loop
+
+- [x] Review the sponsorship diff against `main`, including untracked files; record actionable findings.
+- [x] Fix root causes and run focused regressions after each batch.
+- [x] Repeat strict review until zero findings; run final validation and record results.
+
+Round 1 findings: (1) Prefix-based classification mistakes sponsorship information/fees and unrelated “No” prose for claims; replace it with complete statement rules. (2) Known-status types and OpenAPI permit missing evidence; require evidence/source for known statuses. (3) Sponsorship browser checks bypass the standard runner; integrate them into `audit:browser`.
+
+Round 1 fixes: complete assertion grammar now lives in ingestion; known statuses require evidence/source in TypeScript and OpenAPI; sponsorship browser checks share the standard runner. Six classifier regressions failed before the rewrite; focused classifier, contract, rendering, and filter checks pass.
+
+Round 2 finding: splitting every newline treats a wrapped qualifier as a separate statement (`Visa sponsorship is available\nonly to internal transfers.`). Preserve soft line wraps before classifying complete statements.
+
+Round 2 fix: preserve soft line wraps and classify only complete statements. Three segmentation regressions failed before the fix; all 68 classifier tests pass. Regenerated sponsorship metadata only and verified all unrelated feed fields against `HEAD`.
+
+Round 3 review: zero findings across classifier/ingestion, type/schema contracts, UI/URL/API filters, and browser integration. Validation: 191 tests, 71 data audits, lint, typecheck, and production build pass; all 43 standard browser checks pass, including desktop/mobile sponsorship coverage. `git diff --check` passes. Clean: yes.
+
+## Local job refresh
+
+Refresh produced 548 jobs, including 360 retained SerpAPI listings. Adzuna returned 401; other credential-dependent providers were unavailable locally. The partial feed built successfully but failed mapped coverage (257/548), so the previous 1,000-job feed was restored; all 71 data audits pass again. Partial output: `/tmp/endpoint-jobs-partial-refresh.json`. Full refresh requires working provider credentials.
+
+## Improve sponsorship recognition
+
+- [x] Add real-listing and format regressions for conditional offers, list items, labels, and common refusal wording.
+- [x] Improve statement parsing and explicit phrase rules while preserving negation, scope, and conflict safeguards.
+- [x] Reclassify stored jobs without changing unrelated data; inspect every newly recognized claim.
+- [x] Run tests, data audits, lint, typecheck, build, and sponsorship browser checks; record coverage and limitations.
+
+Review: explicit labels, H-1B wording, flat lists, conditional offers, and common refusals are recognized; ambiguous nested restrictions remain unknown. Independent review found no remaining blockers after hierarchy regressions were fixed.
+
+Coverage: 3 case-by-case listings (2 distinct roles), 23 unavailable, 974 not stated, 0 unconditional offers. Anthropic's offer retains its limitation in the evidence; Deloitte's MDM role concerns master data management, an existing relevance limitation. Unrelated feed fields, order, and timestamps match `HEAD`.
+
+Validation: 228 tests, 71 data audits, lint, typecheck, build, and diff checks pass. Browser run passed 41 checks; both sponsorship checks passed on rerun after scoping their evidence assertion to the blockquote (the excerpt also appears in the description).
+
+## Additional sponsorship discovery pass
+
+- [x] Inspect unknown listings and alternative wording for missed positive or conditional sponsorship evidence.
+- [x] Independently cross-check candidates; add rules only for supported offers and verify any changes.
+- [x] Record findings and coverage limitations.
+
+Result: two independent passes found no additional explicit offers in stored descriptions, summaries, titles, or tags. Visa acceptance, relocation benefits, existing authorization requirements, and application questions do not establish sponsorship; classifier and feed are unchanged. Of 974 unknown listings, 462 lack descriptions, limiting discovery without source enrichment.
+
+## Enrich missing descriptions
+
+- [x] Retrieve job-specific source descriptions with bounded requests and record inaccessible sources.
+- [x] Validate listing identity and source evidence; enrich only confirmed matches.
+- [x] Reclassify sponsorship, verify feed integrity and relevant checks, and record coverage.
+
+Recovered 75 descriptions (62 Workday, 12 Curated, 1 Activate). Remaining 387: 378 Adzuna listings behind regional anti-bot challenges; 4 forbidden responses; 1 missing posting; 1 closed posting; 1 generic redirect; 1 mismatched requisition; 1 short snippet. No unrelated metadata or timestamps changed.
+
+New evidence: GEICO Endpoint Automation Staff Engineer considers sponsorship; Vanguard (2), Hartford (1), and Targa (2) explicitly refuse it. Totals: 4 conditional listings, 28 unavailable, 968 unknown. Full text is classified before display truncation; targeted rules have negation/scope regressions. This is a local enrichment pass, not a recurring source-detail refresh.
+
+Validation: 242 tests, 71 data audits, lint, typecheck, production build, desktop/mobile sponsorship checks, GEICO detail evidence, and diff checks pass. Retrieval report: `/tmp/endpoint-description-enrichment-report.json`.
+
+## Final sponsorship review loop
+
+- [x] Review the full branch diff and untracked feature files against the merge base.
+- [x] Fix actionable findings and repeat independent strict review until clean.
+- [x] Run relevant validation and record final results.
+
+Round 1 findings: (1) HTML normalization flattens nested list restrictions before classification; preserve hierarchy through extraction and stored descriptions. (2) Sentence splitting detaches standalone restrictive continuations from offers; reject unsupported contextual qualifications. API/PowerShell and UI/URL reviews found no actionable issues.
+
+Round 2: HTML hierarchy regressions pass. Review of the continuation fix found conditional claims bypassed the context check; apply the same scope checks to every claim and recognize supported affirmative reassurance explicitly.
+
+Round 3: two fresh classifier/normalization reviews returned zero findings; API/PowerShell and UI/URL scopes remain clean. Updated Anthropic evidence and downgraded one unsupported MBTA qualification to unknown; totals are 4 conditional, 27 unavailable, 969 unknown. Unrelated feed fields are unchanged.
+
+Final validation: 257 tests, 71 data audits, lint, typecheck, build, 15 PowerShell tests, and diff checks pass. Browser suite passed 42/43 checks; the mobile map activation timeout passed on an isolated rerun without code changes. Both sponsorship viewport checks passed in the full run. Clean: yes.
+
+## JEV sponsorship classifier
+
+- [x] Add the TypeSafe JavaScript SDK and an opt-in, confidence-gated JEV classifier for unresolved listings.
+- [x] Preserve exact source excerpts and deterministic classifications; keep API failures non-fatal.
+- [x] Integrate classification into refresh/backfill and document configuration.
+- [x] Add mocked contract tests and run relevant validation.
+
+Review: exact rules remain authoritative; deliberate ambiguity bypasses JEV. Novel wording receives bounded adjacent source context, and incomplete, oversized, low-confidence, malformed, or failed evaluations remain `not-stated`. Each run defaults to 50 requests with bounded concurrency, timeout, and retries.
+
+Live backfill: 25 attempted, 12 classified, 0 failed. Stored totals: 4 case-by-case, 39 unavailable, 957 not stated; no unconditional sponsorship offers were found.
+
+Thermonuclear loop: successive review batches fixed request budgeting, long/conflicting passage extraction, hidden raw-description transport, duplicated state, deterministic ambiguity ownership, and detached novel qualifiers. The final fresh review returned zero findings. Validation: 268 tests, 71 data audits, lint, typecheck, production build, desktop/mobile sponsorship browser checks, and diff checks pass. Clean: yes.
+
+## PR #55 Copilot review loop
+
+- [x] Recompute stale `not-stated` records before JEV and persist deterministic results.
+- [x] Handle detached role restrictions and enforce a literal 50-request default cap.
+- [x] Verify 274 tests, 71 data audits, lint, typecheck, and diff checks.
+- [x] Guard detached `Not available for...` and `Not eligible for...` continuations.
+- [x] Guard qualifying sponsorship restrictions immediately before a recognized claim.
+- [x] Exclude empty-passage jobs from the JEV request budget.
+- [x] Include bounded preceding context in JEV sponsorship evidence.
+- [x] Preserve hidden full descriptions through provider object spreads without serialization.
+- [x] Reserve bounded adjacent context around long JEV signal windows.
+- [x] Recognize `now nor in the future` refusals and backfill the affected listing.
+- [x] Guard detached `while`/`although` and noun-first `only` restrictions in both directions.
+- [ ] Resolve all findings and confirm a fresh clean review on the latest head.
+
+Latest verification: 288 tests, 71 data audits, scoped lint, typecheck, and diff checks pass.

@@ -24,6 +24,7 @@ export { metroAreaOptions, minimumSalaryFilterValues } from "@/lib/job-filters";
 export type FilterState = JobFilters;
 
 export type FilterAction =
+  | { type: "setSponsorship"; value: FilterState["sponsorship"] }
   | { type: "setQuery"; value: string }
   | { type: "setLocationQuery"; value: string }
   | { type: "togglePlatform"; value: Platform }
@@ -49,6 +50,7 @@ export const initialFilterState: FilterState = {
   selectedTools: [],
   selectedMetroAreas: [],
   workplace: "Any",
+  sponsorship: "Any",
   salaryOnly: false,
   leadershipOnly: false,
   minimumSalary: "Any",
@@ -109,6 +111,8 @@ export function filterReducer(
   action: FilterAction
 ): FilterState {
   switch (action.type) {
+    case "setSponsorship":
+      return { ...state, sponsorship: action.value };
     case "setQuery":
       return { ...state, query: action.value };
     case "setLocationQuery":

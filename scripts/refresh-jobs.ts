@@ -29,6 +29,7 @@ import {
   selectFeedJobs
 } from "./job-refresh/job-selection";
 import { extractSalaryFromText, getPositiveInteger } from "./job-refresh/shared";
+import { enrichVisaSponsorshipWithJev } from "./job-refresh/jev-sponsorship";
 
 import {
   isExcludedJobSourceUrl,
@@ -57,12 +58,9 @@ async function main() {
   const retainedJobIds = new Set(
     candidateJobs.slice(currentJobs.length).map((job) => job.id)
   );
-  const normalizedJobs = limitFeedJobs(
+  const selectedJobs = limitFeedJobs(
     selectFeedJobs(
       candidateJobs
-        .map(addExtractedSalary)
-        .map(addResolvedMapLocation)
-        .map(withResolvedWorkplace)
         .filter((job) => !isExcludedJobSourceUrl(job.sourceUrl, excludedSourceUrls))
         .filter((job) => !isSourceFreshnessExpired(job, fetchedAt))
         .filter((job) => new Date(job.staleAfter).getTime() >= fetchedAt.getTime()),
@@ -71,7 +69,18 @@ async function main() {
     maxJobs,
     reservedJobIds
   );
+  const jevResult = await enrichVisaSponsorshipWithJev(selectedJobs);
+  const normalizedJobs = jevResult.jobs
+    .map(addExtractedSalary)
+    .map(addResolvedMapLocation)
+    .map(withResolvedWorkplace);
   const retainedJobCount = normalizedJobs.filter((job) => retainedJobIds.has(job.id)).length;
+
+  if (jevResult.attempted > 0 || jevResult.skipped > 0) {
+    console.log(
+      `JEV sponsorship classification: ${jevResult.classified}/${jevResult.attempted} accepted, ${jevResult.failed} failed, ${jevResult.skipped} skipped by request cap`
+    );
+  }
 
   if (retainedJobCount > 0) {
     console.log(`Retained ${retainedJobCount} recent SerpAPI jobs from the previous feed`);

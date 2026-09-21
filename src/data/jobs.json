@@ -3201,7 +3201,12 @@
       ],
       "roleFamily": "Endpoint Security",
       "seniority": "Mid",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "Is role eligible for Immigration Sponsorship? No.",
+        "sourceUrl": "https://himalayas.app/companies/palo-alto-networks/jobs/solutions-engineer-endpoint-central"
+      }
     },
     {
       "id": "adzuna-5890001897",
@@ -4622,6 +4627,11 @@
         "max": 273000,
         "currency": "USD",
         "label": "$198k-$273k"
+      },
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "Is role eligible for Immigration Sponsorship? No.",
+        "sourceUrl": "https://himalayas.app/companies/palo-alto-networks/jobs/domain-consultant-endpoint-management-solutions"
       }
     },
     {
@@ -5550,6 +5560,11 @@
         "max": 130295,
         "currency": "USD",
         "label": "$79k-$130k"
+      },
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "Guardian is not currently or in the foreseeable future sponsoring employment visas.",
+        "sourceUrl": "https://www.linkedin.com/jobs/view/digital-workplace-av-support-engineer-at-guardian-life-4414031837?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
       }
     },
     {
@@ -8100,7 +8115,12 @@
       ],
       "roleFamily": "Endpoint Security",
       "seniority": "Mid",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "Regions will not sponsor applicants for work visas for this position at this time.",
+        "sourceUrl": "https://careers.regions.com/us/en/job/R101336/MacOs-EUC-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
+      }
     },
     {
       "id": "serpapi-masco-greensburg-in-onsite-it-endpoint-specialist-87ef9dccc3",
@@ -10614,6 +10634,11 @@
         "max": 105000,
         "currency": "USD",
         "label": "$95k-$105k"
+      },
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "Visa sponsorship is not available for this position now nor in the future.",
+        "sourceUrl": "https://www.higheredjobs.com/admin/details.cfm?JobCode=179558569&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
       }
     },
     {
@@ -13923,6 +13948,11 @@
         "max": 195000,
         "currency": "USD",
         "label": "$123k-$195k"
+      },
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "The company will not consider candidates who require sponsorship for a work-authorized visa, now or in the future.",
+        "sourceUrl": "https://www.careers.philips.com/professional/global/en/job/589909/Senior-Cloud-Infrastructure-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
       }
     },
     {
@@ -15829,6 +15859,11 @@
         "max": 122060,
         "currency": "USD",
         "label": "$81k-$122k"
+      },
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "Visa Sponsorship is not available for this position.",
+        "sourceUrl": "https://careers.caterpillar.com/en/jobs/r0000392999/endpoint-security-analyst/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
       }
     },
     {
@@ -15959,7 +15994,12 @@
       ],
       "roleFamily": "Device Compliance",
       "seniority": "Senior",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "At this time, we are unable to offer visa sponsorship for this position.",
+        "sourceUrl": "https://www.linkedin.com/jobs/view/mdm-senior-solution-engineer-at-global-payments-inc-4467228827?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
+      }
     },
     {
       "id": "serpapi-powerschool-dallas-tx-senior-mobile-device-management-mdm-engineer-12ab325e8b",
@@ -17029,6 +17069,11 @@
         "max": 194350,
         "currency": "USD",
         "label": "65,000–194,350 a year"
+      },
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "PNC will not provide sponsorship for employment visas or participate in STEM OPT for this position.",
+        "sourceUrl": "https://www.theladders.com/job/infrastructure-engineer-sr-racf-mainframe-thepncfinancialservicesgroup-schenectady-ny_88829991?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
       }
     },
     {
@@ -17412,6 +17457,11 @@
         "max": 131300,
         "currency": "USD",
         "label": "111,605–131,300 a year"
+      },
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "This position is not eligible for visa sponsorship.",
+        "sourceUrl": "https://www.monster.com/job-openings/senior-microsoft-intune-engineer-saint-paul-mn--f5f38537-da7b-47e5-a9b3-f6defdbfbaa5?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
       }
     },
     {
@@ -17525,6 +17575,11 @@
         "max": 175000,
         "currency": "USD",
         "label": "125K–175K a year"
+      },
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "Hike2 cannot sponsor work authorizations or visas now or in the future.",
+        "sourceUrl": "https://www.jobleads.com/us/job/senior-mdm-engineer--united--e25380dacc5259aea5b6fc09e9b69641b?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
       }
     },
     {
@@ -21475,7 +21530,12 @@
       ],
       "roleFamily": "Systems Administration",
       "seniority": "Mid",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "Infosys is unable to provide immigration sponsorship for this role now or in the future.",
+        "sourceUrl": "https://www.monster.com/job-openings/sccm-mecm-support-engineer-hartford-ct--1e742953-798e-44db-9353-fdda56de425a?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
+      }
     },
     {
       "id": "serpapi-umemployed-anywhere-100-remote-mdm-data-engineering-only-w2-59eddacdb4",
@@ -28704,6 +28764,11 @@
         "max": 229000,
         "currency": "USD",
         "label": "116K–229K a year"
+      },
+      "visaSponsorship": {
+        "status": "case-by-case",
+        "evidence": "Limited immigration sponsorship may be available",
+        "sourceUrl": "https://www.indeed.com/viewjob?jk=1378daa1913f66c1&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
       }
     },
     {
@@ -29709,6 +29774,11 @@
         "max": 175000,
         "currency": "USD",
         "label": "$125k-$175k"
+      },
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "Hike2 cannot sponsor work authorizations or visas now or in the future.",
+        "sourceUrl": "https://hike2.recruitee.com/o/senior-mdm-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
       }
     },
     {
@@ -35757,7 +35827,12 @@
       ],
       "roleFamily": "Endpoint Security",
       "seniority": "Mid",
-      "employmentType": "Contract"
+      "employmentType": "Contract",
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "Candidates must be legally authorized to live and work in the country where the position is based, without requiring employer sponsorship.",
+        "sourceUrl": "https://applyall.com/jobs/uk/beyondtrust-endpoint-privilege-management-epm-engineer-2-open-positions-at-hellokindred-jc_df186f24ff800370fe2aa9ef?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
+      }
     },
     {
       "id": "serpapi-lcg-inc-bethesda-md-windows-endpoint-engineer-senior-6b95fc4c9d",
@@ -41635,7 +41710,12 @@
       ],
       "roleFamily": "Windows Platform",
       "seniority": "Mid",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "This role is not eligible for Work Visa sponsorship, either currently or in the future.",
+        "sourceUrl": "https://www.indeed.com/viewjob?jk=388ffcccf9a22aa9&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
+      }
     },
     {
       "id": "serpapi-sentinelone-iowa-senior-solutions-engineer-endpoint-security-a5afb4344b",
@@ -41937,6 +42017,11 @@
         "max": 136200,
         "currency": "USD",
         "label": "$94k-$136k"
+      },
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "We do not currently sponsor immigration visas.",
+        "sourceUrl": "https://4dayweek.io/job/systems-engineer-at-expel-3cd5fb3b"
       }
     },
     {
@@ -42641,6 +42726,11 @@
         "max": 160000,
         "currency": "USD",
         "label": "$130k-$160k"
+      },
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "Visa Sponsorship: Please note, we are unable to provide visa sponsorship for the position offered.",
+        "sourceUrl": "https://jobs.lever.co/brightonjones/62e60e7e-656d-42ef-a06d-ca720471b6b4"
       }
     },
     {
@@ -42955,7 +43045,12 @@
       ],
       "roleFamily": "Endpoint Security",
       "seniority": "Associate",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "Regions will not sponsor applicants for work visas for this position at this time.",
+        "sourceUrl": "https://www.monster.com/job-openings/end-user-computing-euc-engineer-hoover-al--389aa0f8-110c-4ace-a6cd-66ff4b96b568?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
+      }
     },
     {
       "id": "serpapi-15-gundersen-lutheran-admin-svcs-onalaska-wi-end-user-computing-engineer-regional-desktop-team-d5700a0bc3",
@@ -45834,6 +45929,11 @@
         "max": 143200,
         "currency": "USD",
         "label": "$85k-$143k"
+      },
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "Visa sponsorship is not available for this position.",
+        "sourceUrl": "https://www.careers.ford.com/job/dearborn/platform-engineer-infrastructure/48560/95946661344?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
       }
     },
     {
@@ -46017,7 +46117,12 @@
       ],
       "roleFamily": "Windows Platform",
       "seniority": "Mid",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "This role is not eligible for Work Visa sponsorship, either currently or in the future.",
+        "sourceUrl": "https://raymondjames.wd1.myworkdayjobs.com/en-US/RaymondJamesCareers/job/Analyst--Digital-Workplace-Product-Management--Microsoft-365-_R-0011852-1?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
+      }
     },
     {
       "id": "serpapi-vanguard-careers-dallas-tx-director-enterprise-platform-engineering-mac-windows-endpoints-67427dfeb4",
@@ -46067,7 +46172,12 @@
       ],
       "roleFamily": "Endpoint Security",
       "seniority": "Senior",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "Vanguard is not offering visa sponsorship for this position.",
+        "sourceUrl": "https://www.vanguardjobs.com/job/23013831/director-enterprise-platform-engineering-mac-windows-endpoints-dallas-tx/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
+      }
     },
     {
       "id": "serpapi-thrive-united-states-principal-architect-enterprise-engineering-98e1c494e3",
@@ -46459,7 +46569,12 @@
       ],
       "roleFamily": "Endpoint Security",
       "seniority": "Mid",
-      "employmentType": "Full-time"
+      "employmentType": "Full-time",
+      "visaSponsorship": {
+        "status": "unavailable",
+        "evidence": "Infosys is unable to provide immigration sponsorship for this role now or in the future.",
+        "sourceUrl": "https://talents.vaia.com/companies/infosys-limited/austin/end-user-computing-engineer-128630753/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
+      }
     },
     {
       "id": "serpapi-marathon-petroleum-st-marys-oh-senior-platforms-engineer-digital-workplace-ai-7335e11f36",

@@ -33,6 +33,11 @@ export async function auditProviders({ run, sources }: AuditContext) {
     assertIncludes(sources.workflow, 'cron: "17 11 * * *"');
     assertIncludes(sources.workflow, "workflow_dispatch");
     assertIncludes(sources.workflow, "npm run jobs:refresh");
+    assertIncludes(sources.workflow, "TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_AI_APIKEY }}");
+    assertIncludes(sources.workflow, "JOB_JEV_MODEL: jev-latest");
+    assertIncludes(sources.workflow, 'JOB_JEV_MIN_CONFIDENCE: "0.8"');
+    assertIncludes(sources.workflow, 'JOB_JEV_MAX_REQUESTS: "50"');
+    assertIncludes(sources.workflow, 'JOB_JEV_MAX_RETRIES: "0"');
     assertIncludes(sources.workflow, "npm run build");
     assertIncludes(sources.workflow, "git rebase FETCH_HEAD");
   });

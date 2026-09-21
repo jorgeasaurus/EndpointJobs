@@ -15,6 +15,7 @@ import type { Job, JobsFeed } from "@/types/job";
 
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
 import { JobContextCards } from "@/components/job-board/job-context-cards";
+import { VisaSponsorship } from "@/components/job-board/visa-sponsorship";
 import { SiteFooter, Topbar } from "@/components/job-board/topbar";
 import {
   getJobPath,
@@ -205,6 +206,7 @@ export default async function JobPage({ params }: JobPageProps) {
                 ) : null}
               </dl>
 
+              <VisaSponsorship sponsorship={job.visaSponsorship} expanded />
               <JobContextCards job={job} />
             </aside>
           </div>

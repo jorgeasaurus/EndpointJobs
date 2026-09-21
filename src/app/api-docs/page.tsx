@@ -47,6 +47,7 @@ const responseExample = JSON.stringify({
     metroAreas: [],
     location: null,
     workplace: null,
+    sponsorship: null,
     salaryShown: false,
     leadership: false,
     minSalary: null,

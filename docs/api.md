@@ -21,6 +21,7 @@ GET /api/jobs?tools=Jamf&platforms=macOS&minSalary=150000&page=1&limit=20
     "tools": ["Jamf"],
     "location": null,
     "workplace": null,
+    "sponsorship": null,
     "salaryShown": false,
     "leadership": false,
     "minSalary": "150000",
@@ -46,6 +47,7 @@ GET /api/jobs?tools=Jamf&platforms=macOS&minSalary=150000&page=1&limit=20
 | `tools` | Comma-separated endpoint tools, such as `Jamf`, `Intune`, or `SCCM` |
 | `location` | City, state, or country text, 1–200 characters |
 | `workplace` | `Remote`, `Hybrid`, or `On-site` |
+| `sponsorship` | `available`, `case-by-case`, `unavailable`, or `not-stated` |
 | `salary` | `1` to require disclosed compensation |
 | `leadership` | `1` to require leadership roles |
 | `minSalary` | USD floor: `80000`, `100000`, `120000`, `150000`, `180000`, `200000` |
@@ -55,6 +57,8 @@ GET /api/jobs?tools=Jamf&platforms=macOS&minSalary=150000&page=1&limit=20
 | `sort` | `newest`, `salary`, or `company` |
 | `page` | Positive integer; default `1` |
 | `limit` | `1`–`100`; default `20` |
+
+Visa sponsorship comes from explicit listing statements. Jobs without a statement match `not-stated`; `visaSponsorship` includes the status and any supporting `evidence` and `sourceUrl`.
 
 Repeated or unknown parameters are rejected. Multi-value filters use one comma-separated parameter, not repeated keys.
 
