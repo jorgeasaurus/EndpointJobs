@@ -76,7 +76,7 @@ jobs:
           JOB_AIDEVBOARD_LIMIT: "20"
           ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
           ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
-          TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+          TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_AI_APIKEY }}
           JOB_JEV_MODEL: jev-latest
           JOB_JEV_MIN_CONFIDENCE: "0.8"
           JOB_JEV_MAX_REQUESTS: "50"
