@@ -14,6 +14,8 @@ for (const description of [
   "Visa sponsorship is available. This offer does not apply to this position.",
   "Visa sponsorship is available. Not for this position.",
   "Visa sponsorship is available. Unavailable for this job.",
+  "Visa sponsorship is available. Eligibility is limited to internal transfers.",
+  "Visa sponsorship is available. For qualified candidates.",
   "No visa sponsorship. Except for internal transfers.",
   "No visa sponsorship.\n\nUnless the candidate already holds an H-1B visa.",
   "Is this role eligible for visa sponsorship? Yes. Only for internal transfers."

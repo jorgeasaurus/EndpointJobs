@@ -5,7 +5,7 @@ import { sponsorshipMatchText, sponsorshipStatementGroups } from "./sponsorship-
 type KnownStatus = Exclude<SponsorshipStatus, "not-stated">;
 // These continuations refer back to an assertion. An unsupported continuation
 // cannot be discarded while retaining an unconditional promise or refusal.
-const qualifyingContinuation = /^(?:however\b|but\b|only\b|except\b|unless\b|subject to\b|(?:not|unavailable|ineligible) for\b|(?:this|that) (?:offer |statement |policy )?(?:does not|doesn't|doesn’t|is limited|applies only)\b)/i;
+const qualifyingContinuation = /^(?:however\b|but\b|only\b|except\b|unless\b|subject to\b|(?:not|unavailable|ineligible) for\b|(?:eligibility|availability) (?:is |remains )?(?:limited|restricted|subject to|determined)\b|for (?:internal transfers?\b|(?:qualified|eligible|selected|certain|some|specific)\b|(?:candidates?|applicants?) (?:who|with|meeting)\b)|(?:this|that) (?:offer |statement |policy )?(?:does not|doesn't|doesn’t|is limited|applies only)\b)/i;
 const eligibilityQuestion = /^Is (?:this |the )?(?:role|position|job) eligible for (?:visa|immigration) sponsorship\?$/i;
 
 export function classifyVisaSponsorship(description: string, sourceUrl: string): VisaSponsorship {

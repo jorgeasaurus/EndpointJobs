@@ -854,5 +854,5 @@ Thermonuclear loop: successive review batches fixed request budgeting, long/conf
 
 - [x] Recompute stale `not-stated` records before JEV and persist deterministic results.
 - [x] Handle detached role restrictions and enforce a literal 50-request default cap.
-- [x] Verify 272 tests, 71 data audits, lint, typecheck, and diff checks.
+- [x] Verify 274 tests, 71 data audits, lint, typecheck, and diff checks.
 - [ ] Resolve all findings and confirm a fresh clean review on the latest head.
