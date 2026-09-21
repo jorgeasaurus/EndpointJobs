@@ -88,7 +88,7 @@ function normalizeSchoolJobsItem(raw: SchoolJobsItem, company: string, fetchedAt
     raw["joblisting:qualifications"],
     raw["joblisting:supplementalinformation"]
   ].map((value) => getXmlText(value) ?? "").filter(Boolean).join("\n\n"));
-  const description = normalizeDescription(rawDescription);
+  const description = normalizeDescription(rawDescription, "text");
   const searchableDescription = description ?? cleanText(rawDescription);
   const location = cleanText(getXmlText(raw["joblisting:location"]));
   const jobType = cleanText(getXmlText(raw["joblisting:jobType"]));
@@ -116,6 +116,7 @@ function normalizeSchoolJobsItem(raw: SchoolJobsItem, company: string, fetchedAt
     attributionLabel: `SchoolJobs / ${company}`,
     termsProfile: "public-api",
     description: searchableDescription,
+    descriptionFormat: "text",
     sourceTags,
     employmentType: jobType
   });

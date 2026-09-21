@@ -1,17 +1,14 @@
 import type { Job } from "../../../src/types/job";
 import type { ProviderAdapter } from "../provider";
-import { defaultWorkdaySites, type WorkdaySite } from "./workday-sites";
+import { workdayProvider } from "./workday";
 import {
   addDays,
   getJobStaleDays,
   toEndpointJob,
-  buildStableJobId,
   cleanText,
   cleanUrl,
-  containsAlias,
   getCsvConfig,
   buildProviderJobId,
-  normalizeSearchText,
   parseDateLike,
   stripHtml
 } from "../shared";
@@ -84,13 +81,6 @@ type JibeSite = {
   queries: string[];
 };
 
-type WorkdayJob = {
-  title?: string;
-  externalPath?: string;
-  postedOn?: string;
-  bulletFields?: string[];
-  locationsText?: string;
-};
 
 const staleDays = getJobStaleDays();
 
@@ -126,12 +116,7 @@ export const companyAtsProviders = [
     defaultUrl: "https://www.amazon.jobs/en/search.json",
     fetchJobs: ({ url, fetchedAt }) => fetchAmazonJobs(url, fetchedAt)
   },
-  {
-    id: "workday",
-    displayName: "Workday",
-    defaultUrl: "https://accenture.wd103.myworkdayjobs.com/wday/cxs/accenture/AccentureCareers/jobs",
-    fetchJobs: ({ url, fetchedAt }) => fetchWorkdayJobs(url, fetchedAt)
-  },
+  workdayProvider,
   {
     id: "jibe",
     displayName: "Jibe",
@@ -155,33 +140,6 @@ async function fetchAmazonJobs(url: string, fetchedAt: Date) {
     const payload = await fetchAmazonSearch(queryUrl);
     jobs.push(...payload.map((job) => normalizeAmazonJob(job, fetchedAt)));
     console.log(`Fetched ${payload.length} raw jobs from Amazon Jobs query ${query}`);
-  }
-
-  return jobs;
-}
-
-async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
-  const sites = getWorkdaySites(url);
-  const jobs: Array<Job | null> = [];
-  let completedQueries = 0;
-
-  for (const site of sites) {
-    for (const query of site.queries) {
-      try {
-        const payload = await fetchWorkdaySearch(site.url, query);
-        completedQueries += 1;
-        jobs.push(...payload.map((job) => normalizeWorkdayJob(job, site, query, fetchedAt)));
-        console.log(`Fetched ${payload.length} raw jobs from Workday/${site.name} query ${query}`);
-      } catch (error) {
-        console.warn(
-          `Skipping Workday/${site.name} query ${query}: ${error instanceof Error ? error.message : String(error)}`
-        );
-      }
-    }
-  }
-
-  if (completedQueries === 0) {
-    throw new Error("No Workday queries completed successfully");
   }
 
   return jobs;
@@ -236,40 +194,6 @@ async function fetchAmazonSearch(url: string) {
   }
 
   return (json as { jobs: unknown[] }).jobs.filter(isAmazonJob);
-}
-
-async function fetchWorkdaySearch(url: string, query: string) {
-  const configuredLimit = Number(process.env.JOB_WORKDAY_RESULTS_PER_QUERY ?? 10);
-  const limit = Number.isFinite(configuredLimit) && configuredLimit > 0 ? configuredLimit : 10;
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      accept: "application/json",
-      "accept-language": "en-US,en;q=0.9",
-      "content-type": "application/json",
-      origin: new URL(url).origin,
-      referer: new URL(url).origin,
-      "user-agent": "Mozilla/5.0"
-    },
-    body: JSON.stringify({
-      appliedFacets: {},
-      limit,
-      offset: 0,
-      searchText: query
-    })
-  });
-
-  if (!response.ok) {
-    throw new Error(`Workday request failed: ${response.status} ${response.statusText}`);
-  }
-
-  const json: unknown = await response.json();
-
-  if (!json || typeof json !== "object" || !Array.isArray((json as { jobPostings?: unknown }).jobPostings)) {
-    throw new Error("Workday response did not include a jobPostings array");
-  }
-
-  return (json as { jobPostings: unknown[] }).jobPostings.filter(isWorkdayJob);
 }
 
 async function fetchActivateSearch(url: string, query: string, siteName: string) {
@@ -354,41 +278,9 @@ function normalizeAmazonJob(raw: AmazonJob, fetchedAt: Date): Job | null {
     attributionLabel: "Amazon Jobs",
     termsProfile: "public-api",
     description,
+    descriptionFormat: "text",
     sourceTags,
     employmentType: cleanText(raw.job_schedule_type)
-  });
-}
-
-function normalizeWorkdayJob(raw: WorkdayJob, site: WorkdaySite, query: string, fetchedAt: Date): Job | null {
-  const title = cleanText(raw.title);
-  const company = site.name;
-  const sourceJobUrl = buildWorkdayJobUrl(site.url, raw.externalPath);
-
-  if (!title || !company || !sourceJobUrl) {
-    return null;
-  }
-
-  const bulletFields = Array.isArray(raw.bulletFields) ? raw.bulletFields.map(cleanText).filter(Boolean) : [];
-  const location = getWorkdayLocation(raw, bulletFields);
-  const postedAt = parseWorkdayPostedOn(raw.postedOn, fetchedAt) ?? fetchedAt.toISOString();
-  const staleAfter = addDays(fetchedAt, staleDays).toISOString();
-
-  return toEndpointJob({
-    id: buildStableJobId("workday", site.name, title, sourceJobUrl),
-    title,
-    company,
-    location,
-    postedAt,
-    fetchedAt,
-    staleAfter,
-    source: "Workday",
-    sourceUrl: sourceJobUrl,
-    applyUrl: sourceJobUrl,
-    attributionLabel: `Workday / ${company}`,
-    termsProfile: "public-api",
-    description: bulletFields.join(" "),
-    sourceTags: bulletFields,
-    relevanceOnlyParts: [query]
   });
 }
 
@@ -425,6 +317,7 @@ function normalizeActivateJob(raw: ActivateJob, site: ActivateSite, query: strin
     attributionLabel: `Activate / ${site.name}`,
     termsProfile: "public-api",
     description,
+    descriptionFormat: "text",
     relevanceOnlyParts: [query]
   });
 }
@@ -466,36 +359,11 @@ function normalizeJibeJob(raw: JibeJob, site: JibeSite, query: string, fetchedAt
     attributionLabel: `Jibe / ${site.name}`,
     termsProfile: "public-api",
     description,
+    descriptionFormat: "text",
     sourceTags,
     relevanceOnlyParts: [query],
     employmentType: cleanText(data.employment_type)
   });
-}
-
-function parseWorkdayPostedOn(value: string | undefined, fetchedAt: Date) {
-  const text = normalizeSearchText(value ?? "");
-
-  if (!text) {
-    return undefined;
-  }
-
-  if (containsAlias(text, "today") || containsAlias(text, "yesterday") || containsAlias(text, "just posted")) {
-    return containsAlias(text, "yesterday")
-      ? addDays(fetchedAt, -1).toISOString()
-      : fetchedAt.toISOString();
-  }
-
-  const match = text.match(/posted\s+(\d+)\+?\s+(day|week|month)s?\s+ago/);
-
-  if (!match) {
-    return undefined;
-  }
-
-  const amount = Number(match[1]);
-  const unit = match[2];
-  const days = unit === "month" ? amount * 30 : unit === "week" ? amount * 7 : amount;
-
-  return addDays(fetchedAt, -days).toISOString();
 }
 
 function buildAmazonSearchUrl(baseUrl: string, query: string) {
@@ -528,218 +396,6 @@ function buildAmazonJobUrl(jobPath: string | undefined) {
     return undefined;
   }
 }
-
-function getWorkdaySites(defaultUrl: string) {
-  const configured = process.env.JOB_WORKDAY_SITES;
-
-  if (!configured) {
-    return defaultWorkdaySites.map((site) => ({
-      ...site,
-      url: site.url || defaultUrl
-    }));
-  }
-
-  return configured
-    .split(";;")
-    .map((entry) => entry.trim())
-    .filter(Boolean)
-    .map((entry) => {
-      const [name, url, queries] = entry.split("|");
-
-      if (!name || !url || !queries) {
-        throw new Error(`Invalid JOB_WORKDAY_SITES entry: ${entry}`);
-      }
-
-      return {
-        name: cleanText(name),
-        url: cleanText(url),
-        queries: queries.split(";").map(cleanText).filter(Boolean)
-      };
-    });
-}
-
-function buildWorkdayJobUrl(siteUrl: string, externalPath: string | undefined) {
-  if (!externalPath) {
-    return undefined;
-  }
-
-  try {
-    const url = new URL(siteUrl);
-    const [, sitePath] = url.pathname.match(/\/wday\/cxs\/[^/]+\/([^/]+)\/jobs/) ?? [];
-    const visibleSitePath = sitePath ? `/${sitePath}` : "";
-    return new URL(`${visibleSitePath}${externalPath}`, url.origin).toString();
-  } catch {
-    return undefined;
-  }
-}
-
-function getWorkdayLocation(raw: WorkdayJob, bulletFields: string[]) {
-  const reportedLocation =
-    cleanText(raw.locationsText) ||
-    bulletFields.find((field) => !/^[A-Z0-9-]+$/.test(field)) ||
-    "";
-
-  if (reportedLocation && !isWorkdayLocationCount(reportedLocation)) {
-    return reportedLocation;
-  }
-
-  return parseWorkdayLocationFromExternalPath(raw.externalPath) || reportedLocation;
-}
-
-function isWorkdayLocationCount(value: string) {
-  return /^\d+ locations$/i.test(value);
-}
-
-function parseWorkdayLocationFromExternalPath(externalPath: string | undefined) {
-  if (!externalPath) {
-    return "";
-  }
-
-  const segments = decodeURIComponent(externalPath)
-    .split("/")
-    .map(cleanText)
-    .filter(Boolean);
-  const jobSegmentIndex = segments.findIndex(
-    (segment) => segment.toLowerCase() === "job"
-  );
-  const locationSlug = jobSegmentIndex >= 0 ? segments[jobSegmentIndex + 1] : "";
-
-  if (!locationSlug) {
-    return "";
-  }
-
-  return formatWorkdayLocationSlug(locationSlug);
-}
-
-function formatWorkdayLocationSlug(slug: string) {
-  const parts = slug
-    .replace(/_/g, "-")
-    .split("-")
-    .map(cleanText)
-    .filter(Boolean);
-
-  if (parts.length === 0) {
-    return "";
-  }
-
-  const locationParts = dropLeadingCountryCode(parts);
-  const firstState = getStateCode(locationParts[0]);
-
-  if (firstState && locationParts.length > 1) {
-    return `${toTitleCase(locationParts.slice(1).join(" "))}, ${firstState}`;
-  }
-
-  const trailingState = getTrailingStateCode(locationParts);
-
-  if (trailingState && locationParts.length > trailingState.partCount) {
-    return `${toTitleCase(locationParts.slice(0, -trailingState.partCount).join(" "))}, ${
-      trailingState.code
-    }`;
-  }
-
-  return toTitleCase(locationParts.join(" "));
-}
-
-function dropLeadingCountryCode(parts: string[]) {
-  const [first, ...rest] = parts;
-  return first && /^(us|usa)$/i.test(first) && rest.length > 0 ? rest : parts;
-}
-
-function getStateCode(value: string | undefined) {
-  if (!value) {
-    return undefined;
-  }
-
-  const normalized = value.toLowerCase();
-  const stateCode = stateNameToCode[normalized];
-
-  if (stateCode) {
-    return stateCode;
-  }
-
-  return /^[a-z]{2}$/i.test(value) ? value.toUpperCase() : undefined;
-}
-
-function getTrailingStateCode(parts: string[]) {
-  for (const partCount of [3, 2, 1]) {
-    const stateName = parts.slice(-partCount).join(" ").toLowerCase();
-    const code = stateNameToCode[stateName];
-
-    if (code) {
-      return { code, partCount };
-    }
-
-    if (partCount === 1) {
-      const stateCode = getStateCode(parts[parts.length - 1]);
-
-      if (stateCode) {
-        return { code: stateCode, partCount };
-      }
-    }
-  }
-
-  return undefined;
-}
-
-function toTitleCase(value: string) {
-  return value
-    .toLowerCase()
-    .replace(/\b[a-z]/g, (letter) => letter.toUpperCase());
-}
-
-const stateNameToCode: Record<string, string> = {
-  alabama: "AL",
-  alaska: "AK",
-  arizona: "AZ",
-  arkansas: "AR",
-  california: "CA",
-  colorado: "CO",
-  connecticut: "CT",
-  delaware: "DE",
-  "district of columbia": "DC",
-  florida: "FL",
-  georgia: "GA",
-  hawaii: "HI",
-  idaho: "ID",
-  illinois: "IL",
-  indiana: "IN",
-  iowa: "IA",
-  kansas: "KS",
-  kentucky: "KY",
-  louisiana: "LA",
-  maine: "ME",
-  maryland: "MD",
-  massachusetts: "MA",
-  michigan: "MI",
-  minnesota: "MN",
-  mississippi: "MS",
-  missouri: "MO",
-  montana: "MT",
-  nebraska: "NE",
-  nevada: "NV",
-  "new hampshire": "NH",
-  "new jersey": "NJ",
-  "new mexico": "NM",
-  "new york": "NY",
-  "north carolina": "NC",
-  "north dakota": "ND",
-  ohio: "OH",
-  oklahoma: "OK",
-  oregon: "OR",
-  pennsylvania: "PA",
-  "rhode island": "RI",
-  "south carolina": "SC",
-  "south dakota": "SD",
-  tennessee: "TN",
-  texas: "TX",
-  utah: "UT",
-  vermont: "VT",
-  virginia: "VA",
-  washington: "WA",
-  "west virginia": "WV",
-  wisconsin: "WI",
-  wyoming: "WY"
-};
 
 function getActivateSites(defaultUrl: string) {
   const configured = process.env.JOB_ACTIVATE_SITES;
@@ -860,15 +516,6 @@ function isAmazonJob(value: unknown): value is AmazonJob {
 
   const candidate = value as AmazonJob;
   return Boolean(candidate.id && candidate.title && candidate.job_path);
-}
-
-function isWorkdayJob(value: unknown): value is WorkdayJob {
-  if (!value || typeof value !== "object") {
-    return false;
-  }
-
-  const candidate = value as WorkdayJob;
-  return Boolean(candidate.title && candidate.externalPath);
 }
 
 function isActivateJob(value: unknown): value is ActivateJob {

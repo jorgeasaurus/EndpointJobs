@@ -14,6 +14,7 @@ import {
   normalizeSalary,
   normalizeSearchText,
   parseDateLike,
+  stripHtml,
   summarize,
   toEndpointJob
 } from "../shared";
@@ -310,8 +311,8 @@ function normalizeRapidApiLinkedInJob(
     return null;
   }
 
-  const description = cleanText(
-    firstFieldText(raw, rapidApiLinkedInFields.description)
+  const description = stripHtml(
+    firstFieldText(raw, rapidApiLinkedInFields.description) ?? ""
   );
   const location = cleanText(
     firstFieldText(raw, rapidApiLinkedInFields.location)
@@ -339,6 +340,7 @@ function normalizeRapidApiLinkedInJob(
     attributionLabel: "LinkedIn Job Search via RapidAPI",
     termsProfile: "partner-terms",
     description,
+    descriptionFormat: "text",
     sourceTags,
     relevanceOnlyParts: [titleFilter],
     haystackParts: [workplaceType],

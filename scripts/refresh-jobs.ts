@@ -17,6 +17,8 @@ import { techmapRssProvider } from "./job-refresh/providers/techmap-rss";
 import { theirStackProvider } from "./job-refresh/providers/theirstack";
 import { fourdayweekProvider } from "./job-refresh/providers/fourdayweek";
 import { himalayasProvider } from "./job-refresh/providers/himalayas";
+import { oracleHcmProvider, OracleHcmIncompleteSnapshotError } from "./job-refresh/providers/oracle-hcm";
+import { WorkdayIncompleteSnapshotError } from "./job-refresh/providers/workday";
 import { usaJobsProvider } from "./job-refresh/providers/usajobs";
 import { resolveJobMapLocation } from "./job-refresh/map-location";
 import {
@@ -162,6 +164,7 @@ const providerAdapters = [
   smartRecruitersProvider,
   recruiteeProvider,
   usaJobsProvider,
+  oracleHcmProvider,
   aiDevBoardProvider,
   himalayasProvider,
   fourdayweekProvider
@@ -179,6 +182,7 @@ const defaultProviders: SupportedProvider[] = [
   "ashby",
   "amazon",
   "workday",
+  "oraclehcm",
   "jibe",
   "activate",
   "smartrecruiters",
@@ -255,6 +259,7 @@ async function fetchConfiguredProviderJobs(
 
       console.log(`Fetched ${providerJobs.length} raw jobs from ${adapter.displayName}`);
     } catch (error) {
+      if (error instanceof WorkdayIncompleteSnapshotError || error instanceof OracleHcmIncompleteSnapshotError) throw error;
       console.warn(`Skipping ${provider}: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
@@ -278,7 +283,7 @@ function getConfiguredSourceUrl(provider: SupportedProvider, allowLegacyUrl: boo
     return providerOverride;
   }
 
-  if (allowLegacyUrl && provider !== "workday" && process.env.JOB_API_URL) {
+  if (allowLegacyUrl && provider === "remoteok" && process.env.JOB_API_URL) {
     return process.env.JOB_API_URL;
   }
 

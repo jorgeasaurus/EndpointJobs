@@ -1,5 +1,6 @@
 import {
   getUsStateSuffix,
+  isUsStateOnlyQualifier,
   isAmbiguousPanamaCity,
   isJamaicaUsNeighborhood,
   isNewMexicoUsLocation
@@ -102,6 +103,12 @@ const locationCoordinates: Coordinate[] = [
     keys: ["denver", "westminster", "fort collins", "jacks cabin gunnison"]
   },
   {
+    label: "Irving, TX",
+    latitude: 32.814,
+    longitude: -96.9489,
+    keys: ["irving tx", "irving texas"]
+  },
+  {
     label: "Dallas, TX",
     latitude: 32.7767,
     longitude: -96.797,
@@ -132,6 +139,12 @@ const locationCoordinates: Coordinate[] = [
     keys: ["lafayette parish"]
   },
   { label: "Tampa, FL", latitude: 27.9506, longitude: -82.4572, keys: ["tampa"] },
+  {
+    label: "Jacksonville, FL",
+    latitude: 30.3322,
+    longitude: -81.6557,
+    keys: ["jacksonville fl", "jacksonville florida"]
+  },
   { label: "Miami, FL", latitude: 25.7617, longitude: -80.1918, keys: ["miami"] },
   {
     label: "Huntsville, AL",
@@ -636,6 +649,28 @@ export function hasGermanLocationEvidence(
 }
 
 export function resolveJobMapLocation(location: string): JobMapLocation | undefined {
+  const normalizedLocation = normalizeLocation(location);
+  const parts = location.split(";");
+
+  for (let index = 0; index < parts.length; index++) {
+    const part = parts[index];
+    const next = normalizeLocation(parts[index + 1] ?? "");
+    const stateQualifier = isUsStateOnlyQualifier(next) ? next : "";
+    const collisionContext = stateQualifier
+      ? `${normalizeLocation(part)} ${stateQualifier}`
+      : normalizeLocation(part);
+    const resolved = resolveSingleJobMapLocation(part, normalizedLocation, collisionContext, Boolean(stateQualifier));
+    if (resolved) return resolved;
+  }
+  return undefined;
+}
+
+function resolveSingleJobMapLocation(
+  location: string,
+  normalizedFullLocation = normalizeLocation(location),
+  normalizedCollisionContext = normalizeLocation(location),
+  hasAdjacentUsState = false
+): JobMapLocation | undefined {
   const normalized = normalizeLocation(location);
 
   if (!normalized || /^\d+ locations$/.test(normalized)) {
@@ -647,15 +682,28 @@ export function resolveJobMapLocation(location: string): JobMapLocation | undefi
   }
 
   const coordinate = searchableLocationCoordinates.find((candidate) =>
-    !isInternationalCityWithExplicitUsState(candidate.label, normalized) &&
-    candidate.normalizedKeys.some((key) => containsNormalizedLocationKey(normalized, key))
+    !isInternationalCityWithExplicitUsState(candidate.label, normalizedCollisionContext, normalizedFullLocation, hasAdjacentUsState) &&
+    candidate.normalizedKeys.some((key) =>
+      containsNormalizedLocationKey(normalized, key)
+      || (containsNormalizedLocationKey(normalizedFullLocation, key)
+        && containsNormalizedLocationKey(key, normalized))
+    )
   );
 
   return coordinate ? toMapLocation(coordinate) : undefined;
 }
 
-function isInternationalCityWithExplicitUsState(label: string, normalizedLocation: string) {
-  if (label === "San Jose, CA" && hasCostaRicaContext(normalizedLocation)) {
+function isInternationalCityWithExplicitUsState(
+  label: string,
+  normalizedLocation: string,
+  normalizedFullLocation = normalizedLocation,
+  hasAdjacentUsState = false
+) {
+  if (
+    label === "San Jose, CA" &&
+    hasCostaRicaContext(normalizedFullLocation) &&
+    !hasCaliforniaContext(normalizedLocation)
+  ) {
     return true;
   }
 
@@ -681,7 +729,8 @@ function isInternationalCityWithExplicitUsState(label: string, normalizedLocatio
   const state = getUsStateSuffix(normalizedLocation);
   // German cities may use DE as a country code; other guarded labels retain
   // the full US-state collision check, including Delaware.
-  return state !== undefined && !(state === "de" && label.endsWith(", Germany"));
+  return (state !== undefined || hasAdjacentUsState)
+    && !(state === "de" && label.endsWith(", Germany"));
 }
 
 const usStateGuardedInternationalCountries = [
@@ -726,6 +775,13 @@ function hasCostaRicaContext(normalizedLocation: string) {
   return (
     containsNormalizedLocationKey(normalizedLocation, "costa rica") ||
     containsNormalizedLocationKey(normalizedLocation, "san jose cr")
+  );
+}
+
+function hasCaliforniaContext(normalizedLocation: string) {
+  return (
+    getUsStateSuffix(normalizedLocation) === "ca" ||
+    containsNormalizedLocationKey(normalizedLocation, "california")
   );
 }
 

@@ -866,3 +866,66 @@ Thermonuclear loop: successive review batches fixed request budgeting, long/conf
 - [ ] Resolve all findings and confirm a fresh clean review on the latest head.
 
 Latest verification: 288 tests, 71 data audits, scoped lint, typecheck, and diff checks pass.
+
+# LinkedIn company-source expansion
+
+- [x] Inspect the open past-24-hours LinkedIn results and identify missing employers.
+- [x] Verify direct employer sources and add supported recurring coverage.
+- [x] Merge verified relevant listings into the feed and run focused validation.
+
+## Review
+
+Reviewed 75 LinkedIn results and added 14 recurring sources: Archer, DRW, Obsidian Security, Later, Snorkel AI, Applied Intuition, Radiant Industries, SC Johnson, U.S. Bank, IFF, Greenberg Traurig, Morgan Stanley, Tempus AI, and Florida Blue. The original batch verified 9 jobs from 8 employers. A live branch refresh now contains 1,031 active jobs, including 3 direct Workday listings from SC Johnson and IFF; Oracle HCM completed with no active endpoint matches.
+
+Corrected ATS workplace metadata, original publication dates, and Workday expiry handling; added Oracle HCM support and narrow endpoint relevance rules. Tests, data audit, typecheck, lint, production build, and local rendered listings verified before rebasing. Against refreshed main: 128 tests, data audit, typecheck, lint, and production build pass; version bumped to 0.1.15 for the PR.
+
+# PR 53 Copilot review loop
+
+- [x] Capture review state for dbdcfb0 (one completed review, six unresolved threads).
+- [x] Fix actionable review feedback and verify regressions.
+- [x] Push fixes, resolve handled threads, and request a fresh review of the final commit.
+
+## Review
+
+Fixed Workday detail failure/timeout handling and explicit overrides, workplace metadata, Oracle canonicalization/configuration/description normalization, source documentation, and provider wiring. All 145 tests, data audit, typecheck, lint, and production build pass; the refresh integration test proves detail outages cannot replace the existing feed. Final acceptance requires a fresh Copilot review on the pushed commit with no actionable comments.
+
+Second review: fixed seven valid summary findings covering entity decoding, Oracle deadline/link handling, Jacksonville coordinates, singular trading titles, and feed source ordering. Declined the Snorkel macOS suggestion: cached and live employer text contains no macOS reference; Jamf/Apple Business Manager alone does not establish the platform. All 153 tests, data audit, typecheck, lint, and build pass before requesting another review.
+
+Third review: normalized Oracle API bases, skipped closed Oracle details, failed closed on detail-enabled Workday search outages, and stabilized IDs for the four new Workday listings. Corrected mapped totals; the repeated unsupported Snorkel claim is explained and left open. Validation: 166 tests, data audit, typecheck, lint, and production build pass; final review gate remains pending.
+
+Fourth review: bounded Workday searches to 15 seconds, normalized trailing slashes in detail URLs, restored IFF salary extraction for Hangul filler separators, and documented SchoolJobs defaults. All 172 tests, data audit, typecheck, lint, and production build pass; request another latest-head review.
+
+Fifth review: wrap malformed Workday detail normalization as an incomplete snapshot and inherit detail defaults across trailing-slash overrides. The CLI malformed-payload regression fails before the fix and passes afterward; all 177 tests, data audit, typecheck, and lint pass. Prior production build remains applicable to these ingestion-only changes.
+
+Sixth review: reject malformed Workday/Oracle search entries, validate Workday closing dates, enforce a shared 120-second Workday deadline, and audit all 14 new source defaults. Declined the Oracle 41901 Windows claim: stored/live text has no Windows reference and current normalized metadata matches. All 192 tests, data audit, typecheck, and lint pass; prior production build remains applicable.
+
+Seventh review: distinguish closed Oracle details from malformed empty success, reject invalid Oracle closing dates and Workday location arrays, and preserve literal placeholders across HTML/text normalization. Repeated Snorkel/Oracle platform claims remain unsupported by source evidence. All 202 tests, data audit, typecheck, lint, and production build pass.
+
+Eighth review: validate remaining Workday/Oracle payload types and Oracle counts/pages, reject exact-boundary Workday expiry, and honor primary location order with Irving coordinates. Corrected U.S. Bank and backfilled one Irving record; the checked-in feed now contains 895 active and 493 mapped listings. All 242 tests, data audit, typecheck, lint, and production build pass.
+
+Latest review: scope the shared Workday deadline to each detail-enabled employer so the legacy crawl cannot exhaust it before direct sources run, and wrap the final post-batch deadline check as an incomplete snapshot. Regressions cover both boundaries.
+
+Follow-up review: reject empty normalized Workday site overrides as incomplete snapshots and correct the per-site deadline documentation.
+
+Next review: apply adjacent state-only qualifiers to the current map segment's collision guard; split Valencia/CA, Santiago/CA, Lima/OH, and Bogota/NJ now reject international coordinates while independent later cities remain selectable.
+
+Latest review: recognize full US state names and country/ZIP suffixes in adjacent qualifiers, and reject hyphenated trading-system titles without endpoint duties.
+
+## Review 16 plan
+
+- [x] Merge current `main` and preserve its refreshed feed.
+- [x] Fix Oracle fallback, Workday flag parsing, and segmented location resolution with regressions.
+- [x] Regenerate affected feed metadata.
+- [x] Run the full verification suite, push fixes, and resolve the remaining review thread.
+
+Review 16: merged the latest refreshed `main` feed, restricted the legacy URL fallback to Remote OK, validated Workday detail flags case-insensitively, and scoped multi-location collision checks to the current segment while preserving `San Jose; Costa Rica`. Backfilled three newly resolvable map points. Validation: 434 tests, 71 data audits, lint, typecheck, production build, and diff checks pass.
+# PR #53 thermonuclear review
+
+- [x] Extract Workday refresh logic from the mixed provider module.
+- [x] Keep map collision guards scoped to each location segment.
+- [x] Run focused and full verification.
+- [x] Repeat strict review until no findings remain.
+
+## Review
+
+Moved Workday fetching, validation, normalization, and errors into its own provider module; `company-ats.ts` fell from 1,067 to 538 lines. Location resolution now uses each segment for state collisions while retaining bounded full-location context for labels such as San José, Costa Rica. Three strict review rounds plus an integration-validation pass completed; 434 tests, 71 data audits, lint, typecheck, production build, and diff checks pass.

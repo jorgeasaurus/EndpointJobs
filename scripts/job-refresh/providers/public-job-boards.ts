@@ -378,6 +378,7 @@ function normalizeRemoteOkJob(raw: RemoteOkJob, fetchedAt: Date): Job | null {
     attributionLabel: "Remote OK",
     termsProfile: "attribution-required",
     description,
+    descriptionFormat: "text",
     sourceTags: tags,
     employmentType: inferEmploymentType(haystack),
     ...(salary ? { salary } : {})
@@ -415,6 +416,7 @@ function normalizeRemotiveJob(raw: RemotiveJob, fetchedAt: Date): Job | null {
     attributionLabel: "Remotive",
     termsProfile: "attribution-required",
     description,
+    descriptionFormat: "text",
     sourceTags,
     haystackParts: [raw.salary],
     employmentType: normalizeRemotiveJobType(raw.job_type),
@@ -454,6 +456,7 @@ function normalizeArbeitnowJob(raw: ArbeitnowJob, fetchedAt: Date): Job | null {
     attributionLabel: "Arbeitnow",
     termsProfile: "attribution-required",
     description,
+    descriptionFormat: "text",
     sourceTags: [...tags, ...jobTypes],
   });
 }
@@ -490,6 +493,7 @@ function normalizeJobicyJob(raw: JobicyJob, fetchedAt: Date): Job | null {
     attributionLabel: "Jobicy",
     termsProfile: "attribution-required",
     description,
+    descriptionFormat: "text",
     sourceTags: [...industry, ...jobType],
     haystackParts: [raw.jobLevel],
     employmentType: jobType[0]
@@ -536,6 +540,7 @@ function normalizeMuseJob(raw: MuseJob, fetchedAt: Date): Job | null {
     attributionLabel: "The Muse",
     termsProfile: "public-api",
     description,
+    descriptionFormat: "text",
     sourceTags,
     employmentType: cleanText(raw.type)
   });
@@ -575,6 +580,7 @@ function normalizeAdzunaJob(raw: AdzunaJob, fetchedAt: Date): Job | null {
     attributionLabel: "Adzuna",
     termsProfile: "attribution-required",
     description,
+    descriptionFormat: "text",
     sourceTags,
     employmentType: cleanText(raw.contract_type ?? raw.contract_time),
     ...(salary ? { salary } : {})
