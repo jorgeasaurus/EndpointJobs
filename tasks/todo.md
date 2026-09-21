@@ -861,6 +861,7 @@ Thermonuclear loop: successive review batches fixed request budgeting, long/conf
 - [x] Include bounded preceding context in JEV sponsorship evidence.
 - [x] Preserve hidden full descriptions through provider object spreads without serialization.
 - [x] Reserve bounded adjacent context around long JEV signal windows.
+- [x] Recognize `now nor in the future` refusals and backfill the affected listing.
 - [ ] Resolve all findings and confirm a fresh clean review on the latest head.
 
-Latest verification: 281 tests, 71 data audits, scoped lint, typecheck, and diff checks pass.
+Latest verification: 282 tests, 71 data audits, scoped lint, typecheck, and diff checks pass.

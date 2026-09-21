@@ -14,6 +14,7 @@ const refusals = [
   ["Philips", "The company will not consider candidates who require sponsorship for a work-authorized visa, now or in the future."],
   ["PNC", "PNC will not provide sponsorship for employment visas or participate in STEM OPT for this position."],
   ["MBTA", "The MBTA does not have an employer work sponsorship program."],
+  ["Colorado School of Mines", "Visa sponsorship is not available for this position now nor in the future."],
   ["HelloKindred", "Candidates must be legally authorized to live and work in the country where the position is based, without requiring employer sponsorship."]
 ] as const;
 
