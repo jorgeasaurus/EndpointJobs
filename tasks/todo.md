@@ -903,6 +903,8 @@ Seventh review: distinguish closed Oracle details from malformed empty success, 
 
 Eighth review: validate remaining Workday/Oracle payload types and Oracle counts/pages, reject exact-boundary Workday expiry, and honor primary location order with Irving coordinates. Corrected U.S. Bank and backfilled one Irving record; the checked-in feed now contains 895 active and 493 mapped listings. All 242 tests, data audit, typecheck, lint, and production build pass.
 
+Latest review: scope the shared Workday deadline to each detail-enabled employer so the legacy crawl cannot exhaust it before direct sources run. The workflow failure reproduced the bug; the regression covers a slow legacy site followed by a direct employer.
+
 ## Review 16 plan
 
 - [x] Merge current `main` and preserve its refreshed feed.

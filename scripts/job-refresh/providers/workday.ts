@@ -72,13 +72,11 @@ async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
   } catch (error) {
     throw new WorkdayIncompleteSnapshotError("configuration", "parsing", error);
   }
-  const deadline = sites.some((site) => site.fetchDetails)
-    ? Date.now() + 120_000
-    : undefined;
   const jobs: Array<Job | null> = [];
   let completedQueries = 0;
 
   for (const site of sites) {
+    const deadline = site.fetchDetails ? Date.now() + 120_000 : undefined;
     const seenPaths = new Set<string>();
     for (const query of site.queries) {
       let payload: WorkdayJob[];

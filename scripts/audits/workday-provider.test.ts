@@ -589,6 +589,37 @@ test("Workday shares one deadline across searches and details and caps the final
   assert.deepEqual(timeouts, [15_000, 15_000, 15_000, 15_000, 15_000, 15_000, 15_000, 15_000, 8_000]);
 });
 
+test("Workday starts the detail deadline after legacy sites finish", async (t) => {
+  const originalSites = process.env.JOB_WORKDAY_SITES;
+  process.env.JOB_WORKDAY_SITES = "Legacy|https://legacy.example/wday/cxs/legacy/Careers/jobs|Endpoint|false;;Direct|https://direct.example/wday/cxs/direct/Careers/jobs|Endpoint|true";
+  t.after(() => {
+    if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+    else process.env.JOB_WORKDAY_SITES = originalSites;
+  });
+  let elapsed = 0;
+  t.mock.method(Date, "now", () => elapsed);
+  t.mock.method(AbortSignal, "timeout", () => new AbortController().signal);
+  t.mock.method(globalThis, "fetch", async (input: unknown, init?: RequestInit) => {
+    if (init?.method === "POST") {
+      if (String(input).includes("legacy.example")) {
+        elapsed += 119_000;
+        return Response.json({ jobPostings: [detailPosting] });
+      }
+      elapsed += 1_000;
+      return workdaySearchResponse([detailPosting]);
+    }
+    elapsed += 1_000;
+    return Response.json({ jobPostingInfo: validDetail });
+  });
+
+  const jobs = await workdayProvider.fetchJobs({
+    url: workdayProvider.defaultUrl,
+    fetchedAt: new Date("2026-09-12T12:00:00Z"),
+  });
+
+  assert.equal(jobs.filter(Boolean).length, 2);
+});
+
 test("Workday paginates detail-enabled searches through the reported total", async (t) => {
   const originalEnv = { ...process.env };
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
