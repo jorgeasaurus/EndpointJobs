@@ -18,6 +18,9 @@ for (const description of [
   "Visa sponsorship is available. Unavailable for this job.",
   "Visa sponsorship is available. Eligibility is limited to internal transfers.",
   "Visa sponsorship is available. For qualified candidates.",
+  "Visa sponsorship is available. While we cannot sponsor every candidate.",
+  "Visa sponsorship is available. Although we cannot sponsor every candidate.",
+  "Visa sponsorship is available. Internal transfers only.",
   "No visa sponsorship. Except for internal transfers.",
   "No visa sponsorship.\n\nUnless the candidate already holds an H-1B visa.",
   "Is this role eligible for visa sponsorship? Yes. Only for internal transfers."
@@ -38,7 +41,10 @@ for (const description of [
 
 for (const description of [
   "For internal transfers only. Visa sponsorship is available.",
-  "For internal transfers only.\n\nVisa sponsorship is available."
+  "For internal transfers only.\n\nVisa sponsorship is available.",
+  "While we cannot sponsor every candidate. Visa sponsorship is available.",
+  "Although we cannot sponsor every candidate. Visa sponsorship is available.",
+  "Internal transfers only. Visa sponsorship is available."
 ]) {
   test(`preceding qualification remains unknown: ${description}`, async () => {
     assert.deepEqual(classifyVisaSponsorship(description, sourceUrl), { status: "not-stated" });

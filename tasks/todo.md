@@ -862,6 +862,7 @@ Thermonuclear loop: successive review batches fixed request budgeting, long/conf
 - [x] Preserve hidden full descriptions through provider object spreads without serialization.
 - [x] Reserve bounded adjacent context around long JEV signal windows.
 - [x] Recognize `now nor in the future` refusals and backfill the affected listing.
+- [x] Guard detached `while`/`although` and noun-first `only` restrictions in both directions.
 - [ ] Resolve all findings and confirm a fresh clean review on the latest head.
 
-Latest verification: 282 tests, 71 data audits, scoped lint, typecheck, and diff checks pass.
+Latest verification: 288 tests, 71 data audits, scoped lint, typecheck, and diff checks pass.
