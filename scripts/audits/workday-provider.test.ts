@@ -350,6 +350,49 @@ test("Workday detail overrides reject invalid boolean flags", async (t) => {
   );
 });
 
+test("Workday rejects configured sites without normalized queries", async (t) => {
+  const originalSites = process.env.JOB_WORKDAY_SITES;
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs| ; |true";
+  t.after(() => {
+    if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+    else process.env.JOB_WORKDAY_SITES = originalSites;
+  });
+
+  await assert.rejects(
+    workdayProvider.fetchJobs({
+      url: workdayProvider.defaultUrl,
+      fetchedAt: new Date("2026-09-12T12:00:00Z"),
+    }),
+    (error) => error instanceof WorkdayIncompleteSnapshotError
+      && error.cause instanceof Error
+      && /Invalid JOB_WORKDAY_SITES entry/.test(error.cause.message),
+  );
+});
+
+test("Workday page limits use strict positive integer configuration", async (t) => {
+  const originalEnv = { ...process.env };
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
+  t.after(() => {
+    process.env = originalEnv;
+  });
+  const seenLimits: number[] = [];
+  t.mock.method(globalThis, "fetch", async (_input: unknown, init?: RequestInit) => {
+    if (init?.method !== "POST") throw new Error("Detail fetch should not run");
+    seenLimits.push((JSON.parse(String(init.body)) as { limit: number }).limit);
+    return Response.json({ jobPostings: [], total: 0 });
+  });
+
+  for (const configured of ["0.5", "1e2", "100", " 2 "]) {
+    process.env.JOB_WORKDAY_RESULTS_PER_QUERY = configured;
+    await workdayProvider.fetchJobs({
+      url: workdayProvider.defaultUrl,
+      fetchedAt: new Date("2026-09-12T12:00:00Z"),
+    });
+  }
+
+  assert.deepEqual(seenLimits, [10, 10, 100, 2]);
+});
+
 for (const fetchDetails of [true, false]) {
   test(`Workday ${fetchDetails ? "rejects" : "tolerates"} search failures for ${fetchDetails ? "detail-enabled" : "legacy search-only"} sites`, async (t) => {
       const originalSites = process.env.JOB_WORKDAY_SITES;

@@ -485,7 +485,7 @@ function normalizeGreenhouseJob(raw: GreenhouseJob, board: string, fetchedAt: Da
     (value) => value && !Number.isNaN(new Date(value).getTime())
   );
   const postedAt = publicationDate ? new Date(publicationDate).toISOString() : fetchedAt.toISOString();
-  const staleAfter = addDays(fetchedAt, staleDays).toISOString();
+  const staleAfter = addDays(new Date(postedAt), staleDays).toISOString();
 
   return toEndpointJob({
     id: `greenhouse-${board}-${raw.id}`,

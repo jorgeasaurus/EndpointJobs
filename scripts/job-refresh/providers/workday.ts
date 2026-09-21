@@ -8,6 +8,7 @@ import {
   cleanText,
   containsAlias,
   getJobStaleDays,
+  getPositiveInteger,
   inferWorkplace,
   normalizeEmploymentTypeLabel,
   normalizeSearchText,
@@ -185,13 +186,10 @@ async function fetchWorkdaySearch(
   requireValidEntries = false,
   deadline?: number,
 ) {
-  const configuredLimit = Number(
-    process.env.JOB_WORKDAY_RESULTS_PER_QUERY ?? 10,
+  const limit = getPositiveInteger(
+    process.env.JOB_WORKDAY_RESULTS_PER_QUERY,
+    10,
   );
-  const limit =
-    Number.isFinite(configuredLimit) && configuredLimit > 0
-      ? configuredLimit
-      : 10;
   const postings: WorkdayJob[] = [];
   let offset = 0;
   let reportedTotal: number | undefined;
@@ -507,25 +505,31 @@ function getWorkdaySites(defaultUrl: string): WorkdaySite[] {
     .filter(Boolean)
     .map((entry) => {
       const [name, url, queries, fetchDetails] = entry.split("|");
+      const normalizedName = cleanText(name);
+      const normalizedUrl = cleanText(url);
+      const normalizedQueries = queries
+        ?.split(";")
+        .map(cleanText)
+        .filter(Boolean) ?? [];
 
-      if (!name || !url || !queries) {
+      if (!normalizedName || !normalizedUrl || normalizedQueries.length === 0) {
         throw new Error(`Invalid JOB_WORKDAY_SITES entry: ${entry}`);
       }
 
       return {
-        name: cleanText(name),
-        url: cleanText(url),
+        name: normalizedName,
+        url: normalizedUrl,
         fetchDetails:
           fetchDetails === undefined
             ? defaultWorkdaySites.some(
                 (site) =>
                   site.url.replace(/\/+$/, "") ===
-                    cleanText(url).replace(/\/+$/, "") &&
+                    normalizedUrl.replace(/\/+$/, "") &&
                   "fetchDetails" in site &&
                   site.fetchDetails,
               )
             : parseWorkdayFetchDetails(fetchDetails, entry),
-        queries: queries.split(";").map(cleanText).filter(Boolean),
+        queries: normalizedQueries,
       };
     });
 }

@@ -92,7 +92,7 @@ test("Greenhouse distinguishes Exchange topology from hybrid work arrangements",
   }
 });
 
-test("Greenhouse preserves original publication dates and falls back for unavailable or invalid dates", async (t) => {
+test("Greenhouse anchors freshness to original publication dates and falls back for unavailable or invalid dates", async (t) => {
   t.mock.method(globalThis, "fetch", async () => Response.json({ jobs: [
     { id: 1, first_published: "2026-06-03T09:50:05-04:00" },
     { id: 2 },
@@ -102,9 +102,13 @@ test("Greenhouse preserves original publication dates and falls back for unavail
     updated_at: "2026-09-11T20:37:10Z" })) }));
   const provider = atsBoardProviders.find((provider) => provider.id === "greenhouse")!;
   const jobs = (await provider.fetchJobs({ url: provider.defaultUrl, fetchedAt })).filter(Boolean);
-  assert.equal(jobs.find((job) => job!.sourceUrl.endsWith("/1"))!.postedAt, "2026-06-03T13:50:05.000Z");
+  const original = jobs.find((job) => job!.sourceUrl.endsWith("/1"))!;
+  assert.equal(original.postedAt, "2026-06-03T13:50:05.000Z");
+  assert.equal(original.staleAfter, "2026-07-18T13:50:05.000Z");
   for (const id of [2, 3]) {
-    assert.equal(jobs.find((job) => job!.sourceUrl.endsWith(`/${id}`))!.postedAt, "2026-09-11T20:37:10.000Z");
+    const job = jobs.find((job) => job!.sourceUrl.endsWith(`/${id}`))!;
+    assert.equal(job.postedAt, "2026-09-11T20:37:10.000Z");
+    assert.equal(job.staleAfter, "2026-10-26T20:37:10.000Z");
   }
 });
 
