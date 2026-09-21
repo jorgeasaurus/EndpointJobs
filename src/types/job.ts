@@ -1,3 +1,4 @@
+import type { VisaSponsorship } from "../lib/visa-sponsorship";
 import type {
   EndpointTool,
   Platform,
@@ -28,6 +29,7 @@ export type Job = {
   location: string;
   mapLocation?: JobMapLocation;
   workplace: Workplace;
+  visaSponsorship?: VisaSponsorship;
   postedAt: string;
   fetchedAt: string;
   staleAfter: string;

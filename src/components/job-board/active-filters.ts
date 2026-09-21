@@ -1,3 +1,4 @@
+import { sponsorshipLabels } from "@/lib/visa-sponsorship";
 import type {
   FilterAction,
   FilterState,
@@ -39,6 +40,12 @@ type ArrayFilterDescriptor<Item extends string> = {
 };
 
 const scalarFilterDescriptors: ScalarFilterDescriptor[] = [
+  {
+    id: "sponsorship",
+    isActive: (filters) => filters.sponsorship !== "Any",
+    getLabel: (filters) => `Visa: ${filters.sponsorship === "Any" ? "Any" : sponsorshipLabels[filters.sponsorship]}`,
+    getClearAction: () => ({ type: "setSponsorship", value: "Any" })
+  },
   {
     id: "query",
     isActive: (filters) => getQuery(filters).length > 0,

@@ -13,6 +13,7 @@ test("all filters roundtrip and preserve unrelated URL parameters", () => {
     selectedTools: [...toolOptions],
     selectedMetroAreas: [...metroAreaOptions],
     workplace: "Hybrid",
+    sponsorship: "Any",
     salaryOnly: true,
     leadershipOnly: true,
     minimumSalary: "120000",

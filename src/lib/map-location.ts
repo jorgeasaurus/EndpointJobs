@@ -649,7 +649,11 @@ export function hasGermanLocationEvidence(
 
 export function resolveJobMapLocation(location: string): JobMapLocation | undefined {
   for (const part of location.split(";")) {
-    const resolved = resolveSingleJobMapLocation(part, location);
+    const normalizedPart = normalizeLocation(part);
+    const context = normalizedPart.includes("san jose") && hasCostaRicaContext(normalizeLocation(location))
+      ? location
+      : part;
+    const resolved = resolveSingleJobMapLocation(part, context);
     if (resolved) return resolved;
   }
   return undefined;

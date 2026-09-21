@@ -36,6 +36,9 @@
             "$ref": "#/components/parameters/Workplace"
           },
           {
+            "$ref": "#/components/parameters/Sponsorship"
+          },
+          {
             "$ref": "#/components/parameters/SalaryShown"
           },
           {
@@ -325,6 +328,20 @@
           ]
         }
       },
+      "Sponsorship": {
+        "name": "sponsorship",
+        "in": "query",
+        "description": "Visa sponsorship stated in the listing. Missing information is not-stated; remote work does not imply sponsorship.",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "available",
+            "case-by-case",
+            "unavailable",
+            "not-stated"
+          ]
+        }
+      },
       "SalaryShown": {
         "name": "salary",
         "in": "query",
@@ -588,6 +605,7 @@
           "metroAreas",
           "location",
           "workplace",
+          "sponsorship",
           "salaryShown",
           "leadership",
           "minSalary",
@@ -731,6 +749,19 @@
               "Remote",
               "Hybrid",
               "On-site",
+              null
+            ]
+          },
+          "sponsorship": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "available",
+              "case-by-case",
+              "unavailable",
+              "not-stated",
               null
             ]
           },
@@ -939,6 +970,51 @@
           },
           "salary": {
             "$ref": "#/components/schemas/Salary"
+          },
+          "visaSponsorship": {
+            "type": "object",
+            "description": "Sponsorship statement extracted from the listing; absence means not stated.",
+            "oneOf": [
+              {
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "const": "not-stated"
+                  }
+                },
+                "additionalProperties": false
+              },
+              {
+                "required": [
+                  "status",
+                  "evidence",
+                  "sourceUrl"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "available",
+                      "case-by-case",
+                      "unavailable"
+                    ]
+                  },
+                  "evidence": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Supporting excerpt from the listing."
+                  },
+                  "sourceUrl": {
+                    "type": "string",
+                    "minLength": 1,
+                    "format": "uri"
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
           }
         }
       },

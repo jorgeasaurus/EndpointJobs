@@ -296,7 +296,7 @@ test("Workday detail overrides honor explicit false and inherit defaults only wh
     return Response.json({ jobPostingInfo: validDetail });
   };
   try {
-    for (const [override, expected] of [["|false", 0], ["", 1], ["|true", 2]] as const) {
+    for (const [override, expected] of [["|false", 0], ["", 1], ["|true", 2], ["|TRUE", 3]] as const) {
       process.env.JOB_WORKDAY_SITES = `${site.name}|${site.url}|Endpoint${override}`;
       const jobs: Array<Job | null> = await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
       assert.equal(jobs.filter(Boolean).length, 1);
@@ -307,6 +307,20 @@ test("Workday detail overrides honor explicit false and inherit defaults only wh
     if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
     else process.env.JOB_WORKDAY_SITES = originalSites;
   }
+});
+
+test("Workday detail overrides reject invalid boolean flags", async (t) => {
+  assert.ok(workdayProvider);
+  const originalSites = process.env.JOB_WORKDAY_SITES;
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|treu";
+  t.after(() => {
+    if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
+    else process.env.JOB_WORKDAY_SITES = originalSites;
+  });
+  await assert.rejects(
+    workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") }),
+    /Invalid JOB_WORKDAY_SITES fetchDetails flag/
+  );
 });
 
 for (const fetchDetails of [true, false]) {

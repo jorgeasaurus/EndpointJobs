@@ -109,6 +109,8 @@ RapidAPI Daily assumes the [Pro plan](https://rapidapi.com/techmap-io-techmap-io
 
 Use `JOB_EXCLUDED_SOURCE_URLS` as a comma-separated list for confirmed-dead source postings that an aggregator still returns.
 
+Set `TYPESAFE_API_KEY` to classify sponsorship statements that remain unresolved after exact-rule matching. The refresh uses TypeSafe's `jev-latest` model, accepts results at `0.8` confidence or higher, caps each run at 50 requests, and keeps failures as `not-stated`; override these with `JOB_JEV_MODEL`, `JOB_JEV_MIN_CONFIDENCE`, `JOB_JEV_CONCURRENCY`, `JOB_JEV_MAX_REQUESTS`, `JOB_JEV_TIMEOUT_MS`, and `JOB_JEV_MAX_RETRIES`. Run `npm run jobs:classify-sponsorship` to reclassify the stored feed.
+
 ## GitHub Action
 
 `.github/workflows/refresh-jobs.yml` runs daily at `11:17 UTC` and can also be run manually with `workflow_dispatch`.

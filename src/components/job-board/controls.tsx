@@ -1,3 +1,4 @@
+import { sponsorshipStatuses, sponsorshipLabels } from "@/lib/visa-sponsorship";
 import { useState, type RefObject } from "react";
 
 import {
@@ -45,6 +46,7 @@ import type {
   WorkplaceFilter
 } from "./filter-model";
 import {
+  toSponsorshipFilter,
   toFreshnessFilter,
   toMinimumSalaryFilter,
   toRoleFamilyFilter,
@@ -133,6 +135,7 @@ export function CommandPanel({
             dispatch={dispatch}
             selectedTools={filters.selectedTools}
             selectedMetroAreas={filters.selectedMetroAreas}
+            sponsorship={filters.sponsorship}
             minimumSalary={filters.minimumSalary}
             seniority={filters.seniority}
             sort={filters.sort}
@@ -435,12 +438,14 @@ function PlatformFilters({
 }
 
 function countAdvancedFilters({
+  sponsorship,
   minimumSalary,
   seniority,
   sort,
   selectedMetroAreas,
   selectedTools
 }: {
+  sponsorship: FilterState["sponsorship"];
   minimumSalary: MinimumSalaryFilter;
   seniority: SeniorityFilter;
   sort: SortKey;
@@ -449,6 +454,7 @@ function countAdvancedFilters({
 }) {
   let count = 0;
 
+  if (sponsorship !== "Any") count += 1;
   if (minimumSalary !== "Any") count += 1;
   if (seniority !== "All") count += 1;
   if (sort !== "newest") count += 1;
@@ -465,6 +471,7 @@ function AdvancedFilters({
   dispatch,
   selectedMetroAreas,
   selectedTools,
+  sponsorship,
   minimumSalary,
   seniority,
   sort
@@ -475,11 +482,13 @@ function AdvancedFilters({
   dispatch: FilterDispatch;
   selectedMetroAreas: MetroAreaFilter[];
   selectedTools: EndpointTool[];
+  sponsorship: FilterState["sponsorship"];
   minimumSalary: MinimumSalaryFilter;
   seniority: SeniorityFilter;
   sort: SortKey;
 }) {
   const advancedCount = countAdvancedFilters({
+    sponsorship,
     minimumSalary,
     seniority,
     sort,
@@ -511,6 +520,18 @@ function AdvancedFilters({
 
       <div className="advanced-filters-body">
         <div className="hero-filter-controls">
+          <label className="field">
+            <span>Visa sponsorship</span>
+            <select
+              value={sponsorship}
+              onChange={(event) => dispatch({ type: "setSponsorship", value: toSponsorshipFilter(event.currentTarget.value) })}
+            >
+              <option value="Any">Any</option>
+              {sponsorshipStatuses.map((status) => (
+                <option key={status} value={status}>{sponsorshipLabels[status]}</option>
+              ))}
+            </select>
+          </label>
           <label className="field">
             <span>Minimum salary</span>
             <select

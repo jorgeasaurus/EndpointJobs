@@ -4,6 +4,7 @@ import { loadBrowserAuditScenarios } from "./audit-user-stories-browser-fixtures
 import { auditJobMapBrowser } from "./audits/job-map-browser.mjs";
 import { auditJobComparisonBrowser } from "./audits/job-comparison-browser.mjs";
 import { auditMinimumSalaryBrowser } from "./audits/minimum-salary-browser.mjs";
+import { auditSponsorshipBrowser } from "./audits/sponsorship-browser.mjs";
 import { auditJobsApiBrowser } from "./audits/jobs-api-browser.mjs";
 
 const baseUrl = process.env.AUDIT_BASE_URL ?? "http://127.0.0.1:3002";
@@ -751,6 +752,8 @@ await auditMinimumSalaryBrowser({
 });
 
 await auditJobsApiBrowser({ baseUrl, browser, desktopViewport, newPage, run });
+
+await auditSponsorshipBrowser({ baseUrl, browser, desktopViewport, mobileViewport, newPage, run });
 
 await run("FEAT-034", "Mobile viewport has no document overflow", async () => {
   const page = await newPage(browser, { width: 390, height: 844 });

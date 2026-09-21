@@ -707,10 +707,17 @@ function getWorkdaySites(defaultUrl: string): WorkdaySite[] {
         url: cleanText(url),
         fetchDetails: fetchDetails === undefined
           ? defaultWorkdaySites.some((site) => site.url.replace(/\/+$/, "") === cleanText(url).replace(/\/+$/, "") && "fetchDetails" in site && site.fetchDetails)
-          : cleanText(fetchDetails) === "true",
+          : parseWorkdayFetchDetails(fetchDetails, entry),
         queries: queries.split(";").map(cleanText).filter(Boolean)
       };
     });
+}
+
+function parseWorkdayFetchDetails(value: string, entry: string) {
+  const normalized = cleanText(value).toLowerCase();
+  if (normalized === "true") return true;
+  if (normalized === "false") return false;
+  throw new Error(`Invalid JOB_WORKDAY_SITES fetchDetails flag in entry: ${entry}`);
 }
 
 function buildWorkdayJobUrl(siteUrl: string, externalPath: string | undefined) {
