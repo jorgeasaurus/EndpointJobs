@@ -65,7 +65,12 @@ export class WorkdayDetailError extends WorkdayIncompleteSnapshotError {
 }
 
 async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
-  const sites = getWorkdaySites(url);
+  let sites: WorkdaySite[];
+  try {
+    sites = getWorkdaySites(url);
+  } catch (error) {
+    throw new WorkdayIncompleteSnapshotError("configuration", "parsing", error);
+  }
   const deadline = sites.some((site) => site.fetchDetails)
     ? Date.now() + 120_000
     : undefined;
@@ -189,6 +194,7 @@ async function fetchWorkdaySearch(
       : 10;
   const postings: WorkdayJob[] = [];
   let offset = 0;
+  let reportedTotal: number | undefined;
 
   while (true) {
     const response = await fetch(url, {
@@ -254,10 +260,15 @@ async function fetchWorkdaySearch(
     );
 
     const total = (json as { total?: unknown }).total;
-    if (!requireValidEntries || total === undefined) return postings;
-    if (!Number.isInteger(total) || (total as number) < 0) {
+    if (!requireValidEntries) return postings;
+    if (
+      !Number.isSafeInteger(total) ||
+      (total as number) < offset + page.length ||
+      (reportedTotal !== undefined && total !== reportedTotal)
+    ) {
       throw new Error("Workday response included an invalid total");
     }
+    reportedTotal = total as number;
     if (offset + page.length >= (total as number)) return postings;
     if (page.length === 0) {
       throw new Error("Workday search ended before its reported total");
@@ -370,8 +381,13 @@ function normalizeWorkdayJob(
   const bulletFields = Array.isArray(raw.bulletFields)
     ? raw.bulletFields.map(cleanText).filter(Boolean)
     : [];
-  const location = detail?.location
-    ? [detail.location, ...(detail.additionalLocations ?? [])].join("; ")
+  const detailLocations = detail
+    ? [detail.location, ...(detail.additionalLocations ?? [])]
+        .map((value) => cleanText(value ?? ""))
+        .filter(Boolean)
+    : [];
+  const location = detailLocations.length > 0
+    ? detailLocations.join("; ")
     : getWorkdayLocation(raw, bulletFields);
   const detailDescription = detail?.jobDescription
     ? stripHtml(detail.jobDescription).trim()

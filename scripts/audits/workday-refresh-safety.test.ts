@@ -46,7 +46,7 @@ for (const { provider, detailStatus, searchFailure = false, searchTimeout = fals
           if (init?.method === "POST" && ${searchFailure}) return new Response(null, { status: 500 });
           if (init?.method === "POST") return Response.json({ jobPostings: [{
             title: "Endpoint Engineer", externalPath: "/job/Chicago/Endpoint_456"
-          }] });
+          }], total: 1 });
           if (${malformedDetail}) return Response.json({jobPostingInfo: {title: "Endpoint Engineer", startDate: new Date().toISOString().slice(0,10), location: "Chicago", additionalLocations: {unexpected: true}, jobDescription: "Manage Windows endpoints with Intune."}});
           return new Response(null, { status: ${detailStatus} });
         }
