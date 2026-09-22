@@ -929,3 +929,13 @@ Review 16: merged the latest refreshed `main` feed, restricted the legacy URL fa
 ## Review
 
 Moved Workday fetching, validation, normalization, and errors into its own provider module; `company-ats.ts` fell from 1,067 to 538 lines. Location resolution now uses each segment for state collisions while retaining bounded full-location context for labels such as San José, Costa Rica. Three strict review rounds plus an integration-validation pass completed; 434 tests, 71 data audits, lint, typecheck, production build, and diff checks pass.
+
+# Issue #54: missing location requests
+
+- [x] Add a discoverable, accessible GitHub request link below the location filter row with URL-encoded editable fields.
+- [x] Verify desktop/mobile layout, keyboard access, URL contents, lint, and typecheck.
+- [x] Review changes and create a PR closing #54.
+
+## Review
+
+Added an editable GitHub issue link below the location filter row with encoded location/context fields. Lint, typecheck, production build, and independent review pass; browser checks at 1280px, 390px, and 320px verify layout, focus, keyboard activation, and new-tab URL (GitHub response intercepted).

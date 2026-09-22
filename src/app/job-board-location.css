@@ -20,6 +20,30 @@
   backdrop-filter: none;
 }
 
+.location-request-link {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 6px 0;
+  color: var(--white-60);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.location-request-link:hover {
+  color: var(--lime);
+}
+
+.location-request-link:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 .workplace-filter-panel {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);

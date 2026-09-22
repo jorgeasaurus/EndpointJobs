@@ -27,7 +27,7 @@ import { AnimatedNumber } from "./animated-number";
 import type { ActiveFilterItem } from "./active-filters";
 import { JobSearch } from "./job-search";
 import { ToggleButton } from "./toggle-button";
-import { LocationFilters, WorkplaceFilters } from "./location-filters";
+import { LocationFilters, LocationRequestLink, WorkplaceFilters } from "./location-filters";
 import {
   freshnessFilterOptions,
   metroAreaOptions,
@@ -119,6 +119,7 @@ export function CommandPanel({
               locationQuery={filters.locationQuery}
             />
           </div>
+          <LocationRequestLink />
           <WorkplaceFilters
             dispatch={dispatch}
             workplace={filters.workplace}
