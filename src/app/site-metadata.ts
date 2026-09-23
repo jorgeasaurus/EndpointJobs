@@ -7,6 +7,7 @@ import packageJson from "../../package.json";
 export const siteUrl = "https://endpointjobs.dev";
 export const siteName = "Endpoint Jobs";
 export const appVersion = packageJson.version;
+export const jobsDirectoryPageSize = 50;
 export const siteTitle =
   "Endpoint Engineering Jobs | Jamf, Intune, macOS & Windows Roles";
 export const siteDescription =

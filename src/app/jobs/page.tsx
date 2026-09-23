@@ -12,6 +12,7 @@ import type { JobsFeed } from "@/types/job";
 import {
   getJobPath,
   getJobsDirectoryPath,
+  jobsDirectoryPageSize as jobsPerPage,
   siteUrl
 } from "../site-metadata";
 
@@ -19,7 +20,6 @@ type DirectoryPageProps = {
   searchParams: Promise<{ page?: string | string[] }>;
 };
 
-const jobsPerPage = 50;
 const feed = feedData as JobsFeed;
 
 function resolveDirectoryPage(value: string | string[] | undefined) {

@@ -970,3 +970,13 @@ Regression assertions pass and reject both a generic description and removal of 
 Replaced the external Google Fonts CSS import with next/font self-hosting and bumped to 0.1.17. Same-feed Lighthouse 13.5.0 mobile medians (3 runs each): LCP 8.70→8.11s, FCP 7.12→6.30s, TBT 229→302ms, score 54→53; desktop single-run LCP 1.80→1.46s, score 88→93. CLS stayed zero; results and reproduction instructions are in `docs/performance-58.json`.
 
 The 4.7 MB HTML is dominated by hydration data, including full descriptions required for existing search/workplace/card behavior; retained rather than changing those contracts. Field LCP/INP/CLS unavailable (PageSpeed HTTP 429); no Core Web Vitals pass claimed. Build, lint, typecheck, 71 data audits, React Doctor 100/100, independent review, and font/network/layout browser checks pass.
+
+# Issue #59: sitemap directory coverage
+
+- [x] Add canonical directory pages using the shared page size and active canonical count.
+- [x] Verify empty, boundary, duplicate, and expired feed behavior plus generated XML.
+- [x] Run checks, review, bump version, and prepare a PR.
+
+## Review
+
+Added `/jobs` and valid canonical pagination URLs using the shared 50-job page size and active canonical job count; sitemap revalidates every 300 seconds. Eight focused tests, 71 data audits, lint, typecheck, build, React Doctor 100/100, and independent review pass. Generated XML contains 1,094 URLs; all 22 directory URLs return 200, self-canonicalize, and contain jobs. Version bumped to 0.1.18.
