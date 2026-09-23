@@ -949,3 +949,11 @@ Added an editable GitHub issue link below the location filter row with encoded l
 ## Review
 
 Directory descriptions now describe browsing by title, company, and location; later pages prepend `Page N:`. Version bumped to 0.1.16. Lint, typecheck, build, directory expiry regression, independent review, and browser metadata checks pass. Invalid page values use page 1; out-of-range pages retain the not-found UI and noindex (streamed responses return HTTP 200).
+
+# PR #65 Copilot review loop
+
+- [x] Inspect initial review: one actionable thread on ee4741c.
+- [x] Add and verify directory description regression assertions.
+- [ ] Push, resolve the handled thread, and request a fresh latest-head review.
+
+Regression assertions pass and reject both a generic description and removal of the pagination prefix. Lint, typecheck, and diff checks pass; fresh latest-head Copilot review remains pending.

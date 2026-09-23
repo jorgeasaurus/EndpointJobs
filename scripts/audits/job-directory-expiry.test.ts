@@ -3,6 +3,7 @@ import test from "node:test";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import feedData from "../../src/data/jobs.json";
+import { siteDescription } from "../../src/app/site-metadata";
 import type { Job } from "../../src/types/job";
 import { fixedAuditNow, makeJob } from "./shared";
 
@@ -27,7 +28,12 @@ test("directory refreshes canonical jobs and pagination after expiry in a warm p
     assert.match(before, /href="\/jobs\/directory-direct"/);
     assert.doesNotMatch(before, /href="\/jobs\/directory-duplicate"/);
     assert.match(renderToStaticMarkup(await JobsDirectory(secondPage)), /directory-expiring/);
-    assert.match(String((await generateMetadata(secondPage)).alternates?.canonical), /page=2$/);
+    const firstMetadata = await generateMetadata(firstPage);
+    const secondMetadata = await generateMetadata(secondPage);
+    assert.notEqual(firstMetadata.description, siteDescription);
+    assert.match(firstMetadata.description ?? "", /^Browse active endpoint engineering jobs by title, company, and location\./);
+    assert.equal(secondMetadata.description, `Page 2: ${firstMetadata.description}`);
+    assert.match(String(secondMetadata.alternates?.canonical), /page=2$/);
 
     context.mock.timers.setTime(fixedAuditNow.getTime() + 2 * 86_400_000);
     const after = renderToStaticMarkup(await JobsDirectory(firstPage));
