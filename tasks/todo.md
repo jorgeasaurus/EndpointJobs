@@ -1008,3 +1008,5 @@ Second Copilot cycle: preserve transport/redirect/truncation uncertainty before 
 - [x] Fix anchor extraction so data attributes and embedded markup cannot replace real href destinations.
 - [x] Pass 21 regression tests, lint, typecheck, and a fresh 1,158-URL production crawl.
 - [ ] Obtain a fresh Copilot review for the extraction fix.
+
+Additional review: unrelated redirects ending in 404/410 remain unverified. Retained independent exact-job ATS removal evidence behind HTML redirects, with an explicit regression and rationale; this is required for removed Greenhouse jobs. Corrected the historical Truveta HTML observation while preserving the twice-confirmed API result.

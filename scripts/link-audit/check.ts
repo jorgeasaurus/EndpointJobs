@@ -31,10 +31,10 @@ export function classify(status: number, body: string, finalUrl: string, request
     return { outcome: "auth", reason: "Authentication required" };
   }
   if (status >= 500 || status === 408) return { outcome: "transient", reason: "Server/timeout failure" };
-  if (status === 404 || status === 410) return { outcome: "dead", reason: `HTTP ${status}; requires repeat confirmation` };
-  if (status >= 200 && status < 300 && !isCanonicalRedirect(requestedUrl, finalUrl)) {
+  if (((status >= 200 && status < 300) || status === 404 || status === 410) && !isCanonicalRedirect(requestedUrl, finalUrl)) {
     return { outcome: "unverified", reason: "Redirected to a different resource; posting availability unverified" };
   }
+  if (status === 404 || status === 410) return { outcome: "dead", reason: `HTTP ${status}; requires repeat confirmation` };
   if (status >= 200 && status < 300) return { outcome: "reachable", reason: "HTTP success; does not prove vacancy remains open" };
   return { outcome: "unverified", reason: `Unexpected HTTP ${status}` };
 }

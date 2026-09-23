@@ -39,6 +39,8 @@ export async function checkDestination(destination: Destination): Promise<Extern
     observations.push(response.observation);
     // A live API does not repair a broken application URL; both must be reachable.
     outcome = first.observation.outcome === "reachable" ? response.observation.outcome : first.observation.outcome;
+    // A recognized response from the original job-ID API independently proves removal,
+    // even when the HTML redirects to a board. Its own redirect/transport guards still apply.
     if (response.observation.outcome === "dead") outcome = "dead";
   }
   if (outcome === "dead") {

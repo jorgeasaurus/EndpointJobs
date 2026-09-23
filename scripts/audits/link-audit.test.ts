@@ -142,3 +142,33 @@ for (const scenario of ["redirect", "truncated", "repeat-redirect"] as const) {
     assert.equal(result.observations.at(-1)?.outcome, "unverified");
   });
 }
+
+
+for (const status of [404, 410]) {
+  test(`HTTP ${status} at an unrelated redirect cannot confirm a dead posting`, () => {
+    assert.equal(classify(status, "", "https://example.com/not-found", url).outcome, "unverified");
+    assert.equal(classify(status, "", url, url).outcome, "dead");
+  });
+}
+
+test("original-ID ATS evidence can confirm removal behind a generic HTML redirect", async (context) => {
+  const destination = "https://job-boards.greenhouse.io/acme/jobs/123";
+  const probe = getProviderProbe(destination)!;
+  let apiCalls = 0;
+  context.mock.method(globalThis, "fetch", async (value: string) => {
+    if (value === destination) {
+      const response = new Response("Company board");
+      Object.defineProperty(response, "url", { value: "https://job-boards.greenhouse.io/acme" });
+      return response;
+    }
+    assert.equal(value, probe.url);
+    apiCalls++;
+    const response = new Response(JSON.stringify({ status: 404, error: "Job not found" }), { status: 404 });
+    Object.defineProperty(response, "url", { value });
+    return response;
+  });
+  const result = await checkDestination({ url: destination, jobIds: ["job"], sources: ["Greenhouse"] });
+  assert.equal(result.observations[0].outcome, "unverified");
+  assert.equal(apiCalls, 2);
+  assert.equal(result.outcome, "dead");
+});
