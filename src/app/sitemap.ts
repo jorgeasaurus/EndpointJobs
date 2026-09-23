@@ -10,9 +10,14 @@ import {
   getApiDocsPath,
   getEndpointToolUrl,
   getJobUrl,
+  getJobsDirectoryPath,
+  jobsDirectoryPageSize,
   ogImage,
   siteUrl
 } from "./site-metadata";
+
+// Refresh directory pagination and job URLs as listings expire between feed builds.
+export const revalidate = 300;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const feed = feedData as JobsFeed;
@@ -23,6 +28,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "daily" as const,
     priority: 0.8
   }));
+
+  const directoryPages = Array.from(
+    { length: Math.max(1, Math.ceil(jobPages.length / jobsDirectoryPageSize)) },
+    (_, index) => ({
+      url: new URL(getJobsDirectoryPath(index + 1), siteUrl).toString(),
+      lastModified: new Date(feed.updatedAt),
+      changeFrequency: "daily" as const,
+      priority: 0.7
+    })
+  );
 
   return [
     {
@@ -44,6 +59,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "daily" as const,
       priority: 0.9
     })),
+    ...directoryPages,
     ...jobPages
   ];
 }
