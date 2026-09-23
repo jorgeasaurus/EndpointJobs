@@ -1,0 +1,140 @@
+{
+  "issue": 58,
+  "measured_at_utc": "2026-09-23",
+  "scope": "Local production-build lab comparison; not a real-user Core Web Vitals assessment.",
+  "baseline_commit": "49013b88c69a4217320cb75aeec80a47cdaedb5f",
+  "feed_sha256": "087df77d7717510ae0335babfc13f9701a852070653f30aa3438786efb05a778",
+  "tool": "Lighthouse 13.5.0, HeadlessChrome 153, macOS",
+  "method": "Same feed, port, and machine. Default simulated mobile throttling (4x CPU); desktop preset. Three mobile samples and one desktop sample per variant. No concurrent Lighthouse runs. Font-only change plus release version bump.",
+  "reproduce": "npm run build; npm run start -- --port 3058; npx --yes lighthouse@13.5.0 http://localhost:3058 --chrome-flags=\"--headless --no-sandbox\" --only-categories=performance --output=json --output-path=report.json --quiet (add --preset=desktop for desktop)",
+  "field_data": {
+    "lcp": null,
+    "inp": null,
+    "cls": null,
+    "reason": "PageSpeed Insights API returned HTTP 429 quota exceeded. TBT is a lab measurement, not field INP."
+  },
+  "payload": {
+    "baseline_html_decoded_bytes": 4699866,
+    "after_html_decoded_bytes": 4700712,
+    "baseline_react_flight_script_bytes": 4402352,
+    "full_feed_description_json_bytes": 2736900,
+    "description_share_of_full_feed_approx_percent": 65,
+    "finding": "Full descriptions dominate hydration data and support substring/phrase search, workplace overrides, and expandable cards. Retained to preserve behavior; this change does not solve the large HTML payload."
+  },
+  "results": {
+    "mobile": {
+      "before": {
+        "runs": [
+          {
+            "performance_score": 52.0,
+            "fcp_ms": 8281.393,
+            "lcp_ms": 9670.8,
+            "tbt_ms": 249.5,
+            "cls": 0
+          },
+          {
+            "performance_score": 55.0,
+            "fcp_ms": 7116.662,
+            "lcp_ms": 8700.951,
+            "tbt_ms": 220.5,
+            "cls": 0
+          },
+          {
+            "performance_score": 54.0,
+            "fcp_ms": 7113.479,
+            "lcp_ms": 8695.014,
+            "tbt_ms": 229.0,
+            "cls": 0
+          }
+        ],
+        "median": {
+          "performance_score": 54.0,
+          "fcp_ms": 7116.662,
+          "lcp_ms": 8700.951,
+          "tbt_ms": 229.0,
+          "cls": 0
+        }
+      },
+      "after": {
+        "runs": [
+          {
+            "performance_score": 53.0,
+            "fcp_ms": 6304.888,
+            "lcp_ms": 8109.776,
+            "tbt_ms": 327.5,
+            "cls": 0
+          },
+          {
+            "performance_score": 53.0,
+            "fcp_ms": 6304.058,
+            "lcp_ms": 8108.116,
+            "tbt_ms": 302,
+            "cls": 0
+          },
+          {
+            "performance_score": 54.0,
+            "fcp_ms": 6302.762,
+            "lcp_ms": 8105.524,
+            "tbt_ms": 289.619,
+            "cls": 0
+          }
+        ],
+        "median": {
+          "performance_score": 53.0,
+          "fcp_ms": 6304.058,
+          "lcp_ms": 8108.116,
+          "tbt_ms": 302,
+          "cls": 0
+        }
+      }
+    },
+    "desktop": {
+      "before": {
+        "runs": [
+          {
+            "performance_score": 88.0,
+            "fcp_ms": 1377.603,
+            "lcp_ms": 1799.943,
+            "tbt_ms": 0,
+            "cls": 0
+          }
+        ],
+        "median": {
+          "performance_score": 88.0,
+          "fcp_ms": 1377.603,
+          "lcp_ms": 1799.943,
+          "tbt_ms": 0,
+          "cls": 0
+        }
+      },
+      "after": {
+        "runs": [
+          {
+            "performance_score": 93.0,
+            "fcp_ms": 1122.806,
+            "lcp_ms": 1457.806,
+            "tbt_ms": 0,
+            "cls": 0
+          }
+        ],
+        "median": {
+          "performance_score": 93.0,
+          "fcp_ms": 1122.806,
+          "lcp_ms": 1457.806,
+          "tbt_ms": 0,
+          "cls": 0
+        }
+      }
+    }
+  },
+  "validation": [
+    "Production build, lint, typecheck, 71 data audits pass",
+    "React Doctor: 100/100, zero findings",
+    "390px and 1280px browser checks: both fonts loaded from same origin, no Google Fonts requests, no horizontal overflow; screenshots inspected",
+    "Independent review: no blocking findings"
+  ],
+  "references": [
+    "https://nextjs.org/docs/app/getting-started/fonts",
+    "https://developers.google.com/speed/docs/insights/v5/about"
+  ]
+}
