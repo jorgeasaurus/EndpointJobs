@@ -1,7 +1,27 @@
+import { getProviderProbe } from "./providers";
+
 export type Outcome = "reachable" | "dead" | "blocked" | "auth" | "rate-limited" | "transient" | "unverified";
 export type Observation = { url: string; status?: number; finalUrl?: string; outcome: Outcome; reason: string };
 
-export function classify(status: number, body: string, finalUrl: string): Pick<Observation, "outcome" | "reason"> {
+export function isCanonicalRedirect(requested: string, final: string): boolean {
+  const normalize = (value: string) => {
+    const url = new URL(value);
+    url.hash = "";
+    if (url.protocol === "http:") url.protocol = "https:";
+    url.pathname = url.pathname.replace(/\/$/, "") || "/";
+    for (const key of [...url.searchParams.keys()]) {
+      if (/^utm_/i.test(key) || ["trk", "gh_src"].includes(key)) url.searchParams.delete(key);
+    }
+    url.searchParams.sort();
+    return url.href;
+  };
+  if (normalize(requested) === normalize(final)) return true;
+  const before = getProviderProbe(requested);
+  const after = getProviderProbe(final);
+  return Boolean(before && after && before.url === after.url);
+}
+
+export function classify(status: number, body: string, finalUrl: string, requestedUrl = finalUrl): Pick<Observation, "outcome" | "reason"> {
   const title = body.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] ?? "";
   if ([403, 999].includes(status) || /just a moment|access denied|security check|verify you are human|attention required|robot or human/i.test(title)) {
     return { outcome: "blocked", reason: "Access/bot protection; destination validity unknown" };
@@ -12,6 +32,9 @@ export function classify(status: number, body: string, finalUrl: string): Pick<O
   }
   if (status >= 500 || status === 408) return { outcome: "transient", reason: "Server/timeout failure" };
   if (status === 404 || status === 410) return { outcome: "dead", reason: `HTTP ${status}; requires repeat confirmation` };
+  if (status >= 200 && status < 300 && !isCanonicalRedirect(requestedUrl, finalUrl)) {
+    return { outcome: "unverified", reason: "Redirected to a different resource; posting availability unverified" };
+  }
   if (status >= 200 && status < 300) return { outcome: "reachable", reason: "HTTP success; does not prove vacancy remains open" };
   return { outcome: "unverified", reason: `Unexpected HTTP ${status}` };
 }
@@ -37,7 +60,7 @@ export async function request(url: string): Promise<{ observation: Observation; 
         }
       } finally { await reader.cancel(); }
     }
-    return { body, observation: { url, status: response.status, finalUrl: response.url, ...(bytes >= 8_000_000 ? { outcome: "unverified" as const, reason: "Response exceeded 8 MB audit limit; coverage incomplete" } : classify(response.status, body, response.url)) } };
+    return { body, observation: { url, status: response.status, finalUrl: response.url, ...(bytes >= 8_000_000 ? { outcome: "unverified" as const, reason: "Response exceeded 8 MB audit limit; coverage incomplete" } : classify(response.status, body, response.url, url)) } };
   } catch (error) {
     return { body: "", observation: { url, outcome: "transient", reason: error instanceof Error ? error.message : String(error) } };
   }

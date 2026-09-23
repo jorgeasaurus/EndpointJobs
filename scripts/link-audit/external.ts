@@ -55,9 +55,18 @@ export async function checkDestination(destination: Destination): Promise<Extern
   return { ...destination, outcome, observations };
 }
 
-export async function auditExternal(jobs: readonly Job[]) {
+export async function auditExternal(jobs: readonly Job[], navigationUrls: readonly string[] = []) {
+  const destinations = collectDestinations(jobs);
+  const known = new Set(destinations.map((entry) => entry.url));
+  for (const raw of navigationUrls) {
+    const url = normalizeLink(raw, raw) ?? raw;
+    if (!known.has(url)) {
+      destinations.push({ url, jobIds: [], sources: ["site-navigation"] });
+      known.add(url);
+    }
+  }
   const groups = new Map<string, Destination[]>();
-  for (const destination of collectDestinations(jobs)) {
+  for (const destination of destinations) {
     let host = "invalid";
     try { host = new URL(destination.url).host; } catch { /* reported by request */ }
     groups.set(host, [...(groups.get(host) ?? []), destination]);

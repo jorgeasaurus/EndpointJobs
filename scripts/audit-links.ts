@@ -12,7 +12,7 @@ if (!["all", "internal", "external"].includes(scope)) throw new Error("Scope mus
 const startedAt = new Date();
 const jobs = (feedData.jobs as Job[]).filter((job) => isActiveJob(job, startedAt));
 const internal = scope !== "external" ? await auditInternal(base) : undefined;
-const external = scope !== "internal" ? await auditExternal(jobs) : undefined;
+const external = scope !== "internal" ? await auditExternal(jobs, internal?.externalNavigation) : undefined;
 const tally = (entries: { outcome: string }[]) => entries.reduce<Record<string, number>>((counts, item) => {
   counts[item.outcome] = (counts[item.outcome] ?? 0) + 1;
   return counts;

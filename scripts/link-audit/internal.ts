@@ -1,18 +1,21 @@
 import { XMLParser } from "fast-xml-parser";
 import { extractLinks, mapBounded, request, type Observation } from "./check";
 
+export type InternalResult = Observation & { observations: Observation[] };
+
 export async function auditInternal(base: string) {
   const origin = new URL(base).origin;
   const sitemap = await request(`${origin}/sitemap.xml`);
   if (sitemap.observation.outcome !== "reachable") throw new Error("Cannot load sitemap");
   const parsed = new XMLParser().parse(sitemap.body);
-  const entries = parsed.urlset?.url;
-  if (!Array.isArray(entries) || !entries.length) throw new Error("Expected nonempty sitemap urlset");
+  const rawEntries = parsed.urlset?.url;
+  const entries = Array.isArray(rawEntries) ? rawEntries : rawEntries ? [rawEntries] : [];
+  if (!entries.length || entries.some((entry) => typeof entry?.loc !== "string")) throw new Error("Expected nonempty sitemap urlset");
   const seeds = entries.map((entry: { loc: string }) => entry.loc);
   if (seeds.some((url: string) => new URL(url).origin !== origin)) throw new Error("Sitemap contains another origin");
   const seen = new Set<string>();
   const externalNavigation = new Set<string>();
-  const results: Observation[] = [];
+  const results: InternalResult[] = [];
   let queue: string[] = [...new Set([`${origin}/`, `${origin}/api-docs`, ...seeds])];
   while (queue.length) {
     if (seen.size + queue.length > 10_000) throw new Error("Internal crawl exceeded 10,000 URLs");
@@ -20,11 +23,18 @@ export async function auditInternal(base: string) {
     const discovered: string[] = [];
     await mapBounded(queue, 6, async (url) => {
       let result = await request(url);
-      if (["dead", "transient"].includes(result.observation.outcome)) result = await request(url);
-      if (result.observation.outcome === "reachable" && /<meta\b[^>]*name="robots"[^>]*content="[^"]*noindex/i.test(result.body)) {
-        result.observation = { ...result.observation, outcome: "unverified", reason: "HTTP success with noindex; inspect for streamed not-found" };
+      const observations = [result.observation];
+      if (["dead", "transient"].includes(result.observation.outcome)) {
+        result = await request(url);
+        observations.push(result.observation);
       }
-      results.push(result.observation);
+      let observation = result.observation;
+      if (result.observation.outcome === "reachable" && /<meta\b[^>]*name="robots"[^>]*content="[^"]*noindex/i.test(result.body)) {
+        observation = { ...observation, outcome: "unverified", reason: "HTTP success with noindex; inspect for streamed not-found" };
+      } else if (observations.length > 1 && observation.outcome === "reachable") {
+        observation = { ...observation, outcome: "unverified", reason: `Recovered after initial ${observations[0].outcome}; destination was not consistently reachable` };
+      }
+      results.push({ ...observation, observations });
       for (const link of extractLinks(result.body, result.observation.finalUrl ?? url)) {
         if (new URL(link).origin === origin) { if (!seen.has(link)) discovered.push(link); }
         else externalNavigation.add(link);

@@ -989,6 +989,14 @@ Added `/jobs` and valid canonical pagination URLs using the shared 50-job page s
 
 ## Review
 
-Checked 1,159 production internal URLs (all reachable) and 1,136 external destinations from 1,119 active listings: 834 reachable, 26 confirmed dead, and 276 blocked/authenticated/rate-limited/inconclusive. Removed the 26 dead listings and excluded their source URLs from future refreshes; retained uncertain listings. Exhaustive evidence and reproduction command are in `docs/link-audit-60.json`; version 0.1.19.
+Checked 1,159 production internal URLs (all reachable) and 1,136 external destinations from 1,119 active listings: 823 reachable, 26 confirmed dead, and 287 blocked/authenticated/rate-limited/inconclusive. Removed the 26 dead listings and excluded their source URLs from future refreshes; retained uncertain listings. Exhaustive evidence and reproduction command are in `docs/link-audit-60.json`; version 0.1.19.
 
 Nine focused tests, 71 data audits, lint, typecheck, production build, and independent review pass. All 26 removed listings are absent from the generated sitemap and return API 404. HTTP success alone does not verify vacancy availability.
+
+# PR #68 Copilot review loop
+
+- [x] Correct redirect identity checks and remaining audit coverage gaps.
+- [ ] Verify tests and refreshed evidence, push, and resolve feedback.
+- [ ] Obtain a fresh clean Copilot review of the latest commit.
+
+Redirects to unrelated resources are now unverified; 13 regression tests, lint, and typecheck pass. Fresh production verification: 1,159 internal reachable; 1,142 external destinations checked, including navigation links. The same 26 dead destinations remain deployed pending merge; retry attempts are retained and singleton sitemaps are covered.

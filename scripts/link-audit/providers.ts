@@ -17,7 +17,8 @@ export function getProviderProbe(value: string): ProviderProbe | null {
   } catch {
     return null;
   }
-  if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password || url.port) return null;
+  if (!["https:", "http:"].includes(url.protocol)) return null;
+  if (url.username || url.password || url.port) return null;
   const host = url.hostname;
   const path = url.pathname;
   const workday = host.match(/^([a-z0-9-]+)\.wd\d+\.myworkdayjobs\.com$/);
@@ -44,7 +45,7 @@ export function getProviderProbe(value: string): ProviderProbe | null {
       jobId: leverPath[2],
     };
   }
-  const recruiteePath = path.match(/^\/o\/([a-zA-Z0-9_-]+)(?:\/c\/new)?\/?$/);
+  const recruiteePath = path.match(/^\/o\/([a-zA-Z0-9_-]+)(?:\/(?:c\/new|apply))?\/?$/);
   if (/^[a-z0-9-]+\.recruitee\.com$/.test(host) && recruiteePath) {
     return {
       provider: "recruitee",

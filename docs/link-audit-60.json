@@ -13,12 +13,12 @@
 ],
   "summary": {
   "external": {
-    "reachable": 834,
+    "reachable": 823,
     "dead": 26,
+    "unverified": 17,
     "blocked": 221,
     "rate-limited": 15,
-    "auth": 34,
-    "unverified": 6
+    "auth": 34
   },
   "internal": {
     "reachable": 1159
@@ -147,7 +147,7 @@
     {"url": "https://br.jobsora.com/oferta-53473781806", "jobIds": ["rapidapi-qibit-especialista-intune-e-mdm-ad5e864e2b"], "sources": ["RapidAPI Daily International Jobs"], "outcome": "dead", "observations": [{"url": "https://br.jobsora.com/oferta-53473781806", "status": 410, "finalUrl": "https://br.jobsora.com/oferta-53473781806", "outcome": "dead", "reason": "HTTP 410; requires repeat confirmation"}, {"url": "https://br.jobsora.com/oferta-53473781806", "status": 410, "finalUrl": "https://br.jobsora.com/oferta-53473781806", "outcome": "dead", "reason": "HTTP 410; requires repeat confirmation"}]},
     {"url": "https://br.linkedin.com/jobs/view/analista-de-endpoint-security-data-protection-12x36-noturno-at-vision-cybersecurity-4458255356", "jobIds": ["rapidapi-vision-cybersecurity-analista-de-endpoint-security-data-protection-12x36-noturno-3eb9be8dbe"], "sources": ["RapidAPI Daily International Jobs"], "outcome": "reachable", "observations": [{"url": "https://br.linkedin.com/jobs/view/analista-de-endpoint-security-data-protection-12x36-noturno-at-vision-cybersecurity-4458255356", "status": 200, "finalUrl": "https://br.linkedin.com/jobs/view/analista-de-endpoint-security-data-protection-12x36-noturno-at-vision-cybersecurity-4458255356", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
     {"url": "https://br.linkedin.com/jobs/view/analista-de-seguran%C3%A7a-da-informa%C3%A7%C3%A3o-foco-em-endpoint-opera%C3%A7%C3%A3o-at-xsite-seguran%C3%A7a-da-informa%C3%A7%C3%A3o-4459158636", "jobIds": ["rapidapi-xsite-seguran-a-da-informa-o-analista-de-seguran-a-da-informa-o-foco-em-endpoint-opera-o-29723670d4"], "sources": ["RapidAPI Daily International Jobs"], "outcome": "reachable", "observations": [{"url": "https://br.linkedin.com/jobs/view/analista-de-seguran%C3%A7a-da-informa%C3%A7%C3%A3o-foco-em-endpoint-opera%C3%A7%C3%A3o-at-xsite-seguran%C3%A7a-da-informa%C3%A7%C3%A3o-4459158636", "status": 200, "finalUrl": "https://br.linkedin.com/jobs/view/analista-de-seguran%C3%A7a-da-informa%C3%A7%C3%A3o-foco-em-endpoint-opera%C3%A7%C3%A3o-at-xsite-seguran%C3%A7a-da-informa%C3%A7%C3%A3o-4459158636", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
-    {"url": "https://br.linkedin.com/jobs/view/intune-jamf-administrator-at-ultracon-consultoria-4457273018", "jobIds": ["rapidapi-ultracon-consultoria-intune-jamf-administrator-423504be6d"], "sources": ["RapidAPI Daily International Jobs"], "outcome": "reachable", "observations": [{"url": "https://br.linkedin.com/jobs/view/intune-jamf-administrator-at-ultracon-consultoria-4457273018", "status": 200, "finalUrl": "https://br.linkedin.com/jobs/engenheiro-civil-vagas?trk=expired_jd_redirect", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
+    {"url": "https://br.linkedin.com/jobs/view/intune-jamf-administrator-at-ultracon-consultoria-4457273018", "jobIds": ["rapidapi-ultracon-consultoria-intune-jamf-administrator-423504be6d"], "sources": ["RapidAPI Daily International Jobs"], "outcome": "unverified", "observations": [{"url": "https://br.linkedin.com/jobs/view/intune-jamf-administrator-at-ultracon-consultoria-4457273018", "status": 200, "finalUrl": "https://br.linkedin.com/jobs/engenheiro-civil-vagas?trk=expired_jd_redirect", "outcome": "unverified", "reason": "Redirected to a different resource; posting availability unverified"}]},
     {"url": "https://br.linkedin.com/jobs/view/it-manager-ai-mdm-focus-at-ruvixx-inc-4463555050", "jobIds": ["rapidapi-ruvixx-it-manager-ai-mdm-focus-17561e7c0c"], "sources": ["RapidAPI Daily International Jobs"], "outcome": "reachable", "observations": [{"url": "https://br.linkedin.com/jobs/view/it-manager-ai-mdm-focus-at-ruvixx-inc-4463555050", "status": 200, "finalUrl": "https://br.linkedin.com/jobs/view/it-manager-ai-mdm-focus-at-ruvixx-inc-4463555050", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
     {"url": "https://br.linkedin.com/jobs/view/red-bull-student-marketeer-uem-maring%C3%A1-at-red-bull-4466380310", "jobIds": ["rapidapi-red-bull-red-bull-student-marketeer-uem-maring-e66bbabb20"], "sources": ["RapidAPI Daily International Jobs"], "outcome": "reachable", "observations": [{"url": "https://br.linkedin.com/jobs/view/red-bull-student-marketeer-uem-maring%C3%A1-at-red-bull-4466380310", "status": 200, "finalUrl": "https://br.linkedin.com/jobs/view/red-bull-student-marketeer-uem-maring%C3%A1-at-red-bull-4466380310", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
     {"url": "https://br.linkedin.com/jobs/view/senior-desktop-support-engineer-microsoft-intune-autopilot-at-ey-4446452783", "jobIds": ["rapidapi-ey-senior-desktop-support-engineer-microsoft-intune-autopilot-e480d774c6"], "sources": ["RapidAPI Daily International Jobs"], "outcome": "reachable", "observations": [{"url": "https://br.linkedin.com/jobs/view/senior-desktop-support-engineer-microsoft-intune-autopilot-at-ey-4446452783", "status": 200, "finalUrl": "https://br.linkedin.com/jobs/view/senior-desktop-support-engineer-microsoft-intune-autopilot-at-ey-4446452783", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
@@ -176,7 +176,7 @@
     {"url": "https://careers.govcio.com/careers-home/jobs/8946?lang=en-us&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-govcio-llc-key-west-fl-senior-microsoft-endpoint-configuration-manager-8b8b7870cd"], "sources": ["SerpAPI Google Jobs"], "outcome": "reachable", "observations": [{"url": "https://careers.govcio.com/careers-home/jobs/8946?lang=en-us&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 200, "finalUrl": "https://careers.govcio.com/careers-home/jobs/8946?lang=en-us&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
     {"url": "https://careers.hitachi.com/jobs/18268088-euc-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-hitachi-careers-seattle-wa-euc-engineer-8e504fb91f"], "sources": ["SerpAPI Google Jobs"], "outcome": "blocked", "observations": [{"url": "https://careers.hitachi.com/jobs/18268088-euc-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 403, "finalUrl": "https://careers.hitachi.com/jobs/18268088-euc-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "blocked", "reason": "Access/bot protection; destination validity unknown"}]},
     {"url": "https://careers.leidos.com/jobs/18238315-project-manager-enterprise-endpoint-and-network-migrations?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-leidos-herndon-va-project-manager-enterprise-endpoint-network-migrations-18a983d1ec"], "sources": ["SerpAPI Google Jobs"], "outcome": "blocked", "observations": [{"url": "https://careers.leidos.com/jobs/18238315-project-manager-enterprise-endpoint-and-network-migrations?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 403, "finalUrl": "https://careers.leidos.com/jobs/18238315-project-manager-enterprise-endpoint-and-network-migrations?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "blocked", "reason": "Access/bot protection; destination validity unknown"}]},
-    {"url": "https://careers.oracle.com/en/job/343967?utm_medium=search+engine&utm_source=google&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-oracle-nashville-tn-senior-core-infrastructure-engineer-nashville-tn-d63dc5360e"], "sources": ["SerpAPI Google Jobs"], "outcome": "reachable", "observations": [{"url": "https://careers.oracle.com/en/job/343967?utm_medium=search+engine&utm_source=google&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 200, "finalUrl": "https://careers.oracle.com/en/sites/jobsearch/job/343967?utm_medium=search%20engine%2Corganic&utm_source=google%2Cgoogle_jobs_apply&utm_campaign=google_jobs_apply", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
+    {"url": "https://careers.oracle.com/en/job/343967?utm_medium=search+engine&utm_source=google&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-oracle-nashville-tn-senior-core-infrastructure-engineer-nashville-tn-d63dc5360e"], "sources": ["SerpAPI Google Jobs"], "outcome": "unverified", "observations": [{"url": "https://careers.oracle.com/en/job/343967?utm_medium=search+engine&utm_source=google&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 200, "finalUrl": "https://careers.oracle.com/en/sites/jobsearch/job/343967?utm_medium=search%20engine%2Corganic&utm_source=google%2Cgoogle_jobs_apply&utm_campaign=google_jobs_apply", "outcome": "unverified", "reason": "Redirected to a different resource; posting availability unverified"}]},
     {"url": "https://careers.regeneron.com/en/jobs/r50605/executive-director-employee-technology-digital-workplace/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-regeneron-pharmaceuticals-inc-sleepy-hollow-ny-executive-director-employee-technology-digital-workplace-12422e51c7"], "sources": ["SerpAPI Google Jobs"], "outcome": "reachable", "observations": [{"url": "https://careers.regeneron.com/en/jobs/r50605/executive-director-employee-technology-digital-workplace/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 200, "finalUrl": "https://careers.regeneron.com/en/jobs/r50605/executive-director-employee-technology-digital-workplace/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
     {"url": "https://careers.regions.com/us/en/job/R101336/MacOs-EUC-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-regions-hoover-al-1-other-macos-euc-engineer-1d7aabcb73"], "sources": ["SerpAPI Google Jobs"], "outcome": "reachable", "observations": [{"url": "https://careers.regions.com/us/en/job/R101336/MacOs-EUC-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 200, "finalUrl": "https://careers.regions.com/us/en/job/R101336/MacOs-EUC-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
     {"url": "https://careers.roblox.com/jobs/8212529?gh_jid=8212529", "jobIds": ["greenhouse-roblox-8212529"], "sources": ["Greenhouse"], "outcome": "reachable", "observations": [{"url": "https://careers.roblox.com/jobs/8212529?gh_jid=8212529", "status": 200, "finalUrl": "https://careers.roblox.com/jobs/8212529?gh_jid=8212529", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
@@ -227,11 +227,11 @@
     {"url": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-a-administrador-a-office-365-azure-intune-at-econocom-espa%C3%B1a-4462205307", "jobIds": ["rapidapi-econocom-espa-a-t-cnico-a-administrador-a-office-365-azure-intune-44a61afe49"], "sources": ["RapidAPI Daily International Jobs"], "outcome": "rate-limited", "observations": [{"url": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-a-administrador-a-office-365-azure-intune-at-econocom-espa%C3%B1a-4462205307", "status": 429, "finalUrl": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-a-administrador-a-office-365-azure-intune-at-econocom-espa%C3%B1a-4462205307", "outcome": "rate-limited", "reason": "Rate limited; not a dead link"}]},
     {"url": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-a-de-sistemas-n2-gnu-linux-y-gesti%C3%B3n-de-dispositivos-uem-at-seidor-4466272689", "jobIds": ["rapidapi-seidor-t-cnico-a-de-sistemas-n2-gnu-linux-y-gesti-n-de-dispositivos-uem-67b215afc2"], "sources": ["RapidAPI Daily International Jobs"], "outcome": "reachable", "observations": [{"url": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-a-de-sistemas-n2-gnu-linux-y-gesti%C3%B3n-de-dispositivos-uem-at-seidor-4466272689", "status": 200, "finalUrl": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-a-de-sistemas-n2-gnu-linux-y-gesti%C3%B3n-de-dispositivos-uem-at-seidor-4466272689", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
     {"url": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-senior-endpoint-at-selecta-digital-4456908934", "jobIds": ["rapidapi-selecta-digital-t-cnico-senior-endpoint-aced699628"], "sources": ["RapidAPI Daily International Jobs"], "outcome": "rate-limited", "observations": [{"url": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-senior-endpoint-at-selecta-digital-4456908934", "status": 429, "finalUrl": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-senior-endpoint-at-selecta-digital-4456908934", "outcome": "rate-limited", "reason": "Rate limited; not a dead link"}]},
-    {"url": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-senior-endpoint-ingles-b2-hibrido-barcelona-at-experis-espa%C3%B1a-4457750431", "jobIds": ["rapidapi-experis-espa-a-t-cnico-senior-endpoint-ingles-b2-hibrido-barcelona-f7d42dfa42"], "sources": ["RapidAPI Daily International Jobs"], "outcome": "reachable", "observations": [{"url": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-senior-endpoint-ingles-b2-hibrido-barcelona-at-experis-espa%C3%B1a-4457750431", "status": 200, "finalUrl": "https://es.linkedin.com/jobs/educador-social-empleos?trk=expired_jd_redirect", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
+    {"url": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-senior-endpoint-ingles-b2-hibrido-barcelona-at-experis-espa%C3%B1a-4457750431", "jobIds": ["rapidapi-experis-espa-a-t-cnico-senior-endpoint-ingles-b2-hibrido-barcelona-f7d42dfa42"], "sources": ["RapidAPI Daily International Jobs"], "outcome": "unverified", "observations": [{"url": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-senior-endpoint-ingles-b2-hibrido-barcelona-at-experis-espa%C3%B1a-4457750431", "status": 200, "finalUrl": "https://es.linkedin.com/jobs/educador-social-empleos?trk=expired_jd_redirect", "outcome": "unverified", "reason": "Redirected to a different resource; posting availability unverified"}]},
     {"url": "https://es.linkedin.com/jobs/view/tech-t%C3%A9cnico-a-mdm-at-telef%C3%B3nica-4463569123", "jobIds": ["rapidapi-telef-nica-tech-t-cnico-a-mdm-92649a4718"], "sources": ["RapidAPI Daily International Jobs"], "outcome": "reachable", "observations": [{"url": "https://es.linkedin.com/jobs/view/tech-t%C3%A9cnico-a-mdm-at-telef%C3%B3nica-4463569123", "status": 200, "finalUrl": "https://es.linkedin.com/jobs/view/tech-t%C3%A9cnico-a-mdm-at-telef%C3%B3nica-4463569123", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
     {"url": "https://es.linkedin.com/jobs/view/technical-customer-success-manager-endpoint-security-at-check-point-software-4443376149", "jobIds": ["rapidapi-check-point-software-technical-customer-success-manager-endpoint-security-98ba4ef3c1"], "sources": ["RapidAPI Daily International Jobs"], "outcome": "reachable", "observations": [{"url": "https://es.linkedin.com/jobs/view/technical-customer-success-manager-endpoint-security-at-check-point-software-4443376149", "status": 200, "finalUrl": "https://es.linkedin.com/jobs/view/technical-customer-success-manager-endpoint-security-at-check-point-software-4443376149", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
     {"url": "https://explore.jobs.netflix.net/careers/job/790311819897-distributed-systems-engineer-6-ads-member-experience-los-gatos-california-united-states-of-america?domain=netflix.com&microsite=netflix.com&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-netflix-seattle-wa-3-others-distributed-systems-engineer-6-ads-member-experience-433109fcd1"], "sources": ["SerpAPI Google Jobs"], "outcome": "reachable", "observations": [{"url": "https://explore.jobs.netflix.net/careers/job/790311819897-distributed-systems-engineer-6-ads-member-experience-los-gatos-california-united-states-of-america?domain=netflix.com&microsite=netflix.com&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 200, "finalUrl": "https://explore.jobs.netflix.net/careers/job/790311819897-distributed-systems-engineer-6-ads-member-experience-los-gatos-california-united-states-of-america?domain=netflix.com&microsite=netflix.com&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
-    {"url": "https://fa-etum-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/41900?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-guidewell-jacksonville-fl-it-systems-engineer-macos-and-ios-management-4e5aa0e07b"], "sources": ["SerpAPI Google Jobs"], "outcome": "reachable", "observations": [{"url": "https://fa-etum-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/41900?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 200, "finalUrl": "https://fa-etum-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/41900", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
+    {"url": "https://fa-etum-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/41900?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-guidewell-jacksonville-fl-it-systems-engineer-macos-and-ios-management-4e5aa0e07b"], "sources": ["SerpAPI Google Jobs"], "outcome": "unverified", "observations": [{"url": "https://fa-etum-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/41900?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 200, "finalUrl": "https://fa-etum-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/41900", "outcome": "unverified", "reason": "Redirected to a different resource; posting availability unverified"}]},
     {"url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/San-Jose/Senior-Client-Engineer_RP1035300-1", "jobIds": ["workday-f5-senior-mdm-engineer-cc2cd19014"], "sources": ["Workday"], "outcome": "reachable", "observations": [{"url": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/San-Jose/Senior-Client-Engineer_RP1035300-1", "status": 200, "finalUrl": "https://ffive.wd5.myworkdayjobs.com/f5jobs/job/San-Jose/Senior-Client-Engineer_RP1035300-1", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}, {"url": "https://ffive.wd5.myworkdayjobs.com/wday/cxs/ffive/f5jobs/job/San-Jose/Senior-Client-Engineer_RP1035300-1", "status": 200, "finalUrl": "https://ffive.wd5.myworkdayjobs.com/wday/cxs/ffive/f5jobs/job/San-Jose/Senior-Client-Engineer_RP1035300-1", "outcome": "reachable", "reason": "Workday confirms posted job accepts applications"}]},
     {"url": "https://gdit.wd5.myworkdayjobs.com/External_Career_Site/job/USA-DC-Washington/Endpoint-Engineer_RQ219320-1", "jobIds": ["workday-gdit-endpoint-engineer-632c4ceb4a"], "sources": ["Workday"], "outcome": "reachable", "observations": [{"url": "https://gdit.wd5.myworkdayjobs.com/External_Career_Site/job/USA-DC-Washington/Endpoint-Engineer_RQ219320-1", "status": 200, "finalUrl": "https://gdit.wd5.myworkdayjobs.com/External_Career_Site/job/USA-DC-Washington/Endpoint-Engineer_RQ219320-1", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}, {"url": "https://gdit.wd5.myworkdayjobs.com/wday/cxs/gdit/External_Career_Site/job/USA-DC-Washington/Endpoint-Engineer_RQ219320-1", "status": 200, "finalUrl": "https://gdit.wd5.myworkdayjobs.com/wday/cxs/gdit/External_Career_Site/job/USA-DC-Washington/Endpoint-Engineer_RQ219320-1", "outcome": "reachable", "reason": "Workday confirms posted job accepts applications"}]},
     {"url": "https://gdit.wd5.myworkdayjobs.com/External_Career_Site/job/USA-MD-Annapolis-Junction/Desktop-Systems-Engineer---TS-SCI-with-Polygraph_RQ228372-1", "jobIds": ["workday-gdit-desktop-systems-engineer-ts-sci-with-polygraph-8cdb77bb10"], "sources": ["Workday"], "outcome": "reachable", "observations": [{"url": "https://gdit.wd5.myworkdayjobs.com/External_Career_Site/job/USA-MD-Annapolis-Junction/Desktop-Systems-Engineer---TS-SCI-with-Polygraph_RQ228372-1", "status": 200, "finalUrl": "https://gdit.wd5.myworkdayjobs.com/External_Career_Site/job/USA-MD-Annapolis-Junction/Desktop-Systems-Engineer---TS-SCI-with-Polygraph_RQ228372-1", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}, {"url": "https://gdit.wd5.myworkdayjobs.com/wday/cxs/gdit/External_Career_Site/job/USA-MD-Annapolis-Junction/Desktop-Systems-Engineer---TS-SCI-with-Polygraph_RQ228372-1", "status": 200, "finalUrl": "https://gdit.wd5.myworkdayjobs.com/wday/cxs/gdit/External_Career_Site/job/USA-MD-Annapolis-Junction/Desktop-Systems-Engineer---TS-SCI-with-Polygraph_RQ228372-1", "outcome": "reachable", "reason": "Workday confirms posted job accepts applications"}]},
@@ -326,11 +326,11 @@
     {"url": "https://jobs.cardinalhealth.com/search/jobdetails/digital-employee-experience-senior-engineer-it-client-services/d36acce1-2741-490b-af20-587f23ce0017", "jobIds": ["activate-cardinal-health--6e1c05fac2"], "sources": ["Activate"], "outcome": "reachable", "observations": [{"url": "https://jobs.cardinalhealth.com/search/jobdetails/digital-employee-experience-senior-engineer-it-client-services/d36acce1-2741-490b-af20-587f23ce0017", "status": 200, "finalUrl": "https://jobs.cardinalhealth.com/search/jobdetails/digital-employee-experience-senior-engineer-it-client-services/d36acce1-2741-490b-af20-587f23ce0017", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
     {"url": "https://jobs.cardinalhealth.com/search/jobdetails/senior-analyst-it-client-services/7ae46ecc-772f-4564-a4ee-bba42ed6a47f", "jobIds": ["activate-cardinal-health--fa01358157"], "sources": ["Activate"], "outcome": "reachable", "observations": [{"url": "https://jobs.cardinalhealth.com/search/jobdetails/senior-analyst-it-client-services/7ae46ecc-772f-4564-a4ee-bba42ed6a47f", "status": 200, "finalUrl": "https://jobs.cardinalhealth.com/search/jobdetails/senior-analyst-it-client-services/7ae46ecc-772f-4564-a4ee-bba42ed6a47f", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
     {"url": "https://jobs.carrier.com/de/stellenbeschreibung/palm-beach-gardens/endpoint-architecture-engineer/29289/100999693168?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-carrier-palm-beach-gardens-fl-endpoint-architecture-engineer-002b8cfced"], "sources": ["SerpAPI Google Jobs"], "outcome": "reachable", "observations": [{"url": "https://jobs.carrier.com/de/stellenbeschreibung/palm-beach-gardens/endpoint-architecture-engineer/29289/100999693168?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 200, "finalUrl": "https://jobs.carrier.com/de/stellenbeschreibung/palm-beach-gardens/endpoint-architecture-engineer/29289/100999693168?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
-    {"url": "https://jobs.elastic.co/jobs?gh_jid=8119448&gh_jid=8119448", "jobIds": ["greenhouse-elastic-8119448"], "sources": ["Greenhouse"], "outcome": "reachable", "observations": [{"url": "https://jobs.elastic.co/jobs?gh_jid=8119448&gh_jid=8119448", "status": 200, "finalUrl": "https://jobs.elastic.co/jobs/engineering/united-states/senior-manager-endpoint-protections/8119448?gh_jid=8119448", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
-    {"url": "https://jobs.elastic.co/jobs?gh_jid=8161819&gh_jid=8161819", "jobIds": ["greenhouse-elastic-8161819"], "sources": ["Greenhouse"], "outcome": "reachable", "observations": [{"url": "https://jobs.elastic.co/jobs?gh_jid=8161819&gh_jid=8161819", "status": 200, "finalUrl": "https://jobs.elastic.co/jobs/engineering/canada/senior-manager-endpoint-protections/8161819?gh_jid=8161819", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
-    {"url": "https://jobs.elastic.co/jobs?gh_jid=8161821&gh_jid=8161821", "jobIds": ["greenhouse-elastic-8161821"], "sources": ["Greenhouse"], "outcome": "reachable", "observations": [{"url": "https://jobs.elastic.co/jobs?gh_jid=8161821&gh_jid=8161821", "status": 200, "finalUrl": "https://jobs.elastic.co/jobs/engineering/spain/senior-manager-endpoint-protections/8161821?gh_jid=8161821", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
-    {"url": "https://jobs.elastic.co/jobs?gh_jid=8214106&gh_jid=8214106", "jobIds": ["greenhouse-elastic-8214106"], "sources": ["Greenhouse"], "outcome": "reachable", "observations": [{"url": "https://jobs.elastic.co/jobs?gh_jid=8214106&gh_jid=8214106", "status": 200, "finalUrl": "https://jobs.elastic.co/jobs/engineering/united-states/senior-director-of-product-management-endpoint-security-xdr/8214106?gh_jid=8214106", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
-    {"url": "https://jobs.elastic.co/jobs?gh_jid=8214187&gh_jid=8214187", "jobIds": ["greenhouse-elastic-8214187"], "sources": ["Greenhouse"], "outcome": "reachable", "observations": [{"url": "https://jobs.elastic.co/jobs?gh_jid=8214187&gh_jid=8214187", "status": 200, "finalUrl": "https://jobs.elastic.co/jobs/engineering/canada/senior-director-of-product-management-endpoint-security-xdr/8214187?gh_jid=8214187", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
+    {"url": "https://jobs.elastic.co/jobs?gh_jid=8119448&gh_jid=8119448", "jobIds": ["greenhouse-elastic-8119448"], "sources": ["Greenhouse"], "outcome": "unverified", "observations": [{"url": "https://jobs.elastic.co/jobs?gh_jid=8119448&gh_jid=8119448", "status": 200, "finalUrl": "https://jobs.elastic.co/jobs/engineering/united-states/senior-manager-endpoint-protections/8119448?gh_jid=8119448", "outcome": "unverified", "reason": "Redirected to a different resource; posting availability unverified"}]},
+    {"url": "https://jobs.elastic.co/jobs?gh_jid=8161819&gh_jid=8161819", "jobIds": ["greenhouse-elastic-8161819"], "sources": ["Greenhouse"], "outcome": "unverified", "observations": [{"url": "https://jobs.elastic.co/jobs?gh_jid=8161819&gh_jid=8161819", "status": 200, "finalUrl": "https://jobs.elastic.co/jobs/engineering/canada/senior-manager-endpoint-protections/8161819?gh_jid=8161819", "outcome": "unverified", "reason": "Redirected to a different resource; posting availability unverified"}]},
+    {"url": "https://jobs.elastic.co/jobs?gh_jid=8161821&gh_jid=8161821", "jobIds": ["greenhouse-elastic-8161821"], "sources": ["Greenhouse"], "outcome": "unverified", "observations": [{"url": "https://jobs.elastic.co/jobs?gh_jid=8161821&gh_jid=8161821", "status": 200, "finalUrl": "https://jobs.elastic.co/jobs/engineering/spain/senior-manager-endpoint-protections/8161821?gh_jid=8161821", "outcome": "unverified", "reason": "Redirected to a different resource; posting availability unverified"}]},
+    {"url": "https://jobs.elastic.co/jobs?gh_jid=8214106&gh_jid=8214106", "jobIds": ["greenhouse-elastic-8214106"], "sources": ["Greenhouse"], "outcome": "unverified", "observations": [{"url": "https://jobs.elastic.co/jobs?gh_jid=8214106&gh_jid=8214106", "status": 200, "finalUrl": "https://jobs.elastic.co/jobs/engineering/united-states/senior-director-of-product-management-endpoint-security-xdr/8214106?gh_jid=8214106", "outcome": "unverified", "reason": "Redirected to a different resource; posting availability unverified"}]},
+    {"url": "https://jobs.elastic.co/jobs?gh_jid=8214187&gh_jid=8214187", "jobIds": ["greenhouse-elastic-8214187"], "sources": ["Greenhouse"], "outcome": "unverified", "observations": [{"url": "https://jobs.elastic.co/jobs?gh_jid=8214187&gh_jid=8214187", "status": 200, "finalUrl": "https://jobs.elastic.co/jobs/engineering/canada/senior-director-of-product-management-endpoint-security-xdr/8214187?gh_jid=8214187", "outcome": "unverified", "reason": "Redirected to a different resource; posting availability unverified"}]},
     {"url": "https://jobs.hii-tsd.com/job/Springfield%2C-VA-Endpoint-Systems-Administrator-Virg/1405871700/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-hii-s-mission-technologies-division-springfield-va-endpoint-systems-administrator-17657c320f"], "sources": ["SerpAPI Google Jobs"], "outcome": "reachable", "observations": [{"url": "https://jobs.hii-tsd.com/job/Springfield%2C-VA-Endpoint-Systems-Administrator-Virg/1405871700/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 200, "finalUrl": "https://jobs.hii-tsd.com/job/Springfield%2C-VA-Endpoint-Systems-Administrator-Virg/1405871700/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
     {"url": "https://jobs.lever.co/brightonjones/62e60e7e-656d-42ef-a06d-ca720471b6b4", "jobIds": ["lever-brightonjones-62e60e7e-656d-42ef-a06d-ca720471b6b4"], "sources": ["Lever"], "outcome": "reachable", "observations": [{"url": "https://jobs.lever.co/brightonjones/62e60e7e-656d-42ef-a06d-ca720471b6b4", "status": 200, "finalUrl": "https://jobs.lever.co/brightonjones/62e60e7e-656d-42ef-a06d-ca720471b6b4", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}, {"url": "https://api.lever.co/v0/postings/brightonjones/62e60e7e-656d-42ef-a06d-ca720471b6b4", "status": 200, "finalUrl": "https://api.lever.co/v0/postings/brightonjones/62e60e7e-656d-42ef-a06d-ca720471b6b4", "outcome": "reachable", "reason": "Lever public job API contains the posting"}]},
     {"url": "https://jobs.lever.co/brightonjones/62e60e7e-656d-42ef-a06d-ca720471b6b4/apply", "jobIds": ["lever-brightonjones-62e60e7e-656d-42ef-a06d-ca720471b6b4"], "sources": ["Lever"], "outcome": "reachable", "observations": [{"url": "https://jobs.lever.co/brightonjones/62e60e7e-656d-42ef-a06d-ca720471b6b4/apply", "status": 200, "finalUrl": "https://jobs.lever.co/brightonjones/62e60e7e-656d-42ef-a06d-ca720471b6b4/apply", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}, {"url": "https://api.lever.co/v0/postings/brightonjones/62e60e7e-656d-42ef-a06d-ca720471b6b4", "status": 200, "finalUrl": "https://api.lever.co/v0/postings/brightonjones/62e60e7e-656d-42ef-a06d-ca720471b6b4", "outcome": "reachable", "reason": "Lever public job API contains the posting"}]},
@@ -987,7 +987,7 @@
     {"url": "https://www.jobleads.com/us/job/unified-endpoint-intune-administrator--colorado-springs--e35e47df34a54fd5fce8f8e3e2c099184?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-dexian-colorado-springs-co-unified-endpoint-intune-administrator-97caf54a1a"], "sources": ["SerpAPI Google Jobs"], "outcome": "blocked", "observations": [{"url": "https://www.jobleads.com/us/job/unified-endpoint-intune-administrator--colorado-springs--e35e47df34a54fd5fce8f8e3e2c099184?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 403, "finalUrl": "https://www.jobleads.com/us/job/unified-endpoint-intune-administrator--colorado-springs--e35e47df34a54fd5fce8f8e3e2c099184?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "blocked", "reason": "Access/bot protection; destination validity unknown"}]},
     {"url": "https://www.jobleads.com/us/job/vip-onsite-senior-systems-engineer-zero-touch-endpoint--costa-mesa--e7f35330fa7aa4fbd60cf67d990d6226d?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-t2-group-costa-mesa-ca-vip-onsite-senior-systems-engineer-zero-touch-endpoint-db58eaad5e"], "sources": ["SerpAPI Google Jobs"], "outcome": "blocked", "observations": [{"url": "https://www.jobleads.com/us/job/vip-onsite-senior-systems-engineer-zero-touch-endpoint--costa-mesa--e7f35330fa7aa4fbd60cf67d990d6226d?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 403, "finalUrl": "https://www.jobleads.com/us/job/vip-onsite-senior-systems-engineer-zero-touch-endpoint--costa-mesa--e7f35330fa7aa4fbd60cf67d990d6226d?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "blocked", "reason": "Access/bot protection; destination validity unknown"}]},
     {"url": "https://www.jobleads.com/us/job/windows-engineer-remote-on-call-powershell-pro--alexandria--ef95c303474722bc77a9cc7a88911f601?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-baynova-llc-alexandria-va-windows-engineer-remote-on-call-powershell-pro-5ed11cc068"], "sources": ["SerpAPI Google Jobs"], "outcome": "blocked", "observations": [{"url": "https://www.jobleads.com/us/job/windows-engineer-remote-on-call-powershell-pro--alexandria--ef95c303474722bc77a9cc7a88911f601?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 403, "finalUrl": "https://www.jobleads.com/us/job/windows-engineer-remote-on-call-powershell-pro--alexandria--ef95c303474722bc77a9cc7a88911f601?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "blocked", "reason": "Access/bot protection; destination validity unknown"}]},
-    {"url": "https://www.jobserve.com/us/en/extjob/AIML-SR-IOS-MACOS-ENGINEER-SIRI-AND-INFORMATION-INTELLIGENCE-in-Cupertino-California-USA-DC3E774CE11DA10A81/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-apple-inc-cupertino-ca-aiml-sr-ios-macos-engineer-siri-and-information-intelligence-ff4ac47811"], "sources": ["SerpAPI Google Jobs"], "outcome": "reachable", "observations": [{"url": "https://www.jobserve.com/us/en/extjob/AIML-SR-IOS-MACOS-ENGINEER-SIRI-AND-INFORMATION-INTELLIGENCE-in-Cupertino-California-USA-DC3E774CE11DA10A81/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 200, "finalUrl": "https://www.jobserve.com/us/en/extjob/AIML-SR-IOS-MACOS-ENGINEER-SIRI-AND-INFORMATION-INTELLIGENCE-in-Cupertino-California-USA-DC3E774CE11DA10A81/?CustomText=6013&utm_campaign=google_jobs_apply&cx=1&rcu=CAE227B32FDF7F2D5C841A43D352AAD670E2C579D294C34A087E16F64F67D4894C63691D43FF8C68BAD79D8B90E3435AB2D5AF9527E39998118329271BF1D220BD4C74B508686668DD86C1EC19C5F812E3D89BDBC3FE29A35008EDB0124BF6D6A4C0B5316D7EF16E83B5F4CE00EF3145C0E74E7238E90567B2A03C0E5329D8D3CC8F1B596077A22AE98A11DB08A64E16C874F6B71834320EA77F26430871F5B5DAA822CE244745099988F98DE72CA3566EE922AE37257FAB8183D45AE1D3E317B1B308C472", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
+    {"url": "https://www.jobserve.com/us/en/extjob/AIML-SR-IOS-MACOS-ENGINEER-SIRI-AND-INFORMATION-INTELLIGENCE-in-Cupertino-California-USA-DC3E774CE11DA10A81/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-apple-inc-cupertino-ca-aiml-sr-ios-macos-engineer-siri-and-information-intelligence-ff4ac47811"], "sources": ["SerpAPI Google Jobs"], "outcome": "unverified", "observations": [{"url": "https://www.jobserve.com/us/en/extjob/AIML-SR-IOS-MACOS-ENGINEER-SIRI-AND-INFORMATION-INTELLIGENCE-in-Cupertino-California-USA-DC3E774CE11DA10A81/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 200, "finalUrl": "https://www.jobserve.com/us/en/extjob/AIML-SR-IOS-MACOS-ENGINEER-SIRI-AND-INFORMATION-INTELLIGENCE-in-Cupertino-California-USA-DC3E774CE11DA10A81/?CustomText=6013&utm_campaign=google_jobs_apply&cx=1&rcu=CAE227B32FDF7F2D5C841A43D352AAD670E2C579D294C34A087E16F64F67D4894C63691D43FF8C68BAD79D8B90E3435AB2D5AF9527E39998118329271BF1D220BD4C74B508686668DD86C1EC19C5F812E3D89BDBC3FE29A35008EDB0124BF6D6A4C0B5316D7EF16E83B5F4CE00EF3145C0E74E7238E90567B2A03C0E5329D8D3CC8F1B596077A22AE98A11DB08A64E16C874F6B71834320EA77F26430871F5B5DAA822CE244745099988F98DE72CA3566EE922AE37257FAB8183D45AE1D3E317B1B308C472", "outcome": "unverified", "reason": "Redirected to a different resource; posting availability unverified"}]},
     {"url": "https://www.jobstore.com/us/job/l26467822/modern-workplace-engineer-sharepoint-power-platform-job?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-aven-hospitality-arlington-tx-modern-workplace-engineer-sharepoint-power-platform-ac7ac77e00"], "sources": ["SerpAPI Google Jobs"], "outcome": "blocked", "observations": [{"url": "https://www.jobstore.com/us/job/l26467822/modern-workplace-engineer-sharepoint-power-platform-job?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 403, "finalUrl": "https://www.jobstore.com/us/job/l26467822/modern-workplace-engineer-sharepoint-power-platform-job?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "blocked", "reason": "Access/bot protection; destination validity unknown"}]},
     {"url": "https://www.jobzmall.com/allina-health-system/job/digital-workplace-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-allina-health-system-minneapolis-mn-digital-workplace-engineer-bbd8e2a528"], "sources": ["SerpAPI Google Jobs"], "outcome": "reachable", "observations": [{"url": "https://www.jobzmall.com/allina-health-system/job/digital-workplace-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 200, "finalUrl": "https://www.jobzmall.com/allina-health-system/job/digital-workplace-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
     {"url": "https://www.jobzmall.com/capital-one/job/manager-endpoint-security-engineer-2?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-capital-one-mclean-va-manager-endpoint-security-engineer-69a5c352a9"], "sources": ["SerpAPI Google Jobs"], "outcome": "reachable", "observations": [{"url": "https://www.jobzmall.com/capital-one/job/manager-endpoint-security-engineer-2?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 200, "finalUrl": "https://www.jobzmall.com/capital-one/job/manager-endpoint-security-engineer-2?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
@@ -1112,7 +1112,7 @@
     {"url": "https://www.monster.com/job-openings/sr-endpoint-security-microsoft-engineer-media-pa--77fc1049-ca34-4e47-9a69-2e5154d61d8e?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-expert-in-recruitment-solutions-pennsylvania-sr-endpoint-security-microsoft-engineer-1d69ea8448"], "sources": ["SerpAPI Google Jobs"], "outcome": "blocked", "observations": [{"url": "https://www.monster.com/job-openings/sr-endpoint-security-microsoft-engineer-media-pa--77fc1049-ca34-4e47-9a69-2e5154d61d8e?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 403, "finalUrl": "https://www.monster.com/job-openings/sr-endpoint-security-microsoft-engineer-media-pa--77fc1049-ca34-4e47-9a69-2e5154d61d8e?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "blocked", "reason": "Access/bot protection; destination validity unknown"}]},
     {"url": "https://www.monster.com/job-openings/staff-tech-operations-engineer-payment-pops-sonic--87f21cfe-cb3e-47a3-aa1d-d87f5a87ebfd?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-inspire-brands-united-states-staff-tech-operations-engineer-payment-pops-sonic-25377d8e63"], "sources": ["SerpAPI Google Jobs"], "outcome": "blocked", "observations": [{"url": "https://www.monster.com/job-openings/staff-tech-operations-engineer-payment-pops-sonic--87f21cfe-cb3e-47a3-aa1d-d87f5a87ebfd?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 403, "finalUrl": "https://www.monster.com/job-openings/staff-tech-operations-engineer-payment-pops-sonic--87f21cfe-cb3e-47a3-aa1d-d87f5a87ebfd?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "blocked", "reason": "Access/bot protection; destination validity unknown"}]},
     {"url": "https://www.monster.com/job-openings/staff-windows-low-level-c-engineer-endpoint-security-laclede-id--621f187d-7527-43a9-8560-1d738128700c?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-sentinelone-inc-anywhere-staff-windows-low-level-c-engineer-endpoint-security-9f542d26ec"], "sources": ["SerpAPI Google Jobs"], "outcome": "blocked", "observations": [{"url": "https://www.monster.com/job-openings/staff-windows-low-level-c-engineer-endpoint-security-laclede-id--621f187d-7527-43a9-8560-1d738128700c?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 403, "finalUrl": "https://www.monster.com/job-openings/staff-windows-low-level-c-engineer-endpoint-security-laclede-id--621f187d-7527-43a9-8560-1d738128700c?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "blocked", "reason": "Access/bot protection; destination validity unknown"}]},
-    {"url": "https://www.okta.com/company/careers/opportunity/8143733?gh_jid=8143733", "jobIds": ["greenhouse-okta-8143733"], "sources": ["Greenhouse"], "outcome": "reachable", "observations": [{"url": "https://www.okta.com/company/careers/opportunity/8143733?gh_jid=8143733", "status": 200, "finalUrl": "https://www.okta.com/company/careers/senior-solutions-engineer-okta-8143733/", "outcome": "reachable", "reason": "HTTP success; does not prove vacancy remains open"}]},
+    {"url": "https://www.okta.com/company/careers/opportunity/8143733?gh_jid=8143733", "jobIds": ["greenhouse-okta-8143733"], "sources": ["Greenhouse"], "outcome": "unverified", "observations": [{"url": "https://www.okta.com/company/careers/opportunity/8143733?gh_jid=8143733", "status": 200, "finalUrl": "https://www.okta.com/company/careers/senior-solutions-engineer-okta-8143733/", "outcome": "unverified", "reason": "Redirected to a different resource; posting availability unverified"}]},
     {"url": "https://www.recruit.net/job/desktop-administrator-l--jobs/12D6F6287BCC6FFE?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-wipro-limited-colorado-desktop-administrator-l2-cda99bc59d"], "sources": ["SerpAPI Google Jobs"], "outcome": "blocked", "observations": [{"url": "https://www.recruit.net/job/desktop-administrator-l--jobs/12D6F6287BCC6FFE?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 403, "finalUrl": "https://www.recruit.net/job/desktop-administrator-l--jobs/12D6F6287BCC6FFE?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "blocked", "reason": "Access/bot protection; destination validity unknown"}]},
     {"url": "https://www.recruit.net/job/endpoint-engineer-windows-mecm-jobs/0042E1B608F70541?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-lts-albany-ca-lead-endpoint-engineer-windows-mecm-62db19e871"], "sources": ["SerpAPI Google Jobs"], "outcome": "blocked", "observations": [{"url": "https://www.recruit.net/job/endpoint-engineer-windows-mecm-jobs/0042E1B608F70541?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 403, "finalUrl": "https://www.recruit.net/job/endpoint-engineer-windows-mecm-jobs/0042E1B608F70541?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "blocked", "reason": "Access/bot protection; destination validity unknown"}]},
     {"url": "https://www.recruit.net/job/pos-client-platform-engineer-jobs/8D35E8C9F3BCDBB8?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "jobIds": ["serpapi-toshiba-global-commerce-solutions-durham-ar-pos-client-platform-engineer-9c55cc78b1"], "sources": ["SerpAPI Google Jobs"], "outcome": "blocked", "observations": [{"url": "https://www.recruit.net/job/pos-client-platform-engineer-jobs/8D35E8C9F3BCDBB8?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "status": 403, "finalUrl": "https://www.recruit.net/job/pos-client-platform-engineer-jobs/8D35E8C9F3BCDBB8?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic", "outcome": "blocked", "reason": "Access/bot protection; destination validity unknown"}]},
@@ -2620,5 +2620,1486 @@
     }
   ],
   "action": "Removed 26 confirmed dead listings and excluded their exact source URLs from runtime and subsequent refreshes. Kept every blocked, rate-limited, authentication-gated, or inconclusive listing."
+},
+  "redirectCorrection": {
+  "classifiedAt": "2026-09-23T14:26:09.773Z",
+  "note": "Original response evidence reclassified with identity-preserving redirect rules; no new network observation implied.",
+  "urls": [
+    "https://br.linkedin.com/jobs/view/intune-jamf-administrator-at-ultracon-consultoria-4457273018",
+    "https://careers.oracle.com/en/job/343967?utm_medium=search+engine&utm_source=google&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+    "https://es.linkedin.com/jobs/view/t%C3%A9cnico-senior-endpoint-ingles-b2-hibrido-barcelona-at-experis-espa%C3%B1a-4457750431",
+    "https://fa-etum-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/requisitions/preview/41900?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+    "https://jobs.elastic.co/jobs?gh_jid=8119448&gh_jid=8119448",
+    "https://jobs.elastic.co/jobs?gh_jid=8161819&gh_jid=8161819",
+    "https://jobs.elastic.co/jobs?gh_jid=8161821&gh_jid=8161821",
+    "https://jobs.elastic.co/jobs?gh_jid=8214106&gh_jid=8214106",
+    "https://jobs.elastic.co/jobs?gh_jid=8214187&gh_jid=8214187",
+    "https://www.jobserve.com/us/en/extjob/AIML-SR-IOS-MACOS-ENGINEER-SIRI-AND-INFORMATION-INTELLIGENCE-in-Cupertino-California-USA-DC3E774CE11DA10A81/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+    "https://www.okta.com/company/careers/opportunity/8143733?gh_jid=8143733"
+  ]
+},
+  "reviewVerification": {
+  "startedAt": "2026-09-23T14:25:34.134Z",
+  "completedAt": "2026-09-23T14:27:12.633Z",
+  "activeListings": 1093,
+  "summary": {
+    "internal": {
+      "reachable": 1159
+    },
+    "external": {
+      "reachable": 845,
+      "dead": 26,
+      "transient": 4,
+      "unverified": 21,
+      "blocked": 206,
+      "auth": 36,
+      "rate-limited": 4
+    }
+  },
+  "note": "Fresh production crawl includes still-deployed excluded listings until merge. All 26 dead destinations match the original remediation. Original snapshot above has corrected redirect classifications.",
+  "externalDestinations": 1142,
+  "navigationOnlyResults": [
+    {
+      "url": "https://aidevboard.com/job/6ed45b53-3ebe-41a1-9dcf-a596a72d3249",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://aidevboard.com/job/6ed45b53-3ebe-41a1-9dcf-a596a72d3249",
+          "status": 200,
+          "finalUrl": "https://aidevboard.com/job/6ed45b53-3ebe-41a1-9dcf-a596a72d3249",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://bebee.com/us/jobs/mdm-data-engineer-enexus-global-dallas-tx-united-states--oneredce-6874_1c53d6123a147dc9d89b8d28447b8875?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://bebee.com/us/jobs/mdm-data-engineer-enexus-global-dallas-tx-united-states--oneredce-6874_1c53d6123a147dc9d89b8d28447b8875?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://bebee.com/us/jobs/mdm-data-engineer-enexus-global-dallas-tx-united-states--oneredce-6874_1c53d6123a147dc9d89b8d28447b8875?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        },
+        {
+          "url": "https://bebee.com/us/jobs/mdm-data-engineer-enexus-global-dallas-tx-united-states--oneredce-6874_1c53d6123a147dc9d89b8d28447b8875?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://bebee.com/us/jobs/mdm-data-engineer-enexus-global-dallas-tx-united-states--oneredce-6874_1c53d6123a147dc9d89b8d28447b8875?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://bebee.com/us/jobs/senior-endpoint-engineer-dual-platform-zero-touch-deploy-swiftcruit-chicago--pureheal-28528_23106_404a0f78131ffafa994b586d0b3598d4?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://bebee.com/us/jobs/senior-endpoint-engineer-dual-platform-zero-touch-deploy-swiftcruit-chicago--pureheal-28528_23106_404a0f78131ffafa994b586d0b3598d4?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://bebee.com/us/jobs/senior-endpoint-engineer-dual-platform-zero-touch-deploy-swiftcruit-chicago--pureheal-28528_23106_404a0f78131ffafa994b586d0b3598d4?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        },
+        {
+          "url": "https://bebee.com/us/jobs/senior-endpoint-engineer-dual-platform-zero-touch-deploy-swiftcruit-chicago--pureheal-28528_23106_404a0f78131ffafa994b586d0b3598d4?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://bebee.com/us/jobs/senior-endpoint-engineer-dual-platform-zero-touch-deploy-swiftcruit-chicago--pureheal-28528_23106_404a0f78131ffafa994b586d0b3598d4?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://br.jobsora.com/oferta-53473781806",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://br.jobsora.com/oferta-53473781806",
+          "status": 410,
+          "finalUrl": "https://br.jobsora.com/oferta-53473781806",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        },
+        {
+          "url": "https://br.jobsora.com/oferta-53473781806",
+          "status": 410,
+          "finalUrl": "https://br.jobsora.com/oferta-53473781806",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://buymeacoffee.com/jorgeasaurus",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://buymeacoffee.com/jorgeasaurus",
+          "status": 200,
+          "finalUrl": "https://buymeacoffee.com/jorgeasaurus",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://careers.teksystems.com/us/en/job/JP-006261912/Intune-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://careers.teksystems.com/us/en/job/JP-006261912/Intune-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://careers.teksystems.com/us/en/job/JP-006261912/Intune-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        },
+        {
+          "url": "https://careers.teksystems.com/us/en/job/JP-006261912/Intune-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://careers.teksystems.com/us/en/job/JP-006261912/Intune-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://careers.usbank.com/global/en/job/UBNAGLOBAL20260025708EXTERNALENGLOBAL/Senior-Windows-Endpoint-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://careers.usbank.com/global/en/job/UBNAGLOBAL20260025708EXTERNALENGLOBAL/Senior-Windows-Endpoint-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://careers.usbank.com/global/en/job/UBNAGLOBAL20260025708EXTERNALENGLOBAL/Senior-Windows-Endpoint-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        },
+        {
+          "url": "https://careers.usbank.com/global/en/job/UBNAGLOBAL20260025708EXTERNALENGLOBAL/Senior-Windows-Endpoint-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://careers.usbank.com/global/en/job/UBNAGLOBAL20260025708EXTERNALENGLOBAL/Senior-Windows-Endpoint-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://careers.zacharypiper.com/details/1000/windows_endpoint_engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://careers.zacharypiper.com/details/1000/windows_endpoint_engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 404,
+          "finalUrl": "https://careers.zacharypiper.com/details/1000/windows_endpoint_engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 404; requires repeat confirmation"
+        },
+        {
+          "url": "https://careers.zacharypiper.com/details/1000/windows_endpoint_engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 404,
+          "finalUrl": "https://careers.zacharypiper.com/details/1000/windows_endpoint_engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 404; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://careers.zacharypiper.com/details/930/senior_windows_endpoint_engineer_174380?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://careers.zacharypiper.com/details/930/senior_windows_endpoint_engineer_174380?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 404,
+          "finalUrl": "https://careers.zacharypiper.com/details/930/senior_windows_endpoint_engineer_174380?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 404; requires repeat confirmation"
+        },
+        {
+          "url": "https://careers.zacharypiper.com/details/930/senior_windows_endpoint_engineer_174380?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 404,
+          "finalUrl": "https://careers.zacharypiper.com/details/930/senior_windows_endpoint_engineer_174380?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 404; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://github.com/jorgeasaurus/EndpointJobs",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://github.com/jorgeasaurus/EndpointJobs",
+          "status": 200,
+          "finalUrl": "https://github.com/jorgeasaurus/EndpointJobs",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://github.com/jorgeasaurus/EndpointJobs/blob/main/docs/api.md",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://github.com/jorgeasaurus/EndpointJobs/blob/main/docs/api.md",
+          "status": 200,
+          "finalUrl": "https://github.com/jorgeasaurus/EndpointJobs/blob/main/docs/api.md",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://github.com/jorgeasaurus/EndpointJobs/blob/main/powershell/EndpointJobs/README.md",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://github.com/jorgeasaurus/EndpointJobs/blob/main/powershell/EndpointJobs/README.md",
+          "status": 200,
+          "finalUrl": "https://github.com/jorgeasaurus/EndpointJobs/blob/main/powershell/EndpointJobs/README.md",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://github.com/jorgeasaurus/EndpointJobs/issues/new?template=report-or-request.yml",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "auth",
+      "observations": [
+        {
+          "url": "https://github.com/jorgeasaurus/EndpointJobs/issues/new?template=report-or-request.yml",
+          "status": 200,
+          "finalUrl": "https://github.com/login?return_to=https%3A%2F%2Fgithub.com%2Fjorgeasaurus%2FEndpointJobs%2Fissues%2Fnew%3Ftemplate%3Dreport-or-request.yml",
+          "outcome": "auth",
+          "reason": "Authentication required"
+        }
+      ]
+    },
+    {
+      "url": "https://github.com/jorgeasaurus/EndpointJobs/issues/new?title=Request+coverage+for+a+missing+city+or+region&body=%23%23%23+City+or+region%0A%0A%23%23%23+State+or+province%0A%0A%23%23%23+Country%0A%0A%23%23%23+Additional+context+%28optional%29%0ATell+us+about+the+endpoint+roles+you+are+looking+for.%0A%0A%23%23%23+Relevant+job+sources+%28optional%29%0AAdd+links+to+local+job+boards+or+employer+career+pages.",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "auth",
+      "observations": [
+        {
+          "url": "https://github.com/jorgeasaurus/EndpointJobs/issues/new?title=Request+coverage+for+a+missing+city+or+region&body=%23%23%23+City+or+region%0A%0A%23%23%23+State+or+province%0A%0A%23%23%23+Country%0A%0A%23%23%23+Additional+context+%28optional%29%0ATell+us+about+the+endpoint+roles+you+are+looking+for.%0A%0A%23%23%23+Relevant+job+sources+%28optional%29%0AAdd+links+to+local+job+boards+or+employer+career+pages.",
+          "status": 200,
+          "finalUrl": "https://github.com/login?return_to=https%3A%2F%2Fgithub.com%2Fjorgeasaurus%2FEndpointJobs%2Fissues%2Fnew%3Ftitle%3DRequest%2Bcoverage%2Bfor%2Ba%2Bmissing%2Bcity%2Bor%2Bregion%26body%3D%2523%2523%2523%2BCity%2Bor%2Bregion%250A%250A%2523%2523%2523%2BState%2Bor%2Bprovince%250A%250A%2523%2523%2523%2BCountry%250A%250A%2523%2523%2523%2BAdditional%2Bcontext%2B%2528optional%2529%250ATell%2Bus%2Babout%2Bthe%2Bendpoint%2Broles%2Byou%2Bare%2Blooking%2Bfor.%250A%250A%2523%2523%2523%2BRelevant%2Bjob%2Bsources%2B%2528optional%2529%250AAdd%2Blinks%2Bto%2Blocal%2Bjob%2Bboards%2Bor%2Bemployer%2Bcareer%2Bpages.",
+          "outcome": "auth",
+          "reason": "Authentication required"
+        }
+      ]
+    },
+    {
+      "url": "https://haystackapp.io/jobs/328cf0d4-eea1-450f-a052-a15e2ee6b6a6?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://haystackapp.io/jobs/328cf0d4-eea1-450f-a052-a15e2ee6b6a6?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 404,
+          "finalUrl": "https://haystackapp.io/jobs/328cf0d4-eea1-450f-a052-a15e2ee6b6a6?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 404; requires repeat confirmation"
+        },
+        {
+          "url": "https://haystackapp.io/jobs/328cf0d4-eea1-450f-a052-a15e2ee6b6a6?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 404,
+          "finalUrl": "https://haystackapp.io/jobs/328cf0d4-eea1-450f-a052-a15e2ee6b6a6?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 404; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://job-boards.greenhouse.io/truveta/jobs/5987363004",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://job-boards.greenhouse.io/truveta/jobs/5987363004",
+          "status": 200,
+          "finalUrl": "https://job-boards.greenhouse.io/truveta?error=true",
+          "outcome": "unverified",
+          "reason": "Redirected to a different resource; posting availability unverified"
+        },
+        {
+          "url": "https://boards-api.greenhouse.io/v1/boards/truveta/jobs/5987363004",
+          "status": 404,
+          "finalUrl": "https://boards-api.greenhouse.io/v1/boards/truveta/jobs/5987363004",
+          "outcome": "dead",
+          "reason": "greenhouse job API confirms posting not found (404)"
+        },
+        {
+          "url": "https://boards-api.greenhouse.io/v1/boards/truveta/jobs/5987363004",
+          "status": 404,
+          "finalUrl": "https://boards-api.greenhouse.io/v1/boards/truveta/jobs/5987363004",
+          "outcome": "dead",
+          "reason": "greenhouse job API confirms posting not found (404)"
+        }
+      ]
+    },
+    {
+      "url": "https://jobs.appcast.io/leidos/intune-engineer/58695016311?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://jobs.appcast.io/leidos/intune-engineer/58695016311?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 404,
+          "finalUrl": "https://jobs.appcast.io/leidos/intune-engineer/58695016311?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 404; requires repeat confirmation"
+        },
+        {
+          "url": "https://jobs.appcast.io/leidos/intune-engineer/58695016311?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 404,
+          "finalUrl": "https://jobs.appcast.io/leidos/intune-engineer/58695016311?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 404; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://us.trabajo.org/job-28652-ee0eaf877f14d3b382c37ccd324f6dd3?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://us.trabajo.org/job-28652-ee0eaf877f14d3b382c37ccd324f6dd3?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://us.trabajo.org/job-28652-ee0eaf877f14d3b382c37ccd324f6dd3?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        },
+        {
+          "url": "https://us.trabajo.org/job-28652-ee0eaf877f14d3b382c37ccd324f6dd3?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://us.trabajo.org/job-28652-ee0eaf877f14d3b382c37ccd324f6dd3?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://www.careers.ford.com/job/dearborn/platform-engineer-infrastructure/48560/95946661344?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://www.careers.ford.com/job/dearborn/platform-engineer-infrastructure/48560/95946661344?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 404,
+          "finalUrl": "https://www.careers.ford.com/job/dearborn/platform-engineer-infrastructure/48560/95946661344?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 404; requires repeat confirmation"
+        },
+        {
+          "url": "https://www.careers.ford.com/job/dearborn/platform-engineer-infrastructure/48560/95946661344?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 404,
+          "finalUrl": "https://www.careers.ford.com/job/dearborn/platform-engineer-infrastructure/48560/95946661344?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 404; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://www.clearancejobs.com/jobs/9163098/desktop-and-windows-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://www.clearancejobs.com/jobs/9163098/desktop-and-windows-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 404,
+          "finalUrl": "https://www.clearancejobs.com/jobs/9163098/desktop-and-windows-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 404; requires repeat confirmation"
+        },
+        {
+          "url": "https://www.clearancejobs.com/jobs/9163098/desktop-and-windows-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 404,
+          "finalUrl": "https://www.clearancejobs.com/jobs/9163098/desktop-and-windows-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 404; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://www.clearancejobs.com/jobs/9163099/desktop-and-windows-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://www.clearancejobs.com/jobs/9163099/desktop-and-windows-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 404,
+          "finalUrl": "https://www.clearancejobs.com/jobs/9163099/desktop-and-windows-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 404; requires repeat confirmation"
+        },
+        {
+          "url": "https://www.clearancejobs.com/jobs/9163099/desktop-and-windows-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 404,
+          "finalUrl": "https://www.clearancejobs.com/jobs/9163099/desktop-and-windows-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 404; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://www.clearancejobs.com/jobs/9173270/cyber-security-services-endpoint-security-administration?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://www.clearancejobs.com/jobs/9173270/cyber-security-services-endpoint-security-administration?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 404,
+          "finalUrl": "https://www.clearancejobs.com/jobs/9173270/cyber-security-services-endpoint-security-administration?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 404; requires repeat confirmation"
+        },
+        {
+          "url": "https://www.clearancejobs.com/jobs/9173270/cyber-security-services-endpoint-security-administration?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 404,
+          "finalUrl": "https://www.clearancejobs.com/jobs/9173270/cyber-security-services-endpoint-security-administration?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 404; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://www.dice.com/job-detail/1872801e-1f2e-45ca-b93c-03c4b4baefe0?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://www.dice.com/job-detail/1872801e-1f2e-45ca-b93c-03c4b4baefe0?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.dice.com/job-detail/1872801e-1f2e-45ca-b93c-03c4b4baefe0?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        },
+        {
+          "url": "https://www.dice.com/job-detail/1872801e-1f2e-45ca-b93c-03c4b4baefe0?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.dice.com/job-detail/1872801e-1f2e-45ca-b93c-03c4b4baefe0?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://www.dice.com/job-detail/52d61535-b827-448f-a24e-ce44081bdfa5?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://www.dice.com/job-detail/52d61535-b827-448f-a24e-ce44081bdfa5?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.dice.com/job-detail/52d61535-b827-448f-a24e-ce44081bdfa5?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        },
+        {
+          "url": "https://www.dice.com/job-detail/52d61535-b827-448f-a24e-ce44081bdfa5?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.dice.com/job-detail/52d61535-b827-448f-a24e-ce44081bdfa5?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://www.dice.com/job-detail/c8619ae9-bcc6-4b94-8024-119929a34d66?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://www.dice.com/job-detail/c8619ae9-bcc6-4b94-8024-119929a34d66?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.dice.com/job-detail/c8619ae9-bcc6-4b94-8024-119929a34d66?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        },
+        {
+          "url": "https://www.dice.com/job-detail/c8619ae9-bcc6-4b94-8024-119929a34d66?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.dice.com/job-detail/c8619ae9-bcc6-4b94-8024-119929a34d66?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://www.dice.com/job-detail/dfc36df2-f44a-46cf-87a6-63988bb0a431?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://www.dice.com/job-detail/dfc36df2-f44a-46cf-87a6-63988bb0a431?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.dice.com/job-detail/dfc36df2-f44a-46cf-87a6-63988bb0a431?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        },
+        {
+          "url": "https://www.dice.com/job-detail/dfc36df2-f44a-46cf-87a6-63988bb0a431?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.dice.com/job-detail/dfc36df2-f44a-46cf-87a6-63988bb0a431?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://www.learn4good.com/jobs/albany/georgia/info_technology/5475202860/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://www.learn4good.com/jobs/albany/georgia/info_technology/5475202860/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.learn4good.com/jobs/albany/georgia/info_technology/5475202860/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        },
+        {
+          "url": "https://www.learn4good.com/jobs/albany/georgia/info_technology/5475202860/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.learn4good.com/jobs/albany/georgia/info_technology/5475202860/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://www.learn4good.com/jobs/cleveland/tennessee/info_technology/5481054008/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://www.learn4good.com/jobs/cleveland/tennessee/info_technology/5481054008/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.learn4good.com/jobs/cleveland/tennessee/info_technology/5481054008/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        },
+        {
+          "url": "https://www.learn4good.com/jobs/cleveland/tennessee/info_technology/5481054008/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.learn4good.com/jobs/cleveland/tennessee/info_technology/5481054008/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://www.learn4good.com/jobs/cookeville/tennessee/info_technology/5481057739/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://www.learn4good.com/jobs/cookeville/tennessee/info_technology/5481057739/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.learn4good.com/jobs/cookeville/tennessee/info_technology/5481057739/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        },
+        {
+          "url": "https://www.learn4good.com/jobs/cookeville/tennessee/info_technology/5481057739/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.learn4good.com/jobs/cookeville/tennessee/info_technology/5481057739/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://www.learn4good.com/jobs/covington/kentucky/info_technology/5473094139/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://www.learn4good.com/jobs/covington/kentucky/info_technology/5473094139/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.learn4good.com/jobs/covington/kentucky/info_technology/5473094139/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        },
+        {
+          "url": "https://www.learn4good.com/jobs/covington/kentucky/info_technology/5473094139/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.learn4good.com/jobs/covington/kentucky/info_technology/5473094139/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://www.learn4good.com/jobs/hayden/idaho/management_and_managerial/5474818869/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://www.learn4good.com/jobs/hayden/idaho/management_and_managerial/5474818869/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.learn4good.com/jobs/hayden/idaho/management_and_managerial/5474818869/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        },
+        {
+          "url": "https://www.learn4good.com/jobs/hayden/idaho/management_and_managerial/5474818869/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.learn4good.com/jobs/hayden/idaho/management_and_managerial/5474818869/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://www.learn4good.com/jobs/seattle/washington/info_technology/5452191450/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://www.learn4good.com/jobs/seattle/washington/info_technology/5452191450/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.learn4good.com/jobs/seattle/washington/info_technology/5452191450/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        },
+        {
+          "url": "https://www.learn4good.com/jobs/seattle/washington/info_technology/5452191450/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.learn4good.com/jobs/seattle/washington/info_technology/5452191450/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        }
+      ]
+    },
+    {
+      "url": "https://www.learn4good.com/jobs/winchester/kentucky/info_technology/5464418001/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [],
+      "sources": [
+        "site-navigation"
+      ],
+      "outcome": "dead",
+      "observations": [
+        {
+          "url": "https://www.learn4good.com/jobs/winchester/kentucky/info_technology/5464418001/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.learn4good.com/jobs/winchester/kentucky/info_technology/5464418001/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        },
+        {
+          "url": "https://www.learn4good.com/jobs/winchester/kentucky/info_technology/5464418001/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 410,
+          "finalUrl": "https://www.learn4good.com/jobs/winchester/kentucky/info_technology/5464418001/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "dead",
+          "reason": "HTTP 410; requires repeat confirmation"
+        }
+      ]
+    }
+  ],
+  "changedOutcomes": [
+    {
+      "url": "https://boards.greenhouse.io/andurilindustries/jobs/5246823007?gh_jid=5246823007",
+      "jobIds": [
+        "greenhouse-andurilindustries-5246823007"
+      ],
+      "sources": [
+        "Greenhouse"
+      ],
+      "outcome": "transient",
+      "observations": [
+        {
+          "url": "https://boards.greenhouse.io/andurilindustries/jobs/5246823007?gh_jid=5246823007",
+          "status": 200,
+          "finalUrl": "https://job-boards.greenhouse.io/andurilindustries/jobs/5246823007?gh_jid=5246823007",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        },
+        {
+          "url": "https://boards-api.greenhouse.io/v1/boards/andurilindustries/jobs/5246823007",
+          "outcome": "transient",
+          "reason": "The operation was aborted due to timeout"
+        }
+      ]
+    },
+    {
+      "url": "https://es.linkedin.com/jobs/view/endpoint-management-specialist-at-drees-sommer-espa%C3%B1a-4459969457",
+      "jobIds": [
+        "rapidapi-drees-sommer-espa-a-endpoint-management-specialist-21d0da6edb"
+      ],
+      "sources": [
+        "RapidAPI Daily International Jobs"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://es.linkedin.com/jobs/view/endpoint-management-specialist-at-drees-sommer-espa%C3%B1a-4459969457",
+          "status": 200,
+          "finalUrl": "https://es.linkedin.com/jobs/view/endpoint-management-specialist-at-drees-sommer-espa%C3%B1a-4459969457",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://es.linkedin.com/jobs/view/mdm-technical-architect-remote-at-veeva-systems-4438911816",
+      "jobIds": [
+        "rapidapi-veeva-systems-mdm-technical-architect-remote-def11b2225"
+      ],
+      "sources": [
+        "RapidAPI Daily International Jobs"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://es.linkedin.com/jobs/view/mdm-technical-architect-remote-at-veeva-systems-4438911816",
+          "status": 200,
+          "finalUrl": "https://es.linkedin.com/jobs/view/mdm-technical-architect-remote-at-veeva-systems-4438911816",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://es.linkedin.com/jobs/view/project-manager-proyecto-de-migraci%C3%B3n-mdm-freelance-at-connecting-visions-4461898606",
+      "jobIds": [
+        "rapidapi-connecting-visions-project-manager-proyecto-de-migraci-n-mdm-freelance-5dc587d319"
+      ],
+      "sources": [
+        "RapidAPI Daily International Jobs"
+      ],
+      "outcome": "unverified",
+      "observations": [
+        {
+          "url": "https://es.linkedin.com/jobs/view/project-manager-proyecto-de-migraci%C3%B3n-mdm-freelance-at-connecting-visions-4461898606",
+          "status": 200,
+          "finalUrl": "https://es.linkedin.com/jobs/director-de-proyecto-empleos?trk=expired_jd_redirect",
+          "outcome": "unverified",
+          "reason": "Redirected to a different resource; posting availability unverified"
+        }
+      ]
+    },
+    {
+      "url": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-a-administrador-a-office-365-azure-intune-at-econocom-espa%C3%B1a-4462205307",
+      "jobIds": [
+        "rapidapi-econocom-espa-a-t-cnico-a-administrador-a-office-365-azure-intune-44a61afe49"
+      ],
+      "sources": [
+        "RapidAPI Daily International Jobs"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-a-administrador-a-office-365-azure-intune-at-econocom-espa%C3%B1a-4462205307",
+          "status": 200,
+          "finalUrl": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-a-administrador-a-office-365-azure-intune-at-econocom-espa%C3%B1a-4462205307",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-senior-endpoint-at-selecta-digital-4456908934",
+      "jobIds": [
+        "rapidapi-selecta-digital-t-cnico-senior-endpoint-aced699628"
+      ],
+      "sources": [
+        "RapidAPI Daily International Jobs"
+      ],
+      "outcome": "unverified",
+      "observations": [
+        {
+          "url": "https://es.linkedin.com/jobs/view/t%C3%A9cnico-senior-endpoint-at-selecta-digital-4456908934",
+          "status": 200,
+          "finalUrl": "https://es.linkedin.com/jobs/educador-social-empleos?trk=expired_jd_redirect",
+          "outcome": "unverified",
+          "reason": "Redirected to a different resource; posting availability unverified"
+        }
+      ]
+    },
+    {
+      "url": "https://mx.linkedin.com/jobs/view/endpoint-engineer-at-tata-consultancy-services-4462482959",
+      "jobIds": [
+        "rapidapi-tata-consultancy-services-endpoint-engineer-4fe8c911d0"
+      ],
+      "sources": [
+        "RapidAPI Daily International Jobs"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://mx.linkedin.com/jobs/view/endpoint-engineer-at-tata-consultancy-services-4462482959",
+          "status": 200,
+          "finalUrl": "https://mx.linkedin.com/jobs/view/endpoint-engineer-at-tata-consultancy-services-4462482959",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://mx.linkedin.com/jobs/view/especialista-en-gesti%C3%B3n-y-despliegue-de-parches-con-mecm-e-intune-at-redicsa-4460448450",
+      "jobIds": [
+        "rapidapi-redicsa-especialista-en-gesti-n-y-despliegue-de-parches-con-mecm-e-intune-41888d6fcf"
+      ],
+      "sources": [
+        "RapidAPI Daily International Jobs"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://mx.linkedin.com/jobs/view/especialista-en-gesti%C3%B3n-y-despliegue-de-parches-con-mecm-e-intune-at-redicsa-4460448450",
+          "status": 200,
+          "finalUrl": "https://mx.linkedin.com/jobs/view/especialista-en-gesti%C3%B3n-y-despliegue-de-parches-con-mecm-e-intune-at-redicsa-4460448450",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://mx.linkedin.com/jobs/view/ingeniero-apple-endpoint-jamf-pro-at-bcm-corp-4458019045",
+      "jobIds": [
+        "rapidapi-bcm-ingeniero-apple-endpoint-jamf-pro-96cc64b3e9"
+      ],
+      "sources": [
+        "RapidAPI Daily International Jobs"
+      ],
+      "outcome": "unverified",
+      "observations": [
+        {
+          "url": "https://mx.linkedin.com/jobs/view/ingeniero-apple-endpoint-jamf-pro-at-bcm-corp-4458019045",
+          "status": 200,
+          "finalUrl": "https://es.linkedin.com/jobs/ingeniero-residente-empleos?trk=expired_jd_redirect",
+          "outcome": "unverified",
+          "reason": "Redirected to a different resource; posting availability unverified"
+        }
+      ]
+    },
+    {
+      "url": "https://mx.linkedin.com/jobs/view/mdm-sales-manager-%E2%80%93-tijuana-m-f-at-sterimed-us-4459309627",
+      "jobIds": [
+        "rapidapi-sterimed-us-mdm-sales-manager-tijuana-m-f-7d5d1874b0"
+      ],
+      "sources": [
+        "RapidAPI Daily International Jobs"
+      ],
+      "outcome": "rate-limited",
+      "observations": [
+        {
+          "url": "https://mx.linkedin.com/jobs/view/mdm-sales-manager-%E2%80%93-tijuana-m-f-at-sterimed-us-4459309627",
+          "status": 429,
+          "finalUrl": "https://mx.linkedin.com/jobs/view/mdm-sales-manager-%E2%80%93-tijuana-m-f-at-sterimed-us-4459309627",
+          "outcome": "rate-limited",
+          "reason": "Rate limited; not a dead link"
+        }
+      ]
+    },
+    {
+      "url": "https://mx.linkedin.com/jobs/view/microsoft-365-intune-architect-at-persistent-systems-4466603136",
+      "jobIds": [
+        "rapidapi-persistent-systems-microsoft-365-intune-architect-1c739396e5"
+      ],
+      "sources": [
+        "RapidAPI Daily International Jobs"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://mx.linkedin.com/jobs/view/microsoft-365-intune-architect-at-persistent-systems-4466603136",
+          "status": 200,
+          "finalUrl": "https://mx.linkedin.com/jobs/view/microsoft-365-intune-architect-at-persistent-systems-4466603136",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.adzuna.com/details/5866617223",
+      "jobIds": [
+        "adzuna-5866617223"
+      ],
+      "sources": [
+        "Adzuna"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.adzuna.com/details/5866617223",
+          "status": 202,
+          "finalUrl": "https://www.adzuna.com/details/5866617223",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.adzuna.com/details/5867214828",
+      "jobIds": [
+        "adzuna-5867214828"
+      ],
+      "sources": [
+        "Adzuna"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.adzuna.com/details/5867214828",
+          "status": 202,
+          "finalUrl": "https://www.adzuna.com/details/5867214828",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.adzuna.com/land/ad/5865858255?se=VsGTgFG38RGcJLhG1VQLjQ&v=52A1F37535E89760AD01EFEA803D21ACFDA3410E",
+      "jobIds": [
+        "adzuna-5865858255"
+      ],
+      "sources": [
+        "Adzuna"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.adzuna.com/land/ad/5865858255?se=VsGTgFG38RGcJLhG1VQLjQ&v=52A1F37535E89760AD01EFEA803D21ACFDA3410E",
+          "status": 202,
+          "finalUrl": "https://www.adzuna.com/land/ad/5865858255?se=VsGTgFG38RGcJLhG1VQLjQ&v=52A1F37535E89760AD01EFEA803D21ACFDA3410E",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.adzuna.com/land/ad/5866144271?se=NBssg1G38RG1sYQbCK3HdA&v=36832415746C220E683CE00EAB14399C341CE19A",
+      "jobIds": [
+        "adzuna-5866144271"
+      ],
+      "sources": [
+        "Adzuna"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.adzuna.com/land/ad/5866144271?se=NBssg1G38RG1sYQbCK3HdA&v=36832415746C220E683CE00EAB14399C341CE19A",
+          "status": 202,
+          "finalUrl": "https://www.adzuna.com/land/ad/5866144271?se=NBssg1G38RG1sYQbCK3HdA&v=36832415746C220E683CE00EAB14399C341CE19A",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.adzuna.com/land/ad/5866302569?se=cjp0iFG38RGcJLhG1VQLjQ&v=E36DE27B16415BE72A96181B13C681FD8FA64E00",
+      "jobIds": [
+        "adzuna-5866302569"
+      ],
+      "sources": [
+        "Adzuna"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.adzuna.com/land/ad/5866302569?se=cjp0iFG38RGcJLhG1VQLjQ&v=E36DE27B16415BE72A96181B13C681FD8FA64E00",
+          "status": 202,
+          "finalUrl": "https://www.adzuna.com/land/ad/5866302569?se=cjp0iFG38RGcJLhG1VQLjQ&v=E36DE27B16415BE72A96181B13C681FD8FA64E00",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.adzuna.com/land/ad/5866460800?se=gC-FflG38RGC4YytmZ486A&v=E593AF38F98197CB9F67BCECF99053E943989B5A",
+      "jobIds": [
+        "adzuna-5866460800"
+      ],
+      "sources": [
+        "Adzuna"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.adzuna.com/land/ad/5866460800?se=gC-FflG38RGC4YytmZ486A&v=E593AF38F98197CB9F67BCECF99053E943989B5A",
+          "status": 202,
+          "finalUrl": "https://www.adzuna.com/land/ad/5866460800?se=gC-FflG38RGC4YytmZ486A&v=E593AF38F98197CB9F67BCECF99053E943989B5A",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.adzuna.com/land/ad/5867346250?se=nmuSilG38RGC4YytmZ486A&v=310034601E803897C801BE1AECFDA8D76EAD0642",
+      "jobIds": [
+        "adzuna-5867346250"
+      ],
+      "sources": [
+        "Adzuna"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.adzuna.com/land/ad/5867346250?se=nmuSilG38RGC4YytmZ486A&v=310034601E803897C801BE1AECFDA8D76EAD0642",
+          "status": 202,
+          "finalUrl": "https://www.adzuna.com/land/ad/5867346250?se=nmuSilG38RGC4YytmZ486A&v=310034601E803897C801BE1AECFDA8D76EAD0642",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.adzuna.com/land/ad/5867881842?se=VsYiflG38RG1sYQbCK3HdA&v=CCB7FAA0F087FB15C9B468BFF7E54B84E727EB21",
+      "jobIds": [
+        "adzuna-5867881842"
+      ],
+      "sources": [
+        "Adzuna"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.adzuna.com/land/ad/5867881842?se=VsYiflG38RG1sYQbCK3HdA&v=CCB7FAA0F087FB15C9B468BFF7E54B84E727EB21",
+          "status": 202,
+          "finalUrl": "https://www.adzuna.com/land/ad/5867881842?se=VsYiflG38RG1sYQbCK3HdA&v=CCB7FAA0F087FB15C9B468BFF7E54B84E727EB21",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.adzuna.com/land/ad/5868336155?se=cB-LiVG38RGC4YytmZ486A&v=BEA45C5A220A86577F0B07DB123D7C3F08884194",
+      "jobIds": [
+        "adzuna-5868336155"
+      ],
+      "sources": [
+        "Adzuna"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.adzuna.com/land/ad/5868336155?se=cB-LiVG38RGC4YytmZ486A&v=BEA45C5A220A86577F0B07DB123D7C3F08884194",
+          "status": 202,
+          "finalUrl": "https://www.adzuna.com/land/ad/5868336155?se=cB-LiVG38RGC4YytmZ486A&v=BEA45C5A220A86577F0B07DB123D7C3F08884194",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.adzuna.com/land/ad/5868373269?se=Um9tf1G38RGC4YytmZ486A&v=C48AE671974DF1A0D0AE0DBF2DBA7FE8E5349DC6",
+      "jobIds": [
+        "adzuna-5868373269"
+      ],
+      "sources": [
+        "Adzuna"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.adzuna.com/land/ad/5868373269?se=Um9tf1G38RGC4YytmZ486A&v=C48AE671974DF1A0D0AE0DBF2DBA7FE8E5349DC6",
+          "status": 202,
+          "finalUrl": "https://www.adzuna.com/land/ad/5868373269?se=Um9tf1G38RGC4YytmZ486A&v=C48AE671974DF1A0D0AE0DBF2DBA7FE8E5349DC6",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.adzuna.com/land/ad/5868750780?se=PM7IilG38RGiDIFjuPUDPw&v=169A36CB62113B75F8D151637E7276DDC2E27761",
+      "jobIds": [
+        "adzuna-5868750780"
+      ],
+      "sources": [
+        "Adzuna"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.adzuna.com/land/ad/5868750780?se=PM7IilG38RGiDIFjuPUDPw&v=169A36CB62113B75F8D151637E7276DDC2E27761",
+          "status": 202,
+          "finalUrl": "https://www.adzuna.com/land/ad/5868750780?se=PM7IilG38RGiDIFjuPUDPw&v=169A36CB62113B75F8D151637E7276DDC2E27761",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.adzuna.com/land/ad/5869673313?se=VsYiflG38RG1sYQbCK3HdA&v=C9FFA689B61E02E60061F1DB4DC0C056B802ECB1",
+      "jobIds": [
+        "adzuna-5869673313"
+      ],
+      "sources": [
+        "Adzuna"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.adzuna.com/land/ad/5869673313?se=VsYiflG38RG1sYQbCK3HdA&v=C9FFA689B61E02E60061F1DB4DC0C056B802ECB1",
+          "status": 202,
+          "finalUrl": "https://www.adzuna.com/land/ad/5869673313?se=VsYiflG38RG1sYQbCK3HdA&v=C9FFA689B61E02E60061F1DB4DC0C056B802ECB1",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.adzuna.com/land/ad/5870617912?se=QH6sf1G38RGxkZC1KGKl2w&v=DDB8D2C5D137B523153A21E93F5E1B046A4684B3",
+      "jobIds": [
+        "adzuna-5870617912"
+      ],
+      "sources": [
+        "Adzuna"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.adzuna.com/land/ad/5870617912?se=QH6sf1G38RGxkZC1KGKl2w&v=DDB8D2C5D137B523153A21E93F5E1B046A4684B3",
+          "status": 202,
+          "finalUrl": "https://www.adzuna.com/land/ad/5870617912?se=QH6sf1G38RGxkZC1KGKl2w&v=DDB8D2C5D137B523153A21E93F5E1B046A4684B3",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.adzuna.com/land/ad/5871131331?se=Um9tf1G38RGC4YytmZ486A&v=D4C7481B93DAF73B0EB7F39D8A6C1F734F81384F",
+      "jobIds": [
+        "adzuna-5871131331"
+      ],
+      "sources": [
+        "Adzuna"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.adzuna.com/land/ad/5871131331?se=Um9tf1G38RGC4YytmZ486A&v=D4C7481B93DAF73B0EB7F39D8A6C1F734F81384F",
+          "status": 202,
+          "finalUrl": "https://www.adzuna.com/land/ad/5871131331?se=Um9tf1G38RGC4YytmZ486A&v=D4C7481B93DAF73B0EB7F39D8A6C1F734F81384F",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.adzuna.com/land/ad/5871238074?se=cjp0iFG38RGcJLhG1VQLjQ&v=5450FEF8ACDCDBAD0E61448D9A0A6FEAF7A87D9B",
+      "jobIds": [
+        "adzuna-5871238074"
+      ],
+      "sources": [
+        "Adzuna"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.adzuna.com/land/ad/5871238074?se=cjp0iFG38RGcJLhG1VQLjQ&v=5450FEF8ACDCDBAD0E61448D9A0A6FEAF7A87D9B",
+          "status": 202,
+          "finalUrl": "https://www.adzuna.com/land/ad/5871238074?se=cjp0iFG38RGcJLhG1VQLjQ&v=5450FEF8ACDCDBAD0E61448D9A0A6FEAF7A87D9B",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.linkedin.com/jobs/view/4432904109",
+      "jobIds": [
+        "curated-targa-resources-endpoint-administrator-2493a9b65e"
+      ],
+      "sources": [
+        "Curated Jobs"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.linkedin.com/jobs/view/4432904109",
+          "status": 200,
+          "finalUrl": "https://www.linkedin.com/jobs/view/4432904109",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.linkedin.com/jobs/view/4442138849",
+      "jobIds": [
+        "curated-leidos-uem-engineers-f7a16adf14"
+      ],
+      "sources": [
+        "Curated Jobs"
+      ],
+      "outcome": "transient",
+      "observations": [
+        {
+          "url": "https://www.linkedin.com/jobs/view/4442138849",
+          "status": 502,
+          "finalUrl": "https://www.linkedin.com/jobs/view/4442138849",
+          "outcome": "transient",
+          "reason": "Server/timeout failure"
+        }
+      ]
+    },
+    {
+      "url": "https://www.linkedin.com/jobs/view/4458849110",
+      "jobIds": [
+        "curated-metrostar-sr-endpoint-security-engineer-i-6701-eb32db5d8b"
+      ],
+      "sources": [
+        "Curated Jobs"
+      ],
+      "outcome": "unverified",
+      "observations": [
+        {
+          "url": "https://www.linkedin.com/jobs/view/4458849110",
+          "status": 200,
+          "finalUrl": "https://www.linkedin.com/jobs/principal-security-engineer-jobs?trk=expired_jd_redirect",
+          "outcome": "unverified",
+          "reason": "Redirected to a different resource; posting availability unverified"
+        }
+      ]
+    },
+    {
+      "url": "https://www.linkedin.com/jobs/view/4460855462",
+      "jobIds": [
+        "curated-tjdeed-technology-systems-engineer-uem-8a498703e1"
+      ],
+      "sources": [
+        "Curated Jobs"
+      ],
+      "outcome": "rate-limited",
+      "observations": [
+        {
+          "url": "https://www.linkedin.com/jobs/view/4460855462",
+          "status": 429,
+          "finalUrl": "https://www.linkedin.com/jobs/view/4460855462",
+          "outcome": "rate-limited",
+          "reason": "Rate limited; not a dead link"
+        }
+      ]
+    },
+    {
+      "url": "https://www.linkedin.com/jobs/view/endpoint-engineer-trellix-with-security-clearance-at-crimson-phoenix-4467761110?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [
+        "serpapi-crimson-phoenix-springfield-va-endpoint-engineer-trellix-with-security-clearance-1a2bc8aa01"
+      ],
+      "sources": [
+        "SerpAPI Google Jobs"
+      ],
+      "outcome": "transient",
+      "observations": [
+        {
+          "url": "https://www.linkedin.com/jobs/view/endpoint-engineer-trellix-with-security-clearance-at-crimson-phoenix-4467761110?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 502,
+          "finalUrl": "https://www.linkedin.com/jobs/view/endpoint-engineer-trellix-with-security-clearance-at-crimson-phoenix-4467761110?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "transient",
+          "reason": "Server/timeout failure"
+        }
+      ]
+    },
+    {
+      "url": "https://www.linkedin.com/jobs/view/endpoint-platform-engineer-at-exos-4468146966?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [
+        "serpapi-exos-indianapolis-in-endpoint-platform-engineer-c39d3f7530"
+      ],
+      "sources": [
+        "SerpAPI Google Jobs"
+      ],
+      "outcome": "transient",
+      "observations": [
+        {
+          "url": "https://www.linkedin.com/jobs/view/endpoint-platform-engineer-at-exos-4468146966?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 502,
+          "finalUrl": "https://www.linkedin.com/jobs/view/endpoint-platform-engineer-at-exos-4468146966?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "transient",
+          "reason": "Server/timeout failure"
+        }
+      ]
+    },
+    {
+      "url": "https://www.linkedin.com/jobs/view/endpoint-security-engineer-at-castalia-systems-4467261514?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [
+        "serpapi-castalia-systems-morrisville-nc-endpoint-security-engineer-d7150b5830"
+      ],
+      "sources": [
+        "SerpAPI Google Jobs"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.linkedin.com/jobs/view/endpoint-security-engineer-at-castalia-systems-4467261514?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 200,
+          "finalUrl": "https://www.linkedin.com/jobs/view/endpoint-security-engineer-at-castalia-systems-4467261514?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.linkedin.com/jobs/view/it-systems-engineer-at-gallatin-ai-inc-4458048435?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [
+        "serpapi-gallatin-ai-inc-austin-tx-it-systems-engineer-fdfa548724"
+      ],
+      "sources": [
+        "SerpAPI Google Jobs"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.linkedin.com/jobs/view/it-systems-engineer-at-gallatin-ai-inc-4458048435?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 200,
+          "finalUrl": "https://www.linkedin.com/jobs/view/it-systems-engineer-at-gallatin-ai-inc-4458048435?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.linkedin.com/jobs/view/senior-endpoint-security-engineer-crowdstrike-falcon-microsoft-defender-sentinelone-at-triangle-cyber-llc-4460346777?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [
+        "serpapi-triangle-cyber-llc-raleigh-nc-senior-endpoint-security-engineer-crowdstrike-falcon-microsoft-defender-sentinelone-846393ac8a"
+      ],
+      "sources": [
+        "SerpAPI Google Jobs"
+      ],
+      "outcome": "reachable",
+      "observations": [
+        {
+          "url": "https://www.linkedin.com/jobs/view/senior-endpoint-security-engineer-crowdstrike-falcon-microsoft-defender-sentinelone-at-triangle-cyber-llc-4460346777?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 200,
+          "finalUrl": "https://www.linkedin.com/jobs/view/senior-endpoint-security-engineer-crowdstrike-falcon-microsoft-defender-sentinelone-at-triangle-cyber-llc-4460346777?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "reachable",
+          "reason": "HTTP success; does not prove vacancy remains open"
+        }
+      ]
+    },
+    {
+      "url": "https://www.linkedin.com/jobs/view/windows-engineer-at-epic-placements-4466024706?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+      "jobIds": [
+        "serpapi-epic-placements-milwaukee-wi-windows-engineer-fc9f032ffd"
+      ],
+      "sources": [
+        "SerpAPI Google Jobs"
+      ],
+      "outcome": "rate-limited",
+      "observations": [
+        {
+          "url": "https://www.linkedin.com/jobs/view/windows-engineer-at-epic-placements-4466024706?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "status": 429,
+          "finalUrl": "https://www.linkedin.com/jobs/view/windows-engineer-at-epic-placements-4466024706?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+          "outcome": "rate-limited",
+          "reason": "Rate limited; not a dead link"
+        }
+      ]
+    }
+  ]
 }
 }

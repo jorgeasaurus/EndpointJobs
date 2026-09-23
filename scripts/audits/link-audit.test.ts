@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { classify, extractLinks, mapBounded, request } from "../link-audit/check";
-import { collectDestinations, checkDestination } from "../link-audit/external";
+import { collectDestinations, checkDestination, auditExternal } from "../link-audit/external";
 import { classifyProviderPayload, getProviderProbe } from "../link-audit/providers";
 import { fixedAuditNow, makeJob } from "./shared";
 
@@ -88,4 +88,31 @@ test("confirmed dead listings stay out of runtime and the generated feed", async
   for (const kept of report.external.filter((entry) => ["blocked", "rate-limited", "auth", "unverified"].includes(entry.outcome))) {
     assert.equal(isExcludedJobSourceUrl(kept.url), false, kept.url);
   }
+});
+
+
+test("redirects preserve identity only for canonical URL variants", () => {
+  assert.equal(classify(200, "", "https://www.linkedin.com/jobs/search?trk=expired_jd_redirect", "https://www.linkedin.com/jobs/view/123").outcome, "unverified");
+  assert.equal(classify(200, "", "https://example.com/job/1", "http://example.com/job/1/?utm_source=jobs").outcome, "reachable");
+  assert.equal(classify(200, "", "https://example.com/job?id=2", "https://example.com/job?id=1").outcome, "unverified");
+  assert.equal(classify(200, "", "https://job-boards.greenhouse.io/acme/jobs/123", "https://boards.greenhouse.io/acme/jobs/123").outcome, "reachable");
+  assert.equal(classify(200, "", "https://job-boards.greenhouse.io/acme", "https://boards.greenhouse.io/acme/jobs/123").outcome, "unverified");
+  assert.equal(classify(200, "", "https://acme.wd1.myworkdayjobs.com/en-US/Careers/job/City/Engineer_R123", "https://acme.wd1.myworkdayjobs.com/Careers/job/City/Engineer_R123/apply").outcome, "reachable");
+  assert.equal(getProviderProbe("https://acme.recruitee.com/o/engineer/apply")?.url, "https://acme.recruitee.com/api/offers/engineer");
+});
+
+
+test("external audit checks and deduplicates navigation-only destinations", async (context) => {
+  const calls: string[] = [];
+  context.mock.method(globalThis, "fetch", async (value: string) => {
+    calls.push(value);
+    const response = new Response("", { status: 200 });
+    Object.defineProperty(response, "url", { value });
+    return response;
+  });
+  const results = await auditExternal([makeJob({ sourceUrl: url, applyUrl: url })], [url, "https://example.com/docs", "https://example.com/docs#top"]);
+  assert.deepEqual(calls, [url, "https://example.com/docs"]);
+  const navigation = results.find((entry) => entry.url.endsWith("/docs"))!;
+  assert.deepEqual(navigation.jobIds, []);
+  assert.deepEqual(navigation.sources, ["site-navigation"]);
 });
