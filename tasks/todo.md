@@ -1002,3 +1002,9 @@ Nine focused tests, 71 data audits, lint, typecheck, production build, and indep
 Redirects to unrelated resources are now unverified; 13 regression tests, lint, and typecheck pass. Fresh production verification: 1,159 internal reachable; 1,142 external destinations checked, including navigation links. The same 26 dead destinations remain deployed pending merge; retry attempts are retained and singleton sitemaps are covered.
 
 Second Copilot cycle: preserve transport/redirect/truncation uncertainty before interpreting ATS payloads, including confirmation retries; normalize sitemap locations before queueing. Regression coverage includes API redirects, oversized valid JSON, retry redirects, root URL duplicates, and invalid sitemap locations. Historical internal count corrected to 1,158 unique destinations (1,159 requests).
+
+# PR #68 additional review
+
+- [x] Fix anchor extraction so data attributes and embedded markup cannot replace real href destinations.
+- [x] Pass 21 regression tests, lint, typecheck, and a fresh 1,158-URL production crawl.
+- [ ] Obtain a fresh Copilot review for the extraction fix.

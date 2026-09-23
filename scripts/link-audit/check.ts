@@ -89,6 +89,32 @@ export function normalizeLink(href: string, base: string): string | undefined {
 }
 
 export function extractLinks(html: string, base: string): string[] {
-  return [...new Set([...html.matchAll(/<a\b[^>]*\bhref\s*=\s*["']([^"']+)["']/gi)]
-    .map((match) => normalizeLink(match[1], base)).filter((url): url is string => Boolean(url)))];
+  const links = new Set<string>();
+  // Consume complete tags so quoted attribute values cannot introduce fake anchors.
+  const tokens = /<!--[\s\S]*?(?:-->|$)|<![^>]*>|<\/?[a-zA-Z][^>"']*(?:(?:"[^"]*"|'[^']*')[^>"']*)*>/g;
+  let token: RegExpExecArray | null;
+  while ((token = tokens.exec(html))) {
+    const tag = token[0].match(/^<(\/)?([a-zA-Z][a-zA-Z0-9:-]*)\b/);
+    if (!tag) continue;
+    const name = tag[2].toLowerCase();
+    if (tag[1]) continue;
+    if (["script", "style", "textarea", "title"].includes(name)) {
+      const closingTag = new RegExp(`</${name}\\s*>`, "gi");
+      closingTag.lastIndex = tokens.lastIndex;
+      if (!closingTag.exec(html)) break;
+      tokens.lastIndex = closingTag.lastIndex;
+      continue;
+    }
+    if (name !== "a") continue;
+    const attributes = token[0].slice(tag[0].length, -1);
+    const attributePattern = /([^\s"'<>\/=]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+)))?/g;
+    for (const attribute of attributes.matchAll(attributePattern)) {
+      if (attribute[1].toLowerCase() !== "href") continue;
+      const href = attribute[2] ?? attribute[3] ?? attribute[4] ?? "";
+      const url = normalizeLink(href, base);
+      if (url) links.add(url);
+      break; // HTML uses the first occurrence of a duplicate attribute.
+    }
+  }
+  return [...links];
 }

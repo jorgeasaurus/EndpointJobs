@@ -1,4 +1,14 @@
 {
+  "extractionVerification": {
+  "startedAt": "2026-09-23T15:30:08.845Z",
+  "completedAt": "2026-09-23T15:30:53.807Z",
+  "summary": {
+    "reachable": 1158
+  },
+  "externalLinksDiscovered": 1141,
+  "newExternalDestinations": [],
+  "note": "Fresh internal crawl after actual-attribute extraction fix; every discovered external URL is already present in earlier destination evidence."
+},
   "startedAt": "2026-09-23T14:10:37.017Z",
   "externalCompletedAt": "2026-09-23T14:11:52.108Z",
   "completedAt": "2026-09-23T14:13:10.911Z",
