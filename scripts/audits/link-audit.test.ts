@@ -116,3 +116,29 @@ test("external audit checks and deduplicates navigation-only destinations", asyn
   assert.deepEqual(navigation.jobIds, []);
   assert.deepEqual(navigation.sources, ["site-navigation"]);
 });
+
+
+for (const scenario of ["redirect", "truncated", "repeat-redirect"] as const) {
+  test(`ATS payload cannot override ${scenario} uncertainty`, async (context) => {
+    const destination = "https://job-boards.greenhouse.io/acme/jobs/123";
+    const probe = getProviderProbe(destination)!;
+    let apiCalls = 0;
+    context.mock.method(globalThis, "fetch", async (value: string) => {
+      if (value === destination) {
+        const response = new Response("job");
+        Object.defineProperty(response, "url", { value });
+        return response;
+      }
+      assert.equal(value, probe.url);
+      apiCalls++;
+      const repeated404 = scenario === "repeat-redirect" && apiCalls === 1;
+      const body = repeated404 ? { status: 404, error: "Job not found" } : { id: 123, title: "Engineer", padding: scenario === "truncated" ? "x".repeat(8_000_001) : "" };
+      const response = new Response(JSON.stringify(body), { status: repeated404 ? 404 : 200 });
+      Object.defineProperty(response, "url", { value: scenario === "truncated" || repeated404 ? value : "https://other.example.com/job" });
+      return response;
+    });
+    const result = await checkDestination({ url: destination, jobIds: ["job"], sources: ["Greenhouse"] });
+    assert.equal(result.outcome, "unverified");
+    assert.equal(result.observations.at(-1)?.outcome, "unverified");
+  });
+}

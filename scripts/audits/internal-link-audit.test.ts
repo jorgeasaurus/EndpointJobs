@@ -5,6 +5,34 @@ import { auditInternal } from "../link-audit/internal";
 const origin = "https://crawl.example";
 const sitemap = (...paths: string[]) => `<urlset>${paths.map((path) => `<url><loc>${origin}${path}</loc></url>`).join("")}</urlset>`;
 
+test("bare-origin sitemap locations deduplicate the root seed and fragment links", async (context) => {
+  const calls: string[] = [];
+  context.mock.method(globalThis, "fetch", async (input: string | URL | Request) => {
+    const url = String(input);
+    calls.push(url);
+    const response = new Response(url.endsWith("/sitemap.xml") ? sitemap("") : `<a href="${origin}/#top">Home</a>`);
+    Object.defineProperty(response, "url", { value: url });
+    return response;
+  });
+  const report = await auditInternal(origin);
+  assert.equal(report.sitemapUrls, 1);
+  assert.deepEqual(report.results.map((result) => result.url), [`${origin}/`, `${origin}/api-docs`]);
+  assert.equal(calls.filter((url) => url === `${origin}/`).length, 1);
+  assert.equal(calls.includes(origin), false);
+});
+
+test("sitemap locations reject non-HTTP and different-origin destinations", async (context) => {
+  let loc = "javascript:alert(1)";
+  context.mock.method(globalThis, "fetch", async (input: string | URL | Request) => {
+    const response = new Response(`<urlset><url><loc>${loc}</loc></url></urlset>`);
+    Object.defineProperty(response, "url", { value: String(input) });
+    return response;
+  });
+  await assert.rejects(auditInternal(origin), /invalid HTTP URL/);
+  loc = "https://another.example/";
+  await assert.rejects(auditInternal(origin), /another origin/);
+});
+
 test("internal crawl accepts a singleton sitemap and discovers distinct query destinations once", async (context) => {
   const calls: string[] = [];
   const pages: Record<string, string> = {

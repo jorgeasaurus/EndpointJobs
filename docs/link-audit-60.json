@@ -21,7 +21,7 @@
     "auth": 34
   },
   "internal": {
-    "reachable": 1159
+    "reachable": 1158
   }
 },
   "external": [
@@ -1165,7 +1165,6 @@
   "internal": {
   "sitemapUrls": 1157,
   "results": [
-    {"url": "https://endpointjobs.dev", "status": 200, "outcome": "reachable"},
     {"url": "https://endpointjobs.dev/", "status": 200, "outcome": "reachable"},
     {"url": "https://endpointjobs.dev/api-docs", "status": 200, "outcome": "reachable"},
     {"url": "https://endpointjobs.dev/autopilot", "status": 200, "outcome": "reachable"},
@@ -2621,6 +2620,7 @@
   ],
   "action": "Removed 26 confirmed dead listings and excluded their exact source URLs from runtime and subsequent refreshes. Kept every blocked, rate-limited, authentication-gated, or inconclusive listing."
 },
+  "sitemapNormalization": "The original 1,159 requests included bare-origin and trailing-slash duplicates: 1,158 unique internal destinations. Results and summaries deduplicated without new network observations.",
   "redirectCorrection": {
   "classifiedAt": "2026-09-23T14:26:09.773Z",
   "note": "Original response evidence reclassified with identity-preserving redirect rules; no new network observation implied.",
@@ -2644,7 +2644,7 @@
   "activeListings": 1093,
   "summary": {
     "internal": {
-      "reachable": 1159
+      "reachable": 1158
     },
     "external": {
       "reachable": 845,

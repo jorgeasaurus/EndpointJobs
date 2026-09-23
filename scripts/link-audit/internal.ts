@@ -1,5 +1,5 @@
 import { XMLParser } from "fast-xml-parser";
-import { extractLinks, mapBounded, request, type Observation } from "./check";
+import { extractLinks, mapBounded, normalizeLink, request, type Observation } from "./check";
 
 export type InternalResult = Observation & { observations: Observation[] };
 
@@ -11,7 +11,11 @@ export async function auditInternal(base: string) {
   const rawEntries = parsed.urlset?.url;
   const entries = Array.isArray(rawEntries) ? rawEntries : rawEntries ? [rawEntries] : [];
   if (!entries.length || entries.some((entry) => typeof entry?.loc !== "string")) throw new Error("Expected nonempty sitemap urlset");
-  const seeds = entries.map((entry: { loc: string }) => entry.loc);
+  const seeds = entries.map((entry: { loc: string }) => {
+    const url = normalizeLink(entry.loc, origin);
+    if (!url) throw new Error("Sitemap contains an invalid HTTP URL");
+    return url;
+  });
   if (seeds.some((url: string) => new URL(url).origin !== origin)) throw new Error("Sitemap contains another origin");
   const seen = new Set<string>();
   const externalNavigation = new Set<string>();

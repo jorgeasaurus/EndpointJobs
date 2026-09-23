@@ -1000,3 +1000,5 @@ Nine focused tests, 71 data audits, lint, typecheck, production build, and indep
 - [ ] Obtain a fresh clean Copilot review of the latest commit.
 
 Redirects to unrelated resources are now unverified; 13 regression tests, lint, and typecheck pass. Fresh production verification: 1,159 internal reachable; 1,142 external destinations checked, including navigation links. The same 26 dead destinations remain deployed pending merge; retry attempts are retained and singleton sitemaps are covered.
+
+Second Copilot cycle: preserve transport/redirect/truncation uncertainty before interpreting ATS payloads, including confirmation retries; normalize sitemap locations before queueing. Regression coverage includes API redirects, oversized valid JSON, retry redirects, root URL duplicates, and invalid sitemap locations. Historical internal count corrected to 1,158 unique destinations (1,159 requests).

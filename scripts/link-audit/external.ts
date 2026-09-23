@@ -1,6 +1,6 @@
 import { setTimeout as delay } from "node:timers/promises";
 import type { Job } from "../../src/types/job";
-import { classifyProviderPayload, getProviderProbe } from "./providers";
+import { classifyProviderPayload, getProviderProbe, type ProviderProbe } from "./providers";
 import { mapBounded, normalizeLink, request, type Observation } from "./check";
 
 type Destination = { url: string; jobIds: string[]; sources: string[] };
@@ -20,6 +20,14 @@ export function collectDestinations(jobs: readonly Job[]): Destination[] {
   return [...destinations.values()];
 }
 
+function verifyProviderResponse(probe: ProviderProbe, response: { observation: Observation; body: string }) {
+  // Payload evidence cannot override transport, redirect, or truncation uncertainty.
+  if (!["reachable", "dead"].includes(response.observation.outcome)) return;
+  const classified = classifyProviderPayload(probe, response.observation.status ?? 0, response.body);
+  response.observation.outcome = classified.status === "ok" ? "reachable" : classified.status;
+  response.observation.reason = classified.reason;
+}
+
 export async function checkDestination(destination: Destination): Promise<ExternalResult> {
   const first = await request(destination.url);
   const observations = [first.observation];
@@ -27,14 +35,7 @@ export async function checkDestination(destination: Destination): Promise<Extern
   let outcome = first.observation.outcome;
   if (probe) {
     const response = await request(probe.url);
-    const classified = classifyProviderPayload(probe, response.observation.status ?? 0, response.body);
-    if (classified.status !== "unverified") {
-      response.observation.outcome = classified.status === "ok" ? "reachable" : "dead";
-      response.observation.reason = classified.reason;
-    } else if (response.observation.outcome === "reachable" || response.observation.outcome === "dead") {
-      response.observation.outcome = "unverified";
-      response.observation.reason = classified.reason;
-    }
+    verifyProviderResponse(probe, response);
     observations.push(response.observation);
     // A live API does not repair a broken application URL; both must be reachable.
     outcome = first.observation.outcome === "reachable" ? response.observation.outcome : first.observation.outcome;
@@ -45,9 +46,7 @@ export async function checkDestination(destination: Destination): Promise<Extern
     await delay(500);
     const repeat = await request(candidate.url);
     if (probe && candidate.url === probe.url) {
-      const classified = classifyProviderPayload(probe, repeat.observation.status ?? 0, repeat.body);
-      repeat.observation.outcome = classified.status === "dead" ? "dead" : "unverified";
-      repeat.observation.reason = classified.reason;
+      verifyProviderResponse(probe, repeat);
     }
     observations.push(repeat.observation);
     outcome = repeat.observation.outcome === "dead" ? "dead" : "unverified";
