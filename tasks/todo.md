@@ -957,3 +957,16 @@ Directory descriptions now describe browsing by title, company, and location; la
 - [ ] Push, resolve the handled thread, and request a fresh latest-head review.
 
 Regression assertions pass and reject both a generic description and removal of the pagination prefix. Lint, typecheck, and diff checks pass; fresh latest-head Copilot review remains pending.
+
+# Issue #58: homepage performance
+
+- [x] Capture mobile/desktop baseline and investigate response payload.
+- [x] Self-host existing fonts and verify browser behavior.
+- [x] Compare production-build metrics and run relevant checks.
+- [x] Record field-data limits and prepare a PR.
+
+## Review
+
+Replaced the external Google Fonts CSS import with next/font self-hosting and bumped to 0.1.17. Same-feed Lighthouse 13.5.0 mobile medians (3 runs each): LCP 8.70→8.11s, FCP 7.12→6.30s, TBT 229→302ms, score 54→53; desktop single-run LCP 1.80→1.46s, score 88→93. CLS stayed zero; results and reproduction instructions are in `docs/performance-58.json`.
+
+The 4.7 MB HTML is dominated by hydration data, including full descriptions required for existing search/workplace/card behavior; retained rather than changing those contracts. Field LCP/INP/CLS unavailable (PageSpeed HTTP 429); no Core Web Vitals pass claimed. Build, lint, typecheck, 71 data audits, React Doctor 100/100, independent review, and font/network/layout browser checks pass.

@@ -1,5 +1,6 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
+import { JetBrains_Mono, Space_Grotesk } from "next/font/google";
 
 import {
   ogImage,
@@ -21,6 +22,17 @@ import "./job-board-map.css";
 import "./job-board-responsive.css";
 import "./job-detail.css";
 import "./job-board-primitives.css";
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-space-grotesk"
+});
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-jetbrains-mono"
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -66,7 +78,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${spaceGrotesk.variable} ${jetBrainsMono.variable}`}>
       <body>
         {children}
         <Analytics />
