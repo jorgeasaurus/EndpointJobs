@@ -12,7 +12,6 @@ import type { JobsFeed } from "@/types/job";
 import {
   getJobPath,
   getJobsDirectoryPath,
-  siteDescription,
   siteUrl
 } from "../site-metadata";
 
@@ -43,7 +42,7 @@ export async function generateMetadata({ searchParams }: DirectoryPageProps): Pr
 
   return {
     title,
-    description: siteDescription,
+    description: `${page > 1 ? `Page ${page}: ` : ""}Browse active endpoint engineering jobs by title, company, and location. Explore Jamf, Intune, macOS, and Windows roles in the jobs directory.`,
     alternates: { canonical },
     robots: { index: true, follow: true }
   };

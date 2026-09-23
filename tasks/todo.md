@@ -939,3 +939,21 @@ Moved Workday fetching, validation, normalization, and errors into its own provi
 ## Review
 
 Added an editable GitHub issue link below the location filter row with encoded location/context fields. Lint, typecheck, production build, and independent review pass; browser checks at 1280px, 390px, and 320px verify layout, focus, keyboard activation, and new-tab URL (GitHub response intercepted).
+
+# Issue #57: directory meta descriptions
+
+- [x] Add a directory description with page context and bump the package version.
+- [x] Verify lint, types, directory regression, and rendered production metadata.
+- [x] Review the diff and prepare a PR closing #57.
+
+## Review
+
+Directory descriptions now describe browsing by title, company, and location; later pages prepend `Page N:`. Version bumped to 0.1.16. Lint, typecheck, build, directory expiry regression, independent review, and browser metadata checks pass. Invalid page values use page 1; out-of-range pages retain the not-found UI and noindex (streamed responses return HTTP 200).
+
+# PR #65 Copilot review loop
+
+- [x] Inspect initial review: one actionable thread on ee4741c.
+- [x] Add and verify directory description regression assertions.
+- [ ] Push, resolve the handled thread, and request a fresh latest-head review.
+
+Regression assertions pass and reject both a generic description and removal of the pagination prefix. Lint, typecheck, and diff checks pass; fresh latest-head Copilot review remains pending.
