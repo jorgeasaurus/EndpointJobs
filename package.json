@@ -1,6 +1,6 @@
 {
   "name": "endpoint-jobs",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "private": true,
   "type": "module",
   "scripts": {
@@ -20,7 +20,8 @@
     "video:render": "remotion render remotion/index.ts EndpointJobsAd out/endpoint-jobs-ad.mp4",
     "audit:browser": "tsx scripts/audit-user-stories-browser.mjs",
     "audit:accessibility": "tsx scripts/audits/scroll-region-browser.mjs",
-    "audit:data": "tsx scripts/audit-user-stories-data.ts"
+    "audit:data": "tsx scripts/audit-user-stories-data.ts",
+    "audit:links": "tsx scripts/audit-links.ts"
   },
   "dependencies": {
     "@typesafe-ai/sdk": "^0.6.0",

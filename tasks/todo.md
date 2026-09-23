@@ -980,3 +980,15 @@ The 4.7 MB HTML is dominated by hydration data, including full descriptions requ
 ## Review
 
 Added `/jobs` and valid canonical pagination URLs using the shared 50-job page size and active canonical job count; sitemap revalidates every 300 seconds. Eight focused tests, 71 data audits, lint, typecheck, build, React Doctor 100/100, and independent review pass. Generated XML contains 1,094 URLs; all 22 directory URLs return 200, self-canonicalize, and contain jobs. Version bumped to 0.1.18.
+
+# Issue #60: destination link audit
+
+- [x] Add bounded internal crawl and provider-aware external checks with explicit uncertainty.
+- [x] Run against production sitemap/navigation and all active source/application destinations.
+- [x] Confirm and exclude dead listings; record results, test, bump version, and prepare a PR.
+
+## Review
+
+Checked 1,159 production internal URLs (all reachable) and 1,136 external destinations from 1,119 active listings: 834 reachable, 26 confirmed dead, and 276 blocked/authenticated/rate-limited/inconclusive. Removed the 26 dead listings and excluded their source URLs from future refreshes; retained uncertain listings. Exhaustive evidence and reproduction command are in `docs/link-audit-60.json`; version 0.1.19.
+
+Nine focused tests, 71 data audits, lint, typecheck, production build, and independent review pass. All 26 removed listings are absent from the generated sitemap and return API 404. HTTP success alone does not verify vacancy availability.
