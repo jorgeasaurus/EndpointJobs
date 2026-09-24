@@ -85,3 +85,29 @@ test("internal crawl preserves retry failures and still discovers links from rec
   assert.equal(counts.get("/missing"), 2);
   assert.equal(counts.get("/flaky"), 2);
 });
+
+test("internal dead classification requires two dead observations", async (context) => {
+  const sequences: Record<string, number[]> = {
+    "/transient-404": [503, 404],
+    "/transient-410": [503, 410],
+    "/dead-404": [404, 404],
+    "/dead-410": [410, 410],
+  };
+  const counts = new Map<string, number>();
+  context.mock.method(globalThis, "fetch", async (input: string | URL | Request) => {
+    const url = new URL(String(input));
+    const attempt = counts.get(url.pathname) ?? 0;
+    counts.set(url.pathname, attempt + 1);
+    const status = sequences[url.pathname]?.[attempt] ?? 200;
+    const response = new Response(url.pathname === "/sitemap.xml" ? sitemap(...Object.keys(sequences)) : "", { status });
+    Object.defineProperty(response, "url", { value: url.href });
+    return response;
+  });
+  const report = await auditInternal(origin);
+  for (const [path, statuses] of Object.entries(sequences)) {
+    const result = report.results.find((entry) => entry.url === origin + path)!;
+    assert.equal(result.outcome, path.startsWith("/transient") ? "unverified" : "dead", path);
+    assert.deepEqual(result.observations.map((attempt) => attempt.status), statuses, path);
+    assert.equal(counts.get(path), 2);
+  }
+});

@@ -1010,3 +1010,9 @@ Second Copilot cycle: preserve transport/redirect/truncation uncertainty before 
 - [ ] Obtain a fresh Copilot review for the extraction fix.
 
 Additional review: unrelated redirects ending in 404/410 remain unverified. Retained independent exact-job ATS removal evidence behind HTML redirects, with an explicit regression and rationale; this is required for removed Greenhouse jobs. Corrected the historical Truveta HTML observation while preserving the twice-confirmed API result.
+
+# PR #68 entity and retry review
+
+- [x] Decode HTML attributes once using a standards-compliant decoder; leave feed/XML URLs intact.
+- [x] Require repeated dead responses in internal crawl evidence.
+- [ ] Verify regression checks and fresh latest-head Copilot review.

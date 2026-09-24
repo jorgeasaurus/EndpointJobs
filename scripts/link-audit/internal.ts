@@ -37,6 +37,8 @@ export async function auditInternal(base: string) {
         observation = { ...observation, outcome: "unverified", reason: "HTTP success with noindex; inspect for streamed not-found" };
       } else if (observations.length > 1 && observation.outcome === "reachable") {
         observation = { ...observation, outcome: "unverified", reason: `Recovered after initial ${observations[0].outcome}; destination was not consistently reachable` };
+      } else if (observation.outcome === "dead" && (observations.length < 2 || !observations.every((attempt) => attempt.outcome === "dead"))) {
+        observation = { ...observation, outcome: "unverified", reason: "Not-found response was not confirmed by both attempts" };
       }
       results.push({ ...observation, observations });
       for (const link of extractLinks(result.body, result.observation.finalUrl ?? url)) {

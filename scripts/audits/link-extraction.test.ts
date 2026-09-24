@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { extractLinks } from "../link-audit/check";
+import { extractLinks, normalizeLink } from "../link-audit/check";
 
 const base = "https://example.com/";
 
@@ -26,4 +26,18 @@ test("comments and raw text elements cannot add links to the crawl", () => {
     <textarea><a href="/textarea"></textarea><title><a href="/title"></title>
     <a href="/actual">Actual</a><!-- <a href="/unterminated">`;
   assert.deepEqual(extractLinks(html, base), ["https://example.com/actual"]);
+});
+
+
+test("HTML href character references decode once before URL parsing", () => {
+  for (const separator of ["&amp;", "&AMP;", "&#38;", "&#x26;", "&#X26;", "&#38"]) {
+    assert.deepEqual(extractLinks(`<a href="/jobs?page=2${separator}sort=date">Jobs</a>`, base), ["https://example.com/jobs?page=2&sort=date"]);
+  }
+  assert.deepEqual(extractLinks('<a href="/jobs?q=&copy;&NotEqualTilde;">Jobs</a>', base), ["https://example.com/jobs?q=%C2%A9%E2%89%82%CC%B8"]);
+  assert.deepEqual(extractLinks('<a href="/jobs?q=a&amp;amp;b=c">Jobs</a>', base), ["https://example.com/jobs?q=a&amp;b=c"]);
+  assert.deepEqual(extractLinks('<a href="/jobs?q=a&ampersand=b">Jobs</a>', base), ["https://example.com/jobs?q=a&ampersand=b"]);
+});
+
+test("already decoded XML and feed URLs are not HTML-decoded again", () => {
+  assert.equal(normalizeLink("/jobs?q=a&amp;b=c", base), "https://example.com/jobs?q=a&amp;b=c");
 });

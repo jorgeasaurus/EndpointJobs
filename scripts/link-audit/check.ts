@@ -1,3 +1,4 @@
+import { decodeHTMLAttribute } from "entities";
 import { getProviderProbe } from "./providers";
 
 export type Outcome = "reachable" | "dead" | "blocked" | "auth" | "rate-limited" | "transient" | "unverified";
@@ -81,7 +82,7 @@ export async function mapBounded<T, R>(items: readonly T[], concurrency: number,
 
 export function normalizeLink(href: string, base: string): string | undefined {
   try {
-    const url = new URL(href.replaceAll("&amp;", "&"), base);
+    const url = new URL(href, base);
     if (!["https:", "http:"].includes(url.protocol)) return;
     url.hash = "";
     return url.href;
@@ -111,7 +112,7 @@ export function extractLinks(html: string, base: string): string[] {
     for (const attribute of attributes.matchAll(attributePattern)) {
       if (attribute[1].toLowerCase() !== "href") continue;
       const href = attribute[2] ?? attribute[3] ?? attribute[4] ?? "";
-      const url = normalizeLink(href, base);
+      const url = normalizeLink(decodeHTMLAttribute(href), base);
       if (url) links.add(url);
       break; // HTML uses the first occurrence of a duplicate attribute.
     }
