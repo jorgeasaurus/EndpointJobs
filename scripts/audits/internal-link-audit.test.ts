@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
-import test from "node:test";
+import test, { beforeEach } from "node:test";
+import dns from "node:dns/promises";
 import { auditInternal } from "../link-audit/internal";
+
+// HTTP fixtures use a public DNS answer; network guard behavior has separate tests.
+beforeEach((context) => {
+  if (!("mock" in context)) throw new Error("Expected a test context");
+  context.mock.method(dns, "lookup", async () => [{ address: "93.184.216.34", family: 4 }]);
+});
 
 const origin = "https://crawl.example";
 const sitemap = (...paths: string[]) => `<urlset>${paths.map((path) => `<url><loc>${origin}${path}</loc></url>`).join("")}</urlset>`;

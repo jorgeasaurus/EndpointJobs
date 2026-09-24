@@ -5,7 +5,8 @@ export type InternalResult = Observation & { observations: Observation[] };
 
 export async function auditInternal(base: string) {
   const origin = new URL(base).origin;
-  const sitemap = await request(`${origin}/sitemap.xml`);
+  const internalRequest = (url: string) => request(url, { allowedInternalOrigin: origin });
+  const sitemap = await internalRequest(`${origin}/sitemap.xml`);
   if (sitemap.observation.outcome !== "reachable") throw new Error("Cannot load sitemap");
   const parsed = new XMLParser().parse(sitemap.body);
   const rawEntries = parsed.urlset?.url;
@@ -26,10 +27,10 @@ export async function auditInternal(base: string) {
     queue.forEach((url) => seen.add(url));
     const discovered: string[] = [];
     await mapBounded(queue, 6, async (url) => {
-      let result = await request(url);
+      let result = await internalRequest(url);
       const observations = [result.observation];
       if (["dead", "transient"].includes(result.observation.outcome)) {
-        result = await request(url);
+        result = await internalRequest(url);
         observations.push(result.observation);
       }
       let observation = result.observation;

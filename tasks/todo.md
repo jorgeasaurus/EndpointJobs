@@ -1016,3 +1016,12 @@ Additional review: unrelated redirects ending in 404/410 remain unverified. Reta
 - [x] Decode HTML attributes once using a standards-compliant decoder; leave feed/XML URLs intact.
 - [x] Require repeated dead responses in internal crawl evidence.
 - [ ] Verify regression checks and fresh latest-head Copilot review.
+
+# PR #68 network safety review
+
+- [x] Validate each HTTP destination and redirect; reject private/special addresses and pin DNS answers.
+- [x] Allow local audits only at the explicit internal origin; verify real socket transport.
+- [x] Ignore UTM tracking variants in job exclusions while preserving job identifiers.
+- [ ] Confirm build and obtain fresh latest-head review.
+
+496 tests pass, including network safety and tracking-variant regressions; public HTTPS succeeds and an unapproved loopback destination is blocked.

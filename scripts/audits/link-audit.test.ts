@@ -1,9 +1,16 @@
 import assert from "node:assert/strict";
-import test from "node:test";
+import test, { beforeEach } from "node:test";
+import dns from "node:dns/promises";
 import { classify, extractLinks, mapBounded, request } from "../link-audit/check";
 import { collectDestinations, checkDestination, auditExternal } from "../link-audit/external";
 import { classifyProviderPayload, getProviderProbe } from "../link-audit/providers";
 import { fixedAuditNow, makeJob } from "./shared";
+
+// HTTP fixtures use a public DNS answer; network guard behavior has separate tests.
+beforeEach((context) => {
+  if (!("mock" in context)) throw new Error("Expected a test context");
+  context.mock.method(dns, "lookup", async () => [{ address: "93.184.216.34", family: 4 }]);
+});
 
 const url = "https://example.com/job/1";
 test("HTTP uncertainty never becomes a dead link", () => {
@@ -171,4 +178,19 @@ test("original-ID ATS evidence can confirm removal behind a generic HTML redirec
   assert.equal(result.observations[0].outcome, "unverified");
   assert.equal(apiCalls, 2);
   assert.equal(result.outcome, "dead");
+});
+
+
+test("confirmed-dead exclusions ignore tracking parameters but retain job identity", async () => {
+  const { default: report } = await import("../../docs/link-audit-60.json");
+  const { isExcludedJobSourceUrl, normalizeJobSourceUrl } = await import("../../src/lib/job-exclusions");
+  const original = report.remediation.excludedListings.find((entry) => entry.sourceUrl.includes("utm_"))!;
+  const plain = new URL(original.sourceUrl);
+  for (const key of [...plain.searchParams.keys()]) if (/^utm_/i.test(key)) plain.searchParams.delete(key);
+  assert.ok(isExcludedJobSourceUrl(plain.href));
+  plain.searchParams.set("UTM_SOURCE", "new-provider");
+  plain.searchParams.set("utm_medium", "different");
+  assert.ok(isExcludedJobSourceUrl(plain.href));
+  assert.equal(normalizeJobSourceUrl("https://example.com/job?b=2&id=123&utm_source=a"), normalizeJobSourceUrl("https://example.com/job?id=123&b=2&utm_medium=b"));
+  assert.notEqual(normalizeJobSourceUrl("https://example.com/job?id=123"), normalizeJobSourceUrl("https://example.com/job?id=456"));
 });

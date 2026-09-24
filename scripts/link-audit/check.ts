@@ -1,4 +1,5 @@
 import { decodeHTMLAttribute } from "entities";
+import { requestPublic, UnsafeDestinationError } from "./network";
 import { getProviderProbe } from "./providers";
 
 export type Outcome = "reachable" | "dead" | "blocked" | "auth" | "rate-limited" | "transient" | "unverified";
@@ -40,12 +41,16 @@ export function classify(status: number, body: string, finalUrl: string, request
   return { outcome: "unverified", reason: `Unexpected HTTP ${status}` };
 }
 
-export async function request(url: string): Promise<{ observation: Observation; body: string }> {
+export async function request(url: string, options: { allowedInternalOrigin?: string } = {}): Promise<{ observation: Observation; body: string }> {
+  let cleanup: (() => Promise<void>) | undefined;
   try {
-    const response = await fetch(url, {
+    const fetched = await requestPublic(url, {
+      ...options,
       signal: AbortSignal.timeout(20_000),
       headers: { "User-Agent": "EndpointJobs-LinkAudit/1.0", Accept: "text/html,application/json,application/xml;q=0.9,*/*;q=0.8" }
     });
+    cleanup = fetched.cleanup;
+    const response = fetched.response;
     // Bound memory even for unexpectedly large destination documents.
     const reader = response.body?.getReader();
     const decoder = new TextDecoder();
@@ -63,7 +68,9 @@ export async function request(url: string): Promise<{ observation: Observation; 
     }
     return { body, observation: { url, status: response.status, finalUrl: response.url, ...(bytes >= 8_000_000 ? { outcome: "unverified" as const, reason: "Response exceeded 8 MB audit limit; coverage incomplete" } : classify(response.status, body, response.url, url)) } };
   } catch (error) {
-    return { body: "", observation: { url, outcome: "transient", reason: error instanceof Error ? error.message : String(error) } };
+    return { body: "", observation: { url, outcome: error instanceof UnsafeDestinationError ? "blocked" : "transient", reason: error instanceof Error ? error.message : String(error) } };
+  } finally {
+    await cleanup?.();
   }
 }
 

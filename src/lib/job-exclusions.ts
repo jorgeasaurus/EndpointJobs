@@ -78,6 +78,10 @@ export function normalizeJobSourceUrl(value: string | undefined) {
   try {
     const url = new URL(value.trim());
     url.hash = "";
+    for (const key of [...url.searchParams.keys()]) {
+      if (/^utm_/i.test(key)) url.searchParams.delete(key);
+    }
+    url.searchParams.sort();
     return url.toString().replace(/\/$/, "");
   } catch {
     return value.trim().replace(/\/$/, "");
