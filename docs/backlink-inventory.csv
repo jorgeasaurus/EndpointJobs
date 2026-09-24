@@ -1,0 +1,5 @@
+source,source_url,destination_url,classification,evidence,checked_on
+r/Intune launch post,https://www.reddit.com/r/Intune/comments/1ux6u9p/endpoint_jobs/,https://endpointjobs.dev,verified public link; outreach already exists,Public post contains a linked site introduction and feedback thread; traffic and link rel not checked.,2026-09-23
+Project README,https://github.com/jorgeasaurus/EndpointJobs/blob/main/README.md,https://endpointjobs.dev,verified owned link,Live site link in maintained README; not independent editorial endorsement.,2026-09-23
+Project API guide,https://github.com/jorgeasaurus/EndpointJobs/blob/main/docs/api.md,https://endpointjobs.dev/openapi.json,verified owned link,API guide links to the OpenAPI contract; same owned referring domain as README.,2026-09-23
+LinkedIn indexed mention,https://www.linkedin.com/in/collin-elliott,,unverified lead; excluded from verified link count,Search snippet mentions endpointjobs.dev in liked activity; original post and clickable destination not verified.,2026-09-23
