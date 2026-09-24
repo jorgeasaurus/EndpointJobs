@@ -7812,60 +7812,6 @@
       "employmentType": "Full-time"
     },
     {
-      "id": "serpapi-arctiq-cookeville-tn-end-user-computing-euc-engineer-d02f50f23a",
-      "title": "End User Computing; EUC) Engineer",
-      "company": "Arctiq",
-      "location": "Cookeville, TN",
-      "workplace": "Remote",
-      "postedAt": "2026-09-19T11:26:16.599Z",
-      "fetchedAt": "2026-09-22T11:26:16.599Z",
-      "staleAfter": "2026-11-03T11:26:16.599Z",
-      "expiresAt": "2026-11-03T11:26:16.599Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://www.learn4good.com/jobs/cookeville/tennessee/info_technology/5481057739/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://www.learn4good.com/jobs/cookeville/tennessee/info_technology/5481057739/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Position: End User Computing (EUC) Engineer Company Overview:Arctiq is a global, intelligence-driven technology services company delivering professional and managed services across Hybrid Cloud Infrastructure, Networking & Connected Experiences,...",
-      "description": "Position: End User Computing (EUC) Engineer Company Overview:Arctiq is a global, intelligence-driven technology services company delivering professional and managed services across Hybrid Cloud Infrastructure, Networking & Connected Experiences, Cybersecurity, Data & AI, Autonomous Operations & Intelligence, and Enterprise Service Management. We help organizations operate, secure, and modernize complex environments by unifying infrastructure, networking, data, security, automation, and observability under a single, integrated operating model. Our work focuses on helping customers reduce operational friction, improve resilience, and make better, faster decisions as their environments evolve. Arctiq builds on decades of industry expertise and a customer-centric ethos to deliver exceptional value to clients across diverse industries.Position Overview:We are seeking an experienced End User Computing (EUC) Engineer to provide dedicated, full-time support. This role will serve as the primary resource responsible for the administration, support, optimization, and security of the organization's end-user computing environment.The ideal candidate will have strong expertise across modern endpoint management technologies and a proven track record of managing enterprise desktop environments, mobile devices, and endpoint security initiativeQualifications:Administer and maintain enterprise endpoint management platforms, including SCCM/MECM and Microsoft Intune.Configure, deploy, and support Windows Autopilot for streamlined device provisioning and onboarding.Manage and support endpoint infrastructure through Windows Administration Center and related management tools.Package, deploy, and maintain end-user applications across the enterprise environment.Oversee operating system lifecycle management, including upgrades, migrations, and refresh initiatives.Manage endpoint patching and update compliance to ensure systems remain current and secure.Support and maintain endpoint backup and recovery solutions.Identify, prioritize, and remediate endpoint vulnerabilities in partnership with security teams.Administer software licensing and hardware asset management processes and reporting.Monitor and improve the overall digital employee experience, focusing on endpoint performance and user satisfaction.Implement and maintain endpoint security baselines, hardening standards, and compliance controls.Support and troubleshoot enterprise print services and printing infrastructure.Manage deployment and support of mobile applications across iOS and Android devices.Provide support for Bring Your Own Device (BYOD) programs and policies.Monitor endpoint health and performance through proactive monitoring and alerting solutions.Serve as the dedicated EUC resource, partnering closely with stakeholders to ensure reliable and high-quality end-user support.Requirements:7+ years of experience in End User Computing, Desktop Engineering, or Endpoint Management roles.Hands-on experience administering Microsoft Configuration Manager (SCCM/MECM) and Microsoft Intune in an enterprise environment.Strong experience with Windows Autopilot, endpoint provisioning, and device lifecycle management.Experience supporting enterprise Windows desktop environments and modern workplace technologies.Knowledge of endpoint security best practices, vulnerability management, and system hardening.Experience with application packaging, deployment, and patch management processes.Familiarity with mobile device management (MDM) solutions and mobile application deployment.Experience supporting BYOD environments and modern workplace initiatives.Strong troubleshooting, communication, and customer service skills.Ability to work independently in a fully remote environment while supporting a dedicated…",
-      "visaSponsorship": {
-        "status": "not-stated"
-      },
-      "tags": [
-        "Windows",
-        "iOS",
-        "Android",
-        "Intune",
-        "SCCM",
-        "Autopilot",
-        "Learn4Good",
-        "3 days ago",
-        "95K–135K a year",
-        "Full-time",
-        "No degree mentioned"
-      ],
-      "matchReasons": [
-        "Intune + Autopilot",
-        "SCCM/MECM",
-        "Endpoint engineering",
-        "MDM",
-        "Device management"
-      ],
-      "tools": [
-        "Intune",
-        "SCCM",
-        "Autopilot"
-      ],
-      "platforms": [
-        "Windows",
-        "iOS",
-        "Android"
-      ],
-      "roleFamily": "Endpoint Security",
-      "seniority": "Mid",
-      "employmentType": "Full-time"
-    },
-    {
       "id": "serpapi-tata-consultancy-services-bedford-ma-lab-systems-engineer-sccm-windows-gxp-9c532be8fb",
       "title": "Lab Systems Engineer — SCCM, Windows & GxP",
       "company": "Tata Consultancy Services",
@@ -8653,68 +8599,6 @@
       "employmentType": "N/A"
     },
     {
-      "id": "rapidapi-qibit-especialista-intune-e-mdm-ad5e864e2b",
-      "title": "Especialista intune e mdm",
-      "company": "QiBit",
-      "location": "São Paulo, Sao Paulo, br",
-      "mapLocation": {
-        "label": "São Paulo, Brazil",
-        "latitude": -23.5505,
-        "longitude": -46.6333
-      },
-      "workplace": "On-site",
-      "postedAt": "2026-09-19T00:00:00.000Z",
-      "fetchedAt": "2026-09-23T13:16:24.553Z",
-      "staleAfter": "2026-10-19T00:00:00.000Z",
-      "expiresAt": "2026-10-19T00:00:00.000Z",
-      "source": "RapidAPI Daily International Jobs",
-      "sourceUrl": "https://br.jobsora.com/oferta-53473781806",
-      "applyUrl": "https://br.jobsora.com/oferta-53473781806",
-      "attributionLabel": "Daily International Jobs via RapidAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Descrição do trabalho Job Title - Microsoft Intune and MDM Specialist 100% Presencial: (no escritório do Parque da Cidade - Av. das Nações Unidas SP). Role Summary The Senior Analyst, Intune \\& MDM Specialist is responsible for the administration,...",
-      "description": "Descrição do trabalho\nJob Title - Microsoft Intune and MDM Specialist 100% Presencial: (no escritório do Parque da Cidade - Av. das Nações Unidas SP). Role Summary The Senior Analyst, Intune \\& MDM Specialist is responsible for the administration, support, and continuous improvement of enterprise device management platforms, including Microsoft Intune and Jamf. This role ensures secure, reliable, and scalable endpoint management across Windows, mac OS, i OS, and Android devices. The position focuses on policy implementation, platform stability, automation, and issue resolution, contributing to a consistent and high-quality end-user experience.\n\nKey Responsibilities:\n\nAdminister and maintain Microsoft Intune and Jamf platforms to ensure stable and reliable endpoint management services Implement and manage device configuration, compliance policies, and application deployments across supported platforms Maintain endpoint management standards, including policy structure, assignments, and configuration consistency Support device enrollment and provisioning processes across Windows, mac OS, i OS, and Android environments Manage Windows Autopilot and support Apple enrollment processes in alignment with enterprise standards Troubleshoot and resolve enrollment, provisioning, policy, and application deployment issues Support implementation of endpoint security controls in partnership with Security and IAM teams Develop automation solutions using Power Shell, scripting, or APIs to improve efficiency and consistency Collaborate with Service Desk, Deskside, Security, Network, IAM, and application teams to resolve cross-functional issues Participate in escalation support, planned changes, and after-hours activities as required Contribute to continuous improvement of endpoint management services and operational practices.\n\nKey Deliverables Intune and Jamf platforms maintained with stable, supportable, and well-documented configurations. Device enrollment and provisioning workflows maintained for supported endpoint platforms, with recurring issues identified and remediated. Configuration and compliance policies implemented, reviewed regularly, and aligned to organizational standards and security requirements. Endpoint management reporting maintained and published regularly, covering enrollment, compliance, policy health, and deployment outcomes.\n\nRoot cause analysis completed for recurring endpoint management issues, with corrective actions implemented to reduce operational risk. Automation solutions developed and maintained to improve efficiency, consistency, and scale across endpoint management operations.\n\nRequired\n\nExperience\n\nAdvanced English: C1 or C2 5+ years in IT with strong focus on endpoint management, mobile device management, and enterprise desktop support. Strong hands-on experience with: Windows endpoint management and modern device management concepts; mac OS management and troubleshooting; i OS/Android management concepts and enterprise controls; Microsoft Intune administration and policy management; Jamf administration and Apple endpoint management Strong experience with modern endpoint tooling, including: Microsoft Intune (policy, compliance, configuration, applications, reporting); Windows Autopilot Entra ID device identity concepts; Jamf (device management, profiles, policies, compliance posture); Apple Business Manager and/or Apple enrollment concepts Skills \\& Qualifications Advanced Power Shell skills, including automation, troubleshooting, reporting, and API/Graph integration.\n\nStrong experience designing and maintaining Intune configuration, compliance, and application deployment policies in an enterprise environment. Strong experience supporting Jamf administration and Apple endpoint management in an enterprise environment. Experience with device enrollment, provisioning, and policy assignment strategies across Windows, mac OS, i OS, and Android platforms.",
-      "visaSponsorship": {
-        "status": "not-stated"
-      },
-      "tags": [
-        "macOS",
-        "Windows",
-        "Android",
-        "Jamf",
-        "Intune",
-        "Entra ID",
-        "Autopilot",
-        "PowerShell",
-        "jobsora",
-        "jobsora_br",
-        "Environmental",
-        "N/A"
-      ],
-      "matchReasons": [
-        "Jamf + macOS",
-        "Intune + Autopilot",
-        "Endpoint engineering",
-        "MDM",
-        "Device management"
-      ],
-      "tools": [
-        "Jamf",
-        "Intune",
-        "Entra ID",
-        "Autopilot",
-        "PowerShell"
-      ],
-      "platforms": [
-        "macOS",
-        "Windows",
-        "Android"
-      ],
-      "roleFamily": "Endpoint Security",
-      "seniority": "Senior",
-      "employmentType": "N/A"
-    },
-    {
       "id": "rapidapi-coppel-especialista-de-ops-de-seg-endpoint-01c75b1367",
       "title": "Especialista de Ops de Seg EndPoint",
       "company": "Coppel",
@@ -8873,60 +8757,6 @@
       ],
       "roleFamily": "Device Compliance",
       "seniority": "Lead",
-      "employmentType": "Full-time"
-    },
-    {
-      "id": "serpapi-arctiq-cleveland-tn-end-user-computing-euc-engineer-f3d792c905",
-      "title": "End User Computing; EUC) Engineer",
-      "company": "Arctiq",
-      "location": "Cleveland, TN",
-      "workplace": "Remote",
-      "postedAt": "2026-09-18T19:22:59.728Z",
-      "fetchedAt": "2026-09-21T19:22:59.728Z",
-      "staleAfter": "2026-11-02T19:22:59.728Z",
-      "expiresAt": "2026-11-02T19:22:59.728Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://www.learn4good.com/jobs/cleveland/tennessee/info_technology/5481054008/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://www.learn4good.com/jobs/cleveland/tennessee/info_technology/5481054008/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Position: End User Computing (EUC) Engineer Company Overview:Arctiq is a global, intelligence-driven technology services company delivering professional and managed services across Hybrid Cloud Infrastructure, Networking & Connected Experiences,...",
-      "description": "Position: End User Computing (EUC) Engineer Company Overview:Arctiq is a global, intelligence-driven technology services company delivering professional and managed services across Hybrid Cloud Infrastructure, Networking & Connected Experiences, Cybersecurity, Data & AI, Autonomous Operations & Intelligence, and Enterprise Service Management. We help organizations operate, secure, and modernize complex environments by unifying infrastructure, networking, data, security, automation, and observability under a single, integrated operating model. Our work focuses on helping customers reduce operational friction, improve resilience, and make better, faster decisions as their environments evolve. Arctiq builds on decades of industry expertise and a customer-centric ethos to deliver exceptional value to clients across diverse industries.Position Overview:We are seeking an experienced End User Computing (EUC) Engineer to provide dedicated, full-time support. This role will serve as the primary resource responsible for the administration, support, optimization, and security of the organization's end-user computing environment.The ideal candidate will have strong expertise across modern endpoint management technologies and a proven track record of managing enterprise desktop environments, mobile devices, and endpoint security initiativeQualifications:Administer and maintain enterprise endpoint management platforms, including SCCM/MECM and Microsoft Intune.Configure, deploy, and support Windows Autopilot for streamlined device provisioning and onboarding.Manage and support endpoint infrastructure through Windows Administration Center and related management tools.Package, deploy, and maintain end-user applications across the enterprise environment.Oversee operating system lifecycle management, including upgrades, migrations, and refresh initiatives.Manage endpoint patching and update compliance to ensure systems remain current and secure.Support and maintain endpoint backup and recovery solutions.Identify, prioritize, and remediate endpoint vulnerabilities in partnership with security teams.Administer software licensing and hardware asset management processes and reporting.Monitor and improve the overall digital employee experience, focusing on endpoint performance and user satisfaction.Implement and maintain endpoint security baselines, hardening standards, and compliance controls.Support and troubleshoot enterprise print services and printing infrastructure.Manage deployment and support of mobile applications across iOS and Android devices.Provide support for Bring Your Own Device (BYOD) programs and policies.Monitor endpoint health and performance through proactive monitoring and alerting solutions.Serve as the dedicated EUC resource, partnering closely with stakeholders to ensure reliable and high-quality end-user support.Requirements:7+ years of experience in End User Computing, Desktop Engineering, or Endpoint Management roles.Hands-on experience administering Microsoft Configuration Manager (SCCM/MECM) and Microsoft Intune in an enterprise environment.Strong experience with Windows Autopilot, endpoint provisioning, and device lifecycle management.Experience supporting enterprise Windows desktop environments and modern workplace technologies.Knowledge of endpoint security best practices, vulnerability management, and system hardening.Experience with application packaging, deployment, and patch management processes.Familiarity with mobile device management (MDM) solutions and mobile application deployment.Experience supporting BYOD environments and modern workplace initiatives.Strong troubleshooting, communication, and customer service skills.Ability to work independently in a fully remote environment while supporting a dedicated…",
-      "visaSponsorship": {
-        "status": "not-stated"
-      },
-      "tags": [
-        "Windows",
-        "iOS",
-        "Android",
-        "Intune",
-        "SCCM",
-        "Autopilot",
-        "Learn4Good",
-        "3 days ago",
-        "95K–135K a year",
-        "Full-time",
-        "No degree mentioned"
-      ],
-      "matchReasons": [
-        "Intune + Autopilot",
-        "SCCM/MECM",
-        "Endpoint engineering",
-        "MDM",
-        "Device management"
-      ],
-      "tools": [
-        "Intune",
-        "SCCM",
-        "Autopilot"
-      ],
-      "platforms": [
-        "Windows",
-        "iOS",
-        "Android"
-      ],
-      "roleFamily": "Endpoint Security",
-      "seniority": "Mid",
       "employmentType": "Full-time"
     },
     {
@@ -11128,50 +10958,6 @@
       "employmentType": "Full-time"
     },
     {
-      "id": "serpapi-lightgrid-fort-lee-va-cyber-security-services-endpoint-security-administration-jobs-d3bfe709c8",
-      "title": "Cyber Security Services - Endpoint Security Administration Jobs",
-      "company": "Lightgrid",
-      "location": "Fort Lee, VA",
-      "workplace": "On-site",
-      "postedAt": "2026-09-18T11:23:35.058Z",
-      "fetchedAt": "2026-09-20T11:23:35.058Z",
-      "staleAfter": "2026-11-02T11:23:35.058Z",
-      "expiresAt": "2026-11-02T11:23:35.058Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://www.clearancejobs.com/jobs/9173270/cyber-security-services-endpoint-security-administration?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://www.clearancejobs.com/jobs/9173270/cyber-security-services-endpoint-security-administration?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Demonstrate a deep understanding of endpoint security generally (EDR, Anti-malware, GTI, etc.) and Trellix Policy orchestrator (ePO) specifically (on-site and cloud based). • Build, configure, and maintain communication channels between different...",
-      "description": "Demonstrate a deep understanding of endpoint security generally (EDR, Anti-malware, GTI, etc.) and Trellix Policy orchestrator (ePO) specifically (on-site and cloud based).\n\n• Build, configure, and maintain communication channels between different Cybersecurity technology platforms utilizing industry standards (pxGrid, APIs, SAML, Okta, ODBC, and others).\n\n• Demonstrate intermediate Systems Administrator experience across Microsoft and Linux operating systems.\n\n• Parse raw syslog, packet capture, and other system logging data.\n\n• Understand network subnetting.\n\n• Respond to incident tickets in accordance with established SLAs.\n\n• Collaborate across AORs and business groups regarding endpoint security settings, posture, and troubleshooting.\n\n• Participate in Incident Response activities as needed.\n\n• Author, update, edit, and maintain documentation related to endpoint security posture within Agency.\n\nBachelor’s degree in Computer Science, Cybersecurity, Information Assurance, or related discipline (or equivalent experience).\n\nMust be compliant with DoD 8140 Cyber Workforce Qualification Program; preferred certifications include CompTIA Security+, CISSP, or other relevant cybersecurity certification maintained throughout the employment period.\n\nMinimum 3 years’ experience in incident response, cybersecurity operations, or systems administration involving recovery planning, preferably for DoD or federal agencies.\n\nIntermediate Systems Administrator experience configuring, maintaining, and troubleshooting across both Microsoft and Linux operating systems.\n\n• Deep understanding and practical experience with endpoint security tools (EDR, Anti-malware, GTI), with specific expertise in managing Microsoft Defender for both on-site and cloud-based environments.\n\n• Demonstrated ability to build, configure, and maintain communication channels across diverse cybersecurity platforms using industry-standard protocols such as pxGrid, APIs, SAML, Okta, and ODBC.\n\n• Strong capability to parse and analyze raw syslog, packet captures, and system logging data, coupled with a solid understanding of network subnetting for troubleshooting and security posture analysis.\n\n• Hands-on experience deploying, configuring, and maintaining Data Loss Prevention (DLP) tools (including removable media control) and application whitelisting rules for Windows and *NIX environments.\n\n• Experience tracking, maintaining, and reporting on endpoint security compliance to ensure adherence to DoD and Agency requirements (including STIGs, TASKORDs, and CTOs), while navigating change and exception management processes\n\n• Ability to work both independently and as part of a cross-functional cyber response team; may coordinate activities with other analysts. · Exercise sound judgment and report/escalate issues clearly and promptly\n\n• Strong written and verbal communication with ability to document technical activities and procedures, brief government staff, and work with multidisciplinary teams.\n\nSecret clearance required; must be eligible for and able to maintain clearance throughout employment.",
-      "tags": [
-        "Windows",
-        "Linux",
-        "Okta",
-        "Defender",
-        "Clearance Jobs",
-        "Full-time",
-        "2 days ago"
-      ],
-      "matchReasons": [
-        "Endpoint engineering",
-        "Endpoint security",
-        "Compliance evidence",
-        "Windows platform"
-      ],
-      "tools": [
-        "Okta",
-        "Defender"
-      ],
-      "platforms": [
-        "Windows",
-        "Linux"
-      ],
-      "roleFamily": "Endpoint Security",
-      "seniority": "Mid",
-      "employmentType": "Full-time"
-    },
-    {
       "id": "serpapi-msccn-washington-dc-junior-endpoint-protection-analyst-washington-dc-db59009d7a",
       "title": "Junior Endpoint Protection Analyst - Washington DC",
       "company": "MSCCN",
@@ -11324,50 +11110,6 @@
       ],
       "roleFamily": "Endpoint Security",
       "seniority": "Senior",
-      "employmentType": "Full-time"
-    },
-    {
-      "id": "serpapi-enexus-global-dallas-tx-mdm-data-engineer-9be9b943d7",
-      "title": "MDM Data Engineer",
-      "company": "Enexus Global",
-      "location": "Dallas, TX",
-      "mapLocation": {
-        "label": "Dallas, TX",
-        "latitude": 32.7767,
-        "longitude": -96.797
-      },
-      "workplace": "On-site",
-      "postedAt": "2026-09-18T11:23:35.058Z",
-      "fetchedAt": "2026-09-20T11:23:35.058Z",
-      "staleAfter": "2026-11-02T11:23:35.058Z",
-      "expiresAt": "2026-11-02T11:23:35.058Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://bebee.com/us/jobs/mdm-data-engineer-enexus-global-dallas-tx-united-states--oneredce-6874_1c53d6123a147dc9d89b8d28447b8875?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://bebee.com/us/jobs/mdm-data-engineer-enexus-global-dallas-tx-united-states--oneredce-6874_1c53d6123a147dc9d89b8d28447b8875?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "About the Role You'll be the hands-on MDM engineer on a data modernization program for a large financial services client. The platform is built on Databricks and Delta Lake; your job is to own the Profisee MDM layer - configure it, connect it, and keep...",
-      "description": "About the Role\nYou'll be the hands-on MDM engineer on a data modernization program for a large financial services client. The platform is built on Databricks and Delta Lake; your job is to own the Profisee MDM layer - configure it, connect it, and keep golden records flowing cleanly into the downstream warehouse.\n\nThis is an implementation role, not an advisory one. You'll write code, configure match rules, and debug pipeline failures.\n\nWhat You'll Do\nConfigure and tune Profisee match and survivorship rules for Client and Advisor entities (probabilistic + deterministic matching, confidence thresholds, conflict resolution). Build and maintain the integration between Databricks Delta Lake and Profisee - ingestion of staging records into Profisee, and write-back of golden records to the Lakehouse. Set up the Profisee stewardship portal for data steward workflows - exception queues, match review, and record correction. Work with upstream pipeline engineers to ensure records are correctly partitioned and flagged before they hit the MDM layer. Monitor MDM pipeline health - match rates, queue depth, golden record lag - and fix issues when they arise. Document match rules, survivorship decisions, and integration patterns for the team. Must-Have\n3+ years with Profisee MDM - you've implemented it, not just administered it. You know match rules, survivorship policies, and Profisee Connect. Strong SQL and Python - you can write and debug pipeline code independently. Profisee integration experience - connecting Profisee to an external data platform (Databricks, Snowflake, SQL Server, or equivalent) via API or connector. Match/merge configuration - candidate generation, scoring, threshold tuning, and survivorship. Cloud environment experience - AWS or Azure. Nice to Have\nDatabricks / Delta Lake experience (DLT, MERGE, Change Data Feed). Financial services domain knowledge - client data, advisor data, accounts. Experience with other MDM tools (Reltio, Informatica, Semarchy). Kafka / event-driven pipeline experience. You're a Good Fit If\nYou can configure a Profisee match rule from scratch and explain why you set the thresholds where you did. You've debugged a golden record that wasn't writing back correctly and can walk through how you found the issue. You don't need someone to hand you an architecture diagram before you can ask good questions.",
-      "tags": [
-        "Windows",
-        "macOS",
-        "BeBee",
-        "Full-time",
-        "2 days ago",
-        "No degree mentioned"
-      ],
-      "matchReasons": [
-        "MDM",
-        "Windows platform",
-        "macOS platform"
-      ],
-      "tools": [],
-      "platforms": [
-        "Windows",
-        "macOS"
-      ],
-      "roleFamily": "Windows Platform",
-      "seniority": "Mid",
       "employmentType": "Full-time"
     },
     {
@@ -13312,64 +13054,6 @@
       "employmentType": "Full-time"
     },
     {
-      "id": "serpapi-leidos-annandale-va-intune-engineer-3a5e162612",
-      "title": "Intune Engineer",
-      "company": "Leidos",
-      "location": "Annandale, VA",
-      "workplace": "On-site",
-      "postedAt": "2026-09-17T11:26:16.599Z",
-      "fetchedAt": "2026-09-22T11:26:16.599Z",
-      "staleAfter": "2026-11-01T11:26:16.599Z",
-      "expiresAt": "2026-11-01T11:26:16.599Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://jobs.appcast.io/leidos/intune-engineer/58695016311?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://jobs.appcast.io/leidos/intune-engineer/58695016311?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Description The EUT Specialist-_SME provides senior technical leadership for endpoint management services supporting the SEC Infrastructure Support Services (ISS) contract. This role ensures secure, reliable lifecycle operations for SEC endpoint...",
-      "description": "Description\n\n The EUT Specialist-_SME provides senior technical leadership for endpoint management services supporting the SEC Infrastructure Support Services (ISS) contract. This role ensures secure, reliable lifecycle operations for SEC endpoint platforms, including Windows devices, virtual endpoints, and mobile assets, in alignment with PWS requirements for compliance, operational readiness, and service quality. The SME leads design and enforcement of endpoint baselines, patching, vulnerability remediation, and policy controls while supporting modernization initiatives such as Microsoft Intune, Windows Autopilot, and Microsoft Defender for Endpoint. The position also drives cross-functional resolution of complex endpoint issues, maintains SOPs and documentation for audit readiness, and mentors technical staff to improve service performance and consistency.\n\nPRIMARY RESPONSIBILITIES\n\nEndpoint Lifecycle and Platform Operations\n\n- Lead operations and maintenance for SEC-issued endpoints, including laptops, desktops, virtual computers, and mobile devices.\n\n- Direct provisioning, configuration, and decommissioning activities across the full endpoint lifecycle in accordance with SEC standards.\n\n- Oversee enterprise application packaging, deployment, and maintenance for baseline and mission-specific software.\n\n- Manage preproduction endpoint environments to validate new configurations, updates, and releases before production deployment.\n\nSecurity, Compliance, and Policy Governance\n\n- Establish and maintain endpoint configuration baselines, compliance policies, and security controls for Windows and supported mobile platforms.\n\n- Lead patch and vulnerability management activities, including remediation planning and closure reporting.\n\n- Develop, maintain, and version-control endpoint SOPs, architecture artifacts, and operational documentation to support FISMA and audit readiness.\n\n- Ensure endpoint operations align with SEC policy, zero-trust objectives, and approved change control processes.\n\nIntune Engineering and Automation\n\n- Serve as the technical SME for Microsoft Intune in Windows environments, including device configuration profiles, compliance policies, and application delivery.\n\n- Lead Autopilot and endpoint onboarding workflows to improve deployment speed, user readiness, and provisioning consistency.\n\n- Design and implement PowerShell and automation solutions to reduce manual effort, improve reliability, and standardize endpoint operations.\n\n- Integrate endpoint management workflows with enterprise tooling and reporting processes to improve visibility and service performance.\n\nIncident Resolution, Collaboration, and Service Improvement\n\n- Lead complex troubleshooting for Autopilot enrollment failures, policy conflicts, application packaging issues, and endpoint compliance anomalies.\n\n- Coordinate with security, infrastructure, service desk, and vendor teams to resolve escalated incidents and prevent recurrence.\n\n- Provide technical mentorship and quality oversight to endpoint engineers and support personnel.\n\n- Support endpoint SLA/operational reporting, including metrics for patch compliance, incident trends, lifecycle status, and service outcomes.\n\nREQUIRED QUALIFICATIONS\n\nUS Citizenship required: Must meet contract requirements.\n\nClearance: Ability to obtain and maintain SEC Public Trust (or higher if required).\n\nEducation: Bachelors in a relevant field (e.g., Information Technology, Computer Science, Engineering).\n\nExperience:\n\n- 10+ years of experience in endpoint engineering and enterprise endpoint management within complex IT environments. A degree can be substituted for years of experience.\n\n- Demonstrated subject matter expertise in Microsoft Intune for Windows endpoint administration and policy management.\n\n- Demonstrated experience supporting multi-platform endpoint environments, including Windows and mobile/Apple ecosystems.\n\n- Proven experience leading endpoint security, lifecycle management, troubleshooting, and documentation/SOP governance in regulated environments.\n\n- Demonstrated experience leading endpoint modernization initiatives, including Windows Autopilot and Microsoft Defender for Endpoint.\n\nTechnical Skills:\n\n- Microsoft Intune (Windows endpoint management, configuration profiles, compliance policies, and application delivery)\n\n- Multi-platform endpoint administration across Windows and mobile/Apple ecosystem devices\n\n- Windows lifecycle management and endpoint policy baselines\n\n- Endpoint security controls and compliance policy governance\n\n- Windows Autopilot\n\n- Microsoft Defender for Endpoint\n\n- PowerShell scripting and endpoint automation\n\n- Enterprise application packaging and deployment\n\n- Troubleshooting of enrollment failures, policy conflicts, and compliance anomalies\n\nPREFERRED QUALIFICATIONS\n\n- Experience supporting U.S. federal IT environments with FISMA, NIST, and zero-trust control implementation.\n\n- Hands-on experience with co-management or migration strategies across Intune and legacy endpoint management platforms.\n\n- Demonstrated success building endpoint operational dashboards and reporting integrations for compliance and SLA tracking.\n\n- Strong experience leading cross-functional endpoint modernization efforts in large, distributed user environments.\n\n- Advanced troubleshooting experience across identity, policy, and security tooling integrations impacting endpoint compliance.\n\n- Microsoft Certified: Endpoint Administrator Associate (MD-102)\n\n- Microsoft Certified: Security Operations Analyst Associate (SC-200)\n\n- ITIL 4 Foundation\n\nWORK ENVIRONMENT / OTHER\n\nOperational Support: May require participation in on-call or surge support activities depending on operational needs.\n\nLocation: On-site at SEC HQ, Washington, DC.\n\nTravel: As required per contract direction.\n\nIf you're looking for comfort, keep scrolling. At Leidos, we outthink, outbuild, and outpace the status quo — because the mission demands it. We're not hiring followers. We're recruiting the ones who disrupt, provoke, and refuse to fail. Step 10 is ancient history. We're already at step 30 — and moving faster than anyone else dares.\n\nOriginal Posting:September 16, 2026\n\nFor U.S. Positions: While subject to change based on business needs, Leidos reasonably anticipates that this job requisition will remain open for at least 3 days with an anticipated close date of no earlier than 3 days after the original posting date as listed above.\n\nPay Range:Pay Range $82,550.00 - $149,225.00\n\nThe Leidos pay range for this job level is a general guideline only and not a guarantee of compensation or salary. Additional factors considered in extending an offer include (but are not limited to) responsibilities of the job, education, experience, knowledge, skills, and abilities, as well as internal equity, alignment with market data, applicable bargaining agreement (if any), or other law.\n\nAbout Leidos\n\nLeidos is an industry and technology leader serving government and commercial customers with smarter, more efficient digital and mission innovations. Headquartered in Reston, Virginia, with 47,000 global employees, Leidos reported annual revenues of approximately $16.7 billion for the fiscal year ended January 3, 2025. For more information, visit www.Leidos.com.\n\nPay and Benefits\n\nPay and benefits are fundamental to any career decision. That's why we craft compensation packages that reflect the importance of the work we do for our customers. Employment benefits include competitive compensation, Health and Wellness programs, Income Protection, Paid Leave and Retirement. More details are available at www.leidos.com/careers/pay-benefits.\n\nSecuring Your Data\n\nBeware of fake employment opportunities using Leidos’ name. Leidos will never ask you to provide payment-related information during any part of the employment application process (i.e., ask you for money), nor will Leidos ever advance money as part of the hiring process (i.e., send you a check or money order before doing any work). Further, Leidos will only communicate with you through emails that are generated by the Leidos.com automated system – never from free commercial services (e.g., Gmail, Yahoo, Hotmail) or via WhatsApp, Telegram, etc. If you received an email purporting to be from Leidos that asks for payment-related information or any other personal information (e.g., about you or your previous employer), and you are concerned about its legitimacy, please make us aware immediately by emailing us at LeidosCareersFraud@leidos.com.\n\nIf you believe you are the victim of a scam, contact your local law enforcement and report the incident to the U.S. Federal Trade Commission.\n\nCommitment to Non-Discrimination\n\nAll qualified applicants will receive consideration for employment without regard to sex, race, ethnicity, age, national origin, citizenship, religion, physical or mental disability, medical condition, genetic information, pregnancy, family structure, marital status, ancestry, domestic partner status, sexual orientation, gender identity or expression, veteran or military status, or any other basis prohibited by law. Leidos will also consider for employment qualified applicants with criminal histories consistent with relevant laws.",
-      "visaSponsorship": {
-        "status": "not-stated"
-      },
-      "tags": [
-        "Windows",
-        "Intune",
-        "Autopilot",
-        "PowerShell",
-        "Defender",
-        "Jobs.appcast.io",
-        "5 days ago",
-        "82,550–149,225 a year",
-        "Full-time",
-        "Health insurance"
-      ],
-      "matchReasons": [
-        "Intune + Autopilot",
-        "Endpoint engineering",
-        "PowerShell automation",
-        "App packaging",
-        "Endpoint security"
-      ],
-      "tools": [
-        "Intune",
-        "Autopilot",
-        "PowerShell",
-        "Defender"
-      ],
-      "platforms": [
-        "Windows"
-      ],
-      "roleFamily": "Endpoint Security",
-      "seniority": "Senior",
-      "employmentType": "Full-time",
-      "salary": {
-        "min": 82550,
-        "max": 149225,
-        "currency": "USD",
-        "label": "$83k-$149k"
-      }
-    },
-    {
       "id": "serpapi-my3tech-inc-cincinnati-oh-intune-engineer-3996cc2534",
       "title": "Intune Engineer",
       "company": "My3Tech Inc",
@@ -13879,52 +13563,6 @@
       }
     },
     {
-      "id": "serpapi-inpo-albany-ga-ai-driven-digital-workplace-engineer-m365-copilot-ab300d7ed1",
-      "title": "AI-Driven Digital Workplace Engineer; M365 Copilot",
-      "company": "INPO",
-      "location": "Albany, GA",
-      "workplace": "On-site",
-      "postedAt": "2026-09-17T11:23:10.409Z",
-      "fetchedAt": "2026-09-19T11:23:10.409Z",
-      "staleAfter": "2026-11-01T11:23:10.409Z",
-      "expiresAt": "2026-11-01T11:23:10.409Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://www.learn4good.com/jobs/albany/georgia/info_technology/5475202860/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://www.learn4good.com/jobs/albany/georgia/info_technology/5475202860/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Position: AI-Driven Digital Workplace Engineer (M365 Copilot) INPO is seeking an experienced Client Engineer III to design, configure, and support intelligent business solutions across Microsoft 365, Copilot Studio, and Power Platform . You will partner...",
-      "description": "Position: AI-Driven Digital Workplace Engineer (M365 Copilot)\n\nINPO is seeking an experienced Client Engineer III to design, configure, and support intelligent business solutions across Microsoft 365, Copilot Studio, and Power Platform\n\n.\n\nYou will partner with stakeholders to drive productivity and governance while mentoring peers in AI adoption and low-code development\n\n.\n\nThe role emphasizes collaboration across IT and business units, with responsibilities for architecture, security, and enablement resources\n\n.This is an excellent position to take on the AI-Driven Digital Workplace Engineer (M365 Copilot) role at INPO.We are looking to fill the AI-Driven Digital Workplace Engineer (M365 Copilot) position at INPO in Atlanta, GA, United States.The AI-Driven Digital Workplace Engineer (M365 Copilot) role at INPO is now open for applications in Atlanta, GA, United States.Join us at INPO as our next AI-Driven Digital Workplace Engineer (M365 Copilot) in Atlanta, GA, United States.",
-      "tags": [
-        "Windows",
-        "macOS",
-        "Learn4Good",
-        "Full-time",
-        "2 days ago",
-        "110K–140K a year",
-        "No degree mentioned"
-      ],
-      "matchReasons": [
-        "Digital workplace",
-        "Windows platform",
-        "macOS platform"
-      ],
-      "tools": [],
-      "platforms": [
-        "Windows",
-        "macOS"
-      ],
-      "roleFamily": "Windows Platform",
-      "seniority": "Mid",
-      "employmentType": "Full-time",
-      "salary": {
-        "min": 110000,
-        "max": 140000,
-        "currency": "USD",
-        "label": "110K–140K a year"
-      }
-    },
-    {
       "id": "serpapi-nbcuniversal-new-york-ny-sr-manager-digital-workplace-e84e6671e0",
       "title": "Sr. Manager, Digital Workplace",
       "company": "NBCUniversal",
@@ -13972,52 +13610,6 @@
         "max": 125000,
         "currency": "USD",
         "label": "100K–125K a year"
-      }
-    },
-    {
-      "id": "serpapi-micron-hayden-id-program-manager-digital-workplace-transformation-7f8c29a601",
-      "title": "Program Manager: Digital Workplace Transformation",
-      "company": "Micron",
-      "location": "Hayden, ID",
-      "workplace": "On-site",
-      "postedAt": "2026-09-17T11:23:10.409Z",
-      "fetchedAt": "2026-09-19T11:23:10.409Z",
-      "staleAfter": "2026-11-01T11:23:10.409Z",
-      "expiresAt": "2026-11-01T11:23:10.409Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://www.learn4good.com/jobs/hayden/idaho/management_and_managerial/5474818869/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://www.learn4good.com/jobs/hayden/idaho/management_and_managerial/5474818869/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Position: Staff Program Manager: Digital Workplace Transformation Micron Technology is seeking a Staff Program Manager for the Digital Workplace team in Boise to lead strategic transformation programs. You will drive AI-enabled services, automation, and...",
-      "description": "Position: Staff Program Manager: Digital Workplace Transformation Micron Technology is seeking a Staff Program Manager for the Digital Workplace team in Boise to lead strategic transformation programs.\n\nYou will drive AI-enabled services, automation, and modernization while aligning with business priorities and stakeholder needs\n\n.\n\nThe role requires 8+ years leading complex programs, cross-functional collaboration, and strong executive communication abilities to deliver measurable business outcomes\n\n.The Staff Program Manager: Digital Workplace Transformation position in the Human Resources, Management & Operations field is open for applications.This Full Time opportunity is for the Staff Program Manager: Digital Workplace Transformation role at Micron.We are seeking a motivated Staff Program Manager: Digital Workplace Transformation to join Micron in Boise, , United States.Consider building your career as a Staff Program Manager: Digital Workplace Transformation at Micron.",
-      "tags": [
-        "Windows",
-        "macOS",
-        "Learn4Good",
-        "Full-time",
-        "2 days ago",
-        "110K–150K a year",
-        "No degree mentioned"
-      ],
-      "matchReasons": [
-        "Digital workplace",
-        "Windows platform",
-        "macOS platform"
-      ],
-      "tools": [],
-      "platforms": [
-        "Windows",
-        "macOS"
-      ],
-      "roleFamily": "Automation",
-      "seniority": "Manager",
-      "employmentType": "Full-time",
-      "salary": {
-        "min": 110000,
-        "max": 150000,
-        "currency": "USD",
-        "label": "110K–150K a year"
       }
     },
     {
@@ -15392,64 +14984,6 @@
       "employmentType": "Full-time"
     },
     {
-      "id": "serpapi-quantum-world-technologies-inc-bellevue-wa-microsoft-intune-endpoint-support-engineer-ac8c262286",
-      "title": "Microsoft Intune / Endpoint Support Engineer",
-      "company": "Quantum World Technologies Inc.",
-      "location": "Bellevue, WA",
-      "mapLocation": {
-        "label": "Seattle, WA",
-        "latitude": 47.6062,
-        "longitude": -122.3321
-      },
-      "workplace": "On-site",
-      "postedAt": "2026-09-16T13:26:42.912Z",
-      "fetchedAt": "2026-09-21T13:26:42.912Z",
-      "staleAfter": "2026-10-31T13:26:42.912Z",
-      "expiresAt": "2026-10-31T13:26:42.912Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://www.dice.com/job-detail/c8619ae9-bcc6-4b94-8024-119929a34d66?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://www.dice.com/job-detail/c8619ae9-bcc6-4b94-8024-119929a34d66?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Microsoft Intune / Endpoint Support Engineer Bellevue WA Full-Time Position Job Description We are looking for a skilled Microsoft Intune / Endpoint Support Engineer with strong experience in endpoint management, device administration, troubleshooting,...",
-      "description": "Microsoft Intune / Endpoint Support Engineer\n Bellevue WA\n Full-Time Position\n\n Job Description\n\n We are looking for a skilled Microsoft Intune / Endpoint Support Engineer with strong experience in endpoint management, device administration, troubleshooting, and customer technical support. The ideal candidate will have hands-on expertise with Microsoft Intune, MDM/MAM, Windows Autopilot, endpoint security, application deployment, and Windows update management.\n\n The candidate should possess excellent communication skills and be comfortable working directly with customers and cross-functional technical teams to investigate and resolve complex technical issues.\n\n Key Responsibilities\n\n  Provide technical support to customers through telephone, email, and chat, ensuring professional and effective communication. Gather information quickly, communicate next steps and status updates, and build customer confidence throughout the support process. Troubleshoot and resolve complex customer technical issues using established troubleshooting tools and methodologies. Review, investigate, and resolve technical issues by collaborating with internal and cross-functional teams. Work closely with engineering, product, and support teams to identify and resolve recurring technical problems. Participate in technical communities, knowledge-sharing sessions, and peer delivery discussions. Complete technical training and readiness programs to maintain and enhance product knowledge. Identify potential product defects and provide detailed feedback to senior engineers. Contribute to continuous improvement of products, processes, and support practices. Provide end-user support for Windows devices, mobile devices, applications, and endpoint management solutions. Technical Skills & Experience\n\n Microsoft Intune & Endpoint Management\n\n  Strong hands-on experience with Microsoft Intune. Extensive experience with Mobile Device Management (MDM) and Mobile Application Management (MAM). Experience managing device enrollment and endpoint lifecycle management. Experience onboarding and offboarding Windows, iOS, macOS, and Android devices using Microsoft Intune. Create, maintain, update, deploy, and remove Intune configuration policies. Experience with: Device Restriction Policies Wi-Fi Profiles Domain Join Profiles Configuration Profiles Endpoint Security Policies Windows Autopilot\n\n  Extensive experience designing, implementing, and managing Windows Autopilot with Microsoft Intune. Experience with device provisioning, deployment, enrollment, and troubleshooting using Autopilot.",
-      "visaSponsorship": {
-        "status": "not-stated"
-      },
-      "tags": [
-        "macOS",
-        "Windows",
-        "iOS",
-        "Android",
-        "Intune",
-        "Autopilot",
-        "Dice",
-        "Full-time",
-        "5 days ago",
-        "No degree mentioned"
-      ],
-      "matchReasons": [
-        "Intune + Autopilot",
-        "Endpoint engineering",
-        "MDM",
-        "Device management",
-        "Endpoint security"
-      ],
-      "tools": [
-        "Intune",
-        "Autopilot"
-      ],
-      "platforms": [
-        "macOS",
-        "Windows",
-        "iOS",
-        "Android"
-      ],
-      "roleFamily": "Endpoint Security",
-      "seniority": "Senior",
-      "employmentType": "Full-time"
-    },
-    {
       "id": "serpapi-001-manufacturers-and-traders-trust-co-anywhere-desktop-engineer-sccm-endpoint-systems-3c9b12b70e",
       "title": "Desktop Engineer – SCCM & Endpoint Systems",
       "company": "001 Manufacturers and Traders Trust Co",
@@ -16745,53 +16279,6 @@
       "roleFamily": "Device Compliance",
       "seniority": "Senior",
       "employmentType": "Full-time"
-    },
-    {
-      "id": "serpapi-american-esoteric-laboratories-covington-ky-director-of-digital-workplace-productivity-09268cdffc",
-      "title": "Director of Digital Workplace & Productivity",
-      "company": "American Esoteric Laboratories",
-      "location": "Covington, KY",
-      "workplace": "On-site",
-      "postedAt": "2026-09-16T11:23:10.409Z",
-      "fetchedAt": "2026-09-19T11:23:10.409Z",
-      "staleAfter": "2026-10-31T11:23:10.409Z",
-      "expiresAt": "2026-10-31T11:23:10.409Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://www.learn4good.com/jobs/covington/kentucky/info_technology/5473094139/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://www.learn4good.com/jobs/covington/kentucky/info_technology/5473094139/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Job Functions, Duties, Responsibilities and Position Qualifications: We're not just a workplace - we're a Great Place to Work certified employer! Proudly certified as a Great Place to Work, we are dedicated to creating a supportive and inclusive...",
-      "description": "Job Functions, Duties, Responsibilities and Position Qualifications: We're not just a workplace - we're a Great Place to Work certified employer! Proudly certified as a Great Place to Work, we are dedicated to creating a supportive and inclusive environment. At Sonic Healthcare USA, we emphasize teamwork and innovation. Check out our job openings and advance your career with a company that values its team members!Sonic Healthcare USA is seeking a strategic and innovative Director of Digital Workplace & Productivity to lead the technologies and services that power the employee experience across the enterprise. This role is responsible for defining and executing the Digital Workplace strategy, overseeing end-user computing, Microsoft 365, collaboration platforms, enterprise SaaS applications, and emerging productivity technologies that enable employees to work efficiently, securely, and effectively.What You’ll DoDevelop and execute the enterprise Digital Workplace strategy and roadmap.Lead the delivery and optimization of employee productivity technologies, including Microsoft 365, Teams, SharePoint, One Drive, Copilot, and other collaboration platforms.Oversee endpoint engineering, device lifecycle management, mobile technologies, virtual desktop environments, and endpoint security.Manage the enterprise SaaS portfolio, including governance, licensing, vendor management, and cost optimization.Drive adoption of AI, automation, and productivity tools, including Microsoft Copilot, Power Platform, Power Apps, and Power Automate.Partner with HR, Cybersecurity, Infrastructure, Enterprise Architecture, and business leaders to improve the digital employee experience.Establish service excellence through strong governance, support models, automation, knowledge management, and self-service capabilities.Ensure workplace technologies meet security, compliance, privacy, and regulatory requirements, including HIPAA standards.Manage multimillion-dollar budgets, technology investments, software licensing, and strategic vendor relationships.Lead and develop high-performing teams while fostering a culture of innovation, continuous improvement, and customer service.What You BringBachelor's degree in Information Technology, Computer Science, Business, or a related field.10+ years of progressive IT experience.5+ years of leadership experience supporting workplace technologies and end-user services.Deep expertise in Microsoft 365, collaboration platforms, end-user computing, SaaS applications, and digital workplace strategy.Experience leading enterprise-wide technology transformation and adoption initiatives.Strong understanding of employee experience, change management, technology governance, and operational excellence.Experience managing large technology budgets and vendor relationships.Preferred Qualifications Healthcare industry experience.Microsoft certifications.Experience with Microsoft Copilot, Power Platform, Digital Adoption Platforms, and SaaS governance programs.ITIL certification.Experience supporting large, geographically distributed organizations.Why Join Sonic Healthcare USA?This is an opportunity to shape the future of the employee technology experience for one of the nation's leading healthcare organizations. You'll lead initiatives that improve collaboration, productivity, automation, and employee engagement while ensuring technology remains secure, scalable, and aligned with business needs. Join Sonic Healthcare USA and help build a modern, innovative digital workplace that empowers employees to do their best work every day.Scheduled Weekly Hours: 40Work Shift:Job Category: Information TechnologyCompany: Sonic Healthcare USA, IncSonic Healthcare USA is an equal opportunity employer that…",
-      "tags": [
-        "Windows",
-        "macOS",
-        "Learn4Good",
-        "Full-time",
-        "3 days ago",
-        "150K–210K a year"
-      ],
-      "matchReasons": [
-        "Endpoint engineering",
-        "Endpoint security",
-        "Compliance evidence",
-        "Desktop engineering",
-        "End-user computing"
-      ],
-      "tools": [],
-      "platforms": [
-        "Windows",
-        "macOS"
-      ],
-      "roleFamily": "Endpoint Security",
-      "seniority": "Mid",
-      "employmentType": "Full-time",
-      "salary": {
-        "min": 150000,
-        "max": 210000,
-        "currency": "USD",
-        "label": "150K–210K a year"
-      }
     },
     {
       "id": "adzuna-5886123467",
@@ -18559,50 +18046,6 @@
       }
     },
     {
-      "id": "serpapi-thinklusive-plano-tx-windows-systems-administrator-378f785cb5",
-      "title": "Windows Systems Administrator",
-      "company": "Thinklusive",
-      "location": "Plano, TX",
-      "mapLocation": {
-        "label": "Dallas, TX",
-        "latitude": 32.7767,
-        "longitude": -96.797
-      },
-      "workplace": "On-site",
-      "postedAt": "2026-09-15T11:27:22.442Z",
-      "fetchedAt": "2026-09-21T11:27:22.442Z",
-      "staleAfter": "2026-10-30T11:27:22.442Z",
-      "expiresAt": "2026-10-30T11:27:22.442Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://haystackapp.io/jobs/328cf0d4-eea1-450f-a052-a15e2ee6b6a6?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://haystackapp.io/jobs/328cf0d4-eea1-450f-a052-a15e2ee6b6a6?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Job Title: Windows Systems Administrator Location: Plano, TX Experience: 10+ Years Job Description: We are looking for a Windows Systems Administrator to manage and support enterprise IT infrastructure, servers, and end-user systems. Key Responsibilities:...",
-      "description": "Job Title: Windows Systems Administrator\n\nLocation: Plano, TX\n\nExperience: 10+ Years\n\nJob Description:\n\nWe are looking for a Windows Systems Administrator to manage and support enterprise IT infrastructure, servers, and end-user systems.\n\nKey Responsibilities:\n\nManage and troubleshoot Windows Servers and systems. Administer VMware virtual environments. Manage Veeam Backup & Restore operations. Support Active Directory including users, groups, and policies. Administer Microsoft 365 services. Develop and maintain PowerShell scripts for automation and administration. Manage system upgrades, patching, and updates using ManageEngine. Monitor system health, troubleshoot incidents, and maintain infrastructure reliability. Required Skills:\n\nWindows Server Administration VMware Veeam Backup & Recovery Active Directory Microsoft 365 PowerShell ManageEngine / Patch Management System Upgrade & Troubleshooting",
-      "tags": [
-        "Windows",
-        "PowerShell",
-        "Haystack",
-        "Full-time",
-        "6 days ago",
-        "No degree mentioned"
-      ],
-      "matchReasons": [
-        "PowerShell automation",
-        "Windows platform"
-      ],
-      "tools": [
-        "PowerShell"
-      ],
-      "platforms": [
-        "Windows"
-      ],
-      "roleFamily": "Systems Administration",
-      "seniority": "Mid",
-      "employmentType": "Full-time"
-    },
-    {
       "id": "serpapi-tandavix-llc-new-york-ny-senior-endpoint-engineer-with-strong-avd-exp-47461e63ff",
       "title": "Senior Endpoint Engineer with strong AVD exp",
       "company": "Tandavix llc",
@@ -18756,53 +18199,6 @@
       }
     },
     {
-      "id": "serpapi-prohires-texas-city-tx-profisee-mdm-engineer-c67a8e4014",
-      "title": "Profisee MDM Engineer",
-      "company": "Prohires",
-      "location": "Texas City, TX",
-      "mapLocation": {
-        "label": "Houston, TX",
-        "latitude": 29.7604,
-        "longitude": -95.3698
-      },
-      "workplace": "On-site",
-      "postedAt": "2026-09-15T11:26:16.599Z",
-      "fetchedAt": "2026-09-22T11:26:16.599Z",
-      "staleAfter": "2026-10-30T11:26:16.599Z",
-      "expiresAt": "2026-10-30T11:26:16.599Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://www.dice.com/job-detail/52d61535-b827-448f-a24e-ce44081bdfa5?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://www.dice.com/job-detail/52d61535-b827-448f-a24e-ce44081bdfa5?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "About the Role You'll be the hands-on MDM engineer on a data modernization program for a large financial services client. The platform is built on Databricks and Delta Lake; your job is to own the Profisee MDM layer — configure it, connect it, and keep...",
-      "description": "About the Role\n\nYou'll be the hands-on MDM engineer on a data modernization program for a large financial services client. The platform is built on Databricks and Delta Lake; your job is to own the Profisee MDM layer — configure it, connect it, and keep golden records flowing cleanly into the downstream warehouse.\n\nThis is an implementation role, not an advisory one. You'll write code, configure match rules, and debug pipeline failures.\n\nWhat You'll Do\n\n* Configure and tune Profisee match and survivorship rules for Client and Advisor entities (probabilistic + deterministic matching, confidence thresholds, conflict resolution).\n\n* Build and maintain the integration between Databricks Delta Lake and Profisee — ingestion of staging records into Profisee, and write-back of golden records to the Lakehouse.\n\n* Set up the Profisee stewardship portal for data steward workflows — exception queues, match review, and record correction.\n\n* Work with upstream pipeline engineers to ensure records are correctly partitioned and flagged before they hit the MDM layer.\n\n* Monitor MDM pipeline health — match rates, queue depth, golden record lag — and fix issues when they arise.\n\n* Document match rules, survivorship decisions, and integration patterns for the team.\n\nMust-Have\n\n* 3+ years with Profisee MDM — you've implemented it, not just administered it. You know match rules, survivorship policies, and Profisee Connect.\n\n* Strong SQL and Python — you can write and debug pipeline code independently.\n\n* Profisee integration experience — connecting Profisee to an external data platform (Databricks, Snowflake, SQL Server, or equivalent) via API or connector.\n\n* Match/merge configuration — candidate generation, scoring, threshold tuning, and survivorship.\n\n* Cloud environment experience — AWS or Azure.\n\nNice to Have\n\n* Databricks / Delta Lake experience (DLT, MERGE, Change Data Feed).\n\n* Financial services domain knowledge — client data, advisor data, accounts.\n\n* Experience with other MDM tools (Reltio, Informatica, Semarchy).\n\n* Kafka / event-driven pipeline experience.\n\nYou're a Good Fit If…\n\n* You can configure a Profisee match rule from scratch and explain why you set the thresholds where you did.\n\n* You've debugged a golden record that wasn't writing back correctly and can walk through how you found the issue.\n\n* You don't need someone to hand you an architecture diagram before you can ask good questions.\n\n------------------------------------\n\nBhargav. V IT Recruiter\nUpStream Global Services\na division of SPI - \"Over 35 Years Of Industry Excellence\"\na *WMSBE Certified Business",
-      "visaSponsorship": {
-        "status": "not-stated"
-      },
-      "tags": [
-        "Windows",
-        "macOS",
-        "Dice",
-        "7 days ago",
-        "Full-time",
-        "No degree mentioned"
-      ],
-      "matchReasons": [
-        "MDM",
-        "Windows platform",
-        "macOS platform"
-      ],
-      "tools": [],
-      "platforms": [
-        "Windows",
-        "macOS"
-      ],
-      "roleFamily": "Windows Platform",
-      "seniority": "Mid",
-      "employmentType": "Full-time"
-    },
-    {
       "id": "serpapi-ninjaone-wisconsin-c-endpoint-state-control-engineer-hybrid-remote-82bbf576b6",
       "title": "C++ Endpoint State & Control Engineer (Hybrid Remote)",
       "company": "NinjaOne",
@@ -18951,65 +18347,6 @@
       "roleFamily": "Endpoint Security",
       "seniority": "Senior",
       "employmentType": "Contract"
-    },
-    {
-      "id": "serpapi-bae-systems-columbia-sc-desktop-and-windows-engineer-jobs-ee2da0cefd",
-      "title": "Desktop and Windows Engineer Jobs",
-      "company": "BAE Systems",
-      "location": "Columbia, SC",
-      "workplace": "On-site",
-      "postedAt": "2026-09-15T11:25:13.473Z",
-      "fetchedAt": "2026-09-18T11:25:13.473Z",
-      "staleAfter": "2026-10-30T11:25:13.473Z",
-      "expiresAt": "2026-10-30T11:25:13.473Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://www.clearancejobs.com/jobs/9163099/desktop-and-windows-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://www.clearancejobs.com/jobs/9163099/desktop-and-windows-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Job Description BAE is seeking an experienced Desktop & Windows engineer to support technical development and testing of Desktop Operating System (OS) Images for the Executive Office for the U.S. Attorneys (EOUSA) for our customer, the U.S. Attorneys'...",
-      "description": "Job Description\nBAE is seeking an experienced Desktop & Windows engineer to support technical development and testing of Desktop Operating System (OS) Images for the Executive Office for the U.S. Attorneys (EOUSA) for our customer, the U.S. Attorneys' Office (USAO).\n\nRequired Education, Experience, & Skills\nBachelors in computer science, business, or other relevant disciplines.Ten (10) years of relevant work experience may be substituted for degree requirement.\nAnticipated Skill Set:Deep knowledge of Windows OS (Windows 11) internals, architecture, and configuration.Expertise with Active Directory, Group Policy Objects (GPO), OU structure, and domain services.Strong experience with imaging and deployment tools such as MDT, SCCM/MECM, MECM OSD, Autopilot, and Intune.Proficiency with device management, compliance policies, configuration profiles, and Windows Update for Business.Skilled in PowerShell scripting for automation, reporting, and troubleshooting.Experience managing drivers, firmware, hardware standards, and lifecycle management Knowledge of enterprise networking fundamentals (DNS, DHCP, VPN, certificates).Endpoint security: BitLocker, Defender for Endpoint, application control, privilege management.Patch management and vulnerability remediation.Monitoring and logging using tools like Event Viewer, Log Analytics, SIEM platforms.Troubleshooting complex desktop, application, and hardware issues.Supporting virtualization technologies (VDI, Hyper-V).Experience in programming languages such as C#, Visual Basic with strong knowledge in .NET.\n\nPreferred Education, Experience, & Skills\nDeep PowerShell proficiency, including building advanced modules and automating enterprise-scale workflows.Strong experience with cloud-based endpoint management (Intune, Azure AD, Conditional Access, Defender for Endpoint).Expertise with modern provisioning methods (Autopilot, ESP customization, scripted deployments).Familiarity with Zero Trust endpoint principles and secure configuration baselines.Solid understanding of certificate services, PKI, and enterprise certificate management.Experience with Windows troubleshooting using symbols, process monitoring tools, and performance analyzers (ProcMon, WinDbg).\n\nPay Information\nFull-Time Salary Range: $118095 - $200762\n\nPlease note: This range is based on our market pay structures. However, individual salaries are determined by a variety of factors including, but not limited to: business considerations, local market conditions, and internal equity, as well as candidate qualifications, such as skills, education, and experience.\n\nEmployee Benefits: At BAE Systems, we support our employees in all aspects of their life, including their health and financial well-being. Regular employees scheduled to work 20+ hours per week are offered: health, dental, and vision insurance; health savings accounts; a 401(k) savings plan; disability coverage; and life and accident insurance. We also have an employee assistance program, a legal plan, and other perks including discounts on things like home, auto, and pet insurance. Our leave programs include paid time off, paid holidays, as well as other types of leave, including paid parental, military, bereavement, and any applicable federal and state sick leave. Employees may participate in the company recognition program to receive monetary or non-monetary recognition awards. Other incentives may be available based on position level and/or job specifics.\n\nAbout BAE Systems Intelligence & Security\nBAE Systems, Inc. is a defense, aerospace, and security company headquartered in Falls Church, Virginia, with more than 40,000 employees worldwide. We serve, supply, and protect those who protect us. As one of the most geographically diverse international defense companies, we deliver a full range of products and services spanning air, land, maritime, space, and cyber, including advanced electronics, intelligence solutions, and dedicated customer support.\n\nOur culture is performance-driven and values-led, built on curiosity, creativity, and collaboration. Purpose isn't a tagline here. It's what drives us. We're developing breakthrough technologies that defend national security and make a lasting impact on our communities and our planet. When you join BAE Systems, you're not just building a career. You're contributing to a mission that truly matters.\n\nThis position will be posted for at least 5 calendar days. The posting will remain active until the position is filled, or a qualified pool of candidates is identified.",
-      "tags": [
-        "Windows",
-        "Intune",
-        "SCCM",
-        "Entra ID",
-        "Autopilot",
-        "PowerShell",
-        "Defender",
-        "Clearance Jobs",
-        "Full-time",
-        "3 days ago",
-        "118,095–200,762 a year",
-        "Health insurance"
-      ],
-      "matchReasons": [
-        "Intune + Autopilot",
-        "SCCM/MECM",
-        "Endpoint engineering",
-        "Device management",
-        "PowerShell automation"
-      ],
-      "tools": [
-        "Intune",
-        "SCCM",
-        "Entra ID",
-        "Autopilot",
-        "PowerShell",
-        "Defender"
-      ],
-      "platforms": [
-        "Windows"
-      ],
-      "roleFamily": "Endpoint Security",
-      "seniority": "Mid",
-      "employmentType": "Full-time",
-      "salary": {
-        "min": 118095,
-        "max": 200762,
-        "currency": "USD",
-        "label": "118,095–200,762 a year"
-      }
     },
     {
       "id": "serpapi-opentalent-annapolis-md-ts-sci-desktop-systems-engineer-459c56aadb",
@@ -19198,70 +18535,6 @@
       "roleFamily": "Automation",
       "seniority": "Mid",
       "employmentType": "Full-time"
-    },
-    {
-      "id": "serpapi-bae-systems-washington-dc-desktop-and-windows-engineer-jobs-0d4a14d398",
-      "title": "Desktop and Windows Engineer Jobs",
-      "company": "BAE Systems",
-      "location": "Washington, DC",
-      "mapLocation": {
-        "label": "Washington, DC",
-        "latitude": 38.9072,
-        "longitude": -77.0369
-      },
-      "workplace": "On-site",
-      "postedAt": "2026-09-15T11:23:10.409Z",
-      "fetchedAt": "2026-09-19T11:23:10.409Z",
-      "staleAfter": "2026-10-30T11:23:10.409Z",
-      "expiresAt": "2026-10-30T11:23:10.409Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://www.clearancejobs.com/jobs/9163098/desktop-and-windows-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://www.clearancejobs.com/jobs/9163098/desktop-and-windows-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Job Description BAE is seeking an experienced Desktop & Windows engineer to support technical development and testing of Desktop Operating System (OS) Images for the Executive Office for the U.S. Attorneys (EOUSA) for our customer, the U.S. Attorneys'...",
-      "description": "Job Description\nBAE is seeking an experienced Desktop & Windows engineer to support technical development and testing of Desktop Operating System (OS) Images for the Executive Office for the U.S. Attorneys (EOUSA) for our customer, the U.S. Attorneys' Office (USAO).\n\nRequired Education, Experience, & Skills\nBachelors in computer science, business, or other relevant disciplines.Ten (10) years of relevant work experience may be substituted for degree requirement.\nAnticipated Skill Set:Deep knowledge of Windows OS (Windows 11) internals, architecture, and configuration.Expertise with Active Directory, Group Policy Objects (GPO), OU structure, and domain services.Strong experience with imaging and deployment tools such as MDT, SCCM/MECM, MECM OSD, Autopilot, and Intune.Proficiency with device management, compliance policies, configuration profiles, and Windows Update for Business.Skilled in PowerShell scripting for automation, reporting, and troubleshooting.Experience managing drivers, firmware, hardware standards, and lifecycle management Knowledge of enterprise networking fundamentals (DNS, DHCP, VPN, certificates).Endpoint security: BitLocker, Defender for Endpoint, application control, privilege management.Patch management and vulnerability remediation.Monitoring and logging using tools like Event Viewer, Log Analytics, SIEM platforms.Troubleshooting complex desktop, application, and hardware issues.Supporting virtualization technologies (VDI, Hyper-V).Experience in programming languages such as C#, Visual Basic with strong knowledge in .NET.\n\nPreferred Education, Experience, & Skills\nDeep PowerShell proficiency, including building advanced modules and automating enterprise-scale workflows.Strong experience with cloud-based endpoint management (Intune, Azure AD, Conditional Access, Defender for Endpoint).Expertise with modern provisioning methods (Autopilot, ESP customization, scripted deployments).Familiarity with Zero Trust endpoint principles and secure configuration baselines.Solid understanding of certificate services, PKI, and enterprise certificate management.Experience with Windows troubleshooting using symbols, process monitoring tools, and performance analyzers (ProcMon, WinDbg).\n\nPay Information\nFull-Time Salary Range: $118095 - $200762\n\nPlease note: This range is based on our market pay structures. However, individual salaries are determined by a variety of factors including, but not limited to: business considerations, local market conditions, and internal equity, as well as candidate qualifications, such as skills, education, and experience.\n\nEmployee Benefits: At BAE Systems, we support our employees in all aspects of their life, including their health and financial well-being. Regular employees scheduled to work 20+ hours per week are offered: health, dental, and vision insurance; health savings accounts; a 401(k) savings plan; disability coverage; and life and accident insurance. We also have an employee assistance program, a legal plan, and other perks including discounts on things like home, auto, and pet insurance. Our leave programs include paid time off, paid holidays, as well as other types of leave, including paid parental, military, bereavement, and any applicable federal and state sick leave. Employees may participate in the company recognition program to receive monetary or non-monetary recognition awards. Other incentives may be available based on position level and/or job specifics.\n\nAbout BAE Systems Intelligence & Security\nBAE Systems, Inc. is a defense, aerospace, and security company headquartered in Falls Church, Virginia, with more than 40,000 employees worldwide. We serve, supply, and protect those who protect us. As one of the most geographically diverse international defense companies, we deliver a full range of products and services spanning air, land, maritime, space, and cyber, including advanced electronics, intelligence solutions, and dedicated customer support.\n\nOur culture is performance-driven and values-led, built on curiosity, creativity, and collaboration. Purpose isn't a tagline here. It's what drives us. We're developing breakthrough technologies that defend national security and make a lasting impact on our communities and our planet. When you join BAE Systems, you're not just building a career. You're contributing to a mission that truly matters.\n\nThis position will be posted for at least 5 calendar days. The posting will remain active until the position is filled, or a qualified pool of candidates is identified.",
-      "tags": [
-        "Windows",
-        "Intune",
-        "SCCM",
-        "Entra ID",
-        "Autopilot",
-        "PowerShell",
-        "Defender",
-        "Clearance Jobs",
-        "Full-time",
-        "4 days ago",
-        "118,095–200,762 a year",
-        "Dental insurance"
-      ],
-      "matchReasons": [
-        "Intune + Autopilot",
-        "SCCM/MECM",
-        "Endpoint engineering",
-        "Device management",
-        "PowerShell automation"
-      ],
-      "tools": [
-        "Intune",
-        "SCCM",
-        "Entra ID",
-        "Autopilot",
-        "PowerShell",
-        "Defender"
-      ],
-      "platforms": [
-        "Windows"
-      ],
-      "roleFamily": "Endpoint Security",
-      "seniority": "Mid",
-      "employmentType": "Full-time",
-      "salary": {
-        "min": 118095,
-        "max": 200762,
-        "currency": "USD",
-        "label": "118,095–200,762 a year"
-      }
     },
     {
       "id": "serpapi-philips-nashville-tn-senior-cloud-infrastructure-engineer-4fe57712e7",
@@ -21378,59 +20651,6 @@
       }
     },
     {
-      "id": "serpapi-trustminds-inc-chicago-il-senior-desktop-infrastructure-engineer-remote-with-2-days-onsite-in-a-month-5fb0e1b84c",
-      "title": "Senior Desktop Infrastructure Engineer (Remote with 2 days onsite in a month)",
-      "company": "TrustMinds, Inc.",
-      "location": "Chicago, IL",
-      "mapLocation": {
-        "label": "Chicago, IL",
-        "latitude": 41.8781,
-        "longitude": -87.6298
-      },
-      "workplace": "Remote",
-      "postedAt": "2026-09-14T11:25:13.473Z",
-      "fetchedAt": "2026-09-18T11:25:13.473Z",
-      "staleAfter": "2026-10-29T11:25:13.473Z",
-      "expiresAt": "2026-10-29T11:25:13.473Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://www.dice.com/job-detail/dfc36df2-f44a-46cf-87a6-63988bb0a431?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://www.dice.com/job-detail/dfc36df2-f44a-46cf-87a6-63988bb0a431?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Job Description: The ideal candidate will be onsite 2 days per month at old post office building in Chicago Illinois for this role. No travel expenses would be covered. Core Ownership Areas Azure Virtual Desktop Nerdio Windows 11 Gold Images FSLogix...",
-      "description": "Job Description: The ideal candidate will be onsite 2 days per month at old post office building in Chicago Illinois for this role. No travel expenses would be covered.\n\nCore Ownership Areas\n\nAzure Virtual Desktop\nNerdio\nWindows 11 Gold Images\nFSLogix\nIntune and Autopilot Integration\nEnd User Compute Architecture\nAzure Networking for AVD\nDesktop Infrastructure Automation\nEndpoint Security and Compliance\n\nPrimary Responsibilities\nAzure Virtual Desktop Architecture & OperationsArchitect, implement, and maintain Azure Virtual Desktop environments.\nDesign and manage host pools, session hosts, image lifecycles, and deployment pipelines.\nDevelop scalability, resiliency, and disaster recovery strategies.\nOptimize user experience, performance, and Azure consumption costs.\nEstablish operational standards and platform governance.\n\nAVD Networking & Infrastructure Engineering\n\nDesign and troubleshoot AVD network connectivity across Azure and on-premises environments.\nServe as the primary escalation point for network-related virtual desktop issues.\nDiagnose and resolve DNS, routing, firewall, latency, authentication, and connectivity problems.\nPartner with Network Engineering on ExpressRoute, VPN, segmentation, and hybrid connectivity solutions.\nOptimize network paths and client connectivity performance for virtual desktop workloads.\nTroubleshoot FSLogix profile performance, storage connectivity, and authentication issues.\nAnalyze packet captures, connection diagnostics, and performance metrics to identify root causes.\nSupport private endpoint, storage account, Azure Files, and Entra ID integration requirements.\n\nNerdio Engineering & AutomationAdminister and optimize Nerdio Manager.\nDevelop automated provisioning and image management workflows.\nConfigure autoscaling and cost optimization strategies.\nBuild operational automation using PowerShell and Azure services.\n\nWindows 11 Platform Engineering\n\nLead design and engineering of the Bank's Windows 11 desktop platform.\nOwn gold image architecture and standards.\nEstablish image testing, validation, and release processes.\nDefine desktop lifecycle management strategy.\n\nTechnical Leadership\n\nProvide technical leadership for desktop engineering initiatives.\nMentor engineers and contractors.\nEstablish engineering standards and operational practices.\nEvaluate vendors and technical solutions.\nLead major incident response and root cause investigations.",
-      "tags": [
-        "Windows",
-        "Intune",
-        "Entra ID",
-        "Autopilot",
-        "PowerShell",
-        "Dice",
-        "Contractor",
-        "4 days ago",
-        "No degree mentioned"
-      ],
-      "matchReasons": [
-        "Intune + Autopilot",
-        "Endpoint engineering",
-        "PowerShell automation",
-        "Endpoint security",
-        "Compliance evidence"
-      ],
-      "tools": [
-        "Intune",
-        "Entra ID",
-        "Autopilot",
-        "PowerShell"
-      ],
-      "platforms": [
-        "Windows"
-      ],
-      "roleFamily": "Endpoint Security",
-      "seniority": "Senior",
-      "employmentType": "Contract"
-    },
-    {
       "id": "serpapi-caterpillar-east-peoria-il-2-others-endpoint-security-analyst-d6d1ebd0a9",
       "title": "Endpoint Security Analyst",
       "company": "Caterpillar",
@@ -21637,63 +20857,6 @@
       "roleFamily": "Device Compliance",
       "seniority": "Lead",
       "employmentType": "Full-time"
-    },
-    {
-      "id": "serpapi-zachary-piper-mclean-va-senior-windows-endpoint-engineer-174380-5b6bdec103",
-      "title": "Senior Windows Endpoint Engineer - 174380",
-      "company": "Zachary Piper",
-      "location": "McLean, VA",
-      "workplace": "Hybrid",
-      "postedAt": "2026-09-14T11:23:10.409Z",
-      "fetchedAt": "2026-09-19T11:23:10.409Z",
-      "staleAfter": "2026-10-29T11:23:10.409Z",
-      "expiresAt": "2026-10-29T11:23:10.409Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://careers.zacharypiper.com/details/930/senior_windows_endpoint_engineer_174380?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://careers.zacharypiper.com/details/930/senior_windows_endpoint_engineer_174380?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Piper Companies is seeking a Senior Windows Endpoint Engineer to join a leading technology-focused organization in the networking and infrastructure industry for a hybrid long-term contract position based in RTP, NC. The Senior Windows Endpoint Engineer...",
-      "description": "Piper Companies is seeking a Senior Windows Endpoint Engineer to join a leading technology-focused organization in the networking and infrastructure industry for a hybrid long-term contract position based in RTP, NC. The Senior Windows Endpoint Engineer will serve as a key technical resource responsible for endpoint architecture, device management, systems administration, and security across a large-scale enterprise environment. This role requires hands-on expertise with Windows endpoints, Active Directory, Windows Server, thin client technologies, and support of a predominantly Mac-based laptop environment.\n\nResponsibilities of the Senior Windows Endpoint Engineer include:\n\n· Design, deploy, and support enterprise endpoint solutions across Windows desktops, thin clients, virtual desktop environments, and macOS devices.\n\n· Administer and enhance endpoint management platforms including Microsoft Intune, MECM/SCCM, and related device lifecycle management tools.\n\n· Manage Active Directory, Group Policy, Windows Server infrastructure, authentication services, and endpoint security configurations.\n\n· Support thin client deployments and troubleshoot connectivity, authentication, virtualization, and performance-related issues.\n\n· Partner with infrastructure and security teams to implement endpoint hardening, software distribution, patch management, and compliance initiatives.\n\nQualifications for the Senior Windows Endpoint Engineer include:\n\n· 7+ years of experience supporting enterprise Windows environments with a focus on endpoint engineering and systems administration.\n\n· Strong hands-on experience with Windows Server, Active Directory, Group Policy, and endpoint management technologies.\n\n· Expertise working with Microsoft Intune, MECM/SCCM, software deployment, patch management, and endpoint automation.\n\n· Experience supporting and maintaining thin client environments and virtual desktop technologies.\n\n· Familiarity with macOS administration and endpoint management within predominantly Mac-based user environments.\n\n· Strong troubleshooting skills across operating systems, endpoint security, networking, and authentication services.\n\n· Experience with enterprise security tools, endpoint protection platforms, and device compliance standards.\n\n· Excellent communication skills with the ability to collaborate effectively across technical and business teams.\n\nCompensation for the Senior Windows Endpoint Engineer:\n\nSalary Range: $127,000-$137,000/year (USD)\n\nComprehensive Benefits: Medical, Dental, Vision, 401(k), Paid Time Off, and additional company-sponsored benefits.\n\nThis job opens for applications on 9/11/26. Applications for this job will be accepted for at least 30 days from the posting date.\n\nKeywords: Windows Endpoint Engineer, Endpoint Management, Active Directory, Windows Server, Group Policy, Microsoft Intune, MECM, SCCM, Thin Clients, VDI, Virtual Desktop Infrastructure, Endpoint Security, Device Management, Systems Administration, Patch Management, Software Deployment, macOS, JAMF, Infrastructure Engineering, Authentication Services, Desktop Engineering, Endpoint Modernization, Technical Support, Networking, Enterprise Computing, Device Lifecycle Management, Hybrid Environment, RTP, North Carolina.\n\n#LI-MB1 #LI-HYBRID",
-      "tags": [
-        "macOS",
-        "Windows",
-        "Jamf",
-        "Intune",
-        "SCCM",
-        "Zachary Piper Careers - Zachary Piper Solutions",
-        "Contractor",
-        "5 days ago",
-        "No degree mentioned",
-        "Health insurance",
-        "Dental insurance",
-        "Paid time off"
-      ],
-      "matchReasons": [
-        "Jamf + macOS",
-        "SCCM/MECM",
-        "Endpoint engineering",
-        "Device management",
-        "Endpoint security"
-      ],
-      "tools": [
-        "Jamf",
-        "Intune",
-        "SCCM"
-      ],
-      "platforms": [
-        "macOS",
-        "Windows"
-      ],
-      "roleFamily": "Endpoint Security",
-      "seniority": "Senior",
-      "employmentType": "Contract",
-      "salary": {
-        "min": 127000,
-        "max": 137000,
-        "currency": "USD",
-        "label": "$127k-$137k"
-      }
     },
     {
       "id": "serpapi-keydata-morrison-tn-identity-endpoint-security-engineer-windows-hello-896aa02cbf",
@@ -22268,62 +21431,6 @@
       "roleFamily": "Endpoint Security",
       "seniority": "Mid",
       "employmentType": "Full-time"
-    },
-    {
-      "id": "serpapi-zachary-piper-raleigh-nc-windows-endpoint-engineer-e4d387cd88",
-      "title": "Windows Endpoint Engineer",
-      "company": "Zachary Piper",
-      "location": "Raleigh, NC",
-      "workplace": "Hybrid",
-      "postedAt": "2026-09-13T19:22:59.728Z",
-      "fetchedAt": "2026-09-21T19:22:59.728Z",
-      "staleAfter": "2026-10-28T19:22:59.728Z",
-      "expiresAt": "2026-10-28T19:22:59.728Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://careers.zacharypiper.com/details/1000/windows_endpoint_engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://careers.zacharypiper.com/details/1000/windows_endpoint_engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Piper Companies is seeking a Windows Endpoint Engineer for a leading enterprise organization. The Windows Endpoint Engineer role is a hybrid position in the Raleigh, North Carolina area. The Windows Endpoint Engineer will be responsible for the design,...",
-      "description": "Piper Companies is seeking a Windows Endpoint Engineer for a leading enterprise organization. The Windows Endpoint Engineer role is a hybrid position in the Raleigh, North Carolina area. The Windows Endpoint Engineer will be responsible for the design, deployment, management, and optimization of enterprise endpoint technologies across Windows environments. An ideal candidate for the Windows Endpoint Engineer role is an experienced infrastructure professional with strong expertise in Windows endpoint engineering, Active Directory, VDI, and SCCM/MECM administration.\n\nResponsibilities of the Windows Endpoint Engineer:\n\n• Design, deploy, and support enterprise Windows endpoint solutions across physical and virtual environments.\n\n• Administer and maintain Active Directory, Group Policy, and endpoint security configurations.\n\n• Manage and optimize SCCM/MECM for software deployment, patch management, operating system imaging, and endpoint compliance.\n\n• Support and enhance VDI environments, ensuring performance, scalability, and user experience.\n\n• Collaborate with infrastructure, security, and support teams to implement endpoint engineering best practices and automation initiatives.\n\nQualifications of the Windows Endpoint Engineer:\n\n• 5+ years of experience in endpoint engineering and Windows infrastructure administration.\n\n• Strong hands-on experience with Microsoft Windows, Active Directory, Group Policy, and SCCM/MECM.\n\n• Experience supporting and maintaining VDI platforms such as VMware Horizon or Citrix.\n\n• Knowledge of endpoint security, patch management, and enterprise device lifecycle management.\n\n• Experience with PowerShell scripting and automation is highly preferred.\n\nCompensation for the Windows Endpoint Engineer includes:\n\n• Salary range: $100,000 – $135,000 depending on experience\n\n• Comprehensive benefits package including medical, dental, vision, 401(k), PTO, Sick Leave as required by law\n\n• This job opens for applications on 09/14/2026. Applications for this job will be accepted for at least 30 days from the posting date.\n\n#LI-JA1\n\n#LI-HYBRID",
-      "visaSponsorship": {
-        "status": "not-stated"
-      },
-      "tags": [
-        "Windows",
-        "SCCM",
-        "PowerShell",
-        "Zachary Piper Careers - Zachary Piper Solutions",
-        "8 days ago",
-        "Full-time",
-        "No degree mentioned",
-        "Dental insurance",
-        "Health insurance",
-        "Paid time off"
-      ],
-      "matchReasons": [
-        "SCCM/MECM",
-        "Endpoint engineering",
-        "PowerShell automation",
-        "Endpoint security",
-        "Compliance evidence"
-      ],
-      "tools": [
-        "SCCM",
-        "PowerShell"
-      ],
-      "platforms": [
-        "Windows"
-      ],
-      "roleFamily": "Endpoint Security",
-      "seniority": "Mid",
-      "employmentType": "Full-time",
-      "salary": {
-        "min": 100000,
-        "max": 135000,
-        "currency": "USD",
-        "label": "$100k-$135k"
-      }
     },
     {
       "id": "adzuna-5882796904",
@@ -24960,118 +24067,6 @@
       "roleFamily": "Device Compliance",
       "seniority": "Staff",
       "employmentType": "Permanent"
-    },
-    {
-      "id": "serpapi-k-l-gates-llp-incorporated-winchester-ky-digital-workplace-engineer-team-lead-d67923ea6b",
-      "title": "Digital Workplace Engineer Team Lead",
-      "company": "K&L Gates LLP incorporated",
-      "location": "Winchester, KY",
-      "workplace": "On-site",
-      "postedAt": "2026-09-11T11:26:22.952Z",
-      "fetchedAt": "2026-09-17T11:26:22.952Z",
-      "staleAfter": "2026-10-26T11:26:22.952Z",
-      "expiresAt": "2026-10-26T11:26:22.952Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://www.learn4good.com/jobs/winchester/kentucky/info_technology/5464418001/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://www.learn4good.com/jobs/winchester/kentucky/info_technology/5464418001/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Team Lead: Digital Workplace EngineerInformation Technology All Practice Areas Austin, TX, Boston, MA, Charleston, SC, Charlotte, NC, Chicago, IL, Dallas, TX, Durham, NC, Fort Worth, TX, Harrisburg, PA, Houston, TX, Irvine, CA, Kansas City, MO, Los...",
-      "description": "Team Lead: Digital Workplace EngineerInformation Technology All Practice Areas Austin, TX, Boston, MA, Charleston, SC, Charlotte, NC, Chicago, IL, Dallas, TX, Durham, NC, Fort Worth, TX, Harrisburg, PA, Houston, TX, Irvine, CA, Kansas City, MO, Los Angeles, CA, Miami, FL, Nashville, TN, New York, NY, Newark, NJ, Palo Alto, CA, Pittsburgh, PA, Portland, OR, Raleigh, NC, San Francisco, CA, Seattle, WA, Washington, DC, Wilmington, DEAt K&L Gates, we are looking for smart, imaginative and hard-working people with diverse backgrounds, experiences and ideas to join us. Perhaps our search for talented visionaries and your search for important and impactful work lead to the same place.We are seeking a Team Lead: Digital Workplace Engineer to join the firm. The Team Lead: Digital Workplace Engineer oversees user experience, performance, and reliability of all digital workplace services firmwide. This position provides strategic, technical, and operational leadership for endpoint engineering, ensuring improved productivity, service quality, and user experience outcomes. The role sets direction, governance, and standards for workplace technologies, driving excellence and alignment across Engineering, Service Desk, and Infrastructure teams. Responsibilities include eliminating user experience friction, reducing recurring issues, and delivering scalable, consistent global services. This is achieved through automation, standardization, and disciplined execution to enhance service delivery and operational efficiency.KEY RELATIONSHIPSCloud Platform Engineering, Enterprise Applications, Security, Global Support Services, Deskside Support, Network & Collaboration, Business StakeholdersESSENTIAL DUTIESOwning the entire digital workplace user experience while driving continuous improvementEstablishing metrics for DEX and monitoring user sentiment to ensure alignment with objectives and enhance overall experience.Defining standard operating procedures and RACI models while ensuring accountability is upheld consistently across all relevant areas.Conducting root cause analysis and removing recurring issues.Partnering with the Service Desk to minimize incidents while enhancing resolution efficiency and effectiveness.Leading change initiatives and driving strategies to enhance user adoption effectively.Standardizing endpoint configurations while reducing complexityDefining key performance indicators and delivering reports tailored for senior-level audiences, ensuring clarity and actionable insights.Owning escalation frameworks and incident responsesLeading vendor performance aligned with experience service level agreements.Driving the adoption of practical artificial intelligence solutions aligned with enhancing productivity.Leading and developing the team while focusing on achieving results-oriented expectations.EXPERIENCE SKILLS REQUIREDDemonstrate proficiency in Windows, endpoint management, Azure, and automation while ensuring effective implementation and seamless operational functionality.Demonstrate exceptional stakeholder influence and communication skills7+ years in digital workplace / endpoint engineeringPossess experience improving user experience (DEX) and service outcomesDemonstrate proven track record partnering with Service Desk organizationsPossess experience driving automation, standardization, and process maturityPossess experience leading change management and adoption programsDemonstrate exceptional KPI definition and performance reporting experienceCompensation Salary $128,000 - $249,000The compensation salary for this position will be determined during the interview process and will vary based on multiple factors, including but not limited to prior experience, relevant expertise, current business needs, and market factors.ABOUT THE FIRMK&L Gates is a fully integrated global law firm with lawyers located in more than 40 offices. We have experienced dramatic growth in the past decade and now rank among the largest U.S. based law firms in the world. We take pride in constantly striving for innovation, imagination and an entrepreneurial spirit. We come up with big ideas and then roll up our sleeves to get the job done, guiding our clients through their most complex issues in a variety of industry sectors and across multiple regions of the world.The industry recognition the firm has garnered emanates from the foundation of a global community aligned on behalf of our clients. The people at K&L Gates are committed to working…",
-      "tags": [
-        "Windows",
-        "Learn4Good",
-        "Full-time",
-        "6 days ago",
-        "128K–249K a year",
-        "No degree mentioned"
-      ],
-      "matchReasons": [
-        "Endpoint engineering",
-        "Digital workplace",
-        "Windows platform"
-      ],
-      "tools": [],
-      "platforms": [
-        "Windows"
-      ],
-      "roleFamily": "Automation",
-      "seniority": "Lead",
-      "employmentType": "Full-time",
-      "salary": {
-        "min": 128000,
-        "max": 249000,
-        "currency": "USD",
-        "label": "128K–249K a year"
-      }
-    },
-    {
-      "id": "serpapi-u-s-bank-national-association-irving-tx-senior-microsoft-intune-engineer-a1c0ad0aa2",
-      "title": "Senior Microsoft Intune Engineer",
-      "company": "U.S. Bank National Association",
-      "location": "Irving, TX",
-      "workplace": "On-site",
-      "postedAt": "2026-09-11T11:26:22.952Z",
-      "fetchedAt": "2026-09-17T11:26:22.952Z",
-      "staleAfter": "2026-10-26T11:26:22.952Z",
-      "expiresAt": "2026-10-26T11:26:22.952Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://careers.usbank.com/global/en/job/UBNAGLOBAL20260025708EXTERNALENGLOBAL/Senior-Windows-Endpoint-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://careers.usbank.com/global/en/job/UBNAGLOBAL20260025708EXTERNALENGLOBAL/Senior-Windows-Endpoint-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "At U.S. Bank, we’re on a journey to do our best. Helping the customers and businesses we serve to make better and smarter financial decisions and enabling the communities we support to grow and succeed. We believe it takes all of us to bring our shared...",
-      "description": "At U.S. Bank, we’re on a journey to do our best. Helping the customers and businesses we serve to make better and smarter financial decisions and enabling the communities we support to grow and succeed. We believe it takes all of us to bring our shared ambition to life, and each person is unique in their potential. A career with U.S. Bank gives you a wide, ever-growing range of opportunities to discover what makes you thrive at every stage of your career. Try new things, learn new skills and discover what you excel at—all from Day One.\n\nJob DescriptionThis position is not eligible for visa sponsorship.\n\nLocation expectations:\nThis role requires working from a U.S. Bank location three (3) or more days per week.\n\nU.S. Bank is seeking a Senior Microsoft Intune Engineer to join the Windows Platform & Solutions Engineering team within Employee Technology Experience. This team is responsible for the enterprise platforms used to manage Windows devices across the bank, including modern device management, application deployment, software distribution, operating system lifecycle management, automation, and endpoint modernization.\n\nThis person will serve as a senior technical expert for Microsoft Intune and cloud-first Windows device management. They will lead the design, implementation, enhancement, and support of modern endpoint management capabilities while partnering with engineering, operations, architecture, and other technology teams. The successful candidate will bring deep, hands-on Intune experience and the ability to independently lead complex initiatives from technical design through implementation and operational adoption.\n\nMain Responsibilities:Engineer, administer, and enhance Microsoft Intune in a large enterprise environmentLead Intune implementation, migration, and endpoint modernization initiativesDesign and implement cloud-first Windows device management solutionsDevelop and manage device configuration, compliance, application, and update policiesSupport Windows Autopilot and modern device provisioning capabilitiesIntegrate Intune with Microsoft Entra ID, Conditional Access, and related Microsoft technologiesSupport the transition from Microsoft Configuration Manager to modern cloud-based endpoint managementTroubleshoot complex device enrollment, policy, application deployment, software update, and endpoint-management issuesDevelop PowerShell automation and remediation solutions that improve efficiency and platform reliabilityProvide senior engineering guidance and best-practice recommendations for Windows endpoint managementPartner with operations teams to implement and operationalize new platform capabilitiesParticipate in enterprise endpoint-management projects, platform upgrades, and technology implementationsCreate and maintain technical documentation, engineering standards, and solution designsServe as a senior technical resource and escalation point for Microsoft Intune and modern Windows management\n\nMust Have Skills:5–7+ years of hands-on Microsoft Intune experienceDeep experience engineering and administering Intune in an enterprise environmentExperience leading Intune implementations, migrations, or modernization initiativesWindows Autopatch/Windows Update for BusinessStrong cloud-first Windows device management experienceExperience designing and implementing device configuration, compliance, application, and update policiesExperience with Windows Autopilot and modern device provisioningExperience integrating Intune with Microsoft Entra ID and Conditional AccessExperience supporting large-scale, complex Windows endpoint environmentsStrong Windows operating system and endpoint-management troubleshooting skillsHands-on PowerShell scripting and automation experienceAbility to independently lead complex technical initiatives from design through implementationExperience partnering across engineering, architecture, operations, and support teamsStrong communication skills with the ability to explain technical decisions and influence stakeholders\n\nNice to Have Skills:Microsoft Configuration Manager, including co-management and workload-transition experienceExperience migrating Windows management capabilities from traditional on-premises tools to IntuneExperience with enterprise application packaging and deploymentPower BI reporting and analyticsEndpoint security and configuration-baseline experienceExperience integrating endpoint platforms with other enterprise technologiesTechnical design and architecture documentation experienceExperience working in a regulated or highly complex enterprise environment\n\nIf there’s anything we can do to accommodate a disability during any portion of the application or hiring process, please refer to our disability accommodations for applicants.\n\nBenefits:\n\nOur approach to benefits and total rewards considers our team members’ whole selves and what may be needed to thrive in and outside work. That's why our benefits are designed to help you and your family boost your health, protect your financial security and give you peace of mind. Our benefits include the following:\n\nHealthcare (medical, dental, vision)\n\nBasic term and optional term life insurance\n\nShort-term and long-term disability\n\nPregnancy disability and parental leave\n\n401(k) and employer-funded retirement plan\n\nPaid vacation (from two to five weeks depending on salary grade and tenure)\n\nUp to 11 paid holiday opportunities\n\nAdoption assistance\n\nSick and Safe Leave accruals of one hour for every 30 worked, up to 80 hours per calendar year unless otherwise provided by law\n\nReview our full benefits available by employment status here.\n\nU.S. Bank is an equal opportunity employer. We consider all qualified applicants without regard to race, religion, color, sex, national origin, age, sexual orientation, gender identity, disability or veteran status, and other factors protected under applicable law.\n\nE-Verify\n\nU.S. Bank participates in the U.S. Department of Homeland Security E-Verify program in all facilities located in the United States and certain U.S. territories. The E-Verify program is an Internet-based employment eligibility verification system operated by the U.S. Citizenship and Immigration Services. Learn more about the E-Verify program.\n\nThe salary range reflects figures based on the primary location, which is listed first. The actual range for the role may differ based on the location of the role. In addition to salary, U.S. Bank offers a comprehensive benefits package, including incentive and recognition programs, equity stock purchase 401(k) contribution and pension (all benefits are subject to eligibility requirements). Pay Range: $111,605.00 - $131,300.00\n\nU.S. Bank will consider qualified applicants with arrest or conviction records for employment. U.S. Bank conducts background checks consistent with applicable local laws, including the Los Angeles County Fair Chance Ordinance and the California Fair Chance Act as well as the San Francisco Fair Chance Ordinance. U.S. Bank is subject to, and conducts background checks consistent with the requirements of Section 19 of the Federal Deposit Insurance Act (FDIA). In addition, certain positions may also be subject to the requirements of FINRA, NMLS registration, Reg Z, Reg G, OFAC, the NFA, the FCPA, the Bank Secrecy Act, the SAFE Act, and/or federal guidelines applicable to an agreement, such as those related to ethics, safety, or operational procedures.\n\nApplicants must be able to comply with U.S. Bank policies and procedures including the Code of Ethics and Business Conduct and related workplace conduct and safety policies.\n\nPosting may be closed earlier due to high volume of applicants.",
-      "tags": [
-        "Windows",
-        "Intune",
-        "SCCM",
-        "Entra ID",
-        "Autopilot",
-        "PowerShell",
-        "U.S. Bank Careers",
-        "Full-time",
-        "6 days ago",
-        "No degree mentioned",
-        "Dental insurance",
-        "Health insurance"
-      ],
-      "matchReasons": [
-        "Intune + Autopilot",
-        "SCCM/MECM",
-        "Endpoint engineering",
-        "Device management",
-        "PowerShell automation"
-      ],
-      "tools": [
-        "Intune",
-        "SCCM",
-        "Entra ID",
-        "Autopilot",
-        "PowerShell"
-      ],
-      "platforms": [
-        "Windows"
-      ],
-      "roleFamily": "Device Compliance",
-      "seniority": "Senior",
-      "employmentType": "Full-time",
-      "salary": {
-        "min": 111605,
-        "max": 131300,
-        "currency": "USD",
-        "label": "$112k-$131k"
-      },
-      "visaSponsorship": {
-        "status": "unavailable",
-        "evidence": "is unique in their potential. A career with U.S. Bank gives you a wide, ever-growing range of opportunities to discover what makes you thrive at every stage of your career. Try new things, learn new skills and discover what you excel at—all from Day One.\n\nJob DescriptionThis position is not eligible for visa sponsorship.\n\nLocation expectations: This role requires working from a U.S. Bank location three (3) or more days per week.",
-        "sourceUrl": "https://careers.usbank.com/global/en/job/UBNAGLOBAL20260025708EXTERNALENGLOBAL/Senior-Windows-Endpoint-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
-      },
-      "mapLocation": {
-        "label": "Irving, TX",
-        "latitude": 32.814,
-        "longitude": -96.9489
-      }
     },
     {
       "id": "serpapi-reviverx-wisconsin-it-systems-engineer-365-entra-id-jamf-expert-9694bf1ea4",
@@ -29774,57 +28769,6 @@
       "employmentType": "permanent"
     },
     {
-      "id": "serpapi-nscale-seattle-wa-global-endpoint-engineer-secure-zero-touch-deployments-a2e38847a5",
-      "title": "Global Endpoint Engineer — Secure, Zero-Touch Deployments",
-      "company": "Nscale",
-      "location": "Seattle, WA",
-      "mapLocation": {
-        "label": "Seattle, WA",
-        "latitude": 47.6062,
-        "longitude": -122.3321
-      },
-      "workplace": "Remote",
-      "postedAt": "2026-09-08T11:26:22.952Z",
-      "fetchedAt": "2026-09-17T11:26:22.952Z",
-      "staleAfter": "2026-10-23T11:26:22.952Z",
-      "expiresAt": "2026-10-23T11:26:22.952Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://www.learn4good.com/jobs/seattle/washington/info_technology/5452191450/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://www.learn4good.com/jobs/seattle/washington/info_technology/5452191450/e/?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Nscale in Seattle is seeking an Endpoint Engineer to define, manage and improve our global endpoint estate as we scale across countries, offices and remote teams. You’ll work within Technology Operations Platforms to engineer, configure and continuously...",
-      "description": "Nscale in Seattle is seeking an Endpoint Engineer to define, manage and improve our global endpoint estate as we scale across countries, offices and remote teams.\n\nYou’ll work within Technology Operations Platforms to engineer, configure and continuously improve endpoint-management across Windows, macOS, mobile and BYOD\n\n.\n\nYou’ll collaborate with Information Security, procurement and suppliers to implement policies, provisioning workflows and zero-touch deployment, while building dashboards and\n\n#J-18808-Ljbffr",
-      "tags": [
-        "macOS",
-        "Windows",
-        "Learn4Good",
-        "Full-time",
-        "9 days ago",
-        "160K–190K a year",
-        "No degree mentioned"
-      ],
-      "matchReasons": [
-        "Endpoint engineering",
-        "Windows platform",
-        "macOS platform"
-      ],
-      "tools": [],
-      "platforms": [
-        "macOS",
-        "Windows"
-      ],
-      "roleFamily": "Windows Platform",
-      "seniority": "Mid",
-      "employmentType": "Full-time",
-      "salary": {
-        "min": 160000,
-        "max": 190000,
-        "currency": "USD",
-        "label": "160K–190K a year"
-      }
-    },
-    {
       "id": "serpapi-motion-recruitment-lancaster-pa-microsoft-systems-engineer-hybrid-lancaster-pa-837606ba06",
       "title": "Microsoft Systems Engineer/hybrid Lancaster PA",
       "company": "Motion Recruitment",
@@ -30812,62 +29756,6 @@
         "max": 70000,
         "currency": "EUR",
         "label": "€42,000-€70,000"
-      }
-    },
-    {
-      "id": "serpapi-teksystems-brentwood-tn-intune-engineer-1928d05ad4",
-      "title": "Intune Engineer",
-      "company": "TEKsystems",
-      "location": "Brentwood, TN",
-      "workplace": "Remote",
-      "postedAt": "2026-09-07T11:26:22.952Z",
-      "fetchedAt": "2026-09-17T11:26:22.952Z",
-      "staleAfter": "2026-10-22T11:26:22.952Z",
-      "expiresAt": "2026-10-22T11:26:22.952Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://careers.teksystems.com/us/en/job/JP-006261912/Intune-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://careers.teksystems.com/us/en/job/JP-006261912/Intune-Engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Description The client is seeking a highly experienced Microsoft Intune Consultant / Endpoint Modernization Engineer to partner with their Endpoint Engineering team on a critical modernization initiative. The organization currently operates in a...",
-      "description": "Description\n\nThe client is seeking a highly experienced Microsoft Intune Consultant / Endpoint Modernization Engineer to partner with their Endpoint Engineering team on a critical modernization initiative. The organization currently operates in a co-managed SCCM and Intune environment and is looking to accelerate its transition toward a modern cloud-managed endpoint strategy. The consultant will work closely with the Desktop Manager and Senior Endpoint Engineer to assess, rationalize, and migrate approximately 160+ Group Policies into Intune while establishing a roadmap for future-state endpoint management.\n\nThe primary focus of the engagement will be evaluating existing GPOs, determining which policies should be migrated, modified, and implementing Intune Configuration Profiles aligned with best practices. This resource will provide both hands-on engineering support and strategic guidance around endpoint modernization, helping the client overcome bandwidth constraints and make meaningful progress toward its Intune adoption goals.\n\nSkills\n\nMicrosoft, intune, group policy objects, sccm, Endpoint, powershell, azure ad, application package, Active directory, O365, Windows server, Support, System administrator\n\nTop Skills' Details\n\n1. Microsoft Intune / Endpoint Management\n\n• Expert-level experience designing, implementing, and managing Microsoft Intune in enterprise environments.\n\n• Will be responsible for evaluating the client's current Intune configuration, building and optimizing configuration profiles, managing device policies, and helping drive the transition from SCCM to a more modern cloud-managed endpoint environment.\n\n• Success requires hands-on experience with multiple Intune migration or modernization projects and the ability to provide best-practice recommendations.\n\n2. Group Policy (GPO) Analysis & Migration (5+ years required)\n\n• Deep understanding of Active Directory Group Policies and experience translating GPOs into Intune Configuration Profiles and cloud-based policy management.\n\n• Will analyze approximately 160+ existing GPOs, determine which policies should be migrated, modified, and partner with internal teams to establish a future-state policy framework.\n\n• Success requires strong troubleshooting skills and the ability to rationalize legacy policies rather than simply recreating them in Intune.\n\n3. SCCM / Microsoft Configuration Manager (5+ years required)\n\n• Strong background managing SCCM environments and experience moving workloads from SCCM to Intune within co-managed environments.\n\n• Will assess the current SCCM footprint, identify dependencies, and advise on the modernization strategy while minimizing operational disruption.\n\n• Success requires understanding both legacy and modern endpoint management approaches.\n\n4. Endpoint Modernization / Windows Device Management (5+ years required)\n\n• Experience supporting Windows 10/11 device management, compliance policies, configuration profiles, application deployment, and modern workplace initiatives.\n\n• Will help establish the roadmap for future-state device provisioning and endpoint management, including Autopilot readiness and cloud provisioning strategies.\n\n• Success requires a consultative mindset and experience leading enterprise endpoint transformation efforts.\n\n5. Consulting & Stakeholder Communication (3+ years required)\n\n• Proven ability to partner with technical teams, provide strategic guidance, and influence decisions through expertise and best practices.\n\n• Will work directly with the client's Endpoint Engineering team, security teams, and leadership stakeholders to navigate technical and organizational challenges.\n\n• Success requires strong communication skills, the ability to identify risks and roadblocks, and experience advising organizations through similar modernization initiatives.\n\nAdditional Skills & Qualifications\n\nExperience utilizing Intune Group Policy Analytics to assess, analyze, and map existing GPOs into Intune policies.\n\nExperience working in co-managed SCCM and Intune environments and supporting organizations through endpoint management modernization efforts.\n\nAbility to evaluate legacy Group Policies and determine which settings should be migrated, modified.\n\nExperience collaborating with infrastructure, endpoint, and security teams to overcome technical and policy-related roadblocks.\n\nStrong understanding of Windows endpoint management, device configuration, and policy deployment.\n\nAbility to provide strategic recommendations and best practices based on prior Intune migration and modernization engagements.\n\nExperience developing phased roadmaps and implementation plans for Intune adoption and endpoint modernization initiatives.\n\nExperience Level\n\nExpert Level\n\nJob Type & LocationThis is a Contract position based out of Brentwood, TN.\n\nPay and BenefitsThe pay range for this position is $75.00 - $80.00/hr.\n\nIndividual compensation offered for this position within this range will depend on many factors, including qualifications, skills, relevant experience, job knowledge, geographic location, internal equity, and other pertinent job-related factors.\n\nEligibility requirements apply to some benefits and may depend on your job\nclassification and length of employment. Benefits are subject to change and may be\nsubject to specific elections, plan, or program terms. If eligible, the benefits\navailable for this temporary role may include the following:\n\n• Medical, dental & vision\n• Critical Illness, Accident, and Hospital\n• 401(k) Retirement Plan – Pre-tax and Roth post-tax contributions available\n• Life Insurance (Voluntary Life & AD&D for the employee and dependents)\n• Short and long-term disability\n• Health Spending Account (HSA)\n• Transportation benefits\n• Employee Assistance Program\n• Time Off/Leave (PTO, Vacation or Sick Leave)\n\nWorkplace TypeThis is a fully remote position.\n\nApplication DeadlineThis position is anticipated to close on Sep 12, 2026.\n\nAbout TEKsystems\n\nWe're partners in transformation. We help clients activate ideas and solutions to take advantage of a new world of opportunity. We are a team of 80,000 strong, working with over 6,000 clients, including 80% of the Fortune 500, across North America, Europe and Asia. As an industry leader in Full-Stack Technology Services, Talent Services, and real-world application, we work with progressive leaders to drive change. That's the power of true partnership. TEKsystems is an Allegis Group company.\n\nThe company is an equal opportunity employer and will consider all applications without regards to race, sex, age, color, religion, national origin, veteran status, disability, sexual orientation, gender identity, genetic information or any characteristic protected by law.\n\nAbout TEKsystems and TEKsystems Global Services\n\nWe’re a leading provider of business and technology services. We accelerate business transformation for our customers. Our expertise in strategy, design, execution and operations unlocks business value through a range of solutions. We’re a team of 80,000 strong, working with over 6,000 customers, including 80% of the Fortune 500 across North America, Europe and Asia, who partner with us for our scale, full-stack capabilities and speed. We’re strategic thinkers, hands-on collaborators, helping customers capitalize on change and master the momentum of technology. We’re building tomorrow by delivering business outcomes and making positive impacts in our global communities. TEKsystems and TEKsystems Global Services are Allegis Group companies. Learn more at TEKsystems.com.\n\nThe company is an equal opportunity employer and will consider all applications without regard to race, sex, age, color, religion, national origin, veteran status, disability, sexual orientation, gender identity, genetic information or any characteristic protected by law.\n\nSan Francisco Fair Chance Ordinance: Pursuant to the San Francisco Fair Chance Ordinance, for all positions located in the city and county of San Francisco, we will consider for employment qualified applicants with arrest and conviction records.\n\nMassachusetts Lie Detector: It is unlawful in Massachusetts to require or administer a lie detector test as a condition of employment or continued employment. An employer who violates this law shall be subject to criminal penalties and civil liability.\n\nUse of Artificial Intelligence (AI): We may use Artificial Intelligence (AI) to support parts of our hiring process, including sourcing, screening, and evaluating candidates. AI helps assess applications and qualifications, but final decisions are made by our hiring team. By applying, you acknowledge and agree that your application may be reviewed using AI tools.",
-      "tags": [
-        "Windows",
-        "Intune",
-        "SCCM",
-        "Entra ID",
-        "Autopilot",
-        "PowerShell",
-        "TEKsystems Careers",
-        "Contractor",
-        "10 days ago",
-        "75–80 an hour",
-        "No degree mentioned",
-        "Dental insurance"
-      ],
-      "matchReasons": [
-        "Intune + Autopilot",
-        "SCCM/MECM",
-        "Endpoint engineering",
-        "Device management",
-        "PowerShell automation"
-      ],
-      "tools": [
-        "Intune",
-        "SCCM",
-        "Entra ID",
-        "Autopilot",
-        "PowerShell"
-      ],
-      "platforms": [
-        "Windows"
-      ],
-      "roleFamily": "Systems Administration",
-      "seniority": "Senior",
-      "employmentType": "Contract",
-      "salary": {
-        "currency": "USD",
-        "label": "75–80 an hour"
       }
     },
     {
@@ -32257,63 +31145,6 @@
         "Windows"
       ],
       "roleFamily": "Automation",
-      "seniority": "Senior",
-      "employmentType": "Full-time"
-    },
-    {
-      "id": "serpapi-swiftcruit-chicago-il-senior-endpoint-engineer-dual-platform-zero-touch-deploy-1d4c9d2dbb",
-      "title": "Senior Endpoint Engineer: Dual-Platform & Zero-Touch Deploy",
-      "company": "SwiftCruit",
-      "location": "Chicago, IL",
-      "mapLocation": {
-        "label": "Chicago, IL",
-        "latitude": 41.8781,
-        "longitude": -87.6298
-      },
-      "workplace": "On-site",
-      "postedAt": "2026-09-05T13:16:24.553Z",
-      "fetchedAt": "2026-09-23T13:16:24.553Z",
-      "staleAfter": "2026-10-20T13:16:24.553Z",
-      "expiresAt": "2026-10-20T13:16:24.553Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://bebee.com/us/jobs/senior-endpoint-engineer-dual-platform-zero-touch-deploy-swiftcruit-chicago--pureheal-28528_23106_404a0f78131ffafa994b586d0b3598d4?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://bebee.com/us/jobs/senior-endpoint-engineer-dual-platform-zero-touch-deploy-swiftcruit-chicago--pureheal-28528_23106_404a0f78131ffafa994b586d0b3598d4?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Tempus in Chicago is seeking a Senior Endpoint Systems Engineer to architect and lead the health, security, and lifecycle management of our global endpoint fleet across Windows and macOS. You will drive deployment workflows using Microsoft Intune, Jamf...",
-      "description": "Tempus in Chicago is seeking a Senior Endpoint Systems Engineer to architect and lead the health, security, and lifecycle management of our global endpoint fleet across Windows and macOS.\n\nYou will drive deployment workflows using Microsoft Intune, Jamf Pro, and VMware Workspace ONE, implement zero-touch provisioning with Windows Autopilot and ABM, and mentor junior staff while partnering with Security for CIS benchmarks and encryption protocols.",
-      "visaSponsorship": {
-        "status": "not-stated"
-      },
-      "tags": [
-        "macOS",
-        "Windows",
-        "Jamf",
-        "Intune",
-        "Workspace ONE",
-        "Autopilot",
-        "BeBee",
-        "18 days ago",
-        "No degree mentioned"
-      ],
-      "matchReasons": [
-        "Jamf + macOS",
-        "Intune + Autopilot",
-        "Endpoint engineering",
-        "Windows platform",
-        "macOS platform"
-      ],
-      "tools": [
-        "Jamf",
-        "Intune",
-        "Workspace ONE",
-        "Autopilot"
-      ],
-      "platforms": [
-        "macOS",
-        "Windows"
-      ],
-      "roleFamily": "Windows Platform",
       "seniority": "Senior",
       "employmentType": "Full-time"
     },
@@ -46932,46 +45763,6 @@
       }
     },
     {
-      "id": "serpapi-sentinelone-iowa-senior-solutions-engineer-endpoint-security-a5afb4344b",
-      "title": "Senior Solutions Engineer – Endpoint Security",
-      "company": "SentinelOne",
-      "location": "Iowa",
-      "workplace": "On-site",
-      "postedAt": "2026-08-19T11:25:13.473Z",
-      "fetchedAt": "2026-09-18T11:25:13.473Z",
-      "staleAfter": "2026-10-03T11:25:13.473Z",
-      "expiresAt": "2026-10-03T11:25:13.473Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://us.trabajo.org/job-28652-ee0eaf877f14d3b382c37ccd324f6dd3?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://us.trabajo.org/job-28652-ee0eaf877f14d3b382c37ccd324f6dd3?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "SentinelOne seeks a Sr Solutions Engineer to align customer goals with our AI-native endpoint security offerings. You will work with prospects and customers to map requirements to SentinelOne solutions, focusing on prevention, EDR, and threat hunting ....",
-      "description": "SentinelOne seeks a Sr Solutions Engineer to align customer goals with our AI-native endpoint security offerings.\n\nYou will work with prospects and customers to map requirements to SentinelOne solutions, focusing on prevention, EDR, and threat hunting\n\n.\n\nYou'll lead technical presentations, proofs of concept, and engagements, travel up to 50%, and partner with sales to expand our Pacific Northwest territory from a base in the region\n\n.",
-      "tags": [
-        "Windows",
-        "macOS",
-        "Trabajo.org",
-        "Full-time",
-        "30 days ago",
-        "No degree mentioned"
-      ],
-      "matchReasons": [
-        "Endpoint engineering",
-        "Endpoint security",
-        "Windows platform",
-        "macOS platform"
-      ],
-      "tools": [],
-      "platforms": [
-        "Windows",
-        "macOS"
-      ],
-      "roleFamily": "Endpoint Security",
-      "seniority": "Senior",
-      "employmentType": "Full-time"
-    },
-    {
       "id": "remoteok-1136948",
       "title": "Digital Workplace & Automation Specialist",
       "company": "Dreem Health",
@@ -47724,66 +46515,6 @@
         "currency": "USD",
         "label": "$129k-$175k"
       }
-    },
-    {
-      "id": "aidevboard-truveta-security-engineer-endpoint-09c9de714c",
-      "title": "Security Engineer - Endpoint",
-      "company": "Truveta",
-      "location": "Hyderabad, India",
-      "mapLocation": {
-        "label": "Hyderabad, India",
-        "latitude": 17.385,
-        "longitude": 78.4867
-      },
-      "workplace": "On-site",
-      "postedAt": "2026-05-04T12:53:32.000Z",
-      "fetchedAt": "2026-09-23T13:16:24.553Z",
-      "staleAfter": "2026-10-14T13:44:39.152Z",
-      "expiresAt": "2026-10-14T13:44:39.152Z",
-      "source": "AI Dev Board",
-      "sourceUrl": "https://aidevboard.com/job/6ed45b53-3ebe-41a1-9dcf-a596a72d3249",
-      "applyUrl": "https://job-boards.greenhouse.io/truveta/jobs/5987363004",
-      "attributionLabel": "AI Dev Board",
-      "termsProfile": "public-api",
-      "summary": "Truveta provides unprecedented real-world data and real-time intelligence, powered by a dataset built with and owned by US health systems united in a mission of Saving Lives with Data. Together, we power breakthrough medical discoveries, accelerate...",
-      "description": "Truveta provides unprecedented real-world data and real-time intelligence, powered by a dataset built with and owned by US health systems united in a mission of Saving Lives with Data. Together, we power breakthrough medical discoveries, accelerate regulatory-grade evidence, and improve patient care. Today, Truveta enables research on more than 130 million de-identified patients across the US.\n Achieving Truveta’s ambitious mission requires an incredible team of talented and inspired people with a special combination of health, software and big data experience who share our company values .\n Who We Need\n Truveta is rapidly building a talented and diverse team to tackle complex health and technical challenges. We are seeking candidates inspired by the opportunity to securely apply data in the development of real-world health solutions. Beyond core capabilities, we seek problem solvers, passionate and collaborative teammates, and those willing to roll up their sleeves while making a difference. We do things the right way. Our commitment to security and compliance assurance cannot be stressed enough. This position is critical to ensuring we are successful.\n If you are interested in the opportunity to pursue purposeful work, join a mission-driven team, and build a rewarding career while having fun, Truveta may be the perfect fit for you.\n This Opportunity\n The successful candidate will design and support solutions that support the company’s Digital Workplace strategy. They will work on leading edge technologies that help modernize endpoint management by leveraging the cloud to quickly deliver end-user improvements.\n Responsibilities:\n\n Device Management: Define, implement and maintain endpoint hardening baselines for Windows, macOS, and Linux systems with MDM such as Microsoft Intune, and JAMF.\n\n Policy & Hardening: Develop and enforce security policies, standards, and procedures for all endpoint devices. Implement system hardening configurations based on industry best practices.\n\n Deploy & Manage Security Tools: Implement, configure, and maintain endpoint security solutions, including Endpoint Detection and Response (EDR), Extended Detection and Response (XDR), antivirus/anti-malware software, and host-based firewalls.\n\n Incident Response: Collaborate with IT and Security team to respond to endpoint-related incidents. Triage, remediate, and contain security incidents and threats on endpoints. Perform forensic analysis when necessary.\n\n Vulnerability Management: Manage the endpoint vulnerability lifecycle, from discovery and assessment to remediation, using scanning tools and patch management systems.\n\n Patch Management: Design and oversee the deployment of updates, security patches for operating system and applications.\n\n Automation & Scripting: Develop scripts and automation (e.g., using Python, PowerShell) to streamline security operations, automate repetitive tasks, and improve response times.\n\n AI Protection: Secure endpoints used for AI development, including devices accessing model weights, training data, and production inference systems, implementing guardrails on AI tool usage (e.g., prompt injection prevention in local LLM dev tools, restricted plugins/add-ons).\n\n Data Loss Prevention: Enforce data loss prevention (DLP) and encryption policies on devices used to handle sensitive AI training datasets, including PHI/PII and proprietary corporation data.\n\n On-call: Ability to participate in On-call rotation.\n\n On-site: This position requires daily onsite work at Truveta office in Hyderabad.\n\n Qualifications\n\n Experience: 3-5 years of hands-on experience in an endpoint security, cybersecurity engineering, or similar role.\n\n Technical Proficiency: Deep understanding of modern operating systems (Windows, macOS) and their architecture, configuration and deployment in a large enterprise environment.\n\n Cloud Experience : Strong hands-on experience on Azure Cloud PC, VM, Azure Firewall and Azure Networking.\n\n MDM Expertise: Strong hands-on experience on Microsoft Intune and JAMF administration, such as device enrollment, OS upgrade/patch, configuration, profile.\n\n Policy Management: Define and assign compliance/security policies to ensure corporation devices meet organizational security standards.\n\n Application Management: Strong hands-on experience on applications control, deployment, patch and upgrade.\n\n EPM: Proven experience with industry-leading EPM platforms such as CyberArk and BeyondTrust to control user privileged access and provide advanced threat protection and vulnerability management.\n\n Networking: Solid understanding of TCP/IP IPv4/v6, experience of office network (Routing",
-      "visaSponsorship": {
-        "status": "not-stated"
-      },
-      "tags": [
-        "macOS",
-        "Windows",
-        "Linux",
-        "Jamf",
-        "Intune",
-        "PowerShell",
-        "full-time",
-        "mid",
-        "onsite",
-        "llm",
-        "cloud",
-        "security"
-      ],
-      "matchReasons": [
-        "Jamf + macOS",
-        "Endpoint engineering",
-        "MDM",
-        "Device management",
-        "PowerShell automation"
-      ],
-      "tools": [
-        "Jamf",
-        "Intune",
-        "PowerShell"
-      ],
-      "platforms": [
-        "macOS",
-        "Windows",
-        "Linux"
-      ],
-      "roleFamily": "Endpoint Security",
-      "seniority": "Mid",
-      "employmentType": "Full-time"
     },
     {
       "id": "ashby-voleon-5f2b24fd-f819-455e-877b-2c6241555a6e",
@@ -53972,61 +52703,6 @@
       }
     },
     {
-      "id": "serpapi-cloud-destinations-llc-indianapolis-in-endpoint-platform-engineer-19a53ffc3c",
-      "title": "Endpoint Platform Engineer",
-      "company": "Cloud Destinations LLC",
-      "location": "Indianapolis, IN",
-      "mapLocation": {
-        "label": "Indianapolis, IN",
-        "latitude": 39.7684,
-        "longitude": -86.1581
-      },
-      "workplace": "Hybrid",
-      "postedAt": "2026-09-19T11:23:10.409Z",
-      "fetchedAt": "2026-09-19T11:23:10.409Z",
-      "staleAfter": "2026-11-03T11:23:10.409Z",
-      "expiresAt": "2026-11-03T11:23:10.409Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://www.dice.com/job-detail/1872801e-1f2e-45ca-b93c-03c4b4baefe0?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://www.dice.com/job-detail/1872801e-1f2e-45ca-b93c-03c4b4baefe0?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "Position Overview: The Senior Endpoint Platform Engineer will design, implement, and operate secure, scalable enterprise endpoint management platforms. This role combines deep endpoint engineering expertise with operational judgment, governance awareness,...",
-      "description": "Position Overview:\n\nThe Senior Endpoint Platform Engineer will design, implement, and operate secure, scalable enterprise endpoint management platforms. This role combines deep endpoint engineering expertise with operational judgment, governance awareness, automation, observability, and data-driven decision making. The engineer will independently lead initiatives, navigate ambiguity, balance security requirements with operational realities, and build sustainable platform capabilities that can be adopted across teams and business units.\n\nHybrid onsite 3x a week\n\nResponsibilities:\n\n• Design, implement, and operate enterprise endpoint management services using Microsoft Intune and Microsoft Configuration Manager (MECM/SCCM).\n\n• Develop and maintain Windows endpoint standards, including Windows Autopilot, Endpoint Analytics, compliance policies, configuration profiles, and Windows Update for Business.\n\n• Engineer scalable processes for Win32 application packaging and deployment, as well as driver, BIOS, and firmware management.\n\n• Design identity and administration models using Microsoft Entra ID, Identity Governance, Privileged Identity Management (PIM), Access Packages, role-based access control (RBAC), delegated administration, Scope Tags, and least-privilege principles.\n\n• Build reusable automation and configuration-as-code solutions using PowerShell, Python, Microsoft Graph, REST APIs, GitHub Actions, JSON, and YAML.\n\n• Apply Infrastructure as Code, automated testing, and documentation-as-code practices to endpoint platform engineering and operations.\n\n• Define telemetry strategies and instrumentation that support service observability, operational health measurement, and data-driven decision making.\n\n• Develop dashboards, reports, monitoring, and alerts using Azure Monitor, Log Analytics, Kusto Query Language (KQL), Splunk Enterprise, and Splunk Search Processing Language (SPL).\n\n• Lead complex troubleshooting and root cause analysis for endpoint platform, application deployment, compliance, identity, and operational issues.\n\n• Implement and maintain vulnerability management, security baselines, hardening standards, Zero Trust principles, change controls, and auditable operating practices.\n\n• Assess tradeoffs, blast radius, resiliency, and risk when designing or changing endpoint services.\n\n• Document architecture decisions, technical rationale, support procedures, and long-term ownership models.\n\n• Partner across engineering, governance, security, operations, and leadership teams to align platform outcomes with business objectives.\n\n• Communicate complex technical topics clearly to technical and non-technical stakeholders, including executive audiences.\n\n• Enable other teams through standards, automation, reusable capabilities, and knowledge transfer rather than creating operational dependencies.\n\n• Demonstrate ownership from solution design through implementation and operational support.\n\nQualifications:\n\nRequired Qualifications\n\n• Senior-level experience designing, implementing, and operating enterprise endpoint management platforms at scale.\n\n• Deep hands-on experience with Microsoft Intune, MECM/SCCM, Windows endpoint management, Windows Autopilot, Endpoint Analytics, compliance and configuration management, Win32 application deployment, Windows Update for Business, and hardware lifecycle management.\n\n• Experience designing enterprise identity governance and delegated administration models using Microsoft Entra ID, PIM, Access Packages, RBAC, Scope Tags, and least-privilege practices.\n\n• Advanced automation and scripting experience with PowerShell and working experience with Python, Microsoft Graph, REST APIs, GitHub Actions, JSON, and YAML.\n\n• Experience applying Infrastructure as Code, Configuration as Code, automated testing, and documentation-as-code concepts.\n\n• Experience designing telemetry, dashboards, reporting, monitoring, and alerting using Azure Monitor, Log Analytics, KQL, Splunk Enterprise, or SPL.\n\n• Strong knowledge of vulnerability management, security baselines, endpoint hardening, Zero Trust, change control, auditability, and risk-based prioritization.\n\n• Demonstrated ability to work independently, navigate ambiguity, challenge assumptions with evidence, and balance business, operational, and security requirements.\n\n• Strong analytical, troubleshooting, documentation, and communication skills.\n\n• Proven ability to build maintainable, supportable, and scalable platforms rather than one-time solutions.\n\nPreferred Qualifications\n\n• Experience leading large-scale endpoint migrations or MECM-to-Intune transformations.\n\n• Experience supporting shared-service or multi-business-unit environments.\n\n• Experience developing governance models, operating models, and enterprise platform standards.\n\n• Experience establishing service observability and operational reporting for endpoint platforms.\n\n• Experience engaging cross-functional stakeholders and influencing technical and executive audiences.\n\nTools and Technologies:\n\n• Microsoft Intune\n\n• Microsoft Configuration Manager (MECM/SCCM)\n\n• Windows endpoint management\n\n• Windows Autopilot\n\n• Endpoint Analytics\n\n• Windows Update for Business\n\n• Microsoft Entra ID\n\n• Identity Governance\n\n• Privileged Identity Management (PIM)\n\n• Access Packages\n\n• RBAC and Scope Tags\n\n• PowerShell\n\n• Python\n\n• Microsoft Graph\n\n• REST APIs\n\n• GitHub Actions\n\n• JSON and YAML\n\n• Infrastructure as Code\n\n• Configuration as Code\n\n• Azure Monitor\n\n• Log Analytics\n\n• Kusto Query Language (KQL)\n\n• Splunk Enterprise\n\n• Splunk Search Processing Language (SPL)\n\n• Vulnerability management and security baselines\n\n• Zero Trust",
-      "tags": [
-        "Windows",
-        "Intune",
-        "SCCM",
-        "Entra ID",
-        "Autopilot",
-        "PowerShell",
-        "Dice",
-        "Contractor",
-        "15 hours ago",
-        "No degree mentioned"
-      ],
-      "matchReasons": [
-        "Intune + Autopilot",
-        "SCCM/MECM",
-        "Endpoint engineering",
-        "PowerShell automation",
-        "App packaging"
-      ],
-      "tools": [
-        "Intune",
-        "SCCM",
-        "Entra ID",
-        "Autopilot",
-        "PowerShell"
-      ],
-      "platforms": [
-        "Windows"
-      ],
-      "roleFamily": "Device Compliance",
-      "seniority": "Senior",
-      "employmentType": "Contract"
-    },
-    {
       "id": "serpapi-life-science-innovations-willmar-mn-sr-end-user-computing-engineer-telecommunication-engineer-2729024f03",
       "title": "Sr. End User Computing Engineer / Telecommunication Engineer",
       "company": "Life-Science Innovations",
@@ -54383,53 +53059,6 @@
         "max": 60000,
         "currency": "USD",
         "label": "45K–60K a year"
-      }
-    },
-    {
-      "id": "serpapi-ford-motor-credit-company-llc-dearborn-mi-platform-engineer-infrastructure-728aef0fae",
-      "title": "Platform Engineer - Infrastructure",
-      "company": "Ford Motor Credit Company LLC",
-      "location": "Dearborn, MI",
-      "workplace": "Hybrid",
-      "postedAt": "2026-09-19T11:23:10.409Z",
-      "fetchedAt": "2026-09-19T11:23:10.409Z",
-      "staleAfter": "2026-11-03T11:23:10.409Z",
-      "expiresAt": "2026-11-03T11:23:10.409Z",
-      "source": "SerpAPI Google Jobs",
-      "sourceUrl": "https://www.careers.ford.com/job/dearborn/platform-engineer-infrastructure/48560/95946661344?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "applyUrl": "https://www.careers.ford.com/job/dearborn/platform-engineer-infrastructure/48560/95946661344?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
-      "attributionLabel": "Google Jobs via SerpAPI",
-      "termsProfile": "partner-terms",
-      "summary": "We made history and now we work to transform the future – for our customers, our communities and our families. You'll see your work on the road every day, helping people move freely and pursue their dreams. At Ford, you can build more than vehicles. Come...",
-      "description": "We made history and now we work to transform the future – for our customers, our communities and our families. You'll see your work on the road every day, helping people move freely and pursue their dreams. At Ford, you can build more than vehicles. Come build what matters.\n\nThe Ford Motor Credit Company team helps put people behind the wheels of great Ford and Lincoln vehicles. By partnering with dealerships, we provide financing, personalized service and professional expertise to thousands of dealers and millions of customers in over one hundred countries around the world.\n\nIn this position...\n\nFord Credit Platform Engineering builds and operates the shared infrastructure and paved paths that help product teams deliver securely, reliably, and quickly. As a Cloud Infrastructure & SRE Engineer on our Platform Engineering team, you will design, build, and operate the cloud platforms and reliability practices that hundreds of engineers depend on every day.\n\nThis role leans toward cloud infrastructure, DevOps, and Site Reliability Engineering, with strong software development skills. You will write code to automate infrastructure, define reliability targets, and create self-service workflows that eliminate toil. You will operate what you build, participate in on-call rotations, and drive systemic improvements from every incident.\n\nAbout the Team\n\nOur Platform Engineering team sits at the intersection of product and infrastructure. We treat our platform capabilities as products, with users, documentation, support, and a roadmap driven by real feedback. We partner closely with product engineering teams, security, and SRE to standardize patterns around identity, networking, CI/CD, secrets management, and deployment.\n\nWe believe the best platform work is invisible. Developers should not have to think about cluster wiring, pipeline configuration, or operational boilerplate. They should focus on their features, and the platform should just work.\n\nHow We Work\n\nAutomate first: Eliminate repeatable manual work. Measure and reduce toil. Reliability is a feature: Design for failure with timeouts, retries with jitter, idempotency, and graceful degradation. Small, safe changes: Incremental delivery, clear rollback strategies, and continuous improvement. Engineering excellence: Design reviews, blameless postmortems, and strong documentation and runbooks. What Success Looks Like\n\nPlatform capabilities are easy to adopt, well-documented, and measurably reduce lead time for change. Reliability improves over time, measured by SLO attainment, reduced incident frequency and severity, and faster MTTR. Security posture improves through secure-by-default patterns and automated controls. What you'll do...\n\nDesign, build, and operate cloud infrastructure and platform capabilities (networking, compute, Kubernetes, CI/CD, secrets, certificates, identity).Define and improve reliability using service-level indicators (SLIs), service-level objectives (SLOs), and error budgets.Implement observability (metrics, logs, traces) with actionable alerting focused on user impact.Create self-service workflows and automation (infrastructure as code, GitOps, build/release pipelines) that reduce toil.Improve security and compliance through least-privilege access, secure defaults, policy-as-code, and continuous hardening.Participate in on-call rotation, incident response, and post-incident reviews; drive systemic fixes and runbook quality.Partner with application teams to improve deployability, resilience, and cost efficiency (capacity planning, autoscaling, graceful degradation). You'll have...\n\nBachelors of Science Degree7 year’s experience in software developmentExperience operating production cloud platforms and services (e.g., GCP/AWS/Azure) with an SRE mindset.Strong fundamentals in Linux, networking, distributed systems, and debugging complex production issues.Proficiency with infrastructure as code and automation (e.g., Terraform, Helm/Kustomize, GitOps tooling).Experience with containers and orchestration (Docker, Kubernetes) and modern CI/CD.Programming and scripting ability (e.g., Go, Python, Java, TypeScript) to build tooling and automate workflows.Clear communication, effective incident leadership, and a customer-focused approach to platform work.\n\nEven better, you may have...\n\nExperience defining SLIs/SLOs and implementing SLO-based alerting and dashboards.Observability platform experience (e.g., Prometheus/Grafana, OpenTelemetry, centralized logging).Policy-as-code and supply chain security (e.g., OPA/Rego, SLSA concepts, SBOMs, artifact signing).Experience building golden paths (container images, templates, reference architectures, paved pipelines) adopted by multiple teams.Cost optimization experience (FinOps practices, capacity forecasting, right-sizing, multi-tenant platform controls).\n\nYou may not check every box, or your experience may look a little different from what we've outlined, but if you think you can bring value to Ford Motor Company, we encourage you to apply!\n\nAs an established global company, we offer the benefit of choice. You can choose what your Ford future will look like: will your story span the globe, or keep you close to home? Will your career be a deep dive into what you love, or a series of new teams and new skills? Will you be a leader, a changemaker, a technical expert, a culture builder…or all of the above? No matter what you choose, we offer a work life that works for you, including:\n\n• Immediate medical, dental, vision and prescription drug coverage\n\n• Flexible family care days, paid parental leave, new parent ramp-up programs, subsidized back-up child care and more\n\n• Family building benefits including adoption and surrogacy expense reimbursement, fertility treatments, and more\n\n• Vehicle discount program for employees and family members and management leases\n\n• Tuition assistance\n\n• Established and active employee resource groups\n\n• Paid time off for individual and team community service\n\n• A generous schedule of paid holidays, including the week between Christmas and New Year’s Day\n\n• Paid time off and the option to purchase additional vacation time.\n\nThis position is a salary grade 6 and ranges from $85,400-$143,200.\n\nThis position is a salary grade 7 and ranges from $99,600-$166,600.\n\nThis position is a salary grade 8 and ranges from $115,000-$192,900.\n\nFinal determination of salary grade will be based on candidate's skills and experience, and base salary will be set within the applicable range according to job scope, responsibility and competitive market value.\n\nFor more information on salary and benefits, click here: https://fordcareers.co/GSR\n\nVisa sponsorship is not available for this position.\n\nCandidates for positions with Ford Motor Company must be legally authorized to work in the United States. Verification of employment eligibility will be required at the time of hire.\n\nWe are an Equal Opportunity Employer. All qualified applicants will receive consideration for employment without regard to race, religion, color, age, sex, national origin, sexual orientation, gender identity, disability status or protected veteran status. In the United States, if you need a reasonable accommodation for the online application process due to a disability, please call 1-888-336-0660.\n\nThis position is hybrid. Candidates who are in commuting distance to a Ford hub location may be required to be onsite four or more days per week.\n\n#LI-Hybrid #LI-FordCredit #LI-AF1",
-      "tags": [
-        "Linux",
-        "Ford Careers",
-        "Full-time",
-        "Paid time off",
-        "Dental insurance",
-        "Health insurance"
-      ],
-      "matchReasons": [
-        "Compliance evidence"
-      ],
-      "tools": [],
-      "platforms": [
-        "Linux"
-      ],
-      "roleFamily": "Device Compliance",
-      "seniority": "Mid",
-      "employmentType": "Full-time",
-      "salary": {
-        "min": 85400,
-        "max": 143200,
-        "currency": "USD",
-        "label": "$85k-$143k"
-      },
-      "visaSponsorship": {
-        "status": "unavailable",
-        "evidence": "Visa sponsorship is not available for this position.",
-        "sourceUrl": "https://www.careers.ford.com/job/dearborn/platform-engineer-infrastructure/48560/95946661344?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic"
       }
     },
     {

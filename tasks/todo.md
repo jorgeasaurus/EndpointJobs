@@ -980,3 +980,48 @@ The 4.7 MB HTML is dominated by hydration data, including full descriptions requ
 ## Review
 
 Added `/jobs` and valid canonical pagination URLs using the shared 50-job page size and active canonical job count; sitemap revalidates every 300 seconds. Eight focused tests, 71 data audits, lint, typecheck, build, React Doctor 100/100, and independent review pass. Generated XML contains 1,094 URLs; all 22 directory URLs return 200, self-canonicalize, and contain jobs. Version bumped to 0.1.18.
+
+# Issue #60: destination link audit
+
+- [x] Add bounded internal crawl and provider-aware external checks with explicit uncertainty.
+- [x] Run against production sitemap/navigation and all active source/application destinations.
+- [x] Confirm and exclude dead listings; record results, test, bump version, and prepare a PR.
+
+## Review
+
+Checked 1,159 production internal URLs (all reachable) and 1,136 external destinations from 1,119 active listings: 823 reachable, 26 confirmed dead, and 287 blocked/authenticated/rate-limited/inconclusive. Removed the 26 dead listings and excluded their source URLs from future refreshes; retained uncertain listings. Exhaustive evidence and reproduction command are in `docs/link-audit-60.json`; version 0.1.19.
+
+Nine focused tests, 71 data audits, lint, typecheck, production build, and independent review pass. All 26 removed listings are absent from the generated sitemap and return API 404. HTTP success alone does not verify vacancy availability.
+
+# PR #68 Copilot review loop
+
+- [x] Correct redirect identity checks and remaining audit coverage gaps.
+- [ ] Verify tests and refreshed evidence, push, and resolve feedback.
+- [ ] Obtain a fresh clean Copilot review of the latest commit.
+
+Redirects to unrelated resources are now unverified; 13 regression tests, lint, and typecheck pass. Fresh production verification: 1,159 internal reachable; 1,142 external destinations checked, including navigation links. The same 26 dead destinations remain deployed pending merge; retry attempts are retained and singleton sitemaps are covered.
+
+Second Copilot cycle: preserve transport/redirect/truncation uncertainty before interpreting ATS payloads, including confirmation retries; normalize sitemap locations before queueing. Regression coverage includes API redirects, oversized valid JSON, retry redirects, root URL duplicates, and invalid sitemap locations. Historical internal count corrected to 1,158 unique destinations (1,159 requests).
+
+# PR #68 additional review
+
+- [x] Fix anchor extraction so data attributes and embedded markup cannot replace real href destinations.
+- [x] Pass 21 regression tests, lint, typecheck, and a fresh 1,158-URL production crawl.
+- [ ] Obtain a fresh Copilot review for the extraction fix.
+
+Additional review: unrelated redirects ending in 404/410 remain unverified. Retained independent exact-job ATS removal evidence behind HTML redirects, with an explicit regression and rationale; this is required for removed Greenhouse jobs. Corrected the historical Truveta HTML observation while preserving the twice-confirmed API result.
+
+# PR #68 entity and retry review
+
+- [x] Decode HTML attributes once using a standards-compliant decoder; leave feed/XML URLs intact.
+- [x] Require repeated dead responses in internal crawl evidence.
+- [ ] Verify regression checks and fresh latest-head Copilot review.
+
+# PR #68 network safety review
+
+- [x] Validate each HTTP destination and redirect; reject private/special addresses and pin DNS answers.
+- [x] Allow local audits only at the explicit internal origin; verify real socket transport.
+- [x] Ignore UTM tracking variants in job exclusions while preserving job identifiers.
+- [ ] Confirm build and obtain fresh latest-head review.
+
+496 tests pass, including network safety and tracking-variant regressions; public HTTPS succeeds and an unapproved loopback destination is blocked.

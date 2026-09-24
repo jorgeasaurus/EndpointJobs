@@ -1,0 +1,120 @@
+import assert from "node:assert/strict";
+import test, { beforeEach } from "node:test";
+import dns from "node:dns/promises";
+import { auditInternal } from "../link-audit/internal";
+
+// HTTP fixtures use a public DNS answer; network guard behavior has separate tests.
+beforeEach((context) => {
+  if (!("mock" in context)) throw new Error("Expected a test context");
+  context.mock.method(dns, "lookup", async () => [{ address: "93.184.216.34", family: 4 }]);
+});
+
+const origin = "https://crawl.example";
+const sitemap = (...paths: string[]) => `<urlset>${paths.map((path) => `<url><loc>${origin}${path}</loc></url>`).join("")}</urlset>`;
+
+test("bare-origin sitemap locations deduplicate the root seed and fragment links", async (context) => {
+  const calls: string[] = [];
+  context.mock.method(globalThis, "fetch", async (input: string | URL | Request) => {
+    const url = String(input);
+    calls.push(url);
+    const response = new Response(url.endsWith("/sitemap.xml") ? sitemap("") : `<a href="${origin}/#top">Home</a>`);
+    Object.defineProperty(response, "url", { value: url });
+    return response;
+  });
+  const report = await auditInternal(origin);
+  assert.equal(report.sitemapUrls, 1);
+  assert.deepEqual(report.results.map((result) => result.url), [`${origin}/`, `${origin}/api-docs`]);
+  assert.equal(calls.filter((url) => url === `${origin}/`).length, 1);
+  assert.equal(calls.includes(origin), false);
+});
+
+test("sitemap locations reject non-HTTP and different-origin destinations", async (context) => {
+  let loc = "javascript:alert(1)";
+  context.mock.method(globalThis, "fetch", async (input: string | URL | Request) => {
+    const response = new Response(`<urlset><url><loc>${loc}</loc></url></urlset>`);
+    Object.defineProperty(response, "url", { value: String(input) });
+    return response;
+  });
+  await assert.rejects(auditInternal(origin), /invalid HTTP URL/);
+  loc = "https://another.example/";
+  await assert.rejects(auditInternal(origin), /another origin/);
+});
+
+test("internal crawl accepts a singleton sitemap and discovers distinct query destinations once", async (context) => {
+  const calls: string[] = [];
+  const pages: Record<string, string> = {
+    "/sitemap.xml": sitemap("/jobs"),
+    "/": '<a href="/jobs#top">Jobs</a><a href="https://other.example/about">About</a>',
+    "/api-docs": '<a href="/jobs?page=2&amp;sort=date#top">More</a>',
+    "/jobs": '<a href="/jobs?page=2&amp;sort=date">More</a><a href="/jobs?page=3">Last</a>',
+    "/jobs?page=2&sort=date": '<a href="/jobs?page=3#top">Last</a>',
+    "/jobs?page=3": '<a href="/jobs">First</a>',
+  };
+  context.mock.method(globalThis, "fetch", async (input: string | URL | Request) => {
+    const url = new URL(String(input));
+    const path = url.pathname + url.search;
+    calls.push(path);
+    assert.ok(Object.hasOwn(pages, path), `Unexpected request ${url}`);
+    const response = new Response(pages[path]);
+    Object.defineProperty(response, "url", { value: url.href });
+    return response;
+  });
+  const report = await auditInternal(origin);
+  assert.equal(report.sitemapUrls, 1);
+  assert.equal(report.results.length, 5);
+  assert.equal(calls.length, new Set(calls).size);
+  assert.deepEqual(report.results.map((result) => result.url), ["/", "/api-docs", "/jobs", "/jobs?page=2&sort=date", "/jobs?page=3"].map((path) => origin + path));
+  assert.ok(report.results.every((result) => result.outcome === "reachable" && result.observations.length === 1));
+  assert.deepEqual(report.externalNavigation, ["https://other.example/about"]);
+});
+
+test("internal crawl preserves retry failures and still discovers links from recovered pages", async (context) => {
+  const counts = new Map<string, number>();
+  context.mock.method(globalThis, "fetch", async (input: string | URL | Request) => {
+    const url = new URL(String(input));
+    const path = url.pathname;
+    const attempt = (counts.get(path) ?? 0) + 1;
+    counts.set(path, attempt);
+    const status = path === "/missing" ? 404 : path === "/flaky" && attempt === 1 ? 503 : 200;
+    const body = path === "/sitemap.xml" ? sitemap("/missing", "/flaky") : path === "/flaky" && attempt === 2 ? '<a href="/discovered">Link</a>' : "";
+    const response = new Response(body, { status });
+    Object.defineProperty(response, "url", { value: url.href });
+    return response;
+  });
+  const report = await auditInternal(origin);
+  const missing = report.results.find((result) => result.url.endsWith("/missing"))!;
+  assert.equal(missing.outcome, "dead");
+  assert.deepEqual(missing.observations.map((attempt) => attempt.status), [404, 404]);
+  const flaky = report.results.find((result) => result.url.endsWith("/flaky"))!;
+  assert.equal(flaky.outcome, "unverified");
+  assert.deepEqual(flaky.observations.map((attempt) => attempt.outcome), ["transient", "reachable"]);
+  assert.ok(report.results.some((result) => result.url.endsWith("/discovered")));
+  assert.equal(counts.get("/missing"), 2);
+  assert.equal(counts.get("/flaky"), 2);
+});
+
+test("internal dead classification requires two dead observations", async (context) => {
+  const sequences: Record<string, number[]> = {
+    "/transient-404": [503, 404],
+    "/transient-410": [503, 410],
+    "/dead-404": [404, 404],
+    "/dead-410": [410, 410],
+  };
+  const counts = new Map<string, number>();
+  context.mock.method(globalThis, "fetch", async (input: string | URL | Request) => {
+    const url = new URL(String(input));
+    const attempt = counts.get(url.pathname) ?? 0;
+    counts.set(url.pathname, attempt + 1);
+    const status = sequences[url.pathname]?.[attempt] ?? 200;
+    const response = new Response(url.pathname === "/sitemap.xml" ? sitemap(...Object.keys(sequences)) : "", { status });
+    Object.defineProperty(response, "url", { value: url.href });
+    return response;
+  });
+  const report = await auditInternal(origin);
+  for (const [path, statuses] of Object.entries(sequences)) {
+    const result = report.results.find((entry) => entry.url === origin + path)!;
+    assert.equal(result.outcome, path.startsWith("/transient") ? "unverified" : "dead", path);
+    assert.deepEqual(result.observations.map((attempt) => attempt.status), statuses, path);
+    assert.equal(counts.get(path), 2);
+  }
+});
