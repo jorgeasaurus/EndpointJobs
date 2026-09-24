@@ -10,6 +10,8 @@ Focused job board for Endpoint Engineering, macOS, Windows, MDM, UEM, client pla
 
 Live site: https://endpointjobs.dev
 
+SEO routing: [job URL decision](docs/job-url-decision.txt).
+
 Backlink planning: [strategy](docs/backlink-strategy.txt), [known links](docs/backlink-inventory.csv), [opportunity tracker](docs/backlink-opportunities.csv), and [referral metrics](docs/backlink-metrics.csv).
 
 Public API: [`GET /api/jobs`](https://endpointjobs.dev/api/jobs) · [usage guide](docs/api.md) · [OpenAPI 3.1](https://endpointjobs.dev/openapi.json)
