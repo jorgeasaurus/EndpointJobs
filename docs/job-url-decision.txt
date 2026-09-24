@@ -1,0 +1,47 @@
+Job URL decision — issue #62
+Date: 2026-09-23 | Decision: retain /jobs/{encoded job.id}
+Owner: repository maintainer (@jorgeasaurus)
+
+WHY
+Descriptive title/company slugs improve shared-link readability; Google recommends
+readable words where possible. This is a benefit, not evidence that our ID routes
+are invalid. No Search Console or user-study evidence of a slug-related problem
+was available for this assessment; ranking or click-through gains are unknown.
+
+Current routes use one encoded ID segment. Some IDs already contain readable
+source/account/title text; others contain native IDs or hashes. Adding a second
+slug would lengthen those paths and require collision and stale-slug handling.
+Deriving the canonical slug from mutable title/company fields adds URL churn;
+freezing it instead requires persisted slug/alias state across feed refreshes.
+For this changing job feed, that migration cost outweighs the unmeasured benefit.
+
+CURRENT CONTRACT
+src/app/site-metadata.ts: getJobPath/getJobUrl construct ID-based paths.
+src/app/jobs/[id]/page.tsx: resolves active IDs, selects canonical IDs, redirects
+duplicates, and supplies title/company metadata; missing jobs return not-found.
+src/app/sitemap.ts and src/components/job-board/job-card.tsx use those helpers.
+scripts/job-refresh/shared.ts: IDs use provider identity or readable text plus
+hashes. Retaining routes does not guarantee every provider's ID stays immutable.
+No route, ID generation, canonical, sitemap, API, or internal-link changes needed.
+
+REVISIT WHEN
+User feedback demonstrates a sharing/readability problem, or a broader routing
+migration provides a justified opportunity. Evaluate against Search Console
+indexing/CTR and user feedback; separate slug effects from title/content changes.
+If adopted, keep an immutable ID as identity, persist the canonical slug, define
+collision/Unicode/title-edit behavior, and permanently redirect legacy and stale
+paths in one hop. Update canonicals, sitemap, schema URLs, and all internal links
+together; retain API IDs. Verify duplicate and expired-job handling and monitor
+indexing after release. Do not launch a cosmetic migration without those checks.
+
+VALIDATION (production snapshot, 2026-09-23)
+Three sitemap URLs returned 200 with matching self-canonicals and title/company
+page titles: /jobs/adzuna-5895208859,
+/jobs/arbeitnow-senior-endpoint-engineer-london-194391, and
+/jobs/greenhouse-andurilindustries-5246823007. The Greenhouse JobPosting URL
+also matched; the other two had no JobPosting node. This sample validates routing,
+not indexing, ranking, or every job. Listings can expire after this check.
+
+SOURCES (reviewed 2026-09-23)
+https://developers.google.com/search/docs/crawling-indexing/url-structure
+https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes
