@@ -1,0 +1,56 @@
+EndpointJobs backlink strategy — issue #61
+Reviewed: 2026-09-23 | Accountable owner: repository maintainer (@jorgeasaurus)
+
+Goal: earn relevant referrals from endpoint engineers and useful editorial links.
+Start with existing community relationships, then test two relevant placements.
+No outreach, submissions, paid placements, or analytics changes were performed.
+
+BASELINE
+backlink-inventory.csv records evidence, not a complete backlink census.
+The public r/Intune launch post and owned GitHub README/API guide link to the site.
+A LinkedIn search result mentions the site; its original post/link is unverified.
+Search queries: "endpointjobs.dev" excluding the site, then GitHub and Reddit.
+Search coverage is incomplete; no inference of zero other links or outreach.
+Vercel Analytics is mounted in src/app/layout.tsx. Dashboard enablement, referral
+counts, Search Console Links data, and private outreach history are unverified.
+Owner should reconcile those sources with this inventory before new outreach.
+
+EXECUTION
+Week 1 after adoption: owner captures a 28-day referral baseline, reconciles
+existing activity, and checks current rules for the two highest-fit prospects.
+Weeks 2–4: after explicit authorization, make up to two tailored submissions
+where allowed. Offer a useful career resource or API example, not a bulk pitch.
+Prefer stable /intune, /jamf, or /api-docs pages over expiring individual jobs.
+For existing posts, respond only with substantive updates when permitted;
+do not duplicate the launch post or treat a prior post as blanket permission.
+Avoid paid ranking links, automated directory blasts, and reciprocal-link quotas.
+
+TRACKING
+backlink-opportunities.csv is the working queue. Owner updates status and dates
+when actions occur; blank dates/counts mean unknown or not yet performed.
+Status: research, ready, contacted, accepted, live, declined, retired.
+A prospect becomes ready only after its submission policy and audience fit
+are checked. live requires a verified source page linking to the destination.
+Record the exact placement URL and link rel value (or unknown); private Slack
+mentions can generate referrals but do not count as public indexable backlinks.
+
+MEASUREMENT
+Every Monday for the first month, owner updates a row in backlink-metrics.csv
+per source using a consistent trailing 28-day window. Review monthly afterward.
+In Vercel project Analytics, filter Referrers by domain, drill into the source
+page where available, and inspect Pages/Routes for the intended destination.
+Count verified live placements and distinct linking domains separately from
+visitors/pageviews. Visits are not applications, and links do not promise ranks.
+Use unknown until measured; use zero only after inspecting a complete window.
+Optional campaign URL: /intune?utm_source=community_slug&utm_medium=referral&utm_campaign=endpoint_resources
+UTM dashboard filtering requires an eligible plan; referrer reporting is the
+fallback. Do not upgrade plans for this strategy. Direct/private-app traffic
+may lose referrers, so attribution remains incomplete.
+After 30 days, retain channels with relevant visits or useful feedback; retire
+poor-fit prospects. A practical first experiment is two approved placements,
+not a traffic promise. Export the baseline before its reporting window expires.
+Keep private analytics exports and contact details out of this public repository.
+
+REFERENCES
+https://vercel.com/docs/analytics/filtering
+https://vercel.com/docs/analytics
