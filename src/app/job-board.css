@@ -1118,6 +1118,34 @@ h1 {
   min-width: 0;
 }
 
+.footer-appreciation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 48px;
+  color: var(--white-60);
+}
+
+.appreciate-button-host {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.footer-appreciation appreciate-button {
+  --appreciate-size: 24px;
+  --appreciate-default: var(--white-60);
+  --appreciate-hover: var(--white);
+  --appreciate-clicked: #bef264;
+  --appreciate-full: #bef264;
+}
+
+.footer-appreciation appreciate-button::part(button) {
+  min-width: 44px;
+  min-height: 44px;
+}
+
 .footer-meta,
 .footer-links {
   flex-wrap: wrap;

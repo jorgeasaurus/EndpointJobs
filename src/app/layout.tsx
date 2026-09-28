@@ -1,6 +1,7 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import Script from "next/script";
 
 import {
   ogImage,
@@ -81,6 +82,7 @@ export default function RootLayout({
     <html lang="en" className={`${spaceGrotesk.variable} ${jetBrainsMono.variable}`}>
       <body>
         {children}
+        <Script src="https://appreciate-button.com/widget.js" strategy="afterInteractive" />
         <Analytics />
       </body>
     </html>

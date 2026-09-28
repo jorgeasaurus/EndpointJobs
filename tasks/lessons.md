@@ -62,3 +62,5 @@
 - IT automation roles that own employee tooling, access, and onboarding workflows can be endpoint-relevant even without an OS-management product in the title; accept them through narrow title rules while retaining service-desk exclusions.
 
 - Paginate GitHub review polling; the REST default of 30 reviews can hide a completed cycle. Prefer the thread-aware review-state script for latest-head and unresolved-thread checks.
+- A mocked widget API check does not verify the owner's real key or allowed origins; distinguish integration rendering from live service readiness.
+- Custom elements that mutate their own attributes must mount after hydration; afterInteractive script loading alone does not guarantee nested SSR boundaries have hydrated.
