@@ -1025,3 +1025,46 @@ Additional review: unrelated redirects ending in 404/410 remain unverified. Reta
 - [ ] Confirm build and obtain fresh latest-head review.
 
 496 tests pass, including network safety and tracking-variant regressions; public HTTPS succeeds and an unapproved loopback destination is blocked.
+
+# Appreciate button
+
+- [x] Add the official widget to the shared footer with one board-wide counter.
+- [x] Embed the owner's public key and load the script once in the root layout.
+- [x] Verify types, lint, and desktop/mobile rendering.
+
+## Review
+
+Earlier typecheck, lint, and mocked-API browser checks passed. Public key now embedded; no additional service calls or tests run, as requested. Dashboard allowed origins have not been verified.
+
+# Appreciate visibility and Gzip warning
+
+- [x] Reproduce the missing widget and trace the warning.
+- [x] Disable faulty development gzip path; verify three HTTP 200 reloads without compression and retained production compression.
+- [x] Verify live widget initialization on localhost after the owner updated allowed origins.
+
+## Appreciate diagnosis
+
+Live API returns `403 origin_not_allowed` for localhost. Next 16.3.4 compression retains drain listeners; development compression disabled, production preserved. Typecheck, lint, and diff checks pass.
+
+# Appreciate hydration race
+
+- [x] Give the widget a React-owned empty host and mount it after hydration.
+- [x] Verify early script loading, reloads, and navigation without hydration warnings or duplicate widgets.
+
+## Hydration verification
+
+Typecheck and lint pass. Early-upgrading widget fixture and normal live script each pass three reloads and two client navigations: zero hydration warnings, exactly one widget.
+
+# Appreciate strict review loop
+
+- [x] Review current feature/config diff; preserve unrelated task history.
+- [x] Fix actionable findings and run a fresh strict review.
+- [x] Verify types, lint, build, and widget lifecycle behavior.
+
+## Strict round 1
+
+1. Counter identity duplicated the canonical site URL; use `siteUrl` from site metadata to prevent drift. Fixed.
+
+## Strict round 2 and verification
+
+Fresh independent review: zero findings. Build (705 pages), typecheck, lint, and diff checks pass; early-script and live-widget checks pass six reloads, four client navigations, and 1440/390/320px layouts. Live counts load; no votes submitted. Build/typecheck run sequentially to avoid generated-type races. Clean: yes.

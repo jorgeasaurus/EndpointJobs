@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import { AppreciateButton } from "@/components/appreciate-button";
 import { formatUpdatedAt } from "@/lib/jobs";
 import { appVersion, getApiDocsPath, getJobsDirectoryPath } from "@/app/site-metadata";
 
@@ -79,6 +80,7 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
 export function SiteFooter({ updatedAt }: { updatedAt: string }) {
   return (
     <footer className="site-footer">
+      <AppreciateButton />
       <div className="footer-bottom">
         <div className="footer-meta">
           <span>Made by Jorgeasaurus</span>
