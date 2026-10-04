@@ -1068,3 +1068,17 @@ Typecheck and lint pass. Early-upgrading widget fixture and normal live script e
 ## Strict round 2 and verification
 
 Fresh independent review: zero findings. Build (705 pages), typecheck, lint, and diff checks pass; early-script and live-widget checks pass six reloads, four client navigations, and 1440/390/320px layouts. Live counts load; no votes submitted. Build/typecheck run sequentially to avoid generated-type races. Clean: yes.
+
+# Issue #73: Hosted MCP server
+
+- [x] Add stateless `/api/mcp` with three read-only tools and explicit origin handling.
+- [x] Derive schemas from the API contract; reuse search/detail helpers and preserve attribution.
+- [x] Add fixture parity/error tests and a reusable real-client smoke check.
+- [x] Document connection, inputs, freshness, salary/sponsorship semantics; bump to 0.1.20.
+- [x] Verify lint, typecheck, build, 504 tests, and both client protocol modes against the built server.
+- [x] Complete independent code review (no findings).
+- [ ] Verify the deployed PR preview.
+- [ ] After merge/release, verify production separately.
+
+## Review
+MCP SDK 2.3.0 passes protocol 2025-11-25 and 2026-07-28 discovery, all tools, and REST parity locally. `audit:data` has 70 passes and the same FEAT-061 map-coverage failure on unchanged main (582/1180); npm audit reports the same 10 existing advisories with no newly affected packages.
