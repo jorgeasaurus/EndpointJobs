@@ -49,7 +49,7 @@ async function call(client: Client, name: string, args: Record<string, unknown> 
   assert.ok(response.structuredContent);
   const text = response.content.find((item) => item.type === "text");
   assert.ok(text && text.type === "text");
-  assert.deepEqual(JSON.parse(text.text), JSON.parse(JSON.stringify(response.structuredContent)));
+  assert.equal(text.text, JSON.stringify(response.structuredContent));
   return response.structuredContent as Record<string, unknown>;
 }
 

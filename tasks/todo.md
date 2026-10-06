@@ -1094,3 +1094,8 @@ MCP SDK 2.3.0 passes protocol 2025-11-25 and 2026-07-28 discovery, all tools, an
 
 ### Round 2 and validation
 Fresh independent strict review: zero findings. All 504 tests, lint, build, typecheck, and built-server MCP smoke checks pass; a simulated legacy-only server fails the modern-protocol assertion as intended. Previous preview evidence remains scoped to 73b8fc1; latest fixes verified locally. Clean: yes.
+
+## PR #74 Copilot review loop
+- [ ] Verify the latest deployed preview and resolve the pending preview-evidence thread.
+- [ ] Simplify the JSON wire-format assertion, verify it, and resolve the React Doctor thread.
+- [ ] Request a fresh Copilot review and require a clean cycle on the final head.
