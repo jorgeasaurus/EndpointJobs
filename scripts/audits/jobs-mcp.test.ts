@@ -74,7 +74,8 @@ test("MCP discovers three read-only tools and schemas stay aligned with the quer
       }
     }
     const options = await call(client, "get_filter_options");
-    assert.deepEqual(options.filters, jobsApiQueryContract);
+    assert.deepEqual(options.filters, schema.properties);
+    assert.equal((options.filters as Record<string, { maximum?: number }>).page.maximum, Number.MAX_SAFE_INTEGER);
     assert.deepEqual(options.meta, { updatedAt: feed.updatedAt });
   });
 });

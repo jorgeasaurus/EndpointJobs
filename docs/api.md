@@ -14,7 +14,7 @@ Connect a Streamable HTTP client to `https://endpointjobs.dev/api/mcp`; no authe
 | --- | --- | --- |
 | `search_jobs` | Optional API filters below; multi-value filters are arrays | Compact listings, applied filters, pagination, feed timestamp |
 | `get_job` | `{ "id": "<id from search_jobs>" }` | Active listing with available description, attribution, and links |
-| `get_filter_options` | `{}` | Supported filters, values, defaults, bounds, and feed timestamp |
+| `get_filter_options` | `{}` | Search JSON Schema properties, values, defaults, bounds, and feed timestamp |
 
 Example `search_jobs` arguments:
 

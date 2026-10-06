@@ -11,6 +11,8 @@ for (const mode of ["legacy", "auto"] as const) {
   const transport = new StreamableHTTPClientTransport(new URL("/api/mcp", base), { requestInit: { headers } });
   try {
     await client.connect(transport);
+    assert.equal(transport.protocolVersion, mode === "legacy" ? "2025-11-25" : "2026-07-28",
+      `${mode} client must exercise the advertised protocol, not silently downgrade`);
     const { tools } = await client.listTools();
     assert.deepEqual(tools.map((tool) => tool.name).sort(), ["get_filter_options", "get_job", "search_jobs"]);
     const options = await client.callTool({ name: "get_filter_options", arguments: {} });

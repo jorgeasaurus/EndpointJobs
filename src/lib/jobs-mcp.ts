@@ -22,7 +22,7 @@ function querySchema(definition: JobsApiQueryDefinition): z.ZodType {
       if (definition.default !== undefined) schema = schema.default(definition.default);
       break;
   }
-  if ("description" in definition) schema = schema.describe(definition.description ?? "");
+  if (definition.kind === "enum" && definition.description) schema = schema.describe(definition.description);
   return schema.optional();
 }
 
@@ -85,8 +85,8 @@ export function registerJobsMcpTools(server: McpServer, feed: JobsFeed, now = ()
   });
 
   server.registerTool("get_filter_options", {
-    description: "List supported search filters, values, defaults, and bounds. Multi-value MCP inputs are arrays; separators describe the REST API encoding. Omit optional filters to leave them unrestricted. Feed updatedAt is a snapshot timestamp, not a live vacancy check.",
+    description: "List the search tool’s JSON Schema properties, including supported values, defaults, and bounds. Multi-value inputs are arrays. Omit optional filters to leave them unrestricted. Feed updatedAt is a snapshot timestamp, not a live vacancy check.",
     inputSchema: z.strictObject({}),
     annotations
-  }, () => result({ filters: jobsApiQueryContract, meta: { updatedAt: feed.updatedAt } }));
+  }, () => result({ filters: z.toJSONSchema(jobsMcpSearchSchema).properties, meta: { updatedAt: feed.updatedAt } }));
 }

@@ -1077,8 +1077,20 @@ Fresh independent review: zero findings. Build (705 pages), typecheck, lint, and
 - [x] Document connection, inputs, freshness, salary/sponsorship semantics; bump to 0.1.20.
 - [x] Verify lint, typecheck, build, 504 tests, and both client protocol modes against the built server.
 - [x] Complete independent code review (no findings).
-- [ ] Verify the deployed PR preview.
+- [x] Verify the deployed PR preview (73b8fc1): both MCP protocol modes, REST parity, and origin handling pass; results recorded in PR #74.
 - [ ] After merge/release, verify production separately.
 
 ## Review
 MCP SDK 2.3.0 passes protocol 2025-11-25 and 2026-07-28 discovery, all tools, and REST parity locally. `audit:data` has 70 passes and the same FEAT-061 map-coverage failure on unchanged main (582/1180); npm audit reports the same 10 existing advisories with no newly affected packages.
+
+## PR #74 thermonuclear review loop
+- [x] Review the MCP branch diff and record actionable baseline findings.
+- [x] Fix findings, add focused regression coverage, and run a fresh strict review.
+- [x] Validate tests, lint, build/typecheck sequentially, and update the PR with fixes.
+
+### Round 1 baseline
+1. `jobs-mcp.ts`: filter discovery leaked REST encoding metadata and omitted MCP-specific bounds; return the advertised search schema properties directly.
+2. `jobs-mcp-smoke.ts`: automatic protocol negotiation could silently downgrade; assert each claimed protocol version.
+
+### Round 2 and validation
+Fresh independent strict review: zero findings. All 504 tests, lint, build, typecheck, and built-server MCP smoke checks pass; a simulated legacy-only server fails the modern-protocol assertion as intended. Previous preview evidence remains scoped to 73b8fc1; latest fixes verified locally. Clean: yes.
