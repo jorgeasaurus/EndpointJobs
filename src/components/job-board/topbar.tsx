@@ -12,7 +12,7 @@ import Link from "next/link";
 
 import { AppreciateButton } from "@/components/appreciate-button";
 import { formatUpdatedAt } from "@/lib/jobs";
-import { appVersion, getApiDocsPath, getJobsDirectoryPath } from "@/app/site-metadata";
+import { appVersion, getApiDocsPath, getJobsDirectoryPath, getMcpDocsPath } from "@/app/site-metadata";
 
 export function Topbar({ updatedAt }: { updatedAt: string }) {
   return (
@@ -89,6 +89,9 @@ export function SiteFooter({ updatedAt }: { updatedAt: string }) {
         </div>
 
         <nav className="footer-links" aria-label="Project links">
+          <Link className="feedback-link footer-link" href={getMcpDocsPath()} prefetch={false}>
+            <SquareTerminal size={15} aria-hidden="true" /><span>MCP guide</span>
+          </Link>
           {/* Disable speculative prefetch to prevent stale page-one metadata during query pagination. */}
           <Link className="feedback-link footer-link" href={getJobsDirectoryPath()} prefetch={false}>
             <Rows3 size={15} aria-hidden="true" />

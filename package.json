@@ -22,7 +22,8 @@
     "audit:accessibility": "tsx scripts/audits/scroll-region-browser.mjs",
     "audit:data": "tsx scripts/audit-user-stories-data.ts",
     "audit:links": "tsx scripts/audit-links.ts",
-    "audit:mcp": "tsx scripts/audits/jobs-mcp-smoke.ts"
+    "audit:mcp": "tsx scripts/audits/jobs-mcp-smoke.ts",
+    "audit:mcp-guide": "node scripts/audits/mcp-guide-browser.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "^2.3.0",

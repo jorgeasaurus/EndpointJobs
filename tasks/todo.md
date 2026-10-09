@@ -1096,6 +1096,15 @@ MCP SDK 2.3.0 passes protocol 2025-11-25 and 2026-07-28 discovery, all tools, an
 Fresh independent strict review: zero findings. All 504 tests, lint, build, typecheck, and built-server MCP smoke checks pass; a simulated legacy-only server fails the modern-protocol assertion as intended. Previous preview evidence remains scoped to 73b8fc1; latest fixes verified locally. Clean: yes.
 
 ## PR #74 Copilot review loop
-- [ ] Verify the latest deployed preview and resolve the pending preview-evidence thread.
-- [ ] Simplify the JSON wire-format assertion, verify it, and resolve the React Doctor thread.
-- [ ] Request a fresh Copilot review and require a clean cycle on the final head.
+- [x] Verify the latest deployed preview and resolve the pending preview-evidence thread.
+- [x] Simplify the JSON wire-format assertion, verify it, and resolve the React Doctor thread.
+- [x] Request a fresh Copilot review and require a clean cycle on the final head.
+
+Copilot cycle complete: review count 1→2; new review on d80cfd7 reports no findings. Both handled threads are resolved, all checks pass, and both MCP protocols pass on the deployed preview. PR remains unmerged.
+
+## MCP instructions page
+- [x] Recheck deployed MCP tool discovery, calls, and REST parity.
+- [x] Add /mcp instructions with Human/Agent view buttons, copy controls, and navigation.
+- [x] Verify keyboard behavior, clipboard, mobile/desktop layout, build/types, and MCP smoke checks; update PR #74.
+
+Page review: zero actionable findings. All 504 tests, lint, build, typecheck, both MCP protocol smoke tests, and the production-build browser audit pass (1440/390/320px). Deployed MCP reverified at d80cfd7; the new guide is verified locally pending its deployment.

@@ -8,6 +8,7 @@ import type { JobsFeed } from "@/types/job";
 
 import {
   getApiDocsPath,
+  getMcpDocsPath,
   getEndpointToolUrl,
   getJobUrl,
   getJobsDirectoryPath,
@@ -50,6 +51,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: new URL(getApiDocsPath(), siteUrl).toString(),
       lastModified: new Date(feed.updatedAt),
+      changeFrequency: "weekly",
+      priority: 0.6
+    },
+    {
+      url: new URL(getMcpDocsPath(), siteUrl).toString(),
       changeFrequency: "weekly",
       priority: 0.6
     },

@@ -8,6 +8,8 @@ Machine-readable contract: [`/openapi.json`](https://endpointjobs.dev/openapi.js
 
 ## MCP
 
+See the [MCP setup guide](https://endpointjobs.dev/mcp) for Human and Agent instructions.
+
 Connect a Streamable HTTP client to `https://endpointjobs.dev/api/mcp`; no authentication is required. The endpoint supports MCP `2026-07-28` and stateless `2025-11-25` compatibility, verified with `@modelcontextprotocol/client` 2.3.0.
 
 | Tool | Input | Result |
