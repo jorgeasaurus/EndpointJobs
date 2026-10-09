@@ -16,11 +16,14 @@ export const toolOptions = endpointToolOptions;
 export { platformOptions, roleFamilyOptions, seniorityOptions };
 
 const postedDateFormatter = new Intl.DateTimeFormat("en", {
+  timeZone: "UTC",
   month: "short",
   day: "numeric"
 });
 
 const updatedAtFormatter = new Intl.DateTimeFormat("en", {
+  timeZone: "UTC",
+  timeZoneName: "short",
   month: "short",
   day: "numeric",
   hour: "numeric",

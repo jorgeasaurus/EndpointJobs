@@ -4,7 +4,7 @@ import { chromium } from "@playwright/test";
 const base = process.argv[2] ?? "http://127.0.0.1:3137";
 const browser = await chromium.launch();
 try {
-  const context = await browser.newContext({ permissions: ["clipboard-read", "clipboard-write"], extraHTTPHeaders: JSON.parse(process.env.MCP_TEST_HEADERS ?? "{}") });
+  const context = await browser.newContext({ timezoneId: "America/Los_Angeles", permissions: ["clipboard-read", "clipboard-write"], extraHTTPHeaders: JSON.parse(process.env.MCP_TEST_HEADERS ?? "{}") });
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));

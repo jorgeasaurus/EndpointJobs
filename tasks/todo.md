@@ -1108,3 +1108,7 @@ Copilot cycle complete: review count 1→2; new review on d80cfd7 reports no fin
 - [x] Verify keyboard behavior, clipboard, mobile/desktop layout, build/types, and MCP smoke checks; update PR #74.
 
 Page review: zero actionable findings. All 504 tests, lint, build, typecheck, both MCP protocol smoke tests, and the production-build browser audit pass (1440/390/320px). Deployed MCP reverified at d80cfd7; the new guide is verified locally pending its deployment.
+
+Hosted guide checks passed, but homepage navigation exposed an existing server/browser timezone hydration mismatch. Added a cross-timezone regression and deterministic UTC date formatting; revalidate the fix locally and on the preview.
+
+Timezone follow-up: independent review has zero findings. All 505 tests, lint, build/typecheck, and built-server MCP/browser audits pass with a Los Angeles browser timezone.
