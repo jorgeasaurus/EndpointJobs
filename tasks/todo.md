@@ -1112,3 +1112,10 @@ Page review: zero actionable findings. All 504 tests, lint, build, typecheck, bo
 Hosted guide checks passed, but homepage navigation exposed an existing server/browser timezone hydration mismatch. Added a cross-timezone regression and deterministic UTC date formatting; revalidate the fix locally and on the preview.
 
 Timezone follow-up: independent review has zero findings. All 505 tests, lint, build/typecheck, and built-server MCP/browser audits pass with a Los Angeles browser timezone.
+
+## Client-specific MCP setup
+- [x] Verify official setup instructions for requested clients and identify unsupported/ambiguous clients.
+- [x] Add concise client selection, copyable configurations, and source links to the Human view.
+- [x] Verify browser behavior and build/types; update PR #74 with validation evidence.
+
+Client guide review: zero findings. Build, typecheck, lint, and browser audit pass for all ten guides at 1440/390/320px. Sources verified; third-party app connections are not claimed as end-to-end tested. Muse omitted per request; generic setup included.

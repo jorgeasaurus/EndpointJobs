@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Bot, UserRound } from "lucide-react";
+import { McpClientSetup } from "@/components/mcp-client-setup";
 import { ApiCodeBlock } from "@/components/api-code-block";
 import { getApiDocsPath, siteUrl } from "@/app/site-metadata";
 
@@ -81,6 +82,8 @@ export function McpGuide() {
           </>
         )}
       </section>
+
+      {!agentView && <McpClientSetup />}
 
       <section className="api-endpoints mcp-tools" aria-labelledby="mcp-tools-heading">
         <div className="api-section-heading"><span className="section-kicker">Available tools</span><h2 id="mcp-tools-heading">From search to shortlist.</h2></div>

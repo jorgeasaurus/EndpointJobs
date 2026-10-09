@@ -24,3 +24,16 @@
   .mcp-mode-switch { width: 100%; }
   .mcp-mode-switch button { flex: 1; }
 }
+
+.mcp-client-setup { min-width: 0; padding: clamp(20px, 4vw, 40px); border: 1px solid var(--glass-border); border-radius: 8px; background: rgb(12 16 17 / 70%); }
+.mcp-client-setup h2 { margin: 10px 0 24px; font-size: 1.5rem; }
+.mcp-client-setup h3 { margin: 24px 0 16px; }
+.mcp-client-setup label { display: block; margin-bottom: 8px; color: var(--white-60); font-size: .85rem; }
+.mcp-client-setup select { width: 100%; max-width: 420px; min-height: 48px; padding: 10px 14px; border: 1px solid var(--glass-border); border-radius: 6px; background: #111818; color: var(--white); font: inherit; }
+.mcp-client-setup select:focus-visible, .mcp-client-setup a:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+.mcp-client-setup ol { padding-left: 24px; }
+.mcp-client-setup li { padding-left: 6px; margin-bottom: 12px; line-height: 1.65; overflow-wrap: anywhere; }
+.mcp-client-setup li::marker { color: var(--lime); }
+.mcp-client-setup p { color: var(--white-60); font-size: .9rem; line-height: 1.65; overflow-wrap: anywhere; }
+.mcp-client-setup a { display: inline-block; color: var(--lime); margin-top: 16px; font-size: .9rem; }
+.mcp-client-setup .mcp-client-footnote { margin: 24px 0 0; font-size: .8rem; }

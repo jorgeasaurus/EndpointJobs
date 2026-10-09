@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { chromium } from "@playwright/test";
+import { chromium, expect } from "@playwright/test";
 
 const base = process.argv[2] ?? "http://127.0.0.1:3137";
 const browser = await chromium.launch();
@@ -33,6 +33,26 @@ try {
     await page.keyboard.press("Space");
     await page.getByRole("heading", { name: "Connect in three steps." }).waitFor();
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `Human overflow at ${width}`);
+    const picker = page.getByLabel("Assistant or app");
+    for (const value of ["chatgpt", "codex", "claude", "claude-code", "grok", "openclaw", "hermes", "cursor", "vscode", "other"]) {
+      await picker.selectOption(value);
+      const details = page.locator("#mcp-client-details");
+      const name = await picker.locator("option:checked").textContent();
+      await details.getByRole("heading", { name, exact: true }).waitFor();
+      const copy = details.getByRole("button", { name: `Copy ${name} setup`, exact: true });
+      if (await copy.count()) {
+        await copy.click();
+        const config = await page.evaluate(() => navigator.clipboard.readText());
+        assert.ok(config.includes("https://endpointjobs.dev/api/mcp"), `Missing endpoint for ${value}`);
+        if (value === "cursor" || value === "vscode") assert.ok(JSON.parse(config));
+        if (value === "hermes") assert.ok(config.includes("skip_preflight: true"));
+      }
+      if (value !== "other") assert.equal(await details.getByRole("link").count(), 1);
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `${value} overflow at ${width}`);
+    }
+    await picker.focus();
+    await page.keyboard.press("c");
+    await expect(picker).toHaveValue("chatgpt");
     await page.screenshot({ path: `/tmp/endpointjobs-mcp-human-${width}.png`, fullPage: true });
   }
   await page.goto(`${base}/api-docs`);
@@ -43,7 +63,7 @@ try {
   await page.getByRole("link", { name: "MCP guide", exact: true }).click();
   await page.waitForURL(`${base}/mcp`);
   assert.deepEqual(errors, []);
-  console.log("MCP guide passed: Human/Agent toggle, keyboard, clipboard, navigation, canonical, no page errors or overflow at 1440/390/320px.");
+  console.log("MCP guide passed: 10 client guides and configs, Human/Agent toggle, keyboard, clipboard, navigation, canonical, no page errors or overflow at 1440/390/320px.");
 } finally {
   await browser.close();
 }
