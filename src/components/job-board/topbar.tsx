@@ -39,17 +39,16 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
           <FileJson size={15} aria-hidden="true" />
           <span>API docs</span>
         </Link>
-        <a
-          aria-label="Open PowerShell module documentation on GitHub"
-          className="feedback-link powershell-docs-link"
-          href="https://github.com/jorgeasaurus/EndpointJobs/blob/main/powershell/EndpointJobs/README.md"
-          rel="noopener noreferrer"
-          target="_blank"
-          title="Open PowerShell module documentation on GitHub"
+        <Link
+          aria-label="MCP guide"
+          className="feedback-link mcp-docs-link"
+          href={getMcpDocsPath()}
+          prefetch={false}
+          title="Open MCP setup guide"
         >
           <SquareTerminal size={15} aria-hidden="true" />
-          <span>PowerShell</span>
-        </a>
+          <span>MCP guide</span>
+        </Link>
         <a
           aria-label="Open feedback form on GitHub"
           className="feedback-link topbar-feedback-link"
@@ -89,9 +88,16 @@ export function SiteFooter({ updatedAt }: { updatedAt: string }) {
         </div>
 
         <nav className="footer-links" aria-label="Project links">
-          <Link className="feedback-link footer-link" href={getMcpDocsPath()} prefetch={false}>
-            <SquareTerminal size={15} aria-hidden="true" /><span>MCP guide</span>
-          </Link>
+          <a
+            aria-label="Open PowerShell module documentation on GitHub"
+            className="feedback-link footer-link"
+            href="https://github.com/jorgeasaurus/EndpointJobs/blob/main/powershell/EndpointJobs/README.md"
+            rel="noopener noreferrer"
+            target="_blank"
+            title="Open PowerShell module documentation on GitHub"
+          >
+            <SquareTerminal size={15} aria-hidden="true" /><span>PowerShell</span>
+          </a>
           {/* Disable speculative prefetch to prevent stale page-one metadata during query pagination. */}
           <Link className="feedback-link footer-link" href={getJobsDirectoryPath()} prefetch={false}>
             <Rows3 size={15} aria-hidden="true" />
