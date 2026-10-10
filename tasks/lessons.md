@@ -64,3 +64,5 @@
 - Paginate GitHub review polling; the REST default of 30 reviews can hide a completed cycle. Prefer the thread-aware review-state script for latest-head and unresolved-thread checks.
 - A mocked widget API check does not verify the owner's real key or allowed origins; distinguish integration rendering from live service readiness.
 - Custom elements that mutate their own attributes must mount after hydration; afterInteractive script loading alone does not guarantee nested SSR boundaries have hydrated.
+
+- For client setup guides, verify transport exceptions against released client code; an optional configuration flag is not proof it is required. Distinguish source checks, CLI configuration, connection checks, and actual tool calls.

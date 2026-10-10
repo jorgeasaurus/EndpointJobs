@@ -1,0 +1,39 @@
+.mcp-accent { color: var(--lime); }
+.mcp-mode-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin-top: 28px; }
+.mcp-mode-bar > span { color: var(--white-60); font-size: .85rem; }
+.mcp-mode-switch { display: inline-flex; padding: 4px; gap: 4px; border: 1px solid var(--glass-border); border-radius: 10px; background: rgb(0 0 0 / 35%); }
+.mcp-mode-switch button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border: 0; border-radius: 6px; background: transparent; color: var(--white-60); font: inherit; cursor: pointer; }
+.mcp-mode-switch button[aria-pressed="true"] { color: var(--black); background: var(--lime); font-weight: 700; }
+.mcp-mode-switch button:focus-visible, .mcp-notes a:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+.mcp-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; padding-left: 24px; margin: 14px 0 20px; }
+.mcp-steps li { padding-left: 6px; }
+.mcp-steps li::marker { color: var(--lime); font-family: var(--mono); }
+.mcp-steps p, .mcp-preview-note, .mcp-notes p { color: var(--white-60); font-size: .92rem; line-height: 1.65; }
+.mcp-preview-note { margin: 4px 0 12px; }
+.mcp-tools { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.mcp-tools .api-section-heading { grid-column: 1 / -1; }
+.mcp-tools article code { color: var(--lime); overflow-wrap: anywhere; }
+.mcp-notes { padding: 6px 8px 24px; }
+.mcp-notes p { max-width: 850px; }
+.mcp-notes a { color: var(--lime); font-size: .9rem; }
+.mcp-guide, .mcp-guide > *, .mcp-steps > * { min-width: 0; }
+@media (max-width: 760px) {
+  .mcp-steps, .mcp-tools { grid-template-columns: 1fr; }
+  .mcp-steps { gap: 12px; }
+  .mcp-mode-bar { align-items: flex-start; flex-direction: column; }
+  .mcp-mode-switch { width: 100%; }
+  .mcp-mode-switch button { flex: 1; }
+}
+
+.mcp-client-setup { min-width: 0; padding: clamp(20px, 4vw, 40px); border: 1px solid var(--glass-border); border-radius: 8px; background: rgb(12 16 17 / 70%); }
+.mcp-client-setup h2 { margin: 10px 0 24px; font-size: 1.5rem; }
+.mcp-client-setup h3 { margin: 24px 0 16px; }
+.mcp-client-setup label { display: block; margin-bottom: 8px; color: var(--white-60); font-size: .85rem; }
+.mcp-client-setup select { width: 100%; max-width: 420px; min-height: 48px; padding: 10px 14px; border: 1px solid var(--glass-border); border-radius: 6px; background: #111818; color: var(--white); font: inherit; }
+.mcp-client-setup select:focus-visible, .mcp-client-setup a:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+.mcp-client-setup ol { padding-left: 24px; }
+.mcp-client-setup li { padding-left: 6px; margin-bottom: 12px; line-height: 1.65; overflow-wrap: anywhere; }
+.mcp-client-setup li::marker { color: var(--lime); }
+.mcp-client-setup p { color: var(--white-60); font-size: .9rem; line-height: 1.65; overflow-wrap: anywhere; }
+.mcp-client-setup a { display: inline-block; color: var(--lime); margin-top: 16px; font-size: .9rem; }
+.mcp-client-setup .mcp-client-footnote { margin: 24px 0 0; font-size: .8rem; }

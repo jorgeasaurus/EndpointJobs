@@ -63,6 +63,10 @@ export function getEndpointToolUrl(tool: EndpointTool) {
   return new URL(getEndpointToolPath(tool), siteUrl).toString();
 }
 
+export function getMcpDocsPath(): Route {
+  return "/mcp";
+}
+
 export function getOpenApiPath(): Route {
   return "/openapi.json" as Route;
 }

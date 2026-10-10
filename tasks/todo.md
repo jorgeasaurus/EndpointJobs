@@ -1068,3 +1068,61 @@ Typecheck and lint pass. Early-upgrading widget fixture and normal live script e
 ## Strict round 2 and verification
 
 Fresh independent review: zero findings. Build (705 pages), typecheck, lint, and diff checks pass; early-script and live-widget checks pass six reloads, four client navigations, and 1440/390/320px layouts. Live counts load; no votes submitted. Build/typecheck run sequentially to avoid generated-type races. Clean: yes.
+
+# Issue #73: Hosted MCP server
+
+- [x] Add stateless `/api/mcp` with three read-only tools and explicit origin handling.
+- [x] Derive schemas from the API contract; reuse search/detail helpers and preserve attribution.
+- [x] Add fixture parity/error tests and a reusable real-client smoke check.
+- [x] Document connection, inputs, freshness, salary/sponsorship semantics; bump to 0.1.20.
+- [x] Verify lint, typecheck, build, 504 tests, and both client protocol modes against the built server.
+- [x] Complete independent code review (no findings).
+- [x] Verify the deployed PR preview (73b8fc1): both MCP protocol modes, REST parity, and origin handling pass; results recorded in PR #74.
+- [ ] After merge/release, verify production separately.
+
+## Review
+MCP SDK 2.3.0 passes protocol 2025-11-25 and 2026-07-28 discovery, all tools, and REST parity locally. `audit:data` has 70 passes and the same FEAT-061 map-coverage failure on unchanged main (582/1180); npm audit reports the same 10 existing advisories with no newly affected packages.
+
+## PR #74 thermonuclear review loop
+- [x] Review the MCP branch diff and record actionable baseline findings.
+- [x] Fix findings, add focused regression coverage, and run a fresh strict review.
+- [x] Validate tests, lint, build/typecheck sequentially, and update the PR with fixes.
+
+### Round 1 baseline
+1. `jobs-mcp.ts`: filter discovery leaked REST encoding metadata and omitted MCP-specific bounds; return the advertised search schema properties directly.
+2. `jobs-mcp-smoke.ts`: automatic protocol negotiation could silently downgrade; assert each claimed protocol version.
+
+### Round 2 and validation
+Fresh independent strict review: zero findings. All 504 tests, lint, build, typecheck, and built-server MCP smoke checks pass; a simulated legacy-only server fails the modern-protocol assertion as intended. Previous preview evidence remains scoped to 73b8fc1; latest fixes verified locally. Clean: yes.
+
+## PR #74 Copilot review loop
+- [x] Verify the latest deployed preview and resolve the pending preview-evidence thread.
+- [x] Simplify the JSON wire-format assertion, verify it, and resolve the React Doctor thread.
+- [x] Request a fresh Copilot review and require a clean cycle on the final head.
+
+Copilot cycle complete: review count 1→2; new review on d80cfd7 reports no findings. Both handled threads are resolved, all checks pass, and both MCP protocols pass on the deployed preview. PR remains unmerged.
+
+## MCP instructions page
+- [x] Recheck deployed MCP tool discovery, calls, and REST parity.
+- [x] Add /mcp instructions with Human/Agent view buttons, copy controls, and navigation.
+- [x] Verify keyboard behavior, clipboard, mobile/desktop layout, build/types, and MCP smoke checks; update PR #74.
+
+Page review: zero actionable findings. All 504 tests, lint, build, typecheck, both MCP protocol smoke tests, and the production-build browser audit pass (1440/390/320px). Deployed MCP reverified at d80cfd7; the new guide is verified locally pending its deployment.
+
+Hosted guide checks passed, but homepage navigation exposed an existing server/browser timezone hydration mismatch. Added a cross-timezone regression and deterministic UTC date formatting; revalidate the fix locally and on the preview.
+
+Timezone follow-up: independent review has zero findings. All 505 tests, lint, build/typecheck, and built-server MCP/browser audits pass with a Los Angeles browser timezone.
+
+## Client-specific MCP setup
+- [x] Verify official setup instructions for requested clients and identify unsupported/ambiguous clients.
+- [x] Add concise client selection, copyable configurations, and source links to the Human view.
+- [x] Verify browser behavior and build/types; update PR #74 with validation evidence.
+
+Client guide review: zero findings. Build, typecheck, lint, and browser audit pass for all ten guides at 1440/390/320px. Sources verified; third-party app connections are not claimed as end-to-end tested. Muse omitted per request; generic setup included.
+
+## Client setup verification
+- [x] Read the latest GitHub review and recheck every client against official documentation.
+- [x] Verify available CLI syntax, correct discrepancies, and distinguish documentation checks from live app testing.
+- [x] Record the results and validate any changes before updating PR #74.
+
+Rechecked every client against official documentation. Corrected Hermes preflight advice using released v0.21.6 source, added OpenClaw Gateway reload guidance, and noted browser-origin restrictions. Codex CLI syntax/config parsing and Claude Code isolated local connection verified; third-party authenticated tool calls remain untested. Lint, build, typecheck, all ten client browser checks, and both SDK protocol smoke tests pass.

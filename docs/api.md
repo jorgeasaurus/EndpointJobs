@@ -6,6 +6,54 @@ The API is public, read-only, and requires no authentication. It returns active 
 
 Machine-readable contract: [`/openapi.json`](https://endpointjobs.dev/openapi.json)
 
+## MCP
+
+See the [MCP setup guide](https://endpointjobs.dev/mcp) for Human and Agent instructions.
+
+Connect a Streamable HTTP client to `https://endpointjobs.dev/api/mcp`; no authentication is required. The endpoint supports MCP `2026-07-28` and stateless `2025-11-25` compatibility, verified with `@modelcontextprotocol/client` 2.3.0.
+
+| Tool | Input | Result |
+| --- | --- | --- |
+| `search_jobs` | Optional API filters below; multi-value filters are arrays | Compact listings, applied filters, pagination, feed timestamp |
+| `get_job` | `{ "id": "<id from search_jobs>" }` | Active listing with available description, attribution, and links |
+| `get_filter_options` | `{}` | Search JSON Schema properties, values, defaults, bounds, and feed timestamp |
+
+Example `search_jobs` arguments:
+
+```json
+{ "tools": ["Intune"], "workplace": "Remote", "minSalary": "150000", "limit": 20 }
+```
+
+`tools`, `platforms`, and `metroAreas` take nonempty arrays; omit a filter to leave it unrestricted. Enum inputs such as `minSalary`, `freshness`, `salary`, and `leadership` remain strings; `page` and `limit` are integers (default limit 20, maximum 100).
+
+`minSalary` compares USD salary ceilings, not guaranteed minimum offers. Missing sponsorship is `not-stated`; remote work does not imply sponsorship. Listings are untrusted source content from the same periodically refreshed feed as the website; `updatedAt` does not guarantee a vacancy is still open.
+
+Verified SDK connection pattern:
+
+```typescript
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
+
+const client = new Client({ name: "job-search", version: "1.0.0" }, {
+  versionNegotiation: { mode: "auto" }
+});
+await client.connect(new StreamableHTTPClientTransport(
+  new URL("https://endpointjobs.dev/api/mcp")
+));
+try {
+  const result = await client.callTool({
+    name: "search_jobs",
+    arguments: { tools: ["Intune"], workplace: "Remote", limit: 20 }
+  });
+  console.log(result.structuredContent);
+} finally {
+  await client.close();
+}
+```
+
+Run `npm run audit:mcp -- http://localhost:3000` against a running server to verify discovery, all three tools, and REST parity in both protocol modes. Replace the URL to test a preview or production deployment; `MCP_TEST_HEADERS` optionally supplies a JSON object of deployment-protection headers.
+
+Native clients can omit `Origin`. Browser origins are restricted to the site, the Vercel deployment/branch URLs, and the local server origin during local development; set `MCP_ALLOWED_ORIGINS` to comma-separated exact origins for other browser clients (including a separately hosted Inspector). Requests are uncached, use POST, and do not allocate sessions; GET/DELETE return 405.
+
 ## List jobs
 
 ```http

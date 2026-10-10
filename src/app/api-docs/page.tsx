@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { ScrollRegion } from "@/components/scroll-region";
 import { ApiCodeBlock } from "@/components/api-code-block";
-import { getOpenApiPath, siteUrl } from "@/app/site-metadata";
+import { getOpenApiPath, getMcpDocsPath, siteUrl } from "@/app/site-metadata";
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
 import { SiteFooter, Topbar } from "@/components/job-board/topbar";
 import feedData from "@/data/jobs.json";
@@ -85,6 +85,7 @@ export default function ApiDocsPage() {
               No authentication is required.
             </p>
             <nav aria-label="API resources">
+              <Link href={getMcpDocsPath()}>MCP setup guide</Link>
               <Link href={getOpenApiPath()}>OpenAPI specification</Link>
               <a href="https://github.com/jorgeasaurus/EndpointJobs/blob/main/docs/api.md" rel="noopener noreferrer" target="_blank">
                 Full reference

@@ -16,6 +16,8 @@ Backlink planning: [strategy](docs/backlink-strategy.txt), [known links](docs/ba
 
 Public API: [`GET /api/jobs`](https://endpointjobs.dev/api/jobs) · [usage guide](docs/api.md) · [OpenAPI 3.1](https://endpointjobs.dev/openapi.json)
 
+MCP: connect a Streamable HTTP client to `https://endpointjobs.dev/api/mcp` for `search_jobs`, `get_job`, and `get_filter_options`. Public, read-only, no API key; [connection and tool examples](docs/api.md#mcp).
+
 ## Screenshots
 
 | Desktop | Mobile |
