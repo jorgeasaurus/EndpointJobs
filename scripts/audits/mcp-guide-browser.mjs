@@ -45,7 +45,7 @@ try {
         const config = await page.evaluate(() => navigator.clipboard.readText());
         assert.ok(config.includes("https://endpointjobs.dev/api/mcp"), `Missing endpoint for ${value}`);
         if (value === "cursor" || value === "vscode") assert.ok(JSON.parse(config));
-        if (value === "hermes") assert.ok(config.includes("skip_preflight: true"));
+        if (value === "hermes") assert.ok(!config.includes("skip_preflight"));
       }
       if (value !== "other") assert.equal(await details.getByRole("link").count(), 1);
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), `${value} overflow at ${width}`);

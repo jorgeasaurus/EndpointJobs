@@ -1119,3 +1119,10 @@ Timezone follow-up: independent review has zero findings. All 505 tests, lint, b
 - [x] Verify browser behavior and build/types; update PR #74 with validation evidence.
 
 Client guide review: zero findings. Build, typecheck, lint, and browser audit pass for all ten guides at 1440/390/320px. Sources verified; third-party app connections are not claimed as end-to-end tested. Muse omitted per request; generic setup included.
+
+## Client setup verification
+- [x] Read the latest GitHub review and recheck every client against official documentation.
+- [x] Verify available CLI syntax, correct discrepancies, and distinguish documentation checks from live app testing.
+- [x] Record the results and validate any changes before updating PR #74.
+
+Rechecked every client against official documentation. Corrected Hermes preflight advice using released v0.21.6 source, added OpenClaw Gateway reload guidance, and noted browser-origin restrictions. Codex CLI syntax/config parsing and Claude Code isolated local connection verified; third-party authenticated tool calls remain untested. Lint, build, typecheck, all ten client browser checks, and both SDK protocol smoke tests pass.

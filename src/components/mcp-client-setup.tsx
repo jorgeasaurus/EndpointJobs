@@ -42,15 +42,15 @@ const clients: ClientSetup[] = [
   },
   {
     id: "openclaw", name: "OpenClaw",
-    steps: ["Run the commands below to register the remote server and probe its connection.", "Start a new agent turn and ask OpenClaw to search Endpoint Jobs."],
+    steps: ["Run the commands below to register the remote server and probe its connection.", "Start a new agent turn and ask OpenClaw to search Endpoint Jobs. If the tools do not appear, reload or restart the Gateway running your agent."],
     code: `openclaw mcp add endpointjobs --url ${endpoint} --transport streamable-http\nopenclaw mcp doctor endpointjobs --probe`, language: "shell",
     source: "https://docs.openclaw.ai/tools/mcp"
   },
   {
     id: "hermes", name: "Hermes Agent",
     steps: ["Merge the entry below into ~/.hermes/config.yaml. Keep any existing mcp_servers entries.", "Restart Hermes and ask it to discover the Endpoint Jobs tools."],
-    code: `mcp_servers:\n  endpointjobs:\n    url: ${endpoint}\n    skip_preflight: true`, language: "yaml",
-    note: "Hermes uses Streamable HTTP by default. skip_preflight avoids rejecting this POST-only endpoint during its initial URL check.",
+    code: `mcp_servers:\n  endpointjobs:\n    url: ${endpoint}`, language: "yaml",
+    note: "Hermes uses Streamable HTTP by default. Current releases accept this endpoint’s GET/HEAD 405 responses during preflight; no skip_preflight override is needed.",
     source: "https://hermes-agent.nousresearch.com/docs/reference/mcp-config-reference"
   },
   {
@@ -68,7 +68,7 @@ const clients: ClientSetup[] = [
   {
     id: "other", name: "Other MCP clients",
     steps: ["Find your client’s MCP, connectors, integrations, or external tools settings. Add a remote server named Endpoint Jobs.", `Set the server URL to ${endpoint}. Choose Streamable HTTP (sometimes called HTTP) and no authentication.`, "Connect and discover tools. Confirm search_jobs, get_job, and get_filter_options are available, then try the example request below."],
-    note: "Configuration keys vary by client. A client that supports only local stdio servers needs a compatible HTTP bridge; pasting a URL into a launch-command field will not work. A browser GET to this endpoint returns 405 by design—test it with an MCP client.",
+    note: "Configuration keys vary by client. A client that supports only local stdio servers needs a compatible HTTP bridge; pasting a URL into a launch-command field will not work. A browser GET to this endpoint returns 405 by design—test it with an MCP client. Browser-direct clients also need their Origin allowed by the server operator.",
     code: `Name: Endpoint Jobs\nURL: ${endpoint}\nTransport: Streamable HTTP\nAuthentication: None`, language: "text"
   }
 ];
