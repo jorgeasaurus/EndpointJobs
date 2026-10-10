@@ -93,11 +93,13 @@
   }
 
   .topbar .api-docs-link,
+  .topbar .mcp-docs-link,
   .topbar .support-link {
     display: inline-flex;
   }
 
   .api-docs-link span,
+  .mcp-docs-link span,
   .support-link span {
     display: none;
   }

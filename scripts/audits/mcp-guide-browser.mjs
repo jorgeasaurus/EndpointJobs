@@ -11,6 +11,8 @@ try {
   for (const width of [1440, 390, 320]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(`${base}/mcp`);
+    await expect(page.locator(".topbar").getByRole("link", { name: "MCP guide", exact: true })).toBeVisible();
+    await expect(page.locator(".site-footer").getByRole("link", { name: "Open PowerShell module documentation on GitHub", exact: true })).toBeVisible();
     const human = page.getByRole("button", { name: "Human", exact: true });
     const agent = page.getByRole("button", { name: "Agent", exact: true });
     assert.equal(await human.getAttribute("aria-pressed"), "true");

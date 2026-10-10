@@ -1126,3 +1126,9 @@ Client guide review: zero findings. Build, typecheck, lint, and browser audit pa
 - [x] Record the results and validate any changes before updating PR #74.
 
 Rechecked every client against official documentation. Corrected Hermes preflight advice using released v0.21.6 source, added OpenClaw Gateway reload guidance, and noted browser-origin restrictions. Codex CLI syntax/config parsing and Claude Code isolated local connection verified; third-party authenticated tool calls remain untested. Lint, build, typecheck, all ten client browser checks, and both SDK protocol smoke tests pass.
+
+## MCP navigation placement
+- [x] Swap the top-bar PowerShell link with the footer MCP guide link.
+- [x] Verify desktop/mobile navigation and open a follow-up PR.
+
+Navigation review: lint, build, typecheck, and the existing browser audit pass at 1440/390/320px. MCP stays visible in the top bar; PowerShell is in the footer. Required version bump: 0.1.21.
