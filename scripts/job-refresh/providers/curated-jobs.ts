@@ -1,6 +1,6 @@
 import type { Job, Workplace } from "../../../src/types/job";
 import type { ProviderAdapter } from "../provider";
-import { buildStableJobId, normalizeSearchText, stripHtml, toEndpointJob } from "../shared";
+import { addDays, buildStableJobId, getJobStaleDays, normalizeSearchText, stripHtml, toEndpointJob } from "../shared";
 import {
   linkedinCuratedListings,
   type LinkedInCuratedListing
@@ -17,7 +17,10 @@ type CuratedJob = {
   location: string;
   workplace: Workplace;
   postedAt: string;
+  expiresAt?: string;
   sourceUrl: string;
+  availabilityUrl?: string;
+  requireLiveAvailability?: boolean;
   description: string;
   employmentType: string;
   sourceTags: string[];
@@ -43,7 +46,7 @@ const defaultUnavailableText = [
   "no longer accepting applications"
 ];
 
-const curatedJobs = [
+const curatedJobs: [CuratedJob, ...CuratedJob[]] = [
   {
     title: "Software Packaging Engineer",
     company: "NinjaOne",
@@ -115,6 +118,92 @@ const curatedJobs = [
       "- Published base salary is 60.000 EUR gross/year, paid in 14 salaries."
     ].join("\n")
   },
+  {
+    requireLiveAvailability: true,
+    title: "Senior Desktop Engineer",
+    company: "Ropes & Gray",
+    location: "Boston, MA; New York, NY",
+    workplace: "Hybrid",
+    postedAt: "2026-08-07T04:00:00.000Z",
+    expiresAt: "2027-08-07T04:00:00.000Z",
+    sourceUrl: "https://careers-ropesgray.icims.com/jobs/9281/senior-desktop-engineer/job?in_iframe=1",
+    employmentType: "Full-time",
+    salary: { min: 134700, max: 222350, currency: "USD", label: "$134,700-$222,350/year; varies by location" },
+    sourceTags: ["Curated", "Endpoint", "Intune", "Windows", "PowerShell"],
+    availability: { requiredText: ["Senior Desktop Engineer", "Ropes & Gray", "Intune"] },
+    description: "Manage enterprise desktop systems and the endpoint lifecycle, including enrollment, compliance, updates, and retirement. Configure Intune profiles, Group Policy, and security baselines; automate administration and reporting with PowerShell. Monitor device health and resolve complex desktop and application issues as a Tier 3 escalation resource. Hybrid in Boston or New York. Published salary ranges are $134,700-$205,450 in Boston and $145,800-$222,350 in New York."
+  },
+  {
+    requireLiveAvailability: true,
+    title: "Sr. Consultant, Professional Services (Microsoft Security)",
+    company: "Softchoice",
+    location: "Chicago, IL; Denver, CO; Florida; Texas",
+    workplace: "Unknown",
+    postedAt: "2026-09-19T02:00:00.000Z",
+    sourceUrl: "https://careers.softchoice.com/job/Chicago-Sr_-Consultant%2C-Professional-Services-%28Microsoft-Security%29-IL-60290/603794317/",
+    employmentType: "Full-time",
+    salary: { min: 110960, max: 138700, currency: "USD", label: "$110,960-$138,700/year in Florida and Denver" },
+    sourceTags: ["Curated", "Endpoint Security", "Microsoft Defender", "Identity"],
+    availability: { requiredText: ["Sr. Consultant", "Softchoice", "workplace endpoint security"] },
+    description: "Advise enterprise and public-sector clients on Microsoft identity and workplace endpoint security. Implement security configurations, migrations, and policies using Microsoft 365 Defender, Defender for Cloud, and Sentinel. Guide customers through technical decisions and mentor other consultants and engineers. Locations include Chicago, Denver, Florida, and Texas. The published Florida and Denver base range is $110,960-$138,700 with a 14% target incentive; other locations may differ."
+  },
+  {
+    requireLiveAvailability: true,
+    title: "Information Technology Programmer Analyst 12 (Endpoint & User Management)",
+    company: "State of Michigan",
+    location: "Dimondale, MI",
+    workplace: "Hybrid",
+    postedAt: "2026-10-06",
+    expiresAt: "2026-10-21T03:59:00.000Z",
+    sourceUrl: "https://www.governmentjobs.com/jobs/5506606-0/information-technology-programmer-analyst-12-endpoint-user-management",
+    employmentType: "Full-time",
+    sourceTags: ["Curated", "Endpoint", "User Management", "Microsoft 365"],
+    availability: { requiredText: ["Information Technology Programmer Analyst 12", "State of Michigan", "Endpoint"] },
+    description: "Administer statewide enterprise infrastructure, including computer management platforms, account services, Microsoft 365, DNS, and virtualization. Monitor core services and provide third- and fourth-tier incident support for technology staff. Participate in infrastructure projects affecting state accounts and devices. Hybrid in Dimondale with two days on-site and three remote days per week; applicants must reside in Michigan or relocate. Permanent full-time, $34.45-$49.53 per hour. Applications close October 20, 2026 at 11:59 PM Eastern."
+  },
+  {
+    requireLiveAvailability: true,
+    title: "Partner 18, IT Engineer, San Francisco/Menlo Park",
+    company: "Andreessen Horowitz",
+    location: "San Francisco, CA; Menlo Park, CA",
+    workplace: "Hybrid",
+    postedAt: "2026-06-04T00:31:40.000Z",
+    sourceUrl: "https://a16z.com/about/jobs/?gh_jid=7763203003",
+    availabilityUrl: "https://boards-api.greenhouse.io/v1/boards/a16z/jobs/7763203003",
+    employmentType: "Full-time",
+    salary: { min: 189000, max: 221000, currency: "USD", label: "$189,000-$221,000/year" },
+    sourceTags: ["Curated", "Endpoint", "Jamf", "Kandji", "Intune"],
+    availability: { requiredText: ["Partner 18, IT Engineer", "Andreessen Horowitz", "Intune"] },
+    description: "Build and operate the firm's IT infrastructure and SaaS platforms. Manage endpoint, identity, and access tooling with Jamf, Kandji, Okta, and Intune; lead systems projects and automation work. Serve as an escalation resource for complex incidents and executive technology needs. Requires client platform engineering experience. Work from the San Francisco or Menlo Park office four days per week, with occasional travel between offices. The published base salary range is $189,000-$221,000, with additional carry and discretionary bonus eligibility."
+  },
+  {
+    requireLiveAvailability: true,
+    title: "Director, IT",
+    company: "Life360",
+    location: "United States",
+    workplace: "Remote",
+    postedAt: "2026-07-16T16:34:29.000Z",
+    sourceUrl: "https://job-boards.greenhouse.io/life360/jobs/8636922002",
+    employmentType: "Full-time",
+    salary: { min: 167000, max: 245000, currency: "USD", label: "$167,000-$245,000/year" },
+    sourceTags: ["Curated", "Endpoint Management", "Jamf", "IT Leadership"],
+    availability: { requiredText: ["Director, IT", "Life360", "endpoint management"] },
+    description: "Lead IT operations and engineering for a distributed workforce, including enterprise identity, endpoint management, infrastructure, collaboration, and employee services. Set technical roadmaps, develop the team, and own service standards, vendor relationships, and budgets. Partner with Security on access controls and compliance while expanding automation. Requires 15 years of IT experience and seven to eight years of senior leadership. Remote within the United States; the published salary range is $167,000-$245,000 and varies by geographic tier."
+  },
+  {
+    requireLiveAvailability: true,
+    title: "Senior IT Support Engineer",
+    company: "MrBeast",
+    location: "Chicago, IL",
+    workplace: "Hybrid",
+    postedAt: "2026-06-02T16:49:00.000Z",
+    sourceUrl: "https://job-boards.greenhouse.io/mrbeastyoutube/jobs/6011407004",
+    employmentType: "Full-time",
+    salary: { min: 91000, max: 114000, currency: "USD", label: "$91,000-$114,000 base/year; $100,000-$125,000 total" },
+    sourceTags: ["Curated", "Endpoint", "FleetDM", "Munki", "Intune"],
+    availability: { requiredText: ["Senior IT Support Engineer", "Beast Industries", "FleetDM"] },
+    description: "Own identity and access operations and support Feastables' Chicago office. Administer Okta, Google Workspace, and SaaS integrations; lead endpoint rollouts, security deployments, and hardware refreshes. Manage Mac devices with FleetDM and Munki and support Windows endpoints and executive technology needs. Requires five years of IT experience and two years focused on identity. On-site four days per week with Fridays remote. Published base salary is $91,000-$114,000, with target total compensation of $100,000-$125,000."
+  },
   ...linkedinCuratedListings.map(toLinkedInCuratedJob)
 ] satisfies [CuratedJob, ...CuratedJob[]];
 
@@ -161,11 +250,16 @@ async function fetchCuratedJobs(fetchedAt: Date) {
       return null;
     }
 
+    if (availability.status === "unknown" && job.requireLiveAvailability) {
+      console.warn(`Skipping curated job ${job.title}: ${availability.reason}`);
+      return null;
+    }
+
     if (availability.status === "unknown") {
       console.warn(`Keeping curated job ${job.title}: ${availability.reason}`);
     }
 
-    return normalizeCuratedJob(job, fetchedAt);
+    return normalizeCuratedJob(job, fetchedAt, availability.status === "available");
   });
 }
 
@@ -174,7 +268,7 @@ async function checkCuratedJobAvailability(job: CuratedJob): Promise<Availabilit
   const timeout = setTimeout(() => controller.abort(), availabilityTimeoutMs);
 
   try {
-    const response = await fetch(job.sourceUrl, {
+    const response = await fetch(job.availabilityUrl ?? job.sourceUrl, {
       headers: {
         accept: "text/html,application/xhtml+xml,text/plain,*/*",
         "user-agent": "EndpointJobs/1.0 (+https://github.com/)"
@@ -234,14 +328,22 @@ export function evaluateCuratedAvailability(
   return { status: "available" };
 }
 
-function normalizeCuratedJob(job: CuratedJob, fetchedAt: Date): Job | null {
-  return toEndpointJob({
+function normalizeCuratedJob(job: CuratedJob, fetchedAt: Date, available: boolean): Job | null {
+  const refreshFreshness = available && job.requireLiveAvailability;
+  const staleAfter = job.expiresAt || refreshFreshness
+    ? new Date(Math.min(
+        addDays(refreshFreshness ? fetchedAt : new Date(job.postedAt), getJobStaleDays()).getTime(),
+        job.expiresAt ? Date.parse(job.expiresAt) : Infinity
+      )).toISOString()
+    : undefined;
+  const normalized = toEndpointJob({
     id: buildStableJobId("curated", job.company, job.title, job.sourceUrl),
     title: job.title,
     company: job.company,
     location: job.location,
     workplace: job.workplace,
     postedAt: job.postedAt,
+    staleAfter,
     fetchedAt,
     source: curatedJobSourceName,
     sourceUrl: job.sourceUrl,
@@ -254,4 +356,7 @@ function normalizeCuratedJob(job: CuratedJob, fetchedAt: Date): Job | null {
     haystackParts: [job.description],
     employmentType: job.employmentType
   });
+  return normalized && job.expiresAt
+    ? { ...normalized, expiresAt: job.expiresAt }
+    : normalized;
 }

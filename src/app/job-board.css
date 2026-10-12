@@ -787,6 +787,21 @@ h1 {
   font-weight: 700;
 }
 
+.results-heading-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-width: 0;
+}
+
+.results-sort {
+  margin-top: 0;
+  width: 160px;
+  max-width: 100%;
+  flex-shrink: 0;
+}
+
 .results-heading h2 {
   color: var(--white);
   font-size: 1.55rem;

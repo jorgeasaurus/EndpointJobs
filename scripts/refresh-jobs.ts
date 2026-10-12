@@ -180,6 +180,7 @@ const defaultProviders: SupportedProvider[] = [
   "lever",
   "muse",
   "ashby",
+  "workable",
   "amazon",
   "workday",
   "oraclehcm",

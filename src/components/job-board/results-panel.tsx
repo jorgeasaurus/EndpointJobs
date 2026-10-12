@@ -5,12 +5,16 @@ import type { Job } from "@/types/job";
 import { AnimatedNumber } from "./animated-number";
 import { maximumComparedJobs } from "./comparison-selection";
 import { JobCard } from "./job-card";
+import { sortOptions, type SortKey } from "./filter-model";
+import { toSortKey } from "./filter-url";
 import { PaginationControls, type PaginationState } from "./pagination-controls";
 
 export function ResultsPanel({
   clearFilters,
   currentPage,
   onPageChange,
+  onSortChange,
+  sort,
   pageEnd,
   pageStart,
   totalJobs,
@@ -22,6 +26,8 @@ export function ResultsPanel({
 }: PaginationState & {
   clearFilters: () => void;
   onPageChange: (page: number) => void;
+  onSortChange: (sort: SortKey) => void;
+  sort: SortKey;
   query: string;
   selectedJobIds: Set<string>;
   toggleComparison: (job: Job) => void;
@@ -41,10 +47,25 @@ export function ResultsPanel({
             endpoint opportunities
           </h2>
         </div>
-        <span className="feed-note">
-          <Clock3 size={16} aria-hidden="true" />
-          Daily refresh
-        </span>
+        <div className="results-heading-controls">
+          <label className="field results-sort">
+            <span>Sort by</span>
+            <select
+              value={sort}
+              onChange={(event) => onSortChange(toSortKey(event.currentTarget.value))}
+            >
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <span className="feed-note">
+            <Clock3 size={16} aria-hidden="true" />
+            Daily refresh
+          </span>
+        </div>
       </div>
 
       {totalJobs > 0 ? (

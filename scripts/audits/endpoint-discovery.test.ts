@@ -25,3 +25,19 @@ test("trading systems scripting does not imply employee endpoint ownership", () 
     assert.equal(matches(title, "Manage Windows desktops with Intune."), true);
   }
 });
+
+test("corporate IT security, senior support and leadership roles require endpoint evidence", () => {
+  for (const title of [
+    "Senior IT Support Engineer",
+    "Staff Corporate Security Engineer",
+    "Security Engineer, Corp IT",
+    "Director, IT",
+    "Sr. Consultant, Professional Services (Microsoft Security)",
+    "Senior Engineer, Technical Operations"
+  ]) {
+    assert.equal(matches(title, "Own endpoint management, device trust and Mac fleet patching with Jamf and Intune."), true);
+    assert.equal(matches(title, "Manage cloud servers, budgets and business applications."), false);
+  }
+  assert.equal(matches("IT Help Desk Technician", "Use Intune to troubleshoot tickets."), false);
+  assert.equal(matches("Customer Support Engineer", "Troubleshoot endpoint product integrations with Jamf."), false);
+});

@@ -229,6 +229,8 @@ export function JobBoard({
             clearFilters={clearFilters}
             currentPage={safeCurrentPage}
             onPageChange={changePage}
+            onSortChange={(value) => dispatch({ type: "setSort", value })}
+            sort={filters.sort}
             pageEnd={pageEnd}
             pageStart={pageStart}
             totalJobs={visibleJobs.length}
