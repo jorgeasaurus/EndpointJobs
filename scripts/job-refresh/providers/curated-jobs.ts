@@ -200,7 +200,7 @@ const curatedJobs: [CuratedJob, ...CuratedJob[]] = [
     sourceUrl: "https://job-boards.greenhouse.io/mrbeastyoutube/jobs/6011407004",
     employmentType: "Full-time",
     salary: { min: 91000, max: 114000, currency: "USD", label: "$91,000-$114,000 base/year; $100,000-$125,000 total" },
-    sourceTags: ["Curated", "Endpoint", "FleetDM", "Munki", "Intune"],
+    sourceTags: ["Curated", "Endpoint", "macOS", "Windows", "FleetDM", "Munki", "Intune"],
     availability: { requiredText: ["Senior IT Support Engineer", "Beast Industries", "FleetDM"] },
     description: "Own identity and access operations and support Feastables' Chicago office. Administer Okta, Google Workspace, and SaaS integrations; lead endpoint rollouts, security deployments, and hardware refreshes. Manage Mac devices with FleetDM and Munki and support Windows endpoints and executive technology needs. Requires five years of IT experience and two years focused on identity. On-site four days per week with Fridays remote. Published base salary is $91,000-$114,000, with target total compensation of $100,000-$125,000."
   },

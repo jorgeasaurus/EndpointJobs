@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { deriveTools, isEndpointRelevant, normalizeSearchText } from "../job-refresh/shared";
+import { deriveTools, inferRoleFamily, isEndpointRelevant, normalizeSearchText } from "../job-refresh/shared";
 
 function matches(title: string, description: string) {
   const text = normalizeSearchText(`${title} ${description}`);
@@ -40,4 +40,10 @@ test("corporate IT security, senior support and leadership roles require endpoin
   }
   assert.equal(matches("IT Help Desk Technician", "Use Intune to troubleshoot tickets."), false);
   assert.equal(matches("Customer Support Engineer", "Troubleshoot endpoint product integrations with Jamf."), false);
+});
+
+test("corporate endpoint security titles take precedence over Windows platform evidence", () => {
+  for (const title of ["Staff Corporate Security Engineer", "Security Engineer, Corp IT"]) {
+    assert.equal(inferRoleFamily(normalizeSearchText(`${title} Manage Windows devices with Jamf and Intune`), ["Jamf", "Intune"], ["Windows"]), "Endpoint Security");
+  }
 });

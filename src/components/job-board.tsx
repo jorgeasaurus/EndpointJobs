@@ -4,7 +4,7 @@ import { useMemo, useRef, useState } from "react";
 
 import type { EndpointTool, JobsFeed } from "@/types/job";
 import { getJobWorkplace } from "@/lib/workplace";
-import type { WorkplaceFilter } from "./job-board/filter-model";
+import type { FilterAction, WorkplaceFilter } from "./job-board/filter-model";
 
 import { getActiveFilterItems } from "./job-board/active-filters";
 import { updateComparisonSelection } from "./job-board/comparison-selection";
@@ -27,7 +27,7 @@ export function JobBoard({
   feed: JobsFeed;
   initialSelectedTools?: readonly EndpointTool[];
 }) {
-  const [filters, dispatch] = useUrlSyncedFilters(initialSelectedTools);
+  const [filters, dispatchFilters] = useUrlSyncedFilters(initialSelectedTools);
   const filterKey = JSON.stringify(filters);
   const [pagination, setPagination] = useState({
     filterKey: "",
@@ -149,6 +149,13 @@ export function JobBoard({
     activeFilterCount +
     " active " +
     (activeFilterCount === 1 ? "filter" : "filters");
+
+  function dispatch(action: FilterAction) {
+    if (action.type === "setSort") {
+      setPagination({ filterKey: "", page: 1 });
+    }
+    dispatchFilters(action);
+  }
 
   function clearFilters() {
     dispatch({ type: "clear" });

@@ -60661,7 +60661,7 @@
         "macOS",
         "Windows"
       ],
-      "roleFamily": "Windows Platform",
+      "roleFamily": "Endpoint Security",
       "seniority": "Mid",
       "employmentType": "Full-time"
     },
@@ -61526,12 +61526,14 @@
         "Curated",
         "Endpoint",
         "FleetDM",
-        "Munki"
+        "Munki",
+        "macOS"
       ],
       "matchReasons": [
         "Fleet MDM",
         "Endpoint engineering",
-        "Windows platform"
+        "Windows platform",
+        "macOS platform"
       ],
       "tools": [
         "Intune",
@@ -61540,6 +61542,7 @@
         "Google Workspace"
       ],
       "platforms": [
+        "macOS",
         "Windows"
       ],
       "roleFamily": "Windows Platform",

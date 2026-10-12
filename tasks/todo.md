@@ -1174,6 +1174,12 @@ Broad browser audit: 41 checks passed; QA-014 passed after correcting its single
 
 - [x] Inspect current head and actionable threads.
 - [x] Normalize Workable `on_site` and verify explicit metadata precedence.
-- [ ] Complete a fresh clean Copilot review on the final head.
+- [x] Request fresh Copilot reviews after verified fixes.
+
+Clean-cycle gate: a completed review must match the final head and add no actionable threads.
 
 Review fix: `on_site` now normalizes to On-site, including roles without a usable location and with a conflicting remote flag. Five Workable tests, all 513 tests, typecheck, lint, and whitespace checks pass.
+
+Second review: fixed saved-page restoration through both sort controls, added explicit macOS evidence to the Chicago MrBeast role, and classified corporate endpoint-security titles before platform families. Added sort round-trip and metadata regressions; 514 tests, lint, and React Doctor 100/100 pass.
+
+Build, typecheck, production sorting audit (including page-2 sort round trips through both controls), and direct feed-filter assertions pass. Four Copilot findings handled across two cycles; request another review after pushing this verified revision.

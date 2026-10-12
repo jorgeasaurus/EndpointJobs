@@ -11,7 +11,9 @@ test("curated employer roles preserve publication dates and cap freshness at the
       ? "Senior Desktop Engineer Ropes & Gray Intune"
       : url.includes("governmentjobs.com/jobs/5506606")
         ? "Information Technology Programmer Analyst 12 State of Michigan Endpoint"
-        : "";
+        : url.includes("mrbeastyoutube/jobs/6011407004")
+          ? "Senior IT Support Engineer Beast Industries FleetDM"
+          : "";
     return new Response(body, { status: body ? 200 : 404 });
   };
   try {
@@ -19,6 +21,10 @@ test("curated employer roles preserve publication dates and cap freshness at the
     const jobs = await curatedJobProvider.fetchJobs({ url: curatedJobProvider.defaultUrl, fetchedAt });
     const ropes = jobs.find((job) => job?.company === "Ropes & Gray");
     const michigan = jobs.find((job) => job?.company === "State of Michigan");
+    const mrbeast = jobs.find((job) => job?.company === "MrBeast");
+    assert.ok(mrbeast);
+    assert.ok(mrbeast.platforms.includes("macOS"));
+    assert.ok(mrbeast.platforms.includes("Windows"));
     assert.ok(ropes);
     assert.ok(michigan);
     assert.equal(ropes.postedAt, "2026-08-07T04:00:00.000Z");
