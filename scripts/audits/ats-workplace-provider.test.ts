@@ -51,6 +51,19 @@ test("Greenhouse employer workplace tags override generic company remote hiring 
   }
 });
 
+test("Greenhouse remote support duties do not imply a remote work arrangement", async (t) => {
+  t.mock.method(globalThis, "fetch", async () => Response.json({ jobs: [{
+    id: 1, title: "Senior IT Support Engineer", location: { name: "New York, NY" },
+    absolute_url: "https://job-boards.greenhouse.io/test/jobs/support",
+    first_published: "2026-09-11T00:00:00Z",
+    content: "Manage Intune and Jamf endpoints with a combination of onsite and remote IT support. Travel to remote production locations."
+  }] }));
+  const provider = atsBoardProviders.find((provider) => provider.id === "greenhouse")!;
+  const [job] = await provider.fetchJobs({ url: provider.defaultUrl, fetchedAt });
+  assert.equal(job?.workplace, "On-site");
+  assert.ok(job?.summary.includes("remote IT support"));
+});
+
 test("Greenhouse location workplace markers override incidental description text and hiring tags", async (t) => {
   const locations = [
     ["New York City, NY (Hybrid); San Francisco, CA (Hybrid)", "Hybrid"],

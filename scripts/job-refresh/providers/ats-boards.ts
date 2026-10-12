@@ -149,7 +149,10 @@ const defaultGreenhouseBoards = [
   "drweng",
   "obsidiansecurity",
   "later",
-  "snorkelai"
+  "snorkelai",
+  "a16z",
+  "mrbeastyoutube",
+  "life360"
 ];
 
 const defaultLeverCompanies = ["jumpcloud", "brightonjones", "hermeus", "omnidian", "whoop"];
@@ -166,10 +169,17 @@ const defaultAshbyBoards = [
   "suno",
   "voleon",
   "applied",
-  "radiant-industries"
+  "radiant-industries",
+  "drata",
+  "assured",
+  "harvey",
+  "fluidstack",
+  "Crusoe"
 ];
 
-const defaultWorkableAccounts: WorkableAccount[] = [];
+const defaultWorkableAccounts: WorkableAccount[] = [
+  { name: "BKF Engineers", slug: "bkfengineers" }
+];
 
 export const atsBoardProviders = [
   {
@@ -308,8 +318,9 @@ async function fetchWorkableJobs(url: string, fetchedAt: Date) {
 
 async function fetchWorkableAccount(baseUrl: string, slug: string) {
   const jobs: WorkableJob[] = [];
-  const maxPages = getPositiveInteger(process.env.JOB_WORKABLE_MAX_PAGES, 3);
+  const maxPages = getPositiveInteger(process.env.JOB_WORKABLE_MAX_PAGES, 25);
   let token: string | undefined;
+  const seenTokens = new Set<string>();
 
   for (let page = 0; page < maxPages; page += 1) {
     const payload = await fetchWorkableListPage(buildWorkableListUrl(baseUrl, slug), slug, token);
@@ -322,6 +333,14 @@ async function fetchWorkableAccount(baseUrl: string, slug: string) {
     if (!token) {
       break;
     }
+    if (seenTokens.has(token)) {
+      throw new Error(`Workable/${slug} repeated pagination token`);
+    }
+    seenTokens.add(token);
+  }
+
+  if (token) {
+    throw new Error(`Workable/${slug} incomplete after ${maxPages} pages`);
   }
 
   if (process.env.JOB_WORKABLE_FETCH_DETAILS === "false") {
@@ -496,7 +515,8 @@ function normalizeGreenhouseJob(raw: GreenhouseJob, board: string, fetchedAt: Da
       ?? getLinkedInWorkplaceTag(description)
       ?? inferWorkplace(location, [title, company, ...sourceTags, description]
         .join(" ")
-        .replace(/\bExchange\s*\((?:on[ -]premis(?:e|es)|online|server|hybrid|[\s,/-])+\)/gi, "Exchange")),
+        .replace(/\bExchange\s*\((?:on[ -]premis(?:e|es)|online|server|hybrid|[\s,/-])+\)/gi, "Exchange")
+        .replace(/\bremote\s+(?:(?:IT|technical)\s+)?support\b|\bremote\s+production\s+locations\b/gi, "offsite support")),
     postedAt,
     fetchedAt,
     staleAfter,
@@ -610,7 +630,7 @@ function normalizeAshbyJob(raw: AshbyJob, board: string, fetchedAt: Date): Job |
 }
 
 function normalizeAshbyWorkplace(value: string | undefined) {
-  switch (cleanText(value).toLowerCase().replace(/[\s-]/g, "")) {
+  switch (cleanText(value).toLowerCase().replace(/[\s_-]/g, "")) {
     case "onsite": return "On-site";
     case "hybrid": return "Hybrid";
     case "remote": return "Remote";
@@ -664,9 +684,11 @@ function normalizeWorkableJob(raw: WorkableJob, account: WorkableAccount, fetche
     title,
     company,
     location,
-    workplace: raw.remote ? "Remote" : undefined,
+    workplace: normalizeAshbyWorkplace(raw.workplace ?? raw.location?.workplace)
+      ?? (raw.remote ? "Remote" : undefined),
     postedAt,
     fetchedAt,
+    staleAfter: addDays(fetchedAt, staleDays).toISOString(),
     source: "Workable",
     sourceUrl: sourceJobUrl,
     applyUrl: sourceJobUrl,
@@ -783,6 +805,7 @@ function getWorkableResults(payload: unknown) {
 
 function formatSourceAccountName(slug: string) {
   const knownNames: Record<string, string> = {
+    a16z: "Andreessen Horowitz",
     andurilindustries: "Anduril",
     anthropic: "Anthropic",
     applied: "Applied Intuition",
@@ -805,8 +828,10 @@ function formatSourceAccountName(slug: string) {
     keepersecurity: "Keeper Security",
     jumpcloud: "JumpCloud",
     kymeratherapeutics: "Kymera Therapeutics",
+    life360: "Life360",
     lyft: "Lyft",
     mongodb: "MongoDB",
+    mrbeastyoutube: "MrBeast",
     okta: "Okta",
     obsidiansecurity: "Obsidian Security",
     openai: "OpenAI",

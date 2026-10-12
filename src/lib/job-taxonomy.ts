@@ -246,6 +246,12 @@ const specialistTechnicalRoleTerms = [
   "systems development manager",
   "service engineer",
   "it engineer",
+  "senior it support engineer",
+  "corporate security engineer",
+  "security engineer, corp it",
+  "director, it",
+  "consultant, professional services",
+  "engineer, technical operations",
   "it platform and automation engineer",
   "lead it specialist",
   "platform engineer",
@@ -272,6 +278,8 @@ export const technicalRoleTitleTerms = [
 ] as const;
 
 const endpointSecurityRoleTerms = [
+  "corporate security engineer",
+  "security engineer, corp it",
   "endpoint security",
   "endpoint protection",
   "endpoint detection",

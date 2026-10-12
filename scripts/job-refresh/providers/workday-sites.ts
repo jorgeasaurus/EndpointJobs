@@ -208,6 +208,12 @@ export const defaultWorkdaySites = [
     queries: ["Windows Infrastructure", "Endpoint"]
   },
   {
+    name: "Accurate Background",
+    fetchDetails: true,
+    url: "https://accurateb.wd108.myworkdayjobs.com/wday/cxs/accurateb/Accurate_Careers/jobs",
+    queries: ["Technical Operations", "Endpoint", "Intune"]
+  },
+  {
     name: "Tempus AI",
     fetchDetails: true,
     url: "https://tempus.wd5.myworkdayjobs.com/wday/cxs/tempus/Tempus_Careers/jobs",

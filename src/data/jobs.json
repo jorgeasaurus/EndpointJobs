@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-10-11T11:27:19.693Z",
+  "updatedAt": "2026-10-12T02:31:03.314Z",
   "source": {
-    "name": "Remotive + Arbeitnow + Jobicy + Remote OK + Greenhouse + Lever + The Muse + Ashby + Amazon Jobs + Workday + Oracle HCM + Jibe + Activate + SmartRecruiters + Recruitee + SchoolJobs + Curated Jobs + Adzuna + SerpAPI Google Jobs + RapidAPI Daily International Jobs + AI Dev Board + Himalayas + 4 Day Week",
+    "name": "Remotive + Arbeitnow + Jobicy + Remote OK + Greenhouse + Lever + The Muse + Ashby + Workable + Amazon Jobs + Workday + Oracle HCM + Jibe + Activate + SmartRecruiters + Recruitee + SchoolJobs + Curated Jobs + Adzuna + SerpAPI Google Jobs + RapidAPI Daily International Jobs + AI Dev Board + Himalayas + 4 Day Week",
     "url": "https://github.com/jorgeasaurus/EndpointJobs"
   },
   "jobs": [
@@ -52588,135 +52588,6 @@
       "employmentType": "Full-time"
     },
     {
-      "id": "aidevboard-harvey-ai-sr-systems-engineer-client-engineering-8df17ebb18",
-      "title": "Sr. Systems Engineer, Client Engineering",
-      "company": "Harvey AI",
-      "location": "San Francisco, CA",
-      "mapLocation": {
-        "label": "San Francisco, CA",
-        "latitude": 37.7749,
-        "longitude": -122.4194
-      },
-      "workplace": "Remote",
-      "postedAt": "2026-08-28T19:59:51.674Z",
-      "fetchedAt": "2026-10-11T11:27:19.693Z",
-      "staleAfter": "2026-10-14T13:32:35.002Z",
-      "expiresAt": "2026-10-14T13:32:35.002Z",
-      "source": "AI Dev Board",
-      "sourceUrl": "https://aidevboard.com/job/26d2e5a1-c84b-47b7-8534-3bcd4663148a",
-      "applyUrl": "https://jobs.ashbyhq.com/harvey/d926b184-364b-49f5-a269-bef158c1c408/application",
-      "attributionLabel": "AI Dev Board",
-      "termsProfile": "public-api",
-      "summary": "WHY HARVEY At Harvey, we’re transforming how legal and professional services operate. By combining frontier agentic AI, an enterprise-grade platform, and deep domain expertise, we’re reshaping how critical knowledge work gets done for decades to come....",
-      "description": "WHY HARVEY\n\nAt Harvey, we’re transforming how legal and professional services operate. By combining frontier agentic AI, an enterprise-grade platform, and deep domain expertise, we’re reshaping how critical knowledge work gets done for decades to come.\n\nThis is a rare chance to help build a generational company at a true inflection point. We have strong product-market fit and world-class investor support. We’re scaling fast and defining a new category in real time. The work is ambitious, the bar is high, and the opportunity for growth — personal, professional, and financial — is unmatched.\n\nOur team moves fast, takes ownership, and is deeply committed to the mission — operating with intensity, staying close to our customers, and pushing each other for excellence. We live by three values: Decisiveness, Simplicity, and Job's Not Finished. We act quickly on clear judgment over perfect information, we believe simplicity is what scales, and we're never satisfied with where we are. If you want to do the best work of your career alongside people who share that drive, we'd love to build with you.\n\nAt Harvey, the future of professional services is being written today — and we’re just getting started.\n\nROLE OVERVIEW\n\nHarvey runs on a fleet of Macs and Windows devices, and every one of them is the front door to how each Harvey employee does their work. We're seeking a Senior Systems Engineer to own client engineering end to end - Jamf, Intune, Autopilot, Okta device trust, and more, and the automation that ties them together. This is the person who decides how a laptop gets built, secured, patched, recovered, and retired, and who makes those decisions hold up as we scale across offices globally.\n\nThe ideal candidate has run a production device management environment at scale and can move between writing the deployment tooling, debugging a broken enrollment, and pushing for improvements to policy, process, and systems along the way.\n\nWHAT YOU'LL DO\n\n - Own the endpoint platform. Jamf Pro for macOS, Intune and Autopilot for Windows, and the mobile fleet alongside them. You set configuration standards, patching cadence, and compliance baselines in partnership with Security, and you're accountable for the fleet actually meeting them.\n\n - Engineer the device lifecycle. Zero-touch provisioning through Apple Business Manager and Autopilot, automated onboarding and offboarding, hardware refreshes, DLP, and forensics. Where the lifecycle still depends on someone remembering to do something, replace that with code.\n\n - Build the automation the fleet runs on. Most of this role's leverage comes from tooling - Python and scripts against Jamf, Intune, and Okta APIs, event-driven workflows, and self-service that lets employees fix their own problems.\n\n - Partner with Security on endpoint posture. Work directly with Security on endpoint policies, EDR coverage, device trust and Okta FastPass, disk encryption and key escrow, browser management, and more.\n\n - Be the final escalation for endpoint issues. IT Operations handles tier 1 and 2 globally; the problems that reach you are the strange ones. You'll fix them, and then fix the class of problem so the next person doesn't file the ticket.\n\n - Support a global, in-person-heavy company. Harvey has offices across the US, EMEA, and APAC. You'll build for time zones you aren't in, and document and train the team well enough that someone in each location can resolve issues independently.\n\nWHAT YOU HAVE\n\n - Minimum 5 years in endpoint, client, or IT systems engineering, including direct ownership of a macOS MDM environment at 1000+ devices.\n\n - Deep hands-on Jamf experience, plus real Windows management experience via Intune, Autopilot, and Entra.\n\n - Strong scripting and automation ability in Python, Bash, or Swift, with a track record of building tooling against vendor APIs rather than clicking through admin consoles.\n\n - Working fluency with an IdP, Okta preferred, covering SSO, MFA, device trust, and how identity and endpoint policy interact.\n\n - Strong communication and stakeholder management skills, especially with non-technical teams.\n\n - Ability to thrive in a fast-paced, high-growth, and global environment.\n\nBONUS POINTS:\n\n - Experience running endpoint security tooling in a production environment - CrowdStrike or equivalent EDR, managed Chrome Enterprise, DLP.\n\n - Endpoint work inside a compliance program (SOC 2, ISO 27001).\n\nCOMPENSATION\n\n$153,000 - $210,500 USD\n\nDEPENDING ON YOUR LOCATION, AN APPLICANT PRIVACY NOTICE MAY APPLY TO YOU. YOU CAN FIND ALL OF OUR APPLICANT PRIVACY NOTICES HERE https://harveyai.notion.site/Harvey-Candidate-Privacy-Notices-319ac3fcdd7a803bb807d5094f249922?pvs=74.\n\n#LI-RB1\n\nHarvey is an equal opportunity employer and does not discriminate on the basis of race, gender, sexual orientation, gender identity/expression, national origin, disability, age, genetic information, veteran status, marital status, pregnancy or related",
-      "visaSponsorship": {
-        "status": "not-stated"
-      },
-      "tags": [
-        "macOS",
-        "Windows",
-        "Jamf",
-        "Intune",
-        "Okta",
-        "Entra ID",
-        "Autopilot",
-        "full-time",
-        "senior",
-        "remote",
-        "llm",
-        "agents"
-      ],
-      "matchReasons": [
-        "Jamf + macOS",
-        "Intune + Autopilot",
-        "Endpoint engineering",
-        "MDM",
-        "Device management"
-      ],
-      "tools": [
-        "Jamf",
-        "Intune",
-        "Okta",
-        "Entra ID",
-        "Autopilot"
-      ],
-      "platforms": [
-        "macOS",
-        "Windows"
-      ],
-      "roleFamily": "Endpoint Security",
-      "seniority": "Senior",
-      "employmentType": "Full-time",
-      "salary": {
-        "min": 153000,
-        "max": 210500,
-        "currency": "USD",
-        "label": "$153k-$211k"
-      }
-    },
-    {
-      "id": "aidevboard-harvey-ai-sr-systems-engineer-client-engineering-6b1cb299e8",
-      "title": "Sr. Systems Engineer, Client Engineering",
-      "company": "Harvey AI",
-      "location": "New York, NY",
-      "workplace": "Remote",
-      "postedAt": "2026-08-28T19:59:49.596Z",
-      "fetchedAt": "2026-10-11T11:27:19.693Z",
-      "staleAfter": "2026-10-14T13:32:34.899Z",
-      "expiresAt": "2026-10-14T13:32:34.899Z",
-      "source": "AI Dev Board",
-      "sourceUrl": "https://aidevboard.com/job/c237c6ca-9aa9-43c6-bc17-145461a15d4a",
-      "applyUrl": "https://jobs.ashbyhq.com/harvey/02005c77-4871-4100-8030-27aa08ed7aa7/application",
-      "attributionLabel": "AI Dev Board",
-      "termsProfile": "public-api",
-      "summary": "WHY HARVEY At Harvey, we’re transforming how legal and professional services operate. By combining frontier agentic AI, an enterprise-grade platform, and deep domain expertise, we’re reshaping how critical knowledge work gets done for decades to come....",
-      "description": "WHY HARVEY\n\nAt Harvey, we’re transforming how legal and professional services operate. By combining frontier agentic AI, an enterprise-grade platform, and deep domain expertise, we’re reshaping how critical knowledge work gets done for decades to come.\n\nThis is a rare chance to help build a generational company at a true inflection point. We have strong product-market fit and world-class investor support. We’re scaling fast and defining a new category in real time. The work is ambitious, the bar is high, and the opportunity for growth — personal, professional, and financial — is unmatched.\n\nOur team moves fast, takes ownership, and is deeply committed to the mission — operating with intensity, staying close to our customers, and pushing each other for excellence. We live by three values: Decisiveness, Simplicity, and Job's Not Finished. We act quickly on clear judgment over perfect information, we believe simplicity is what scales, and we're never satisfied with where we are. If you want to do the best work of your career alongside people who share that drive, we'd love to build with you.\n\nAt Harvey, the future of professional services is being written today — and we’re just getting started.\n\nROLE OVERVIEW\n\nHarvey runs on a fleet of Macs and Windows devices, and every one of them is the front door to how each Harvey employee does their work. We're seeking a Senior Systems Engineer to own client engineering end to end - Jamf, Intune, Autopilot, Okta device trust, and more, and the automation that ties them together. This is the person who decides how a laptop gets built, secured, patched, recovered, and retired, and who makes those decisions hold up as we scale across offices globally.\n\nThe ideal candidate has run a production device management environment at scale and can move between writing the deployment tooling, debugging a broken enrollment, and pushing for improvements to policy, process, and systems along the way.\n\nWHAT YOU'LL DO\n\n - Own the endpoint platform. Jamf Pro for macOS, Intune and Autopilot for Windows, and the mobile fleet alongside them. You set configuration standards, patching cadence, and compliance baselines in partnership with Security, and you're accountable for the fleet actually meeting them.\n\n - Engineer the device lifecycle. Zero-touch provisioning through Apple Business Manager and Autopilot, automated onboarding and offboarding, hardware refreshes, DLP, and forensics. Where the lifecycle still depends on someone remembering to do something, replace that with code.\n\n - Build the automation the fleet runs on. Most of this role's leverage comes from tooling - Python and scripts against Jamf, Intune, and Okta APIs, event-driven workflows, and self-service that lets employees fix their own problems.\n\n - Partner with Security on endpoint posture. Work directly with Security on endpoint policies, EDR coverage, device trust and Okta FastPass, disk encryption and key escrow, browser management, and more.\n\n - Be the final escalation for endpoint issues. IT Operations handles tier 1 and 2 globally; the problems that reach you are the strange ones. You'll fix them, and then fix the class of problem so the next person doesn't file the ticket.\n\n - Support a global, in-person-heavy company. Harvey has offices across the US, EMEA, and APAC. You'll build for time zones you aren't in, and document and train the team well enough that someone in each location can resolve issues independently.\n\nWHAT YOU HAVE\n\n - Minimum 5 years in endpoint, client, or IT systems engineering, including direct ownership of a macOS MDM environment at 1000+ devices.\n\n - Deep hands-on Jamf experience, plus real Windows management experience via Intune, Autopilot, and Entra.\n\n - Strong scripting and automation ability in Python, Bash, or Swift, with a track record of building tooling against vendor APIs rather than clicking through admin consoles.\n\n - Working fluency with an IdP, Okta preferred, covering SSO, MFA, device trust, and how identity and endpoint policy interact.\n\n - Strong communication and stakeholder management skills, especially with non-technical teams.\n\n - Ability to thrive in a fast-paced, high-growth, and global environment.\n\nBONUS POINTS:\n\n - Experience running endpoint security tooling in a production environment - CrowdStrike or equivalent EDR, managed Chrome Enterprise, DLP.\n\n - Endpoint work inside a compliance program (SOC 2, ISO 27001).\n\nCOMPENSATION\n\n$153,000 - $210,500 USD\n\nDEPENDING ON YOUR LOCATION, AN APPLICANT PRIVACY NOTICE MAY APPLY TO YOU. YOU CAN FIND ALL OF OUR APPLICANT PRIVACY NOTICES HERE https://harveyai.notion.site/Harvey-Candidate-Privacy-Notices-319ac3fcdd7a803bb807d5094f249922?pvs=74.\n\n#LI-RB1\n\nHarvey is an equal opportunity employer and does not discriminate on the basis of race, gender, sexual orientation, gender identity/expression, national origin, disability, age, genetic information, veteran status, marital status, pregnancy or related",
-      "visaSponsorship": {
-        "status": "not-stated"
-      },
-      "tags": [
-        "macOS",
-        "Windows",
-        "Jamf",
-        "Intune",
-        "Okta",
-        "Entra ID",
-        "Autopilot",
-        "full-time",
-        "senior",
-        "remote",
-        "agents",
-        "llm"
-      ],
-      "matchReasons": [
-        "Jamf + macOS",
-        "Intune + Autopilot",
-        "Endpoint engineering",
-        "MDM",
-        "Device management"
-      ],
-      "tools": [
-        "Jamf",
-        "Intune",
-        "Okta",
-        "Entra ID",
-        "Autopilot"
-      ],
-      "platforms": [
-        "macOS",
-        "Windows"
-      ],
-      "roleFamily": "Endpoint Security",
-      "seniority": "Senior",
-      "employmentType": "Full-time",
-      "salary": {
-        "min": 153000,
-        "max": 210500,
-        "currency": "USD",
-        "label": "$153k-$211k"
-      }
-    },
-    {
       "id": "ashby-openai-efed424b-e025-400f-8ac3-73e962b85751",
       "title": "Operating Systems Engineer | Consumer Devices",
       "company": "OpenAI",
@@ -60322,6 +60193,1366 @@
         "max": 130000,
         "currency": "USD",
         "label": "$120k-$130k"
+      }
+    },
+    {
+      "id": "greenhouse-mrbeastyoutube-6191860004",
+      "title": "Senior IT Support Engineer",
+      "company": "MrBeast",
+      "location": "New York, NY",
+      "workplace": "On-site",
+      "postedAt": "2026-09-14T19:25:33.000Z",
+      "fetchedAt": "2026-10-12T02:27:39.322Z",
+      "staleAfter": "2026-10-29T19:25:33.000Z",
+      "expiresAt": "2026-10-29T19:25:33.000Z",
+      "source": "Greenhouse",
+      "sourceUrl": "https://job-boards.greenhouse.io/mrbeastyoutube/jobs/6191860004",
+      "applyUrl": "https://job-boards.greenhouse.io/mrbeastyoutube/jobs/6191860004",
+      "attributionLabel": "Greenhouse / MrBeast",
+      "termsProfile": "public-api",
+      "summary": "About Us Beast Industries is a multifaceted media and entertainment company founded by Jimmy Donaldson, popularly known as MrBeast, the most watched person in the world. Renowned for revolutionizing digital content creation, Beast Industries encompasses a...",
+      "description": " About Us\n\nBeast Industries is a multifaceted media and entertainment company founded by Jimmy Donaldson, popularly known as MrBeast, the most watched person in the world. Renowned for revolutionizing digital content creation, Beast Industries encompasses a diverse portfolio of ventures that extend far beyond its origins on YouTube. With a mission to entertain, inspire, and create significant social impact, Beast Industries operates across various domains including digital media, philanthropy, consumer products, and innovative business initiatives. At Beast Industries, we believe in the transformative power of digital media and its potential to entertain, educate, and effect positive change. Our commitment to innovation, creativity, and philanthropy drives us to explore new frontiers, create unforgettable experiences, and build a legacy that inspires future generations.\n\n About the Role\n\nMrBeast is seeking an Senior IT Support Engineer to join our growing team. This role is a combination of onsite and remote IT support, troubleshooting hardware and software issues, maintaining IT infrastructure, and ensuring a seamless technology experience for our production, creative, and corporate teams.\n\nYou will work alongside the IT Manager to deploy enterprise technology, manage IT systems, enhance security, and contribute to key IT initiatives. This is an exciting opportunity for someone who thrives in fast-paced environments, enjoys problem-solving, and is eager to work with cutting-edge technology.\n\n Responsibilities\n\n- Provide onsite and remote IT support across macOS and Windows environments.\n\n- Configure and deploy laptops, desktops, mobile devices, and peripherals for new and existing employees.\n\n- Troubleshoot software and hardware issues, including core business applications (Google Workspace, Slack, Zoom, Adobe, Monday.com, DocuSign, Otter.ai, etc.).\n\n- Maintain conference room systems, digital signage, printers, and other collaboration tools.\n\n- Assist in WiFi and network deployments across campus, studios, and remote production locations (Cisco, Ubiquiti, Starlink, MiFi).\n\n- Research, install, configure, and support internal software, cloud tools, and enterprise SaaS platforms.\n\n- Create and maintain IT documentation, knowledge bases, and training guides.\n\n- Assist with hardware purchasing, inventory tracking, asset lifecycle management, and yearly IT planning.\n\n- Support campus network infrastructure, including tracing, patching, and maintaining ethernet/fiber cabling (MDF/IDFs).\n\n- Implement IT security best practices, support MDM deployment (FleetDM, Jamf, Intune, Kandji), and strengthen overall cybersecurity.\n\n What We’re Looking For\n\n- 4+ years of IT Support/Admin experience in a mid-to-large organization with strong troubleshooting skills across hardware, software, and networking.\n\n- Excellent communication skills with the ability to explain technical solutions to non-technical users.\n\n- Experience balancing multiple priorities in a fast-moving environment.\n\n- Strong knowledge of IT security, access control, and best practices.\n\n- Hands-on experience with macOS & Windows environments.\n\n- Proficiency in Google Workspace or Microsoft 365 administration.\n\n- Solid understanding of networking concepts (DHCP, DNS, VPN, VLANs, etc.).\n\n- Experience managing MDM platforms (Jamf, Intune, Kandji, FleetDM).\n\n- Familiarity with IT ticketing systems, asset management, and SaaS administration.\n\n- Certifications such as CompTIA A+, Google IT, Apple ACMT, Microsoft 365, Cisco CCNA or similar.\n\n- Experience in media production, content creation, or entertainment industries.\n\n- Knowledge of Linux, scripting, or automation tools.\n\n The target compensation ranges from $100,000 – $130,000 including bonus, benefits, and equity..\n\n Benefits\n\n The Perks, Why Work On the MrBeast Team\n\nWe are redefining what entertainment and storytelling look like at global scale. Every piece of content we publish reaches millions and influences culture in real time. This is your opportunity to lead the team that decides how those moments come to life across every screen.\n\n- Competitive Salary\n\n- Generous Medical (Blue Cross Blue Shield), Dental, Vision and company-paid Life Insurance\n\n- Company contributions to employee Health Savings Accounts (HSA)\n\n- 401k Plan with Safe Harbor company-matching\n\n- Flexible vacation policy and paid company holidays\n\n- Company-provided technology package\n\n- Relocation assistance where applicable, including travel and company-provided housing for the first 90 days",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "macOS",
+        "Windows",
+        "Linux",
+        "Jamf",
+        "Intune",
+        "Fleet MDM",
+        "Kandji",
+        "Google Workspace",
+        "IT",
+        "Corporate"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "Kandji MDM",
+        "Fleet MDM",
+        "MDM",
+        "Windows platform"
+      ],
+      "tools": [
+        "Jamf",
+        "Intune",
+        "Fleet MDM",
+        "Kandji",
+        "Google Workspace"
+      ],
+      "platforms": [
+        "macOS",
+        "Windows",
+        "Linux"
+      ],
+      "roleFamily": "Automation",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 100000,
+        "max": 130000,
+        "currency": "USD",
+        "label": "$100k-$130k"
+      }
+    },
+    {
+      "id": "ashby-fluidstack-8d38405a-e267-4a51-a31e-0a5f1953474d",
+      "title": "IT Engineer",
+      "company": "Fluidstack",
+      "location": "Phoenix, AZ",
+      "mapLocation": {
+        "label": "Phoenix, AZ",
+        "latitude": 33.4484,
+        "longitude": -112.074
+      },
+      "workplace": "On-site",
+      "postedAt": "2026-09-11T16:24:18.243Z",
+      "fetchedAt": "2026-10-12T02:26:13.665Z",
+      "staleAfter": "2026-11-26T02:26:13.665Z",
+      "expiresAt": "2026-11-26T02:26:13.665Z",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/fluidstack/8d38405a-e267-4a51-a31e-0a5f1953474d",
+      "applyUrl": "https://jobs.ashbyhq.com/fluidstack/8d38405a-e267-4a51-a31e-0a5f1953474d/application",
+      "attributionLabel": "Ashby / Fluidstack",
+      "termsProfile": "public-api",
+      "summary": "ABOUT FLUIDSTACK We exist to make humanity more free. For most of human history, you farmed or you starved. Technology gave people more time for the things they wanted to do, instead of things they had to do. Powerful AI will be the biggest lever for...",
+      "description": "ABOUT FLUIDSTACK\n\nWe exist to make humanity more free. For most of human history, you farmed or you starved. Technology gave people more time for the things they wanted to do, instead of things they had to do. Powerful AI will be the biggest lever for human choice we've ever built - but only if models are aligned with what humanity actually wants. There are groups building AI who don't share these goals. Whoever deploys frontier compute infrastructure fastest will decide whether AI expands human freedom or shrinks it.\n\nWe're singularly focused on delivering 10 to 100s of GWs of compute faster than anyone else, rethinking every layer of the stack. We acquire power, design and build data centers, and operate them - with teams spanning hardware and software. Speed and scale are our key differentiators. Come be a part of building civilization-scale infrastructure for AI.\n\nWe hire people who care deeply about this problem space. If that is you, please apply!\n\nHOW WE OPERATE\n\n - Be a barrel. Full autonomy. Own things end to end, take on scope without being asked, no permission required to operate outside your core role.\n\n - Insane urgency. We drive everything forward as fast as possible.\n\n - Reason from first principles. Challenge every assumption. Zero analogy thinking, no egos, the best idea wins.\n\n - Love of the game. The frontier of AI is the most interesting problem of our time. We put in long hours at high intensity to push the frontier forward.\n\n - Build something that actually matters. If you're going to spend your time, spend it on something that matters to the world.\n\nTHE IT TEAM\n\nExamples of key problems the team is working on\n\n - Engineer the systems behind one of the world's largest compute buildouts. Everything runs as code, version-controlled and reproducible, so a new hire, team, or site spins up in minutes instead of days. You'll build internal infrastructure with real engineering rigor and keep it ahead of a company growing 10x.\n\n - Solve multi-tenancy problems most IT engineers never touch. Fluidstack runs teams, sites, and customers in parallel, and the internal systems have to keep them cleanly separated and secure at speed. You'll own architecture problems usually reserved for product infrastructure, on the inside.\n\n - Give every employee the speed it takes to reach 10s to 100s of GWs. The faster the company's people move, the faster we get there. You'll own the internal systems and support that keep a 10x workforce unblocked.\n\nROLE SCOPE\n\n - Provide reliable, hands-on IT support for in-office and remote employees, resolving tickets fast with excellent service.\n\n - Support the MDM fleet across macOS, iOS, and Windows, and troubleshoot in-office network and A/V systems.\n\n - Administer and improve Okta and core SaaS tooling: integrations, role-based access controls, and identity hygiene.\n\n - Run procurement and asset management: coordinate hardware purchasing and track devices across their full lifecycle.\n\n - Build simple, reliable automations that cut manual work, and write clear documentation for technical and non-technical audiences.\n\n - Own onboarding and offboarding for employees and contractors, and support access reviews and basic identity security.\n\nWHAT WE'RE LOOKING FOR\n\nThe below is a starting point. We always make space for exceptional people, so if you don't fit this role exactly, tell us where you would https://jobs.ashbyhq.com/fluidstack/05c2e69c-42f9-4fcb-9cf0-a467aaf98f1c.\n\n - You've administered Okta (users, groups, app integrations) and managed MDM across macOS and Windows.\n\n - You know Google Workspace well, with some Office 365 exposure, and you support macOS, iOS, and Windows devices.\n\n - You build automations to replace manual work, and you reach for code or no-code tools to do it.\n\n - You write clearly: documentation and knowledge-base content that both technical and non-technical people can use.\n\n - You bring a security mindset to identity, access, and device management.\n\n - Bonus: No-code/low-code automation (Okta Workflows, n8n, Zapier, Workato). Scripting (Bash, PowerShell, Python). SOC 2, ISO 27001, NIST, or CIS exposure. AI tools, agents, and MCPs (Fluidstack standardizes on Claude). HRIS integrations (Deel, Rippling, Workday). API and webhook fluency.\n\nSALARY & BENEFITS\n\n - Competitive total compensation package (salary + equity).\n\n - Retirement or pension plan, in line with local norms.\n\n - Health, dental, and vision insurance.\n\n - Generous PTO policy, in line with local norms.\n\nTotal compensation may also include equity in the form of stock options.\n\nWe are committed to pay equity and transparency.\n\nFluidstack is an Equal Employment Opportunity Employer. All qualified applicants will receive consideration for employment without regard to race, color, religion, sex, national origin, sexual orientation, gender identity, disability and protected veterans’ status, or any other characteristic protected by law. Fluidstack will consider for employment qualified applicants with arrest and conviction records pursuant to applicable law.\n\nYou will receive a confirmation email once your application has successfully been accepted. If there is an error with your submission and you did not receive a confirmation email, please email careers@fluidstack.io with your resume/CV, the role you've applied for, and the date you submitted your application-- someone from our recruiting team will be in touch.",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "macOS",
+        "Windows",
+        "iOS",
+        "Okta",
+        "Google Workspace",
+        "PowerShell",
+        "Security & Corp IT",
+        "IT",
+        "FullTime",
+        "OnSite"
+      ],
+      "matchReasons": [
+        "MDM",
+        "Device management",
+        "PowerShell automation",
+        "Windows platform",
+        "macOS platform"
+      ],
+      "tools": [
+        "Okta",
+        "Google Workspace",
+        "PowerShell"
+      ],
+      "platforms": [
+        "macOS",
+        "Windows",
+        "iOS"
+      ],
+      "roleFamily": "Automation",
+      "seniority": "Mid",
+      "employmentType": "Full-time"
+    },
+    {
+      "id": "ashby-harvey-d926b184-364b-49f5-a269-bef158c1c408",
+      "title": "Sr. Systems Engineer, Client Engineering",
+      "company": "Harvey",
+      "location": "San Francisco",
+      "mapLocation": {
+        "label": "San Francisco, CA",
+        "latitude": 37.7749,
+        "longitude": -122.4194
+      },
+      "workplace": "Hybrid",
+      "postedAt": "2026-08-28T19:59:51.674Z",
+      "fetchedAt": "2026-10-12T02:26:13.665Z",
+      "staleAfter": "2026-11-26T02:26:13.665Z",
+      "expiresAt": "2026-11-26T02:26:13.665Z",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/harvey/d926b184-364b-49f5-a269-bef158c1c408",
+      "applyUrl": "https://jobs.ashbyhq.com/harvey/d926b184-364b-49f5-a269-bef158c1c408/application",
+      "attributionLabel": "Ashby / Harvey",
+      "termsProfile": "public-api",
+      "summary": "WHY HARVEY At Harvey, we’re transforming how legal and professional services operate. By combining frontier agentic AI, an enterprise-grade platform, and deep domain expertise, we’re reshaping how critical knowledge work gets done for decades to come....",
+      "description": "WHY HARVEY\n\nAt Harvey, we’re transforming how legal and professional services operate. By combining frontier agentic AI, an enterprise-grade platform, and deep domain expertise, we’re reshaping how critical knowledge work gets done for decades to come.\n\nThis is a rare chance to help build a generational company at a true inflection point. We have strong product-market fit and world-class investor support. We’re scaling fast and defining a new category in real time. The work is ambitious, the bar is high, and the opportunity for growth — personal, professional, and financial — is unmatched.\n\nOur team moves fast, takes ownership, and is deeply committed to the mission — operating with intensity, staying close to our customers, and pushing each other for excellence. We live by three values: Decisiveness, Simplicity, and Job's Not Finished. We act quickly on clear judgment over perfect information, we believe simplicity is what scales, and we're never satisfied with where we are. If you want to do the best work of your career alongside people who share that drive, we'd love to build with you.\n\nAt Harvey, the future of professional services is being written today — and we’re just getting started.\n\nROLE OVERVIEW\n\nHarvey runs on a fleet of Macs and Windows devices, and every one of them is the front door to how each Harvey employee does their work. We're seeking a Senior Systems Engineer to own client engineering end to end - Jamf, Intune, Autopilot, Okta device trust, and more, and the automation that ties them together. This is the person who decides how a laptop gets built, secured, patched, recovered, and retired, and who makes those decisions hold up as we scale across offices globally.\n\nThe ideal candidate has run a production device management environment at scale and can move between writing the deployment tooling, debugging a broken enrollment, and pushing for improvements to policy, process, and systems along the way.\n\nWHAT YOU'LL DO\n\n - Own the endpoint platform. Jamf Pro for macOS, Intune and Autopilot for Windows, and the mobile fleet alongside them. You set configuration standards, patching cadence, and compliance baselines in partnership with Security, and you're accountable for the fleet actually meeting them.\n\n - Engineer the device lifecycle. Zero-touch provisioning through Apple Business Manager and Autopilot, automated onboarding and offboarding, hardware refreshes, DLP, and forensics. Where the lifecycle still depends on someone remembering to do something, replace that with code.\n\n - Build the automation the fleet runs on. Most of this role's leverage comes from tooling - Python and scripts against Jamf, Intune, and Okta APIs, event-driven workflows, and self-service that lets employees fix their own problems.\n\n - Partner with Security on endpoint posture. Work directly with Security on endpoint policies, EDR coverage, device trust and Okta FastPass, disk encryption and key escrow, browser management, and more.\n\n - Be the final escalation for endpoint issues. IT Operations handles tier 1 and 2 globally; the problems that reach you are the strange ones. You'll fix them, and then fix the class of problem so the next person doesn't file the ticket.\n\n - Support a global, in-person-heavy company. Harvey has offices across the US, EMEA, and APAC. You'll build for time zones you aren't in, and document and train the team well enough that someone in each location can resolve issues independently.\n\nWHAT YOU HAVE\n\n - Minimum 5 years in endpoint, client, or IT systems engineering, including direct ownership of a macOS MDM environment at 1000+ devices.\n\n - Deep hands-on Jamf experience, plus real Windows management experience via Intune, Autopilot, and Entra.\n\n - Strong scripting and automation ability in Python, Bash, or Swift, with a track record of building tooling against vendor APIs rather than clicking through admin consoles.\n\n - Working fluency with an IdP, Okta preferred, covering SSO, MFA, device trust, and how identity and endpoint policy interact.\n\n - Strong communication and stakeholder management skills, especially with non-technical teams.\n\n - Ability to thrive in a fast-paced, high-growth, and global environment.\n\nBONUS POINTS:\n\n - Experience running endpoint security tooling in a production environment - CrowdStrike or equivalent EDR, managed Chrome Enterprise, DLP.\n\n - Endpoint work inside a compliance program (SOC 2, ISO 27001).\n\nCOMPENSATION\n\n$153,000 - $210,500 USD\n\nDEPENDING ON YOUR LOCATION, AN APPLICANT PRIVACY NOTICE MAY APPLY TO YOU. YOU CAN FIND ALL OF OUR APPLICANT PRIVACY NOTICES HERE https://harveyai.notion.site/Harvey-Candidate-Privacy-Notices-319ac3fcdd7a803bb807d5094f249922?pvs=74.\n\n#LI-RB1\n\nHarvey is an equal opportunity employer and does not discriminate on the basis of race, gender, sexual orientation, gender identity/expression, national origin, disability, age, genetic information, veteran status, marital status, pregnancy or related condition, or any other basis protected by law.\n\nWe are committed to providing reasonable accommodations to applicants with disabilities, and requests can be made by emailing accommodations@harvey.ai",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "macOS",
+        "Windows",
+        "Jamf",
+        "Intune",
+        "Okta",
+        "Entra ID",
+        "Autopilot",
+        "IT",
+        "FullTime",
+        "Hybrid"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "Intune + Autopilot",
+        "Endpoint engineering",
+        "MDM",
+        "Device management"
+      ],
+      "tools": [
+        "Jamf",
+        "Intune",
+        "Okta",
+        "Entra ID",
+        "Autopilot"
+      ],
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 153000,
+        "max": 210500,
+        "currency": "USD",
+        "label": "$153k-$211k"
+      }
+    },
+    {
+      "id": "ashby-harvey-02005c77-4871-4100-8030-27aa08ed7aa7",
+      "title": "Sr. Systems Engineer, Client Engineering",
+      "company": "Harvey",
+      "location": "New York",
+      "workplace": "Hybrid",
+      "postedAt": "2026-08-28T19:59:49.596Z",
+      "fetchedAt": "2026-10-12T02:26:13.665Z",
+      "staleAfter": "2026-11-26T02:26:13.665Z",
+      "expiresAt": "2026-11-26T02:26:13.665Z",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/harvey/02005c77-4871-4100-8030-27aa08ed7aa7",
+      "applyUrl": "https://jobs.ashbyhq.com/harvey/02005c77-4871-4100-8030-27aa08ed7aa7/application",
+      "attributionLabel": "Ashby / Harvey",
+      "termsProfile": "public-api",
+      "summary": "WHY HARVEY At Harvey, we’re transforming how legal and professional services operate. By combining frontier agentic AI, an enterprise-grade platform, and deep domain expertise, we’re reshaping how critical knowledge work gets done for decades to come....",
+      "description": "WHY HARVEY\n\nAt Harvey, we’re transforming how legal and professional services operate. By combining frontier agentic AI, an enterprise-grade platform, and deep domain expertise, we’re reshaping how critical knowledge work gets done for decades to come.\n\nThis is a rare chance to help build a generational company at a true inflection point. We have strong product-market fit and world-class investor support. We’re scaling fast and defining a new category in real time. The work is ambitious, the bar is high, and the opportunity for growth — personal, professional, and financial — is unmatched.\n\nOur team moves fast, takes ownership, and is deeply committed to the mission — operating with intensity, staying close to our customers, and pushing each other for excellence. We live by three values: Decisiveness, Simplicity, and Job's Not Finished. We act quickly on clear judgment over perfect information, we believe simplicity is what scales, and we're never satisfied with where we are. If you want to do the best work of your career alongside people who share that drive, we'd love to build with you.\n\nAt Harvey, the future of professional services is being written today — and we’re just getting started.\n\nROLE OVERVIEW\n\nHarvey runs on a fleet of Macs and Windows devices, and every one of them is the front door to how each Harvey employee does their work. We're seeking a Senior Systems Engineer to own client engineering end to end - Jamf, Intune, Autopilot, Okta device trust, and more, and the automation that ties them together. This is the person who decides how a laptop gets built, secured, patched, recovered, and retired, and who makes those decisions hold up as we scale across offices globally.\n\nThe ideal candidate has run a production device management environment at scale and can move between writing the deployment tooling, debugging a broken enrollment, and pushing for improvements to policy, process, and systems along the way.\n\nWHAT YOU'LL DO\n\n - Own the endpoint platform. Jamf Pro for macOS, Intune and Autopilot for Windows, and the mobile fleet alongside them. You set configuration standards, patching cadence, and compliance baselines in partnership with Security, and you're accountable for the fleet actually meeting them.\n\n - Engineer the device lifecycle. Zero-touch provisioning through Apple Business Manager and Autopilot, automated onboarding and offboarding, hardware refreshes, DLP, and forensics. Where the lifecycle still depends on someone remembering to do something, replace that with code.\n\n - Build the automation the fleet runs on. Most of this role's leverage comes from tooling - Python and scripts against Jamf, Intune, and Okta APIs, event-driven workflows, and self-service that lets employees fix their own problems.\n\n - Partner with Security on endpoint posture. Work directly with Security on endpoint policies, EDR coverage, device trust and Okta FastPass, disk encryption and key escrow, browser management, and more.\n\n - Be the final escalation for endpoint issues. IT Operations handles tier 1 and 2 globally; the problems that reach you are the strange ones. You'll fix them, and then fix the class of problem so the next person doesn't file the ticket.\n\n - Support a global, in-person-heavy company. Harvey has offices across the US, EMEA, and APAC. You'll build for time zones you aren't in, and document and train the team well enough that someone in each location can resolve issues independently.\n\nWHAT YOU HAVE\n\n - Minimum 5 years in endpoint, client, or IT systems engineering, including direct ownership of a macOS MDM environment at 1000+ devices.\n\n - Deep hands-on Jamf experience, plus real Windows management experience via Intune, Autopilot, and Entra.\n\n - Strong scripting and automation ability in Python, Bash, or Swift, with a track record of building tooling against vendor APIs rather than clicking through admin consoles.\n\n - Working fluency with an IdP, Okta preferred, covering SSO, MFA, device trust, and how identity and endpoint policy interact.\n\n - Strong communication and stakeholder management skills, especially with non-technical teams.\n\n - Ability to thrive in a fast-paced, high-growth, and global environment.\n\nBONUS POINTS:\n\n - Experience running endpoint security tooling in a production environment - CrowdStrike or equivalent EDR, managed Chrome Enterprise, DLP.\n\n - Endpoint work inside a compliance program (SOC 2, ISO 27001).\n\nCOMPENSATION\n\n$153,000 - $210,500 USD\n\nDEPENDING ON YOUR LOCATION, AN APPLICANT PRIVACY NOTICE MAY APPLY TO YOU. YOU CAN FIND ALL OF OUR APPLICANT PRIVACY NOTICES HERE https://harveyai.notion.site/Harvey-Candidate-Privacy-Notices-319ac3fcdd7a803bb807d5094f249922?pvs=74.\n\n#LI-RB1\n\nHarvey is an equal opportunity employer and does not discriminate on the basis of race, gender, sexual orientation, gender identity/expression, national origin, disability, age, genetic information, veteran status, marital status, pregnancy or related condition, or any other basis protected by law.\n\nWe are committed to providing reasonable accommodations to applicants with disabilities, and requests can be made by emailing accommodations@harvey.ai",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "macOS",
+        "Windows",
+        "Jamf",
+        "Intune",
+        "Okta",
+        "Entra ID",
+        "Autopilot",
+        "IT",
+        "FullTime",
+        "Hybrid"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "Intune + Autopilot",
+        "Endpoint engineering",
+        "MDM",
+        "Device management"
+      ],
+      "tools": [
+        "Jamf",
+        "Intune",
+        "Okta",
+        "Entra ID",
+        "Autopilot"
+      ],
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 153000,
+        "max": 210500,
+        "currency": "USD",
+        "label": "$153k-$211k"
+      }
+    },
+    {
+      "id": "ashby-harvey-fa02d0c2-4a44-4deb-a409-6a3b3bd05e9c",
+      "title": "Staff Corporate Security Engineer",
+      "company": "Harvey",
+      "location": "New York",
+      "workplace": "Hybrid",
+      "postedAt": "2026-08-01T00:44:42.658Z",
+      "fetchedAt": "2026-10-12T02:26:13.665Z",
+      "staleAfter": "2026-11-26T02:26:13.665Z",
+      "expiresAt": "2026-11-26T02:26:13.665Z",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/harvey/fa02d0c2-4a44-4deb-a409-6a3b3bd05e9c",
+      "applyUrl": "https://jobs.ashbyhq.com/harvey/fa02d0c2-4a44-4deb-a409-6a3b3bd05e9c/application",
+      "attributionLabel": "Ashby / Harvey",
+      "termsProfile": "public-api",
+      "summary": "WHY HARVEY At Harvey, we’re transforming how legal and professional services operate. By combining frontier agentic AI, an enterprise-grade platform, and deep domain expertise, we’re reshaping how critical knowledge work gets done for decades to come....",
+      "description": "WHY HARVEY\n\nAt Harvey, we’re transforming how legal and professional services operate. By combining frontier agentic AI, an enterprise-grade platform, and deep domain expertise, we’re reshaping how critical knowledge work gets done for decades to come.\n\nThis is a rare chance to help build a generational company at a true inflection point. We have strong product-market fit and world-class investor support. We’re scaling fast and defining a new category in real time. The work is ambitious, the bar is high, and the opportunity for growth — personal, professional, and financial — is unmatched.\n\nOur team moves fast, takes ownership, and is deeply committed to the mission — operating with intensity, staying close to our customers, and pushing each other for excellence. We live by three values: Decisiveness, Simplicity, and Job's Not Finished. We act quickly on clear judgment over perfect information, we believe simplicity is what scales, and we're never satisfied with where we are. If you want to do the best work of your career alongside people who share that drive, we'd love to build with you.\n\nAt Harvey, the future of professional services is being written today — and we’re just getting started.\n\nROLE OVERVIEW\n\nSome of the world's largest companies and their law firms use Harvey's AI to deliver world-class client services at unprecedented scale, entrusting Harvey with their most sensitive documents in the process.\n\nThis role joins Harvey's corporate security function, which secures the company's IT and business systems as Harvey grows rapidly, balancing risk with user experience while validating every assumption through threat modeling and real-world testing rather than relying on best practice alone.\n\nIt is a strong fit for someone at the intersection of security engineering and enterprise systems- someone who understands how data flows between SaaS applications, can pinpoint where security breaks down in complex integrations, and knows how to build controls that scale. Experience with eDiscovery workflows and legal holds is a meaningful differentiator given the nature of Harvey's customer base.\n\nWHAT YOU'LL DO\n\n - Enterprise Integrations & SaaS Security: Design, implement, and govern security controls for cross-application data flows, API integrations, OAuth connections, and third-party SaaS platforms. Own the security review lifecycle for new integrations and automate posture monitoring to catch drift early.\n\n - eDiscovery & Legal Hold Program: Continue to build and operate Harvey's legal hold infrastructure, including data preservation, collection workflows, and custodian management. Partner with Legal and Compliance to meet litigation readiness requirements across our collaboration and productivity stack.\n\n - IT & Business Systems Partnership: Provide security oversight across the SaaS application lifecycle — vendor onboarding assessments, ongoing configuration review, and decommissioning.\n\n - Endpoint Security: Support endpoint security policies and vulnerability management, ensuring endpoint telemetry feeds into detection and response workflows.\n\n - Security Detection & Response: Develop scripts and integrations that extend visibility across corporate systems, partnering with the Detection & Response team to surface signals from SaaS and business applications.\n\nWHAT YOU HAVE\n\n - Demonstrated experience securing enterprise SaaS environments, including integration security, API token management, OAuth governance, and cross-application data flow risk — with working knowledge of authentication/authorization standards (SAML, OIDC, SCIM, X.509) and the ability to debug real-world integration failures.\n\n - Experience building or managing eDiscovery and legal hold programs, including data preservation workflows, custodian management, and coordination with Legal and outside counsel. Familiarity with tools such as Purview, Vault, Relativity, Everlaw, or similar platforms is a plus.\n\n - Strong software engineering fundamentals with proficiency in Python and/or Go, including building integrations against SaaS APIs (not just configuring through consoles), and experience with infrastructure-as-code tooling such as Terraform and/or Pulumi for managing security configurations in a repeatable, auditable way.\n\n - Ability to identify risks and vulnerabilities in IT and business systems and communicate that risk clearly to stakeholders across engineering, legal, and executive audiences.\n\n - Familiarity with endpoint security for macOS and Windows environments, and experience with tools such as Okta, Google Workspace, Salesforce, Workday, NetSuite, Microsoft Entra/Azure/Intune, JAMF, Tines, or similar platforms.\n\n - 4+ years of experience in security engineering, corporate engineering, IT, or a related program management function with a security focus. Experience with generative AI or the legal industry is not required — but genuine curiosity about both will serve you well here.\n\nCOMPENSATION\n\n$220,000 - $330,000 USD\n\nDEPENDING ON YOUR LOCATION, AN APPLICANT PRIVACY NOTICE MAY APPLY TO YOU. YOU CAN FIND ALL OF OUR APPLICANT PRIVACY NOTICES HERE https://harveyai.notion.site/Harvey-Candidate-Privacy-Notices-319ac3fcdd7a803bb807d5094f249922?pvs=74.\n\n#LI-AH1\n\nHarvey is an equal opportunity employer and does not discriminate on the basis of race, gender, sexual orientation, gender identity/expression, national origin, disability, age, genetic information, veteran status, marital status, pregnancy or related condition, or any other basis protected by law.\n\nWe are committed to providing reasonable accommodations to applicants with disabilities, and requests can be made by emailing accommodations@harvey.ai",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "macOS",
+        "Windows",
+        "Jamf",
+        "Intune",
+        "Okta",
+        "Google Workspace",
+        "Entra ID",
+        "Security",
+        "FullTime",
+        "Hybrid"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "Endpoint engineering",
+        "Endpoint security",
+        "Compliance evidence",
+        "Windows platform"
+      ],
+      "tools": [
+        "Jamf",
+        "Intune",
+        "Okta",
+        "Google Workspace",
+        "Entra ID"
+      ],
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Staff",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 220000,
+        "max": 330000,
+        "currency": "USD",
+        "label": "$220k-$330k"
+      }
+    },
+    {
+      "id": "ashby-harvey-f30a1b59-279c-43cb-bf56-1745a84dfd82",
+      "title": "Staff Corporate Security Engineer",
+      "company": "Harvey",
+      "location": "San Francisco",
+      "mapLocation": {
+        "label": "San Francisco, CA",
+        "latitude": 37.7749,
+        "longitude": -122.4194
+      },
+      "workplace": "Hybrid",
+      "postedAt": "2026-08-01T00:44:39.928Z",
+      "fetchedAt": "2026-10-12T02:26:13.665Z",
+      "staleAfter": "2026-11-26T02:26:13.665Z",
+      "expiresAt": "2026-11-26T02:26:13.665Z",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/harvey/f30a1b59-279c-43cb-bf56-1745a84dfd82",
+      "applyUrl": "https://jobs.ashbyhq.com/harvey/f30a1b59-279c-43cb-bf56-1745a84dfd82/application",
+      "attributionLabel": "Ashby / Harvey",
+      "termsProfile": "public-api",
+      "summary": "WHY HARVEY At Harvey, we’re transforming how legal and professional services operate. By combining frontier agentic AI, an enterprise-grade platform, and deep domain expertise, we’re reshaping how critical knowledge work gets done for decades to come....",
+      "description": "WHY HARVEY\n\nAt Harvey, we’re transforming how legal and professional services operate. By combining frontier agentic AI, an enterprise-grade platform, and deep domain expertise, we’re reshaping how critical knowledge work gets done for decades to come.\n\nThis is a rare chance to help build a generational company at a true inflection point. We have strong product-market fit and world-class investor support. We’re scaling fast and defining a new category in real time. The work is ambitious, the bar is high, and the opportunity for growth — personal, professional, and financial — is unmatched.\n\nOur team moves fast, takes ownership, and is deeply committed to the mission — operating with intensity, staying close to our customers, and pushing each other for excellence. We live by three values: Decisiveness, Simplicity, and Job's Not Finished. We act quickly on clear judgment over perfect information, we believe simplicity is what scales, and we're never satisfied with where we are. If you want to do the best work of your career alongside people who share that drive, we'd love to build with you.\n\nAt Harvey, the future of professional services is being written today — and we’re just getting started.\n\nROLE OVERVIEW\n\nSome of the world's largest companies and their law firms use Harvey's AI to deliver world-class client services at unprecedented scale, entrusting Harvey with their most sensitive documents in the process.\n\nThis role joins Harvey's corporate security function, which secures the company's IT and business systems as Harvey grows rapidly, balancing risk with user experience while validating every assumption through threat modeling and real-world testing rather than relying on best practice alone.\n\nIt is a strong fit for someone at the intersection of security engineering and enterprise systems- someone who understands how data flows between SaaS applications, can pinpoint where security breaks down in complex integrations, and knows how to build controls that scale. Experience with eDiscovery workflows and legal holds is a meaningful differentiator given the nature of Harvey's customer base.\n\nWHAT YOU'LL DO\n\n - Enterprise Integrations & SaaS Security: Design, implement, and govern security controls for cross-application data flows, API integrations, OAuth connections, and third-party SaaS platforms. Own the security review lifecycle for new integrations and automate posture monitoring to catch drift early.\n\n - eDiscovery & Legal Hold Program: Continue to build and operate Harvey's legal hold infrastructure, including data preservation, collection workflows, and custodian management. Partner with Legal and Compliance to meet litigation readiness requirements across our collaboration and productivity stack.\n\n - IT & Business Systems Partnership: Provide security oversight across the SaaS application lifecycle — vendor onboarding assessments, ongoing configuration review, and decommissioning.\n\n - Endpoint Security: Support endpoint security policies and vulnerability management, ensuring endpoint telemetry feeds into detection and response workflows.\n\n - Security Detection & Response: Develop scripts and integrations that extend visibility across corporate systems, partnering with the Detection & Response team to surface signals from SaaS and business applications.\n\nWHAT YOU HAVE\n\n - Demonstrated experience securing enterprise SaaS environments, including integration security, API token management, OAuth governance, and cross-application data flow risk — with working knowledge of authentication/authorization standards (SAML, OIDC, SCIM, X.509) and the ability to debug real-world integration failures.\n\n - Experience building or managing eDiscovery and legal hold programs, including data preservation workflows, custodian management, and coordination with Legal and outside counsel. Familiarity with tools such as Purview, Vault, Relativity, Everlaw, or similar platforms is a plus.\n\n - Strong software engineering fundamentals with proficiency in Python and/or Go, including building integrations against SaaS APIs (not just configuring through consoles), and experience with infrastructure-as-code tooling such as Terraform and/or Pulumi for managing security configurations in a repeatable, auditable way.\n\n - Ability to identify risks and vulnerabilities in IT and business systems and communicate that risk clearly to stakeholders across engineering, legal, and executive audiences.\n\n - Familiarity with endpoint security for macOS and Windows environments, and experience with tools such as Okta, Google Workspace, Salesforce, Workday, NetSuite, Microsoft Entra/Azure/Intune, JAMF, Tines, or similar platforms.\n\n - 4+ years of experience in security engineering, corporate engineering, IT, or a related program management function with a security focus. Experience with generative AI or the legal industry is not required — but genuine curiosity about both will serve you well here.\n\nCOMPENSATION\n\n$220,000 - $330,000 USD\n\nDEPENDING ON YOUR LOCATION, AN APPLICANT PRIVACY NOTICE MAY APPLY TO YOU. YOU CAN FIND ALL OF OUR APPLICANT PRIVACY NOTICES HERE https://harveyai.notion.site/Harvey-Candidate-Privacy-Notices-319ac3fcdd7a803bb807d5094f249922?pvs=74.\n\n#LI-AH1\n\nHarvey is an equal opportunity employer and does not discriminate on the basis of race, gender, sexual orientation, gender identity/expression, national origin, disability, age, genetic information, veteran status, marital status, pregnancy or related condition, or any other basis protected by law.\n\nWe are committed to providing reasonable accommodations to applicants with disabilities, and requests can be made by emailing accommodations@harvey.ai",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "macOS",
+        "Windows",
+        "Jamf",
+        "Intune",
+        "Okta",
+        "Google Workspace",
+        "Entra ID",
+        "Security",
+        "FullTime",
+        "Hybrid"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "Endpoint engineering",
+        "Endpoint security",
+        "Compliance evidence",
+        "Windows platform"
+      ],
+      "tools": [
+        "Jamf",
+        "Intune",
+        "Okta",
+        "Google Workspace",
+        "Entra ID"
+      ],
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Staff",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 220000,
+        "max": 330000,
+        "currency": "USD",
+        "label": "$220k-$330k"
+      }
+    },
+    {
+      "id": "ashby-fluidstack-ac7b19a6-abbe-4f60-8421-7658cb3cb6ef",
+      "title": "IT Engineer, Data Center",
+      "company": "Fluidstack",
+      "location": "Barber Lake, TX",
+      "workplace": "On-site",
+      "postedAt": "2026-07-17T23:43:26.239Z",
+      "fetchedAt": "2026-10-12T02:26:13.665Z",
+      "staleAfter": "2026-11-26T02:26:13.665Z",
+      "expiresAt": "2026-11-26T02:26:13.665Z",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/fluidstack/ac7b19a6-abbe-4f60-8421-7658cb3cb6ef",
+      "applyUrl": "https://jobs.ashbyhq.com/fluidstack/ac7b19a6-abbe-4f60-8421-7658cb3cb6ef/application",
+      "attributionLabel": "Ashby / Fluidstack",
+      "termsProfile": "public-api",
+      "summary": "ABOUT FLUIDSTACK We exist to make humanity more free. For most of human history, you farmed or you starved. Technology gave people more time for the things they wanted to do, instead of things they had to do. Powerful AI will be the biggest lever for...",
+      "description": "ABOUT FLUIDSTACK\n\nWe exist to make humanity more free. For most of human history, you farmed or you starved. Technology gave people more time for the things they wanted to do, instead of things they had to do. Powerful AI will be the biggest lever for human choice we've ever built - but only if models are aligned with what humanity actually wants. There are groups building AI who don't share these goals. Whoever deploys frontier compute infrastructure fastest will decide whether AI expands human freedom or shrinks it.\n\nWe're singularly focused on delivering 10 to 100s of GWs of compute faster than anyone else, rethinking every layer of the stack. We acquire power, design and build data centers, and operate them - with teams spanning hardware and software. Speed and scale are our key differentiators. Come be a part of building civilization-scale infrastructure for AI.\n\nWe hire people who care deeply about this problem space. If that is you, please apply!\n\nHOW WE OPERATE\n\n - Be a barrel. Full autonomy. Own things end to end, take on scope without being asked, no permission required to operate outside your core role.\n\n - Insane urgency. We drive everything forward as fast as possible.\n\n - Reason from first principles. Challenge every assumption. Zero analogy thinking, no egos, the best idea wins.\n\n - Love of the game. The frontier of AI is the most interesting problem of our time. We put in long hours at high intensity to push the frontier forward.\n\n - Build something that actually matters. If you're going to spend your time, spend it on something that matters to the world.\n\nTHE IT TEAM\n\n - Examples of key problems the team is working on\n\n - Engineer the systems behind one of the world's largest compute buildouts. Everything runs as code, version-controlled and reproducible, so a new hire, team, or site spins up in minutes instead of days. You'll build internal infrastructure with real engineering rigor and keep it ahead of a company growing 10x.\n\n - Solve multi-tenancy problems most IT engineers never touch. Fluidstack runs teams, sites, and customers in parallel, and the internal systems have to keep them cleanly separated and secure at speed. You'll own architecture problems usually reserved for product infrastructure, on the inside.\n\n - Give every employee the speed it takes to reach tens of gigawatts. The faster the company's people move, the faster we get to tens of gigawatts. You'll own the internal systems and support that keep a 10x workforce unblocked.\n\nROLE SCOPE\n\n - Build and run the on-site IT infrastructure at gigawatt-scale data center campuses, from corporate network and Wi-Fi to badge systems, conference rooms, and edge compute, so a new site is operational the day the first team arrives.\n\n - Automate provisioning of endpoints, identity, and access across a workforce growing 10x, so device setup and offboarding run as version-controlled code rather than manual tickets.\n\n - Own the multi-site IT stack that keeps teams, contractors, and customers cleanly separated and secure, coordinating with the security team on access controls and network segmentation.\n\n - Stand up repeatable IT deployment runbooks for each new campus so the tenth site comes online faster and cleaner than the first.\n\n - Resolve on-site incidents and unblock field and construction teams directly, closing the gap between a reported issue and a working system in hours, not days.\n\nWHAT WE'RE LOOKING FOR\n\n - The below is a starting point. We always make space for exceptional people, so if you don't fit this role exactly, tell us where you would https://jobs.ashbyhq.com/fluidstack/05c2e69c-42f9-4fcb-9cf0-a467aaf98f1c.\n\n - You've built and run IT infrastructure across multiple physical sites, standing up networks, identity, and endpoint management from nothing rather than inheriting a mature environment.\n\n - You've automated IT operations with code (scripting, infrastructure-as-code, MDM policy as code) so that a task done twice by hand became software.\n\n - You've owned identity and access management (SSO, SCIM, directory services) for a fast-growing organization without letting access sprawl or offboarding gaps accumulate.\n\n - You've been the person field, construction, or operations teams call when systems are down on site, and you've resolved incidents under time pressure with people waiting on you.\n\n - You've designed multi-tenant or segmented network environments that kept separate teams, sites, or customers secure without slowing anyone down.\n\n - You write documentation and runbooks clear enough that the next engineer can stand up a site without asking you how.\n\n - Bonus: Data center or industrial site IT experience. Hands-on networking (BGP, VLANs, firewalls) at scale. Okta, Jamf, or Intune administration. Security or compliance framework exposure (SOC 2, ISO 27001).\n\nWe are committed to pay equity and transparency.\n\nFluidstack is an Equal Employment Opportunity Employer. All qualified applicants will receive consideration for employment without regard to race, color, religion, sex, national origin, sexual orientation, gender identity, disability and protected veterans’ status, or any other characteristic protected by law. Fluidstack will consider for employment qualified applicants with arrest and conviction records pursuant to applicable law.\n\nYou will receive a confirmation email once your application has successfully been accepted. If there is an error with your submission and you did not receive a confirmation email, please email careers@fluidstack.io with your resume/CV, the role you've applied for, and the date you submitted your application-- someone from our recruiting team will be in touch.",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "Windows",
+        "macOS",
+        "Jamf",
+        "Intune",
+        "Okta",
+        "Security & Corp IT",
+        "IT",
+        "FullTime",
+        "OnSite"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "Endpoint engineering",
+        "MDM",
+        "Compliance evidence",
+        "Windows platform"
+      ],
+      "tools": [
+        "Jamf",
+        "Intune",
+        "Okta"
+      ],
+      "platforms": [
+        "Windows",
+        "macOS"
+      ],
+      "roleFamily": "Device Compliance",
+      "seniority": "Mid",
+      "employmentType": "Full-time"
+    },
+    {
+      "id": "ashby-fluidstack-7e0c0ca1-c6ea-47f4-987c-bfb71ca88384",
+      "title": "Security Engineer, Corp IT",
+      "company": "Fluidstack",
+      "location": "Austin, TX",
+      "mapLocation": {
+        "label": "Austin, TX",
+        "latitude": 30.2672,
+        "longitude": -97.7431
+      },
+      "workplace": "On-site",
+      "postedAt": "2026-07-17T23:21:14.995Z",
+      "fetchedAt": "2026-10-12T02:26:13.665Z",
+      "staleAfter": "2026-11-26T02:26:13.665Z",
+      "expiresAt": "2026-11-26T02:26:13.665Z",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/fluidstack/7e0c0ca1-c6ea-47f4-987c-bfb71ca88384",
+      "applyUrl": "https://jobs.ashbyhq.com/fluidstack/7e0c0ca1-c6ea-47f4-987c-bfb71ca88384/application",
+      "attributionLabel": "Ashby / Fluidstack",
+      "termsProfile": "public-api",
+      "summary": "ABOUT FLUIDSTACK We exist to make humanity more free. For most of human history, you farmed or you starved. Technology gave people more time for the things they wanted to do, instead of things they had to do. Powerful AI will be the biggest lever for...",
+      "description": "ABOUT FLUIDSTACK\n\nWe exist to make humanity more free. For most of human history, you farmed or you starved. Technology gave people more time for the things they wanted to do, instead of things they had to do. Powerful AI will be the biggest lever for human choice we've ever built - but only if models are aligned with what humanity actually wants. There are groups building AI who don't share these goals. Whoever deploys frontier compute infrastructure fastest will decide whether AI expands human freedom or shrinks it.\n\nWe're singularly focused on delivering 10 to 100s of GWs of compute faster than anyone else, rethinking every layer of the stack. We acquire power, design and build data centers, and operate them - with teams spanning hardware and software. Speed and scale are our key differentiators. Come be a part of building civilization-scale infrastructure for AI.\n\nWe hire people who care deeply about this problem space. If that is you, please apply!\n\nHOW WE OPERATE\n\n - Be a barrel. Full autonomy. Own things end to end, take on scope without being asked, no permission required to operate outside your core role.\n\n - Insane urgency. We drive everything forward as fast as possible.\n\n - Reason from first principles. Challenge every assumption. Zero analogy thinking, no egos, the best idea wins.\n\n - Love of the game. The frontier of AI is the most interesting problem of our time. We put in long hours at high intensity to push the frontier forward.\n\n - Build something that actually matters. If you're going to spend your time, spend it on something that matters to the world.\n\nTHE SECURITY TEAM\n\nExamples of key problems the team is working on\n\n - You're securing the frontier of AI. The model weights training on our infrastructure are the most valuable and most targeted artifacts in technology, and we're standing up the compute to hold them faster than anyone ever has. A breach isn't a leak, it's the frontier walking out the door.\n\n - Build the entire security program from scratch. Most leaders inherit someone else's system and spend a career patching it. Here you own it end to end, bare metal to boardroom, as we scale across continents.\n\n - Your threat surface is measured in gigawatts. The customers running on our infrastructure are building the most consequential technology in human history, and being responsible for the physical and logical security of that work makes everything else feel small.\n\nROLE SCOPE\n\n - Secure the corporate environment end to end: identity, endpoints, SaaS, and email for a workforce growing 10x.\n\n - Build detection and response for the corp attack surface, from phishing to token theft to insider risk.\n\n - Engineer zero-trust access: SSO, device trust, and least-privilege provisioning that scale with hiring instead of against it.\n\n - Automate the controls so security runs as code and policy, not tickets and exceptions.\n\nWHAT WE'RE LOOKING FOR\n\n - The below is a starting point. We always make space for exceptional people, so if you don't fit this role exactly, tell us where you would https://jobs.ashbyhq.com/fluidstack/05c2e69c-42f9-4fcb-9cf0-a467aaf98f1c.\n\n - You've secured a fast-growing company's corp stack hands-on: IdP, MDM, email, SaaS.\n\n - You've built detections that caught real attacks, and tuned out the noise that buries teams.\n\n - You treat identity as the perimeter and have implemented that in practice.\n\n - You automate anything you do twice, in code, not runbooks.\n\n - You've responded to live incidents and made the containment call under pressure.\n\n - Bonus: Okta or equivalent at depth. SIEM and SOAR engineering. macOS and Windows fleet security. Insider-risk programs.\n\nWe are committed to pay equity and transparency.\n\nFluidstack is an Equal Employment Opportunity Employer. All qualified applicants will receive consideration for employment without regard to race, color, religion, sex, national origin, sexual orientation, gender identity, disability and protected veterans’ status, or any other characteristic protected by law. Fluidstack will consider for employment qualified applicants with arrest and conviction records pursuant to applicable law.\n\nYou will receive a confirmation email once your application has successfully been accepted. If there is an error with your submission and you did not receive a confirmation email, please email careers@fluidstack.io with your resume/CV, the role you've applied for, and the date you submitted your application-- someone from our recruiting team will be in touch.",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "macOS",
+        "Windows",
+        "Okta",
+        "Security & Corp IT",
+        "FullTime",
+        "OnSite"
+      ],
+      "matchReasons": [
+        "Endpoint engineering",
+        "MDM",
+        "Windows platform",
+        "macOS platform"
+      ],
+      "tools": [
+        "Okta"
+      ],
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Mid",
+      "employmentType": "Full-time"
+    },
+    {
+      "id": "ashby-assured-903a4f64-df41-4eb8-bbc7-1be1d2754be7",
+      "title": "Senior IT Support Engineer",
+      "company": "Assured",
+      "location": "Remote",
+      "workplace": "Remote",
+      "postedAt": "2026-07-17T17:12:05.329Z",
+      "fetchedAt": "2026-10-12T02:26:13.665Z",
+      "staleAfter": "2026-11-26T02:26:13.665Z",
+      "expiresAt": "2026-11-26T02:26:13.665Z",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/assured/903a4f64-df41-4eb8-bbc7-1be1d2754be7",
+      "applyUrl": "https://jobs.ashbyhq.com/assured/903a4f64-df41-4eb8-bbc7-1be1d2754be7/application",
+      "attributionLabel": "Ashby / Assured",
+      "termsProfile": "public-api",
+      "summary": "Assured is on a mission to modernize insurance. Claims processing (i.e. should we pay this claim?), while often overlooked, is the foundation of the entire industry. It’s currently highly manual, involving phone calls, faxes, and gut instinct, costing...",
+      "description": "Assured is on a mission to modernize insurance. Claims processing (i.e. should we pay this claim?), while often overlooked, is the foundation of the entire industry. It’s currently highly manual, involving phone calls, faxes, and gut instinct, costing tens of billions of dollars a year. We can do better.\n\nAt Assured, we provide large insurers with the software solutions they need to win in a modern, technology-driven world. From self-service claim-filing software to backend fraud detection, we’re the engine that powers claims processing for some of the largest insurers in the world.\n\nThe challenges we face are deep and diverse, from creating digital experiences that provide comfort and clarity to claimants at their most stressed and vulnerable to orchestrating large-scale ML-driven decision-making on billions of dollars of claims payments, life at Assured is dynamic, collaborative, and rewarding.\n\nWe're looking for a Senior IT Support Engineer to help drive IT operations forward at Assured. Reporting to the IT Manager, you'll own day-to-day support and systems for a fully remote team, lead employee onboarding and offboarding, and partner across IT and Security to keep our environment reliable, compliant, and easy to work in. You'll bring depth in identity, endpoint, and SaaS administration — and just as importantly, an AI-forward mindset: we're building an IT function where AI and automation absorb toil so the team can focus on higher-leverage work.\n\nYOU WILL…\n\n👨‍💻 User Support & IT Operations – Serve as a senior escalation point for a fully remote, distributed workforce. Deliver high-quality, timely, empathetic support entirely over Slack, Zoom, and remote screen-share tools — no walk-up desk, no local hands. Own complex troubleshooting across macOS (primary), Windows, Linux, and mobile.\n\n🗣️ Onboarding & Offboarding – Own end-to-end user lifecycle: account provisioning, group membership, device shipment and enrollment, and clean offboarding. Continuously refine the process alongside People Ops and Security.\n\n🔐 Identity & Access Management – Administer our identity stack in Rippling (our core IDP and MDM) — SCIM connections, groups, workflows, SSO/MFA configurations across our SaaS environment. Okta experience is a strong plus and forward-looking as we evaluate our identity architecture.\n\n💻 Device & Endpoint Management – Own our Mac-first fleet through Rippling MDM: enrollment, configuration profiles, patching, compliance baselines, and remote troubleshooting. Maintain accurate asset inventory in Snipe-IT.\n\n🤖 AI-Powered IT Operations – Assured runs on an AI-forward IT stack. You'll operate and extend our automation layer via Console.com http://Console.com (ARIA) powering our Slack Request channels, and contribute directly to the overall automation of access provisioning, deprovisioning, and common IT workflows — pushing more of our routine work into agentic AI so the team can focus on higher-value initiatives. Experience with Risotto, Unthread, or similar AI ITSM platforms is a big plus.\n\n🛡️ Security & Compliance – Help enforce access controls and endpoint hardening in support of our SOC 2 Type II, HIPAA, and ISO 27001 programs. Help facilitate access reviews with the Security team, and support evidence gathering for audits and offboarding verification.\n\n📚 Documentation & Knowledge – Write and maintain runbooks, SOPs, and playbooks in Notion. Turn tribal knowledge into structured content that our AI tools can actually retrieve and act on.\n\n🚀 Roadmap & Improvement – Contribute meaningfully to the IT roadmap: tooling evaluations, integration work, and automations. Mentor teammates and help raise the bar as we scale from 200 → 300+ employees.\n\nYOU HAVE…\n\n📅 5–8+ years of IT support / IT engineering experience, ideally in a fully remote, SaaS-heavy, compliance-driven environment.\n\n🌐 Proven experience supporting a fully remote workforce — you're skilled at diagnosing and resolving issues without physical access to devices, comfortable coordinating device logistics (shipping, returns, remote wipe), and effective at building rapport and trust with employees you may never meet in person.\n\n🖥️ Deep hands-on experience with modern IDP and MDM platforms. Direct Rippling experience strongly preferred (IDP, SCIM, MDM, Workflows). Okta experience is a strong plus.\n\n🔑 Strong working knowledge of SSO, SAML, SCIM, OAuth, and MFA across a diverse SaaS environment.\n\n💻 Advanced macOS administration; solid Windows and mobile troubleshooting; comfortable with shell scripting and light automation.\n\n🛠️ Proficiency with Google Workspace administration, Slack, and common SaaS admin consoles (Zoom, 1Password, Notion, etc.).\n\n🤖 AI-forward mindset. Experience with or genuine curiosity about Console.com http://Console.com (ARIA), Risotto, Unthread, or other AI ITSM / Slack-native help desk platforms. Comfort using AI tools (including Claude) as part of daily IT operations.\n\n🔐 Experience operating in an environment governed by SOC 2, HIPAA, ISO 27001, or similar frameworks — you understand access reviews, evidence collection, and change management.\n\n⚙️ An automation-first mindset — you'd rather build a workflow than repeat a task, and you actively look for what AI or scripting can absorb.\n\n🧩 Excellent problem-solving, written communication, and mentorship instincts.\n\n📊 Ability to work independently, prioritize a mixed queue, and drive projects to completion with minimal oversight.\n\n🧾 Familiarity with asset management (Snipe-IT or similar) and Slack-based ticket intake workflows.\n\n⏰ Working Hours: Must be located in or able to work consistent daily hours matching the Eastern Time Zone (EST/EDT).\n\nThis is a great opportunity to help build a modern, AI-native IT function at a fast-growing insurance technology company. If you're excited about pushing what \"IT\" can look like when AI is part of the team, we'd love to talk. 🚀\n\nBenefits:\n\n🤑 Competitive Compensation: Competitive salary and equity packages for all employees\n\n🏥 Healthcare Plan: Platinum medical, dental, and vision\n\n🛡️ Free life insurance: Including long-term disability & short-term disability\n\n🏄 Unlimited PTO: Uncapped vacation days & paid holidays\n\n👶 Family Leave: Maternity & paternity\n\n📈 401(k) Contribution: Assured contributes 3% of your income, even if you don't contribute\n\n🏠 WFH Benefits: Lunch on us 2x/week, monthly phone stipend & other home office perks\n\n👪 Health FSAs & HSAs: Pre-tax accounts for out-of-pocket medical expenses\n\n🤝 Team events & Offsites: We're remote, but we regularly get together\n\n**We have been made aware of individuals falsely posing as recruiters from Assured Insurance Technologies Inc. Please note that we only contact candidates from official @assured.claims http://assured.claims email addresses and all interviews are conducted through verified company channels. If you are unsure whether a message is legitimate, please contact us directly at recruiting-ops@assured.claims before sharing any personal information**\n\nOur Commitment:\nWe are an equal opportunity employer and value diversity at our company. We do not discriminate on the basis of race, religion, color, national origin, sex, gender, gender expression, sexual orientation, age, marital status, veteran status, or disability status. We will ensure that individuals with disabilities are provided reasonable accommodation to participate in the job application or interview process, perform essential job functions, and receive other benefits and privileges of employment. Please contact us to request accommodation.",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "macOS",
+        "Windows",
+        "Linux",
+        "Okta",
+        "Google Workspace",
+        "Operations",
+        "FullTime",
+        "Remote"
+      ],
+      "matchReasons": [
+        "Endpoint engineering",
+        "MDM",
+        "Compliance evidence",
+        "Windows platform",
+        "macOS platform"
+      ],
+      "tools": [
+        "Okta",
+        "Google Workspace"
+      ],
+      "platforms": [
+        "macOS",
+        "Windows",
+        "Linux"
+      ],
+      "roleFamily": "Device Compliance",
+      "seniority": "Senior",
+      "employmentType": "Full-time"
+    },
+    {
+      "id": "ashby-Crusoe-40033c38-88a2-4d77-b172-2f9d9d29ffbe",
+      "title": "Senior Endpoint Security Engineer",
+      "company": "Crusoe",
+      "location": "San Francisco, CA - US",
+      "mapLocation": {
+        "label": "San Francisco, CA",
+        "latitude": 37.7749,
+        "longitude": -122.4194
+      },
+      "workplace": "On-site",
+      "postedAt": "2026-07-10T18:36:35.908Z",
+      "fetchedAt": "2026-10-12T02:26:13.665Z",
+      "staleAfter": "2026-11-26T02:26:13.665Z",
+      "expiresAt": "2026-11-26T02:26:13.665Z",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Crusoe/40033c38-88a2-4d77-b172-2f9d9d29ffbe",
+      "applyUrl": "https://jobs.ashbyhq.com/Crusoe/40033c38-88a2-4d77-b172-2f9d9d29ffbe/application",
+      "attributionLabel": "Ashby / Crusoe",
+      "termsProfile": "public-api",
+      "summary": "Crusoe is on a mission to accelerate the abundance of energy and intelligence. As the only vertically integrated AI infrastructure company built from the ground up, we own and operate each layer of the stack — from electrons to tokens — to power the...",
+      "description": "Crusoe is on a mission to accelerate the abundance of energy and intelligence. As the only vertically integrated AI infrastructure company built from the ground up, we own and operate each layer of the stack — from electrons to tokens — to power the world's most ambitious AI workloads. When you join Crusoe, you join a team that is building the future, faster.\n\nWe're in the midst of the greatest industrial revolution of our time. The demand for AI compute is boundless, and power is a bottleneck. We're solving that — with an energy-first approach that makes AI infrastructure better for the world and faster for the people innovating with AI.\n\nWe're looking for problem-solving, opportunity-finding teammates with a sense of urgency, who believe in the scale of our ambition and thrive on a path not fully paved — people who want to grow their careers alongside a team of experts across energy, manufacturing, data center construction, and cloud services.\n\nIf you want to do the most meaningful work of your career, help our customers and partners advance their AI strategies, and be part of a high-performing team that believes in each other, come build with us at Crusoe.\n\nAbout the Role:\n\nCrusoe is seeking a Security Engineer to join the Security Engineering team as the primary driver for implementing security defaults and endpoint visibility. This is a strategic, architectural position focused on building secure-by-default endpoints that protect the organization as it scales. You will be responsible for security architecture, endpoint visibility, and maintaining our security posture across a rapidly growing global fleet of macOS, Windows, iOS, and Android devices. This role involves cross-functional partnership with Security and People Operations, with genuine scope to shape how Crusoe manages and secures endpoints. This role is onsite in San Francisco, CA, Sunnyvale, CA or Denver CO.\n\nWhat You'll Be Working On:\n\n - Administer and continuously improve Jamf and Microsoft Intune environments across all managed device types: macOS, Windows, iOS, and Android; maintain configuration profiles, compliance policies, app deployment packages, and OS update enforcement across all platforms.\n\n - Build and maintain automated enrollment workflows including Apple Business Manager (ABM) and Windows Autopilot for zero-touch provisioning at scale.\n\n - Own a structured patch management program with clear SLAs for OS and application updates across all device platforms.\n\n - Define and enforce device compliance baselines aligned with Crusoe security standards and frameworks including CIS Benchmarks and SOC 2; integrate MDM telemetry with EDR and SIEM tooling for compliance drift visibility and proactive remediation.\n\n - Partner with Security on device trust policies, Conditional Access enforcement, certificate-based authentication rollout (SCEP/PKCS), and network-level access control for certificate-based Wi-Fi and VPN authentication.\n\n - Build and maintain scripts and automation in Bash, Python, or PowerShell to reduce manual IT workload; develop self-service tooling that puts routine fixes and software requests directly in employees’ hands.\n\n - Own MDM runbooks, device policy documentation, and asset records; contribute to the standardization of enrollment workflows, naming conventions, and configuration baselines across all platforms.\n\n - Serve as the MDM escalation point in the IT on-call rotation; partner with People Operations on seamless device provisioning and deprovisioning; mentor junior IT team members on endpoint management practices.\n\nWhat You'll Bring to the Team:\n\n - Foundational Security Experience: Demonstrated experience with OSQuery and CrowdStrike (XDR/EDR) for endpoint visibility and threat detection.\n\n - Identity & Access Management: Deep understanding of Okta (Device Trust/FastPass) and Entra ID (Conditional Access).\n\n - MDM/Endpoint Management: 3–6 years of experience with Jamf/Kandji and Microsoft Intune (Autopilot, Compliance Policies, App Protection).\n\n - Independent Engineering: A \"Security-First\" mindset and proven ability to drive R&D initiatives from planning through implementation independently, with a focus on automating security controls.\n\n - Scripting & Automation: Proficiency in Bash, Python, or PowerShell for device policy automation, packaging, and remediation.\n\n - Infrastructure Knowledge: Strong understanding of certificate infrastructure (SCEP, PKCS) and experience with Absolute for Windows persistence.\n\n - Strong documentation habits, ownership mindset, and ability to communicate technical policies to non-technical stakeholders.\n\n - Bachelor’s degree in IT, Computer Science, or equivalent practical experience.\n\n - OSQuery and CrowdStrike expertise , demonstrable experience leveraging OSQuery for endpoint visibility and administering CrowdStrike for threat detection and response; these are foundational to our security visibility and enforcement strategy.\n\nBonus Points\n\n - Jamf Pro administration experience: Smart Groups, configuration profiles, and Jamf Connect or equivalent SSO integration.\n\n - Experience with Jamf Protect, Microsoft Defender for Endpoint, or equivalent EDR tooling.\n\n - Familiarity with Linux endpoint management via Fleet, Puppet, or similar.\n\n - Apple Certified Support Professional (ACSP) or equivalent MDM certification.\n\n - Exposure to SIEM tooling and endpoint log pipelines.\n\n - Experience at a high-growth technology company through a period of rapid headcount scaling.\n\nBenefits:\n\n - Competitive compensation and equity packages\n\n - Restricted Stock Units\n\n - Paid time off, paid holidays & leave of absence programs\n\n - Comprehensive health, dental & vision insurance\n\n - Employer contributions to HSA account\n\n - Paid parental leave\n\n - Paid life insurance, short-term and long-term disability\n\n - Professional development & tuition reimbursement\n\n - Mental health & wellness support\n\n - Commuter benefits (parking & transit)\n\n - Cell phone stipend\n\n - 401(k) Retirement plan with company match up to 4% of salary\n\n - Volunteer time off\n\n - Global travel insurance & emergency assistance\n\n - Daily meals allowance\n\n - Additional perks & programs specific to location\n\nCompensation Range\n\nCompensation will be paid in the range of up to $170,000 - $205,000 + Bonus. Restricted Stock Units are included in all offers. Compensation to be determined by the applicants knowledge, education, and abilities, as well as internal equity and alignment with market data.\n\nCrusoe is an Equal Opportunity Employer. Employment decisions are made without regard to race, color, religion, disability, genetic information, pregnancy, citizenship, marital status, sex/gender, sexual preference/ orientation, gender identity, age, veteran status, national origin, or any other status protected by law or regulation.",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "macOS",
+        "Windows",
+        "iOS",
+        "Android",
+        "Linux",
+        "Jamf",
+        "Intune",
+        "Kandji",
+        "Okta",
+        "Entra ID",
+        "Autopilot",
+        "PowerShell"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "Kandji MDM",
+        "Intune + Autopilot",
+        "Endpoint engineering",
+        "MDM"
+      ],
+      "tools": [
+        "Jamf",
+        "Intune",
+        "Kandji",
+        "Okta",
+        "Entra ID",
+        "Autopilot",
+        "PowerShell",
+        "Defender"
+      ],
+      "platforms": [
+        "macOS",
+        "Windows",
+        "iOS",
+        "Android",
+        "Linux"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 170000,
+        "max": 205000,
+        "currency": "USD",
+        "label": "$170k-$205k"
+      }
+    },
+    {
+      "id": "ashby-Crusoe-c4fefe80-a789-4829-a839-81ebc21247a7",
+      "title": "Senior Microsoft Cloud Infrastructure Engineer",
+      "company": "Crusoe",
+      "location": "San Francisco, CA - US",
+      "mapLocation": {
+        "label": "San Francisco, CA",
+        "latitude": 37.7749,
+        "longitude": -122.4194
+      },
+      "workplace": "On-site",
+      "postedAt": "2026-07-06T22:27:23.233Z",
+      "fetchedAt": "2026-10-12T02:26:13.665Z",
+      "staleAfter": "2026-11-26T02:26:13.665Z",
+      "expiresAt": "2026-11-26T02:26:13.665Z",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Crusoe/c4fefe80-a789-4829-a839-81ebc21247a7",
+      "applyUrl": "https://jobs.ashbyhq.com/Crusoe/c4fefe80-a789-4829-a839-81ebc21247a7/application",
+      "attributionLabel": "Ashby / Crusoe",
+      "termsProfile": "public-api",
+      "summary": "Crusoe is on a mission to accelerate the abundance of energy and intelligence. As the only vertically integrated AI infrastructure company built from the ground up, we own and operate each layer of the stack — from electrons to tokens — to power the...",
+      "description": "Crusoe is on a mission to accelerate the abundance of energy and intelligence. As the only vertically integrated AI infrastructure company built from the ground up, we own and operate each layer of the stack — from electrons to tokens — to power the world's most ambitious AI workloads. When you join Crusoe, you join a team that is building the future, faster.\n\nWe're in the midst of the greatest industrial revolution of our time. The demand for AI compute is boundless, and power is a bottleneck. We're solving that — with an energy-first approach that makes AI infrastructure better for the world and faster for the people innovating with AI.\n\nWe're looking for problem-solving, opportunity-finding teammates with a sense of urgency, who believe in the scale of our ambition and thrive on a path not fully paved — people who want to grow their careers alongside a team of experts across energy, manufacturing, data center construction, and cloud services.\n\nIf you want to do the most meaningful work of your career, help our customers and partners advance their AI strategies, and be part of a high-performing team that believes in each other, come build with us at Crusoe.\n\nAbout This Role\n\nWe’re seeking a Senior Cloud Infrastructure Engineer to own the design, implementation, and lifecycle management of Crusoe’s enterprise cloud infrastructure across corporate and operational environments. This is a high-ownership, hands-on engineering role spanning Microsoft 365, Entra ID, Azure, and Azure Arc-enabled hybrid management. The role sits at the intersection of IT, Security, and site-specific operations to keep systems reliable, secure, and ready to scale with Crusoe’s rapidly expanding footprint of offices, warehouses, and data centers.\n\nWhat You’ll Be Working On\n\n - Administer and optimize Microsoft 365 services (Exchange Online, SharePoint Online, Teams, OneDrive) and own Entra ID tenant health, including Conditional Access, MFA enforcement, and directory synchronization\n\n - Design and manage Azure infrastructure for corporate IT workloads (VMs, virtual networks, storage, and supporting PaaS services) with ongoing cost monitoring and rightsizing\n\n - Implement and administer Azure Arc to unify governance, policy enforcement, and monitoring across hybrid on-premises and cloud environments\n\n - Build and maintain infrastructure-as-code (Terraform, Bicep, or ARM) for repeatable, version-controlled, and auditable deployments\n\n - Plan, rack, and commission physical server hardware at Crusoe data centers, CI facilities, and office sites during new builds and expansions\n\n - Administer Windows Server environments including Active Directory, DNS/DHCP, Group Policy, and certificate services, and manage Hyper-V or VMware virtualized workloads\n\n - Own monitoring, backup, disaster recovery, and incident response for all managed systems; participate in on-call rotation as the escalation owner for server, cloud, and identity incidents\n\n - Drive automation across infrastructure operations, maintain architecture and runbook documentation, and provide mentorship to junior members of the IT Infrastructure team\n\nWhat You’ll Bring to the Team\n\n - 8+ years of hands-on infrastructure experience, with 5+ years focused on Microsoft Azure and M365 administration in enterprise environments\n\n - Deep Microsoft 365 tenant administration, including Exchange Online, SharePoint Online, Teams, OneDrive, and Entra ID (Azure AD)\n\n - Strong Azure infrastructure skills: VMs, VNets, NSGs, storage, ExpressRoute/VPN, and Identity and Access Management\n\n - Hands-on Azure Arc experience for hybrid server management and policy enforcement\n\n - Solid Windows Server administration: Active Directory, DNS/DHCP, Group Policy, certificate services, and file/print services\n\n - Infrastructure-as-code proficiency (Terraform, Bicep, or ARM) with version-controlled practices; PowerShell or Azure CLI scripting for automation\n\n - Ability to perform hands-on physical server work (racking, cabling, and firmware updates) in a data center environment\n\n - Strong troubleshooting, documentation, and cross-functional communication skills; bachelor’s degree in IT, Computer Science, or equivalent practical experience\n\nBonus Points\n\n - Microsoft certifications: AZ-104 (Azure Administrator Associate) or MS-102 (Microsoft 365 Enterprise Administrator Expert)\n\n - VMware vSphere experience alongside or in addition to Hyper-V\n\n - Linux server administration in hybrid Windows/Linux environments\n\n - Experience supporting new site infrastructure builds, coordinating with facilities teams, cabling vendors, and ISPs\n\n - Familiarity with SIEM/SOAR tooling and server and cloud log pipeline integration (Microsoft Sentinel or equivalent)\n\nBenefits:\n\n - Competitive compensation and equity packages\n\n - Restricted Stock Units\n\n - Paid time off, paid holidays & leave of absence programs\n\n - Comprehensive health, dental & vision insurance\n\n - Employer contributions to HSA account\n\n - Paid parental leave\n\n - Paid life insurance, short-term and long-term disability\n\n - Professional development & tuition reimbursement\n\n - Mental health & wellness support\n\n - Commuter benefits (parking & transit)\n\n - Cell phone stipend\n\n - 401(k) Retirement plan with company match up to 4% of salary\n\n - Volunteer time off\n\n - Global travel insurance & emergency assistance\n\n - Daily meals allowance\n\n - Additional perks & programs specific to location\n\nCompensation Range\n\nCompensation will be paid in the range of up to $160,000 - $195,000 + Bonus. Restricted Stock Units are included in all offers. Compensation to be determined by the applicants knowledge, education, and abilities, as well as internal equity and alignment with market data.\n\nCrusoe is an Equal Opportunity Employer. Employment decisions are made without regard to race, color, religion, disability, genetic information, pregnancy, citizenship, marital status, sex/gender, sexual preference/ orientation, gender identity, age, veteran status, national origin, or any other status protected by law or regulation.",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "Windows",
+        "Linux",
+        "Entra ID",
+        "PowerShell",
+        "IT, Compliance, and Security",
+        "IT Systems Engineering",
+        "FullTime",
+        "OnSite"
+      ],
+      "matchReasons": [
+        "PowerShell automation",
+        "Compliance evidence",
+        "Windows platform"
+      ],
+      "tools": [
+        "Entra ID",
+        "PowerShell"
+      ],
+      "platforms": [
+        "Windows",
+        "Linux"
+      ],
+      "roleFamily": "Systems Administration",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 160000,
+        "max": 195000,
+        "currency": "USD",
+        "label": "$160k-$195k"
+      }
+    },
+    {
+      "id": "ashby-drata-51aa1c0e-c624-424e-b319-5e881ed1ca9a",
+      "title": "Senior IT Engineer",
+      "company": "Drata",
+      "location": "Hybrid - San Francisco",
+      "mapLocation": {
+        "label": "San Francisco, CA",
+        "latitude": 37.7749,
+        "longitude": -122.4194
+      },
+      "workplace": "Hybrid",
+      "postedAt": "2026-05-11T23:12:54.820Z",
+      "fetchedAt": "2026-10-12T02:26:13.665Z",
+      "staleAfter": "2026-11-26T02:26:13.665Z",
+      "expiresAt": "2026-11-26T02:26:13.665Z",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/drata/51aa1c0e-c624-424e-b319-5e881ed1ca9a",
+      "applyUrl": "https://jobs.ashbyhq.com/drata/51aa1c0e-c624-424e-b319-5e881ed1ca9a/application",
+      "attributionLabel": "Ashby / Drata",
+      "termsProfile": "public-api",
+      "summary": "Drata is building the trust layer between great companies - automating compliance, managing risk, and helping organizations prove trust continuously as they scale. We're Dratanauts: a global crew of 600+ professionals united by a culture that rewards...",
+      "description": "Drata is building the trust layer between great companies - automating compliance, managing risk, and helping organizations prove trust continuously as they scale. We're Dratanauts: a global crew of 600+ professionals united by a culture that rewards integrity, ownership, and raising the bar, no matter where in the world we're working from.\n\nWhy Join the Drata Team?\nAt Drata, you're not maintaining legacy compliance software - you're building the agentic AI platform defining what trust looks like for the next generation of companies. Here's what makes the work itself worth showing up for:\n\n - Problems without a playbook: You'll work at the edge of AI and security, building agentic governance, continuous compliance, and real-time trust verification to solve problems that don't have an established answer yet. You're writing it as you go.\n\n - Real ownership, not just process: Our values center on owning outcomes and raising the bar, not checking boxes. You're expected to have opinions and back them.\n\n - A seat at the table: Your perspective is unique and valued. Open debate and diverse viewpoints are built into how decisions actually get made here, at every level.\n\n - Growth at rocketship speed: Drata is scaling fast, which means scope grows fast too. High performers get more ownership, visibility, and experience.\n\n - A crew, not just coworkers: Dratanauts consistently describe a \"come as you are\" culture with sharp, curious people—the kind of team that makes hard problems genuinely fun to solve. See what they say here https://drata.com/about/careers/life and follow us on LinkedIn https://www.linkedin.com/company/drata/posts/?feedView=all for company news, employee stories, and career updates.\n\nJob Summary:\n\nAs a member of the IT team, you will play an important role in helping Drata scale securely and thoughtfully as we grow. You’ll build, secure, and continuously improve the systems and processes that power our internal operations across identity and access management, device management, network security, SaaS administration, and workflow automation. This is a great opportunity for someone who enjoys combining strong technical depth with an automation-first mindset to create secure, seamless experiences for employees across the business. You’ll partner closely with teams throughout Drata to strengthen our infrastructure, improve security controls, and bring scalable solutions to the tools and workflows people rely on every day. You’ll also leverage Drata’s security and compliance automation platform to help ensure our IT environment meets critical security and compliance requirements as the company continues to grow. As opportunities arise, you’ll be encouraged to blog, speak, and participate in events to share your work and how other companies can learn from Drata’s approach.\n\nWhat you’ll do:\n\n - Manage and evolve identity, device, and network security infrastructure through infrastructure-as-code, changes are version-controlled, peer-reviewed, and auditable\n\n - Build and maintain automated joiner/mover/leaver workflows so access is provisioned and de-provisioned accurately and on time\n\n - Enforce least-privilege access across the org through scalable IAM governance\n\n - Partner with business departments to evaluate, onboard, and integrate new SaaS tools, owning the full lifecycle from requirements and architecture through to automation and security compliance\n\n - Establish trust and strong relationships with senior leaders, operations managers, and professional staff across other organizational units\n\n - Partner with the Security team to continuously raise the bar on IT security posture\n\n - Own technical documentation, support runbooks, and integration templates\n\n - Provide mentorship to junior staff and encourage their technical development\n\n - Drive AI tool adoption and help the business identify opportunities to integrate AI into workflows\n\n - Build internal tools (CLIs, bots, and dashboards) that make the IT team faster and more effective\n\nWhat you’ll bring:\n\n - Like Apple products? So do we! We are a heavy Mac shop. We need you to have deep technical knowledge of MacOS\n\n - Be our gatekeeper around IAM and have experience with SSO/SAML solutions like Okta and Ping\n\n - We need you to have experience with MDM software like JAMF, Iru (Kandji), or Fleet\n\n - RFC shouldn't be just a three letter acronym to you. We need someone who understands technology basics like networking, dns, firewalls, etc.\n\n - We live in the cloud so we need you to have AWS or GCP experience\n\n - We need you to be able to do in-depth troubleshooting to problem solve\n\n - We are people who are curious and love to learn new things, we want you to have that desire as well\n\n - Be Awesome! You are going to need to work well with your peers because they are often coming to you with problems while frustrated, be kind and clearly communicate to them to make things all better\n\n - Familiarity with SaaS APIs (REST, SOAP, OAuth) for provisioning and automation\n\n - Comfort with infrastructure-as-code (e.g., Terraform) and workflow automation\n\n - Strong grasp of system design, scalability, and SaaS operational best practices\n\n - Familiarity with GitOps workflows and version-controlling infrastructure and configuration changes\n\nHow we support you:\nAt Drata, our people are our strongest advantage—and we prove it with support that exceeds industry standards. Our total rewards package is designed to power your well-being, accelerate your growth, and keep your work-life balance thriving.\n\nExplore how we invest in your Life at Drata https://drata.com/about/life-at-drata?utm_source=chatgpt.com.\n\n - Shared Success: We provide stock equity to ensure that as the company grows, you share directly in that success. Equity gives every employee a sense of ownership and the opportunity to celebrate our wins together—because your contributions don’t just support our progress; they help drive our collective success.\n\n - Health & Wellness: Up to 100% employer-paid premiums for medical, dental, and vision coverage for employees and their dependents, along with comprehensive wellness benefits and healthcare concierge services designed to support your needs beyond traditional insurance.\n\n - Financial Well-being: A comprehensive suite of financial benefits, including a 401(k) plan, company-paid life and disability insurance, tax-advantaged spending accounts, and a range of discounted voluntary offerings to help you customize and strengthen your overall financial position.\n\n - Family Support: We want to support you in life's most important moments, so we offer a paid Parental Leave policy, after six months of employment. Employees also receive access to Kindbody fertility and family-building benefits and dedicated leave specialists who help guide you through the entire process.\n\n - Growth & Development: Generous annual stipends for both professional and personal development, empowering you to invest in your continued growth. You’ll also have access to a wide range of internal learning opportunities, ensuring you can build new skills, deepen your expertise, and advance your career with confidence.\n\n - Time Off & Flexibility: We believe that to do your best work, you should get the time you need for rest, rejuvenation and recovery. Drata offers a flexible vacation policy, paid holidays, and other perks to recharge.\n\nThe expected base salary range for this role is between $157,100 - $194,040 and is listed to provide transparency. Actual base pay will vary based on multiple factors — market location, job-related knowledge, skills, experience, and overall alignment to the role.\n\nCandidates shouldn't expect automatic placement at any particular point within the range. Offer amounts are determined by the qualifications each candidate brings to the position. Total compensation may also include equity designed to provide meaningful ownership in the company, as well as health and wellbeing benefits.",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "macOS",
+        "Jamf",
+        "Kandji",
+        "Okta",
+        "IT",
+        "FullTime",
+        "Hybrid"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "Kandji MDM",
+        "MDM",
+        "Device management",
+        "Compliance evidence"
+      ],
+      "tools": [
+        "Jamf",
+        "Kandji",
+        "Okta"
+      ],
+      "platforms": [
+        "macOS"
+      ],
+      "roleFamily": "Device Compliance",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 157100,
+        "max": 194040,
+        "currency": "USD",
+        "label": "$157k-$194k"
+      }
+    },
+    {
+      "id": "ashby-Crusoe-7ca1a817-32bc-4f61-9173-4adef57ab71c",
+      "title": "Staff Corporate Security Engineer",
+      "company": "Crusoe",
+      "location": "San Francisco, CA - US",
+      "mapLocation": {
+        "label": "San Francisco, CA",
+        "latitude": 37.7749,
+        "longitude": -122.4194
+      },
+      "workplace": "On-site",
+      "postedAt": "2026-04-20T23:43:09.736Z",
+      "fetchedAt": "2026-10-12T02:26:13.665Z",
+      "staleAfter": "2026-11-26T02:26:13.665Z",
+      "expiresAt": "2026-11-26T02:26:13.665Z",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Crusoe/7ca1a817-32bc-4f61-9173-4adef57ab71c",
+      "applyUrl": "https://jobs.ashbyhq.com/Crusoe/7ca1a817-32bc-4f61-9173-4adef57ab71c/application",
+      "attributionLabel": "Ashby / Crusoe",
+      "termsProfile": "public-api",
+      "summary": "Crusoe is on a mission to accelerate the abundance of energy and intelligence. As the only vertically integrated AI infrastructure company built from the ground up, we own and operate each layer of the stack — from electrons to tokens — to power the...",
+      "description": "Crusoe is on a mission to accelerate the abundance of energy and intelligence. As the only vertically integrated AI infrastructure company built from the ground up, we own and operate each layer of the stack — from electrons to tokens — to power the world's most ambitious AI workloads. When you join Crusoe, you join a team that is building the future, faster.\n\nWe're in the midst of the greatest industrial revolution of our time. The demand for AI compute is boundless, and power is a bottleneck. We're solving that — with an energy-first approach that makes AI infrastructure better for the world and faster for the people innovating with AI.\n\nWe're looking for problem-solving, opportunity-finding teammates with a sense of urgency, who believe in the scale of our ambition and thrive on a path not fully paved — people who want to grow their careers alongside a team of experts across energy, manufacturing, data center construction, and cloud services.\n\nIf you want to do the most meaningful work of your career, help our customers and partners advance their AI strategies, and be part of a high-performing team that believes in each other, come build with us at Crusoe.\n\nAbout This Role\n\nCrusoe is building the world’s favorite AI-first cloud infrastructure. We are seeking a Staff Corporate Security Engineer to act as the principal architect for our corporate security posture.\n\nIn this role, you will move beyond tactical tool management to design high-assurance, preventative systems that safeguard our identity perimeter, global network, and SaaS ecosystem. As a senior technical leader, you will build a “Secure by Default” environment where security is seamlessly embedded into the employee experience.\n\nWhat You’ll Be Working On\n\n - Leading the design and implementation of Zero Trust Network Access (ZTNA) and Secure Access Service Edge (SASE) architectures, replacing legacy VPNs with identity-aware, perimeter-less access models\n\n - Architecting preventative SaaS security across platforms such as Google Workspace, Slack, and Okta, including CASB controls to enforce data protection and monitor unauthorized applications or extensions\n\n - Implementing Binary Authorization and device trust mechanisms, leveraging hardware-backed identity (e.g., TPM, Secure Enclave) to ensure only compliant devices can access corporate systems\n\n - Designing and tuning Data Loss Prevention (DLP) controls across endpoints and SaaS platforms to protect intellectual property\n\n - Strengthening email security posture, including MFA enforcement and session controls to mitigate phishing and session hijacking risks\n\n - Architecting AI-native security frameworks, including governance and secure gateways for agent-based systems (e.g., MCP), ensuring all AI-driven actions are auditable and aligned with zero-trust principles\n\n - Scaling identity and access management systems, including SSO, SAML, OAuth, SCIM, and designing Just-In-Time (JIT) access workflows to eliminate standing privileges\n\n - Defining and executing a “Crown Jewels” security methodology, identifying and remediating high-risk vulnerabilities (e.g., IDOR, role-bypass) across critical systems\n\nWhat You’ll Bring to the Team\n\n - 8+ years of experience designing and implementing Zero Trust, SASE, and modern identity-based security architectures\n\n - Strong expertise in SaaS security, including CASB, DLP, and governance across platforms like Google Workspace, Okta, and Slack\n\n - Experience implementing device trust, endpoint security, and hardware-backed identity solutions\n\n - Strong understanding of identity and access management systems (SSO, SAML 2.0, OAuth, SCIM) and secure access patterns\n\n - Knowledge of email security, phishing mitigation, and session security controls\n\n - Experience identifying and mitigating application-layer vulnerabilities such as IDOR and privilege escalation risks\n\n - Familiarity with emerging AI security challenges, including governance of agent-based systems and secure orchestration patterns\n\n - Strong architectural mindset with the ability to design preventative, scalable security systems\n\n - Excellent communication skills and ability to influence security decisions across engineering and business teams\n\nBonus Points\n\n - Experience implementing CASB platforms and enterprise DLP solutions at scale\n\n - Familiarity with Model Context Protocol (MCP) or similar AI orchestration frameworks\n\n - Experience building “Secure by Default” environments in high-growth organizations\n\n - Background in cloud-native or AI infrastructure environment.\n\nBenefits:\n\n - Competitive compensation and equity packages\n\n - Restricted Stock Units\n\n - Paid time off, paid holidays & leave of absence programs\n\n - Comprehensive health, dental & vision insurance\n\n - Employer contributions to HSA account\n\n - Paid parental leave\n\n - Paid life insurance, short-term and long-term disability\n\n - Professional development & tuition reimbursement\n\n - Mental health & wellness support\n\n - Commuter benefits (parking & transit)\n\n - Cell phone stipend\n\n - 401(k) Retirement plan with company match up to 4% of salary\n\n - Volunteer time off\n\n - Global travel insurance & emergency assistance\n\n - Daily meals allowance\n\n - Additional perks & programs specific to location\n\nCompensation Range\n\nCompensation will be paid in the range of up to $210,000 - $255,000 + Bonus. Restricted Stock Units are included in all offers. Compensation to be determined by the applicants knowledge, education, and abilities, as well as internal equity and alignment with market data.\n\nCrusoe is an Equal Opportunity Employer. Employment decisions are made without regard to race, color, religion, disability, genetic information, pregnancy, citizenship, marital status, sex/gender, sexual preference/ orientation, gender identity, age, veteran status, national origin, or any other status protected by law or regulation.",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "Windows",
+        "macOS",
+        "Okta",
+        "Google Workspace",
+        "IT, Compliance, and Security",
+        "Security Engineering",
+        "FullTime",
+        "OnSite"
+      ],
+      "matchReasons": [
+        "Endpoint engineering",
+        "Endpoint security",
+        "Compliance evidence",
+        "Employee experience",
+        "Windows platform"
+      ],
+      "tools": [
+        "Okta",
+        "Google Workspace"
+      ],
+      "platforms": [
+        "Windows",
+        "macOS"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Staff",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 210000,
+        "max": 255000,
+        "currency": "USD",
+        "label": "$210k-$255k"
+      }
+    },
+    {
+      "id": "ashby-Crusoe-39cc39cc-2971-45bb-bb73-80d3612a8ebe",
+      "title": "Senior Systems Engineer - IAM",
+      "company": "Crusoe",
+      "location": "San Francisco, CA - US",
+      "mapLocation": {
+        "label": "San Francisco, CA",
+        "latitude": 37.7749,
+        "longitude": -122.4194
+      },
+      "workplace": "On-site",
+      "postedAt": "2026-04-20T23:22:26.455Z",
+      "fetchedAt": "2026-10-12T02:26:13.665Z",
+      "staleAfter": "2026-11-26T02:26:13.665Z",
+      "expiresAt": "2026-11-26T02:26:13.665Z",
+      "source": "Ashby",
+      "sourceUrl": "https://jobs.ashbyhq.com/Crusoe/39cc39cc-2971-45bb-bb73-80d3612a8ebe",
+      "applyUrl": "https://jobs.ashbyhq.com/Crusoe/39cc39cc-2971-45bb-bb73-80d3612a8ebe/application",
+      "attributionLabel": "Ashby / Crusoe",
+      "termsProfile": "public-api",
+      "summary": "Crusoe is on a mission to accelerate the abundance of energy and intelligence. As the only vertically integrated AI infrastructure company built from the ground up, we own and operate each layer of the stack — from electrons to tokens — to power the...",
+      "description": "Crusoe is on a mission to accelerate the abundance of energy and intelligence. As the only vertically integrated AI infrastructure company built from the ground up, we own and operate each layer of the stack — from electrons to tokens — to power the world's most ambitious AI workloads. When you join Crusoe, you join a team that is building the future, faster.\n\nWe're in the midst of the greatest industrial revolution of our time. The demand for AI compute is boundless, and power is a bottleneck. We're solving that — with an energy-first approach that makes AI infrastructure better for the world and faster for the people innovating with AI.\n\nWe're looking for problem-solving, opportunity-finding teammates with a sense of urgency, who believe in the scale of our ambition and thrive on a path not fully paved — people who want to grow their careers alongside a team of experts across energy, manufacturing, data center construction, and cloud services.\n\nIf you want to do the most meaningful work of your career, help our customers and partners advance their AI strategies, and be part of a high-performing team that believes in each other, come build with us at Crusoe.\n\nAbout This Role\n\nAs a Senior Systems Engineer, you’ll play a key role in building and optimizing Crusoe’s global technology infrastructure. This is a hands-on, on-site role working closely with our global IT team to ensure systems are reliable, secure, and scalable to support Crusoe’s growth.\n\nYou will lead initiatives across identity and access management, automation, and system integrations while driving operational efficiency and strengthening Crusoe’s security posture.\n\nWhat You’ll Be Working On\n\n - Managing advanced Okta functionality, including Device Trust, Okta Expression Language, and complex identity lifecycle management\n\n - Implementing and maintaining RBAC best practices and adaptive security policies to ensure global consistency in access governance\n\n - Building automated workflows using Workato, Okta Workflows, and Lumos to eliminate manual processes and improve operational efficiency\n\n - Planning and executing application integrations (SAML, OIDC, OAuth) and system changes with minimal disruption to business operations\n\n - Partnering with IAM leadership and integration engineers to connect business systems and support feature adoption across the IT ecosystem\n\n - Acting as a Tier 2 escalation point for complex access issues, supporting the Service Desk and broader infrastructure needs\n\n - Mentoring and training Service Desk team members, developing documentation and SOPs to enable independent execution of common IAM tasks\n\n - Participating in global team collaboration, including occasional off-hours syncs to support distributed operations\n\nWhat You’ll Bring to the Team\n\n - 5+ years of experience in Systems Engineering or Identity & Access Management, with strong expertise in Okta administration and identity lifecycle management\n\n - Deep knowledge of Okta’s security capabilities; Okta Administrator or Consultant certifications are strongly preferred\n\n - Experience with Lumos or similar identity governance platforms\n\n - Proven ability to build automation workflows using tools such as Workato or Okta Workflows\n\n - Strong troubleshooting skills, including diagnosing authentication issues, API failures, and access-related incidents. Must be fluent in interacting with REST APIs and using scripting languages (Python, PowerShell, or similar) to troubleshoot failures or perform bulk operations.\n\n - Solid understanding of RBAC, identity governance, PAM (Privileged Access Management) rollout and strategy, and zero-trust security principles.\n\n - Strong communication skills with the ability to translate technical concepts into clear documentation and processes\n\n - Familiarity with Google Workspace Enterprise (organizational units, policies, and security configurations)\n\n - Bachelor’s or Master’s degree in Computer Science, Engineering, or equivalent professional experience\n\nBonus Points\n\n - Strong planning, communication, and change management skills\n\n - Experience working in fast-paced, global environments with distributed teams\n\nBenefits:\n\n - Competitive compensation and equity packages\n\n - Restricted Stock Units\n\n - Paid time off, paid holidays & leave of absence programs\n\n - Comprehensive health, dental & vision insurance\n\n - Employer contributions to HSA account\n\n - Paid parental leave\n\n - Paid life insurance, short-term and long-term disability\n\n - Professional development & tuition reimbursement\n\n - Mental health & wellness support\n\n - Commuter benefits (parking & transit)\n\n - Cell phone stipend\n\n - 401(k) Retirement plan with company match up to 4% of salary\n\n - Volunteer time off\n\n - Global travel insurance & emergency assistance\n\n - Daily meals allowance\n\n - Additional perks & programs specific to location\n\nCompensation Range\n\nCompensation will be paid in the range of up to $165,000 - $200,000 + Bonus. Restricted Stock Units are included in all offers. Compensation to be determined by the applicants knowledge, education, and abilities, as well as internal equity and alignment with market data.\n\nCrusoe is an Equal Opportunity Employer. Employment decisions are made without regard to race, color, religion, disability, genetic information, pregnancy, citizenship, marital status, sex/gender, sexual preference/ orientation, gender identity, age, veteran status, national origin, or any other status protected by law or regulation.",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "Windows",
+        "macOS",
+        "Okta",
+        "Google Workspace",
+        "PowerShell",
+        "IT, Compliance, and Security",
+        "IT Systems Engineering",
+        "FullTime",
+        "OnSite"
+      ],
+      "matchReasons": [
+        "PowerShell automation",
+        "Compliance evidence",
+        "Windows platform",
+        "macOS platform"
+      ],
+      "tools": [
+        "Okta",
+        "Google Workspace",
+        "PowerShell"
+      ],
+      "platforms": [
+        "Windows",
+        "macOS"
+      ],
+      "roleFamily": "Systems Administration",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 165000,
+        "max": 200000,
+        "currency": "USD",
+        "label": "$165k-$200k"
+      }
+    },
+    {
+      "id": "workable-bkfengineers-A55821EB2F",
+      "title": "Systems Engineer - M&A Integration",
+      "company": "BKF Engineers",
+      "location": "Oregon, United States",
+      "mapLocation": {
+        "label": "United States",
+        "latitude": 39.8283,
+        "longitude": -98.5795
+      },
+      "workplace": "Remote",
+      "postedAt": "2026-09-18T00:00:00.000Z",
+      "fetchedAt": "2026-10-12T02:27:32.629Z",
+      "staleAfter": "2026-11-26T02:27:32.629Z",
+      "expiresAt": "2026-11-26T02:27:32.629Z",
+      "source": "Workable",
+      "sourceUrl": "https://apply.workable.com/bkfengineers/j/A55821EB2F/",
+      "applyUrl": "https://apply.workable.com/bkfengineers/j/A55821EB2F/",
+      "attributionLabel": "Workable / BKF Engineers",
+      "termsProfile": "public-api",
+      "summary": "BKF is a multi-service infrastructure consulting firm providing civil engineering, construction management, environmental, planning, and surveying services across California, the Pacific Northwest, and beyond. With offices throughout California and the...",
+      "description": "BKF is a multi-service infrastructure consulting firm providing civil engineering, construction management, environmental, planning, and surveying services across California, the Pacific Northwest, and beyond. With offices throughout California and the Portland area, BKF has served transportation, water resources, land development, government, and federal clients for over 110 years.\n\nAt BKF, you’ll find a unique opportunity to grow your career with intention. Our culture values professional autonomy, innovation, and meaningful collaboration across offices. We are proud to be recognized with the Great Place to Work certification for the second year in a row.\n\nThe Systems Engineer – M&A Integration executes technical integration activities associated with mergers and acquisitions. The role supports the onboarding of acquired companies into BKF’s technology environment, with a primary focus on Microsoft 365, identity, collaboration services, security controls, and related cloud technologies.\n\nReporting to the M&A Integration Lead and receiving technical direction from the Senior M&A Technology Integration Engineer, this position performs hands-on migration, configuration, testing, troubleshooting, cutover, and hypercare activities across multiple acquisitions each year.\n\nThe ideal candidate is a technical generalist with strong Microsoft cloud and identity experience who can work independently while following established integration architecture, standards, and migration plans.\n\n Responsibilities\n\n- Execute technical integration activities for acquired companies in accordance with approved architecture, migration plans, and BKF standards.\n\n- Perform migrations into BKF’s standard platforms, including Exchange Online, Teams, SharePoint Online, and OneDrive-to-Box migrations.\n\n- Support migrations from Google Workspace, Microsoft 365 tenants, and other source environments.\n\n- Execute identity and access integration activities involving Microsoft Entra ID, Active Directory, SSO, MFA, conditional access, provisioning, and account lifecycle management.\n\n- Support the technical dependencies associated with endpoint deployment, including identity, Intune enrollment, application access, security policies, and user authentication.\n\n- Support Azure and related cloud-integration activities when required, including access, permissions, subscriptions, and coordination with Cloud Operations.\n\n- Work with acquired-company IT teams, internal stakeholders, consultants, and vendors to gather technical information and complete assigned integration work.\n\n- Follow migration runbooks, cutover plans, validation procedures, rollback plans, and hyper care processes.\n\n- Troubleshoot technical issues during migration, cutover, and stabilization.\n\n- Support the integration of security, compliance, endpoint-protection, and IT-management platforms.\n\n- Document source environments, migration activities, configurations, dependencies, risks, and completion status.\n\n- Contribute to reusable integration playbooks, standards, checklists, scripts, and automation.\n\n- Escalate technical risks, blockers, and design decisions to the Senior M&A Technology Integration Engineer.\n\n- Hands-on experience administering and migrating Microsoft 365 environments.\n\n- Experience with tenant, email, collaboration-platform, or enterprise IT migrations.\n\n- Working knowledge of Microsoft Entra ID, Active Directory, identity synchronization, MFA, SSO, and conditional access.\n\n- Experience with Exchange Online, Teams, SharePoint Online, and OneDrive.\n\n- Experience with Microsoft Intune, Windows Autopilot, Configuration Manager, or similar endpoint-management platforms.\n\n- Experience supporting endpoint readiness, device enrollment, application deployment, and user onboarding.\n\n- Familiarity with Azure administration, access, permissions, subscriptions, networking concepts, and cloud services.\n\n- Ability to troubleshoot across identity, email, collaboration, endpoint, and cloud environments.\n\n- Strong PowerShell, documentation, and technical-procedure skills.\n\n- Ability to support multiple concurrent acquisition projects and planned after-hours or weekend cutovers.\n\n- Strong communication skills and the ability to work with internal teams, consultants, vendors, and acquired-company personnel.\n\n- Ability to work independently while escalating risks and technical decisions appropriately.\n\n- Experience with Microsoft 365 tenant-to-tenant migrations.\n\n- Experience migrating Google Workspace environments to Microsoft platforms.\n\n- Experience with BitTitan MigrationWiz, Quest, AvePoint, ShareGate, or similar migration tools.\n\n- Experience automating Microsoft 365, Entra ID, Exchange Online, Intune, or Azure activities with PowerShell.\n\n- Familiarity with Microsoft Defender, Purview, Sentinel, or related security platforms.\n\n- Experience supporting mergers, acquisitions, divestitures, carve-outs, or enterprise onboarding.\n\n- Experience working with managed service providers, consultants, and integration vendors.\n\n- Familiarity with ITSM, change-management, and technical project-tracking processes.\n\n- Relevant Microsoft certifications.\n\nPhysical Demands: Must be able to regularly talk, hear and operate a computer, keyboard and mouse and occasionally lift, pull/push and carry up to 20 pounds with accommodations.\n\nWork Conditions: Exposure to constant or intermittent sounds at a low or moderate level consistent with an office setting. Exposure to high-stress, fast-paced, deadline-oriented environment. Travel to other BKF locations and client sites may be required.\n\n- The typical base salary range for this position is $85,000- $110,000 annualized depending upon skills, experience, education, and geographical location. This is a salary position paid biweekly.\n\n- Competitive salaries, profit sharing, and 401k.\n\n- Generous paid time off packages.\n\n- 9 Paid Holidays.\n\n- Flexible schedules.\n\n- Education reimbursement, Paid annual dues for professional and societal organizations.\n\n- BKF offers competitive and award-winning benefits and perks. To learn more click here.\n\nBKF provides equal employment opportunities to all employees and applicants for employment and prohibits discrimination and harassment of any type without regard to race, color, religion, age, sex, national origin, disability status, genetics, protected veteran status, sexual orientation, gender identity or expression, or any other characteristic protected by federal, state or local laws.\n\nBKF does not accept unsolicited resumes from recruiters or employment agencies. In the event a recruiter or agency submits a resume or candidate without a previously signed agreement and a specific solicitation for the position or other approved engagement request for the position with BKF, BKF reserves the right to pursue and hire those candidate(s) without any financial obligation to the recruiter or agency. Any unsolicited submittals are done at the risk of the recruiter.\n\n#LI-Hybrid",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "Windows",
+        "Intune",
+        "SCCM",
+        "Google Workspace",
+        "Entra ID",
+        "Autopilot",
+        "PowerShell",
+        "Defender",
+        "Corporate",
+        "Full-time",
+        "remote"
+      ],
+      "matchReasons": [
+        "Intune + Autopilot",
+        "SCCM/MECM",
+        "Endpoint engineering",
+        "PowerShell automation",
+        "Compliance evidence"
+      ],
+      "tools": [
+        "Intune",
+        "SCCM",
+        "Google Workspace",
+        "Entra ID",
+        "Autopilot",
+        "PowerShell",
+        "Defender"
+      ],
+      "platforms": [
+        "Windows"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 85000,
+        "max": 110000,
+        "currency": "USD",
+        "label": "$85k-$110k"
+      }
+    },
+    {
+      "id": "workable-bkfengineers-6CAB6DC812",
+      "title": "Systems Engineer - M&A Integration",
+      "company": "BKF Engineers",
+      "location": "Pleasanton, California, United States",
+      "mapLocation": {
+        "label": "United States",
+        "latitude": 39.8283,
+        "longitude": -98.5795
+      },
+      "workplace": "Hybrid",
+      "postedAt": "2026-08-28T00:00:00.000Z",
+      "fetchedAt": "2026-10-12T02:27:32.629Z",
+      "staleAfter": "2026-11-26T02:27:32.629Z",
+      "expiresAt": "2026-11-26T02:27:32.629Z",
+      "source": "Workable",
+      "sourceUrl": "https://apply.workable.com/bkfengineers/j/6CAB6DC812/",
+      "applyUrl": "https://apply.workable.com/bkfengineers/j/6CAB6DC812/",
+      "attributionLabel": "Workable / BKF Engineers",
+      "termsProfile": "public-api",
+      "summary": "BKF is a multi-service infrastructure consulting firm providing civil engineering, construction management, environmental, planning, and surveying services across California, the Pacific Northwest, and beyond. With offices throughout California and the...",
+      "description": "BKF is a multi-service infrastructure consulting firm providing civil engineering, construction management, environmental, planning, and surveying services across California, the Pacific Northwest, and beyond. With offices throughout California and the Portland area, BKF has served transportation, water resources, land development, government, and federal clients for over 110 years.\n\nAt BKF, you’ll find a unique opportunity to grow your career with intention. Our culture values professional autonomy, innovation, and meaningful collaboration across offices. We are proud to be recognized with the Great Place to Work certification for the second year in a row.\n\nThe Systems Engineer – M&A Integration executes technical integration activities associated with mergers and acquisitions. The role supports the onboarding of acquired companies into BKF’s technology environment, with a primary focus on Microsoft 365, identity, collaboration services, security controls, and related cloud technologies.\n\nReporting to the M&A Integration Lead and receiving technical direction from the Senior M&A Technology Integration Engineer, this position performs hands-on migration, configuration, testing, troubleshooting, cutover, and hypercare activities across multiple acquisitions each year.\n\nThe ideal candidate is a technical generalist with strong Microsoft cloud and identity experience who can work independently while following established integration architecture, standards, and migration plans.\n\n Responsibilities\n\n- Execute technical integration activities for acquired companies in accordance with approved architecture, migration plans, and BKF standards.\n\n- Perform migrations into BKF’s standard platforms, including Exchange Online, Teams, SharePoint Online, and OneDrive-to-Box migrations.\n\n- Support migrations from Google Workspace, Microsoft 365 tenants, and other source environments.\n\n- Execute identity and access integration activities involving Microsoft Entra ID, Active Directory, SSO, MFA, conditional access, provisioning, and account lifecycle management.\n\n- Support the technical dependencies associated with endpoint deployment, including identity, Intune enrollment, application access, security policies, and user authentication.\n\n- Support Azure and related cloud-integration activities when required, including access, permissions, subscriptions, and coordination with Cloud Operations.\n\n- Work with acquired-company IT teams, internal stakeholders, consultants, and vendors to gather technical information and complete assigned integration work.\n\n- Follow migration runbooks, cutover plans, validation procedures, rollback plans, and hyper care processes.\n\n- Troubleshoot technical issues during migration, cutover, and stabilization.\n\n- Support the integration of security, compliance, endpoint-protection, and IT-management platforms.\n\n- Document source environments, migration activities, configurations, dependencies, risks, and completion status.\n\n- Contribute to reusable integration playbooks, standards, checklists, scripts, and automation.\n\n- Escalate technical risks, blockers, and design decisions to the Senior M&A Technology Integration Engineer.\n\n- Hands-on experience administering and migrating Microsoft 365 environments.\n\n- Experience with tenant, email, collaboration-platform, or enterprise IT migrations.\n\n- Working knowledge of Microsoft Entra ID, Active Directory, identity synchronization, MFA, SSO, and conditional access.\n\n- Experience with Exchange Online, Teams, SharePoint Online, and OneDrive.\n\n- Experience with Microsoft Intune, Windows Autopilot, Configuration Manager, or similar endpoint-management platforms.\n\n- Experience supporting endpoint readiness, device enrollment, application deployment, and user onboarding.\n\n- Familiarity with Azure administration, access, permissions, subscriptions, networking concepts, and cloud services.\n\n- Ability to troubleshoot across identity, email, collaboration, endpoint, and cloud environments.\n\n- Strong PowerShell, documentation, and technical-procedure skills.\n\n- Ability to support multiple concurrent acquisition projects and planned after-hours or weekend cutovers.\n\n- Strong communication skills and the ability to work with internal teams, consultants, vendors, and acquired-company personnel.\n\n- Ability to work independently while escalating risks and technical decisions appropriately.\n\n- Experience with Microsoft 365 tenant-to-tenant migrations.\n\n- Experience migrating Google Workspace environments to Microsoft platforms.\n\n- Experience with BitTitan MigrationWiz, Quest, AvePoint, ShareGate, or similar migration tools.\n\n- Experience automating Microsoft 365, Entra ID, Exchange Online, Intune, or Azure activities with PowerShell.\n\n- Familiarity with Microsoft Defender, Purview, Sentinel, or related security platforms.\n\n- Experience supporting mergers, acquisitions, divestitures, carve-outs, or enterprise onboarding.\n\n- Experience working with managed service providers, consultants, and integration vendors.\n\n- Familiarity with ITSM, change-management, and technical project-tracking processes.\n\n- Relevant Microsoft certifications.\n\nPhysical Demands: Must be able to regularly talk, hear and operate a computer, keyboard and mouse and occasionally lift, pull/push and carry up to 20 pounds with accommodations.\n\nWork Conditions: Exposure to constant or intermittent sounds at a low or moderate level consistent with an office setting. Exposure to high-stress, fast-paced, deadline-oriented environment. Travel to other BKF locations and client sites may be required.\n\n- The typical base salary range for this position is $100,000- $135,000 annualized depending upon skills, experience, education, and geographical location. This is a salary position paid biweekly.\n\n- Competitive salaries, profit sharing, and 401k.\n\n- Generous paid time off packages.\n\n- 9 Paid Holidays.\n\n- Flexible schedules.\n\n- Education reimbursement, Paid annual dues for professional and societal organizations.\n\n- BKF offers competitive and award-winning benefits and perks. To learn more click here.\n\nBKF provides equal employment opportunities to all employees and applicants for employment and prohibits discrimination and harassment of any type without regard to race, color, religion, age, sex, national origin, disability status, genetics, protected veteran status, sexual orientation, gender identity or expression, or any other characteristic protected by federal, state or local laws.\n\nBKF does not accept unsolicited resumes from recruiters or employment agencies. In the event a recruiter or agency submits a resume or candidate without a previously signed agreement and a specific solicitation for the position or other approved engagement request for the position with BKF, BKF reserves the right to pursue and hire those candidate(s) without any financial obligation to the recruiter or agency. Any unsolicited submittals are done at the risk of the recruiter.\n\n#LI-Hybrid",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "Windows",
+        "Intune",
+        "SCCM",
+        "Google Workspace",
+        "Entra ID",
+        "Autopilot",
+        "PowerShell",
+        "Defender",
+        "Corporate",
+        "Full-time",
+        "hybrid"
+      ],
+      "matchReasons": [
+        "Intune + Autopilot",
+        "SCCM/MECM",
+        "Endpoint engineering",
+        "PowerShell automation",
+        "Compliance evidence"
+      ],
+      "tools": [
+        "Intune",
+        "SCCM",
+        "Google Workspace",
+        "Entra ID",
+        "Autopilot",
+        "PowerShell",
+        "Defender"
+      ],
+      "platforms": [
+        "Windows"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 100000,
+        "max": 135000,
+        "currency": "USD",
+        "label": "$100k-$135k"
+      }
+    },
+    {
+      "id": "workday-accurate-background--d3ec3553ed",
+      "title": "Senior Engineer, Technical Operations",
+      "company": "Accurate Background",
+      "location": "US - Irvine",
+      "workplace": "Hybrid",
+      "postedAt": "2026-09-14T00:00:00.000Z",
+      "fetchedAt": "2026-10-12T02:26:07.114Z",
+      "staleAfter": "2026-10-29T00:00:00.000Z",
+      "expiresAt": "2026-10-29T00:00:00.000Z",
+      "source": "Workday",
+      "sourceUrl": "https://accurateb.wd108.myworkdayjobs.com/Accurate_Careers/job/US---Irvine/Senior-Engineer--Technical-Operations_R2199",
+      "applyUrl": "https://accurateb.wd108.myworkdayjobs.com/Accurate_Careers/job/US---Irvine/Senior-Engineer--Technical-Operations_R2199",
+      "attributionLabel": "Workday / Accurate Background",
+      "termsProfile": "public-api",
+      "summary": "When you join Accurate Background, you’re an integral part of making every hire the start of a success story. Your contributions will help us fulfill our mission of advancing the background screening experience through visibility and insights, empowering...",
+      "description": "When you join Accurate Background, you’re an integral part of making every hire the start of a success story. Your contributions will help us fulfill our mission of advancing the background screening experience through visibility and insights, empowering our clients to make smarter, unbiased decisions.\n\nJob Description:\n\nAccurate Background is seeking a Senior Technical Operations Engineer to support and improve our global Microsoft ecosystem, identity platforms, endpoint management, and office infrastructure. This role is responsible for maintaining secure and scalable operational standards while leading technical projects, automation initiatives, and platform improvements across the organization.\n\nThe ideal candidate is a hands-on technical engineer with strong experience in Microsoft 365, identity and access management, endpoint administration, infrastructure support, and operational process improvement.\n\n Responsibilities:\n\n-\nAdminister and maintain Microsoft 365, Entra ID, Active Directory, Intune, and related Microsoft platforms.\n\n-\nManage identity and access management, SSO, SCIM, Conditional Access, MFA, and user lifecycles.\n\n-\nSupport Windows and MacOS endpoint environments, including provisioning, compliance, patching, and zero-touch deployment workflows.\n\n-\nSupport and maintain office infrastructure including networks, servers, and conference room technologies.\n\n-\nLead technical projects from planning through implementation and operational support transition.\n\n-\nDevelop automation, documentation, SOPs, and operational standards to improve efficiency and scalability\n\n-\nPartner cross-functionally with Service Desk, Infrastructure, Security, and business stakeholders\n\n-\nAct as an L3 escalation resource for complex technical and operational incidents.\n\n Required Qualifications:\n\n-\n5+ years of experience in Technical Operations, Systems Administration, or related IT Engineering roles\n\n-\nStrong experience with Microsoft 365 Administration\n\n-\nExperience with endpoint management, device compliance, and identity governance\n\n-\nExperience supporting enterprise infrastructure and networking environments\n\n-\nExperience with PowerShell scripting and automation\n\n-\nStrong troubleshooting, documentation, and project ownership skills\n\n-\nExcellent communication and collaboration skills\n\n Preferred Qualifications:\n\n-\nExperience with JAMF, Defender, Purview, Cisco, and AWS\n\n-\nExperience supporting Zero Trust and security modernization initiatives\n\n-\nFamiliarity with Jira service management and Confluence.\n\n-\nRelevant Microsoft or security certifications.\n\n Working Conditions\n\n-\nHybrid position based in Irvine, California, requiring 2 days per week in the office.\n\n-\nOccasional after-hours support may be required for maintenance windows or incidents\n\n-\nThis role reports directly to the Senior Manager, Technical Operations\n\nThe annual base salary for this position ranges from $85,000 - $110,000. Pay will vary depending on job-related knowledge, skills, experience, and relevant education and training. This position may also be eligible for an annual performance-based bonus, commission, or other variable pay plan. The Company also offers a full range of benefits, including medical, dental, and 401k. Your recruiter can share more details about the specific compensation package during the hiring process.\n\nPlease note that the above job description represents a general overview of the responsibilities and requirements for this position at Accurate Background. Duties and qualifications may vary based on specific business needs and organizational changes.\n\n The Accurate Way:\n\nWe offer a fun, fast-paced environment, with lots of room for growth. We have an unwavering commitment to diversity, ensuring everyone has a complete sense of belonging here. To do this, we follow four guiding principles – Take Ownership, Be Open, Stay Curious, Work as One – core values that dictate what we stand for, and how we behave.\n\n Take ownership.\n\nBe accountable for your actions, your team, and the company. Accept responsibility willingly, especially when it’s what’s best for our customers. Give others every reason to trust you, believe in you, and count on you. Rise to every occasion with your personal best.\n\n Be open.\n\nBe open to new ideas. Be inclusive of people and ways of doing things. Make yourself accessible and approachable, and communicate with genuineness, transparency, honesty, and respect. Embrace differences.\n\n Stay curious.\n\nStay curious even as you move forward. Tirelessly ask questions and challenge the status quo in your pursuit of new ideas, ways to solve problems, and to continually grow and improve.\n\n Work as one.\n\nWork together to create the best customer and workplace experience. Put our customers and employees first—before individual or departmental agendas. Make sure they get the help they need to succeed.\n\n Equal opportunities\n\nAccurate is an equal-opportunity employer and is committed to hiring talented and qualified individuals with diverse backgrounds. All qualified applicants will receive consideration for employment without regard to sex, gender identity, sexual orientation, race, color, religion, national origin, disability, protected veteran status, age, or any other characteristic protected by law.\n\nAccurate will consider for employment all qualified applicants, including those with criminal histories, in a manner consistent with the requirements of applicable state and local laws.\n\nThis posting is open for U.S.-based candidates who currently reside in the following states: AZ, CA, CO, DE, FL, GA, IL, KY, MD, MI, MN, NV, NH, NY, NC, OH, OK, PA, TN, TX, VA, WA, WV\n\n Special Notice:\n\nAccurate is aware of schemes involving fraudulent job postings/offers and/or individuals or entities claiming to be employees of Accurate. Those involved are offering fabricated employment opportunities to applicants, often asking for sensitive personal and financial information. If you believe you have been contacted by anyone misrepresenting themselves as an employee of Accurate, please contact humanresources@accurate.com.\n\n- Please be advised that all legitimate correspondence from an Accurate employee will come from \"@accurate.com\" email accounts.\n\n- Accurate will not interview candidates via text or email. Our interviews are conducted by recruiters and leaders via the phone, Zoom/Teams or in an in-person format.\n\n- Accurate will never ask candidates to make any type of personal financial investment related to gaining employment with the Company.",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "macOS",
+        "Windows",
+        "Jamf",
+        "Intune",
+        "Entra ID",
+        "PowerShell",
+        "Defender",
+        "R2199"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "Endpoint engineering",
+        "PowerShell automation",
+        "Compliance evidence",
+        "Windows platform"
+      ],
+      "tools": [
+        "Jamf",
+        "Intune",
+        "Entra ID",
+        "PowerShell",
+        "Defender"
+      ],
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 85000,
+        "max": 110000,
+        "currency": "USD",
+        "label": "$85k-$110k"
+      }
+    },
+    {
+      "id": "curated-ropes-gray-senior-desktop-engineer-66bbde7cd0",
+      "title": "Senior Desktop Engineer",
+      "company": "Ropes & Gray",
+      "location": "Boston, MA; New York, NY",
+      "mapLocation": {
+        "label": "Boston, MA",
+        "latitude": 42.3601,
+        "longitude": -71.0589
+      },
+      "workplace": "Hybrid",
+      "postedAt": "2026-08-07T04:00:00.000Z",
+      "fetchedAt": "2026-10-12T02:28:07.328Z",
+      "staleAfter": "2026-11-26T02:28:07.328Z",
+      "expiresAt": "2027-08-07T04:00:00.000Z",
+      "source": "Curated Jobs",
+      "sourceUrl": "https://careers-ropesgray.icims.com/jobs/9281/senior-desktop-engineer/job?in_iframe=1",
+      "applyUrl": "https://careers-ropesgray.icims.com/jobs/9281/senior-desktop-engineer/job?in_iframe=1",
+      "attributionLabel": "Ropes & Gray",
+      "termsProfile": "seed",
+      "summary": "Manage enterprise desktop systems and the endpoint lifecycle, including enrollment, compliance, updates, and retirement. Configure Intune profiles, Group Policy, and security baselines; automate administration and reporting with PowerShell. Monitor device...",
+      "description": "Manage enterprise desktop systems and the endpoint lifecycle, including enrollment, compliance, updates, and retirement. Configure Intune profiles, Group Policy, and security baselines; automate administration and reporting with PowerShell. Monitor device health and resolve complex desktop and application issues as a Tier 3 escalation resource. Hybrid in Boston or New York. Published salary ranges are $134,700-$205,450 in Boston and $145,800-$222,350 in New York.",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "Windows",
+        "Intune",
+        "PowerShell",
+        "Curated",
+        "Endpoint"
+      ],
+      "matchReasons": [
+        "Endpoint engineering",
+        "PowerShell automation",
+        "Compliance evidence",
+        "Desktop engineering",
+        "Windows platform"
+      ],
+      "tools": [
+        "Intune",
+        "PowerShell"
+      ],
+      "platforms": [
+        "Windows"
+      ],
+      "roleFamily": "Device Compliance",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 134700,
+        "max": 222350,
+        "currency": "USD",
+        "label": "$134,700-$222,350/year; varies by location"
+      }
+    },
+    {
+      "id": "curated-softchoice-sr-consultant-professional-services-microsoft-security-09fc6f5235",
+      "title": "Sr. Consultant, Professional Services (Microsoft Security)",
+      "company": "Softchoice",
+      "location": "Chicago, IL; Denver, CO; Florida; Texas",
+      "mapLocation": {
+        "label": "Chicago, IL",
+        "latitude": 41.8781,
+        "longitude": -87.6298
+      },
+      "workplace": "Unknown",
+      "postedAt": "2026-09-19T02:00:00.000Z",
+      "fetchedAt": "2026-10-12T02:28:07.328Z",
+      "staleAfter": "2026-11-26T02:28:07.328Z",
+      "expiresAt": "2026-11-26T02:28:07.328Z",
+      "source": "Curated Jobs",
+      "sourceUrl": "https://careers.softchoice.com/job/Chicago-Sr_-Consultant%2C-Professional-Services-%28Microsoft-Security%29-IL-60290/603794317/",
+      "applyUrl": "https://careers.softchoice.com/job/Chicago-Sr_-Consultant%2C-Professional-Services-%28Microsoft-Security%29-IL-60290/603794317/",
+      "attributionLabel": "Softchoice",
+      "termsProfile": "seed",
+      "summary": "Advise enterprise and public-sector clients on Microsoft identity and workplace endpoint security. Implement security configurations, migrations, and policies using Microsoft 365 Defender, Defender for Cloud, and Sentinel. Guide customers through...",
+      "description": "Advise enterprise and public-sector clients on Microsoft identity and workplace endpoint security. Implement security configurations, migrations, and policies using Microsoft 365 Defender, Defender for Cloud, and Sentinel. Guide customers through technical decisions and mentor other consultants and engineers. Locations include Chicago, Denver, Florida, and Texas. The published Florida and Denver base range is $110,960-$138,700 with a 14% target incentive; other locations may differ.",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "Windows",
+        "macOS",
+        "Defender",
+        "Curated",
+        "Endpoint Security",
+        "Microsoft Defender",
+        "Identity"
+      ],
+      "matchReasons": [
+        "Endpoint engineering",
+        "Endpoint security",
+        "Windows platform",
+        "macOS platform"
+      ],
+      "tools": [
+        "Defender"
+      ],
+      "platforms": [
+        "Windows",
+        "macOS"
+      ],
+      "roleFamily": "Endpoint Security",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 110960,
+        "max": 138700,
+        "currency": "USD",
+        "label": "$110,960-$138,700/year in Florida and Denver"
+      }
+    },
+    {
+      "id": "curated-state-of-michigan-information-technology-programmer-analyst-12-endpoint-user-management-4c53b4d701",
+      "title": "Information Technology Programmer Analyst 12 (Endpoint & User Management)",
+      "company": "State of Michigan",
+      "location": "Dimondale, MI",
+      "workplace": "Hybrid",
+      "postedAt": "2026-10-06T00:00:00.000Z",
+      "fetchedAt": "2026-10-12T02:28:07.328Z",
+      "staleAfter": "2026-10-21T03:59:00.000Z",
+      "expiresAt": "2026-10-21T03:59:00.000Z",
+      "source": "Curated Jobs",
+      "sourceUrl": "https://www.governmentjobs.com/jobs/5506606-0/information-technology-programmer-analyst-12-endpoint-user-management",
+      "applyUrl": "https://www.governmentjobs.com/jobs/5506606-0/information-technology-programmer-analyst-12-endpoint-user-management",
+      "attributionLabel": "State of Michigan",
+      "termsProfile": "seed",
+      "summary": "Administer statewide enterprise infrastructure, including computer management platforms, account services, Microsoft 365, DNS, and virtualization. Monitor core services and provide third- and fourth-tier incident support for technology staff. Participate...",
+      "description": "Administer statewide enterprise infrastructure, including computer management platforms, account services, Microsoft 365, DNS, and virtualization. Monitor core services and provide third- and fourth-tier incident support for technology staff. Participate in infrastructure projects affecting state accounts and devices. Hybrid in Dimondale with two days on-site and three remote days per week; applicants must reside in Michigan or relocate. Permanent full-time, $34.45-$49.53 per hour. Applications close October 20, 2026 at 11:59 PM Eastern.",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "Windows",
+        "macOS",
+        "Curated",
+        "Endpoint",
+        "User Management",
+        "Microsoft 365"
+      ],
+      "matchReasons": [
+        "Endpoint engineering",
+        "Windows platform",
+        "macOS platform"
+      ],
+      "tools": [],
+      "platforms": [
+        "Windows",
+        "macOS"
+      ],
+      "roleFamily": "Windows Platform",
+      "seniority": "Mid",
+      "employmentType": "Full-time"
+    },
+    {
+      "id": "curated-andreessen-horowitz-partner-18-it-engineer-san-francisco-menlo-park-bcb141f28a",
+      "title": "Partner 18, IT Engineer, San Francisco/Menlo Park",
+      "company": "Andreessen Horowitz",
+      "location": "San Francisco, CA; Menlo Park, CA",
+      "mapLocation": {
+        "label": "San Francisco, CA",
+        "latitude": 37.7749,
+        "longitude": -122.4194
+      },
+      "workplace": "Hybrid",
+      "postedAt": "2026-06-04T00:31:40.000Z",
+      "fetchedAt": "2026-10-12T02:28:07.328Z",
+      "staleAfter": "2026-11-26T02:28:07.328Z",
+      "expiresAt": "2026-11-26T02:28:07.328Z",
+      "source": "Curated Jobs",
+      "sourceUrl": "https://a16z.com/about/jobs/?gh_jid=7763203003",
+      "applyUrl": "https://a16z.com/about/jobs/?gh_jid=7763203003",
+      "attributionLabel": "Andreessen Horowitz",
+      "termsProfile": "seed",
+      "summary": "Build and operate the firm's IT infrastructure and SaaS platforms. Manage endpoint, identity, and access tooling with Jamf, Kandji, Okta, and Intune; lead systems projects and automation work. Serve as an escalation resource for complex incidents and...",
+      "description": "Build and operate the firm's IT infrastructure and SaaS platforms. Manage endpoint, identity, and access tooling with Jamf, Kandji, Okta, and Intune; lead systems projects and automation work. Serve as an escalation resource for complex incidents and executive technology needs. Requires client platform engineering experience. Work from the San Francisco or Menlo Park office four days per week, with occasional travel between offices. The published base salary range is $189,000-$221,000, with additional carry and discretionary bonus eligibility.",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "Windows",
+        "macOS",
+        "Jamf",
+        "Intune",
+        "Kandji",
+        "Okta",
+        "Curated",
+        "Endpoint"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "Kandji MDM",
+        "Endpoint engineering",
+        "Client platform",
+        "Windows platform"
+      ],
+      "tools": [
+        "Jamf",
+        "Intune",
+        "Kandji",
+        "Okta"
+      ],
+      "platforms": [
+        "Windows",
+        "macOS"
+      ],
+      "roleFamily": "Automation",
+      "seniority": "Mid",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 189000,
+        "max": 221000,
+        "currency": "USD",
+        "label": "$189,000-$221,000/year"
+      }
+    },
+    {
+      "id": "curated-life360-director-it-821d9c4845",
+      "title": "Director, IT",
+      "company": "Life360",
+      "location": "United States",
+      "mapLocation": {
+        "label": "United States",
+        "latitude": 39.8283,
+        "longitude": -98.5795
+      },
+      "workplace": "Remote",
+      "postedAt": "2026-07-16T16:34:29.000Z",
+      "fetchedAt": "2026-10-12T02:28:07.328Z",
+      "staleAfter": "2026-11-26T02:28:07.328Z",
+      "expiresAt": "2026-11-26T02:28:07.328Z",
+      "source": "Curated Jobs",
+      "sourceUrl": "https://job-boards.greenhouse.io/life360/jobs/8636922002",
+      "applyUrl": "https://job-boards.greenhouse.io/life360/jobs/8636922002",
+      "attributionLabel": "Life360",
+      "termsProfile": "seed",
+      "summary": "Lead IT operations and engineering for a distributed workforce, including enterprise identity, endpoint management, infrastructure, collaboration, and employee services. Set technical roadmaps, develop the team, and own service standards, vendor...",
+      "description": "Lead IT operations and engineering for a distributed workforce, including enterprise identity, endpoint management, infrastructure, collaboration, and employee services. Set technical roadmaps, develop the team, and own service standards, vendor relationships, and budgets. Partner with Security on access controls and compliance while expanding automation. Requires 15 years of IT experience and seven to eight years of senior leadership. Remote within the United States; the published salary range is $167,000-$245,000 and varies by geographic tier.",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "Windows",
+        "macOS",
+        "Jamf",
+        "Curated",
+        "Endpoint Management",
+        "IT Leadership"
+      ],
+      "matchReasons": [
+        "Jamf + macOS",
+        "Endpoint engineering",
+        "Compliance evidence",
+        "Windows platform",
+        "macOS platform"
+      ],
+      "tools": [
+        "Jamf"
+      ],
+      "platforms": [
+        "Windows",
+        "macOS"
+      ],
+      "roleFamily": "Device Compliance",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 167000,
+        "max": 245000,
+        "currency": "USD",
+        "label": "$167,000-$245,000/year"
+      }
+    },
+    {
+      "id": "curated-mrbeast-senior-it-support-engineer-6e1b50c307",
+      "title": "Senior IT Support Engineer",
+      "company": "MrBeast",
+      "location": "Chicago, IL",
+      "mapLocation": {
+        "label": "Chicago, IL",
+        "latitude": 41.8781,
+        "longitude": -87.6298
+      },
+      "workplace": "Hybrid",
+      "postedAt": "2026-06-02T16:49:00.000Z",
+      "fetchedAt": "2026-10-12T02:28:07.328Z",
+      "staleAfter": "2026-11-26T02:28:07.328Z",
+      "expiresAt": "2026-11-26T02:28:07.328Z",
+      "source": "Curated Jobs",
+      "sourceUrl": "https://job-boards.greenhouse.io/mrbeastyoutube/jobs/6011407004",
+      "applyUrl": "https://job-boards.greenhouse.io/mrbeastyoutube/jobs/6011407004",
+      "attributionLabel": "MrBeast",
+      "termsProfile": "seed",
+      "summary": "Own identity and access operations and support Feastables' Chicago office. Administer Okta, Google Workspace, and SaaS integrations; lead endpoint rollouts, security deployments, and hardware refreshes. Manage Mac devices with FleetDM and Munki and...",
+      "description": "Own identity and access operations and support Feastables' Chicago office. Administer Okta, Google Workspace, and SaaS integrations; lead endpoint rollouts, security deployments, and hardware refreshes. Manage Mac devices with FleetDM and Munki and support Windows endpoints and executive technology needs. Requires five years of IT experience and two years focused on identity. On-site four days per week with Fridays remote. Published base salary is $91,000-$114,000, with target total compensation of $100,000-$125,000.",
+      "visaSponsorship": {
+        "status": "not-stated"
+      },
+      "tags": [
+        "Windows",
+        "Intune",
+        "Fleet MDM",
+        "Okta",
+        "Google Workspace",
+        "Curated",
+        "Endpoint",
+        "FleetDM",
+        "Munki",
+        "macOS"
+      ],
+      "matchReasons": [
+        "Fleet MDM",
+        "Endpoint engineering",
+        "Windows platform",
+        "macOS platform"
+      ],
+      "tools": [
+        "Intune",
+        "Fleet MDM",
+        "Okta",
+        "Google Workspace"
+      ],
+      "platforms": [
+        "macOS",
+        "Windows"
+      ],
+      "roleFamily": "Windows Platform",
+      "seniority": "Senior",
+      "employmentType": "Full-time",
+      "salary": {
+        "min": 91000,
+        "max": 114000,
+        "currency": "USD",
+        "label": "$91,000-$114,000 base/year; $100,000-$125,000 total"
       }
     }
   ]

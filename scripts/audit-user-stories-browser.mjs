@@ -622,7 +622,11 @@ await run("QA-014", "Advanced select filters serialize, hydrate, and sort visibl
     advancedFilterScenario.seniority,
     "Sort: Company"
   ]);
-  await expect(page.locator(".pagination-summary").first()).toContainText(`of ${advancedFilterScenario.resultCount}`);
+  if (advancedFilterScenario.resultCount > 20) {
+    await expect(page.locator(".pagination-summary").first()).toContainText(`of ${advancedFilterScenario.resultCount}`);
+  } else {
+    await expect(page.locator(".job-card")).toHaveCount(advancedFilterScenario.resultCount);
+  }
 
   expectUrlParams(page, {
     family: advancedFilterScenario.roleFamily,
@@ -641,7 +645,11 @@ await run("QA-014", "Advanced select filters serialize, hydrate, and sort visibl
   await expect(freshnessSelect).toHaveValue(advancedFilterScenario.freshness);
   await expect(senioritySelect).toHaveValue(advancedFilterScenario.seniority);
   await expect(sortSelect).toHaveValue("company");
-  await expect(page.locator(".pagination-summary").first()).toContainText(`of ${advancedFilterScenario.resultCount}`);
+  if (advancedFilterScenario.resultCount > 20) {
+    await expect(page.locator(".pagination-summary").first()).toContainText(`of ${advancedFilterScenario.resultCount}`);
+  } else {
+    await expect(page.locator(".job-card")).toHaveCount(advancedFilterScenario.resultCount);
+  }
   expect(await getVisibleCompanyNames(page, advancedFilterScenario.expectedCompanies.length)).toEqual(firstCompanies);
 
   await page.getByRole("button", { name: "Remove filter: Sort: Company" }).click();

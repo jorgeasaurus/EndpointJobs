@@ -1132,3 +1132,54 @@ Rechecked every client against official documentation. Corrected Hermes prefligh
 - [x] Verify desktop/mobile navigation and open a follow-up PR.
 
 Navigation review: lint, build, typecheck, and the existing browser audit pass at 1440/390/320px. MCP stays visible in the top bar; PowerShell is in the footer. Required version bump: 0.1.21.
+
+# Open roles sorting
+
+- [x] Add a visible sort control to the Open roles heading using existing sort state.
+- [x] Verify ordering, URL persistence, pagination reset, and responsive layout.
+- [x] Run lint, typecheck, build, and React Doctor; record results.
+
+## Review
+
+Added Sort by beside Open roles, reusing the existing newest, compensation, and company sorting. Lint, typecheck, production build, 505 tests, browser checks at 320–1280px, React Doctor 100/100, and independent review pass. URL persistence and pagination reset verified.
+
+# LinkedIn job-source discovery
+
+- [x] Inspect the open LinkedIn search and capture relevant roles.
+- [x] Compare candidates with the feed and configured employers.
+- [x] Verify direct employer listings and report additions or coverage gaps.
+
+## Review
+
+Inspected five LinkedIn results pages through computer use and verified direct employer sources. Strong gaps: Drata, Assured, a16z, Fluidstack, MrBeast, Accurate Background, Ropes & Gray, Cyclotron consulting, Michigan, and Softchoice. Harvey needs direct-source/hybrid correction; Harbor board is empty, ECS direct role unresolved, and Whatnot public Ashby slug returns 404. Research only; feed unchanged.
+
+# Deliver sorting and discovered employer roles
+
+- [x] Add verified ATS defaults and curated direct listings; preserve freshness rules.
+- [x] Fetch targeted sources and merge accepted jobs without unrelated feed churn.
+- [x] Verify source coverage, deduplication, workplace labels, sorting, and checks.
+- [x] Review the combined diff, commit, push, and create a PR.
+
+## Review
+
+Added 21 net roles across 13 employers, replacing two Harvey aggregator listings with direct hybrid roles. Ten ATS defaults and six live-checked curated listings preserve publication dates and application deadlines. Latest daily feed retained without unrelated record edits; unverified leads omitted.
+
+Lint, build, typecheck, 513 tests, React Doctor 100/100, sorting browser audit, and all 23 added/replacement detail pages pass. Independent review found no correctness issues. Data audit: 70 pass; existing FEAT-061 map coverage fails (615/1242).
+
+PR: https://github.com/jorgeasaurus/EndpointJobs/pull/76 (unmerged).
+
+Broad browser audit: 41 checks passed; QA-014 passed after correcting its single-page pagination assumption. Remaining failures: mobile map activation and localhost Appreciate CORS. Sorting-specific checks passed.
+
+# PR #76 Copilot review loop
+
+- [x] Inspect current head and actionable threads.
+- [x] Normalize Workable `on_site` and verify explicit metadata precedence.
+- [x] Request fresh Copilot reviews after verified fixes.
+
+Clean-cycle gate: a completed review must match the final head and add no actionable threads.
+
+Review fix: `on_site` now normalizes to On-site, including roles without a usable location and with a conflicting remote flag. Five Workable tests, all 513 tests, typecheck, lint, and whitespace checks pass.
+
+Second review: fixed saved-page restoration through both sort controls, added explicit macOS evidence to the Chicago MrBeast role, and classified corporate endpoint-security titles before platform families. Added sort round-trip and metadata regressions; 514 tests, lint, and React Doctor 100/100 pass.
+
+Build, typecheck, production sorting audit (including page-2 sort round trips through both controls), and direct feed-filter assertions pass. Four Copilot findings handled across two cycles; request another review after pushing this verified revision.
