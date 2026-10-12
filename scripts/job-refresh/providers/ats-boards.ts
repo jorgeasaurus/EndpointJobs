@@ -630,7 +630,7 @@ function normalizeAshbyJob(raw: AshbyJob, board: string, fetchedAt: Date): Job |
 }
 
 function normalizeAshbyWorkplace(value: string | undefined) {
-  switch (cleanText(value).toLowerCase().replace(/[\s-]/g, "")) {
+  switch (cleanText(value).toLowerCase().replace(/[\s_-]/g, "")) {
     case "onsite": return "On-site";
     case "hybrid": return "Hybrid";
     case "remote": return "Remote";

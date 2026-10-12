@@ -1169,3 +1169,11 @@ Lint, build, typecheck, 513 tests, React Doctor 100/100, sorting browser audit, 
 PR: https://github.com/jorgeasaurus/EndpointJobs/pull/76 (unmerged).
 
 Broad browser audit: 41 checks passed; QA-014 passed after correcting its single-page pagination assumption. Remaining failures: mobile map activation and localhost Appreciate CORS. Sorting-specific checks passed.
+
+# PR #76 Copilot review loop
+
+- [x] Inspect current head and actionable threads.
+- [x] Normalize Workable `on_site` and verify explicit metadata precedence.
+- [ ] Complete a fresh clean Copilot review on the final head.
+
+Review fix: `on_site` now normalizes to On-site, including roles without a usable location and with a conflicting remote flag. Five Workable tests, all 513 tests, typecheck, lint, and whitespace checks pass.

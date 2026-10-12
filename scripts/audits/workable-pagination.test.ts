@@ -60,10 +60,10 @@ test("Workable rejects repeated pagination tokens before reaching the page bound
 test("Workable preserves explicit workplace metadata and publication dates through details", async (t) => {
   process.env.JOB_WORKABLE_FETCH_DETAILS = "true";
   t.mock.method(globalThis, "fetch", async (_url: string | URL | Request, options?: RequestInit) => options?.method === "POST"
-    ? Response.json({ results: [job("hybrid"), job("remote", "remote"), job("onsite", "on-site")] })
+    ? Response.json({ results: [job("hybrid"), job("remote", "remote"), job("onsite", "on-site"), { ...job("onsite-underscore", "on_site"), location: {} }] })
     : Response.json({ shortcode: String(_url).split("/").pop(), description: "Manage Intune and Jamf endpoint deployment.", title: "Endpoint Engineer" }));
   const jobs = (await provider.fetchJobs({ url: provider.defaultUrl, fetchedAt })).filter(Boolean);
-  assert.deepEqual(jobs.map((entry) => entry!.workplace), ["Hybrid", "Remote", "On-site"]);
+  assert.deepEqual(jobs.map((entry) => entry!.workplace), ["Hybrid", "Remote", "On-site", "On-site"]);
   assert.ok(jobs.every((entry) => entry!.postedAt === "2026-10-05T00:00:00.000Z"));
 });
 
