@@ -1197,6 +1197,8 @@ Salary badges use the listing currency via Intl, preserving country qualifiers s
 
 - [x] Open PR #77 and request Copilot review.
 - [x] Cache currency symbols and add three regression tests, including formatter call counts.
-- [ ] Complete a clean Copilot review on the final commit.
+- [x] Complete a clean Copilot review on the implementation commit.
 
 Review: React Doctor's formatter warning is addressed by a per-currency cache. A mocked constructor test confirms repeated normalized currency codes create one formatter; its static rule still flags the cache-miss construction.
+
+Copilot completed two reviews; the latest targets `dc10411` with no findings. Both React Doctor threads are resolved with cache/test evidence. All 517 tests, typecheck, lint, and PR checks pass.
