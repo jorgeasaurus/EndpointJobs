@@ -1183,3 +1183,22 @@ Review fix: `on_site` now normalizes to On-site, including roles without a usabl
 Second review: fixed saved-page restoration through both sort controls, added explicit macOS evidence to the Chicago MrBeast role, and classified corporate endpoint-security titles before platform families. Added sort round-trip and metadata regressions; 514 tests, lint, and React Doctor 100/100 pass.
 
 Build, typecheck, production sorting audit (including page-2 sort round trips through both controls), and direct feed-filter assertions pass. Four Copilot findings handled across two cycles; request another review after pushing this verified revision.
+
+# Salary currency symbols
+
+- [x] Replace the fixed dollar icon with the listing currency symbol.
+- [x] Verify currency mappings, typecheck, lint, and React Doctor.
+
+## Review
+
+Salary badges use the listing currency via Intl, preserving country qualifiers such as CA$. Nine currency assertions, typecheck, lint, whitespace checks, and React Doctor (100/100) pass.
+
+# Salary badge PR review
+
+- [x] Open PR #77 and request Copilot review.
+- [x] Cache currency symbols and add three regression tests, including formatter call counts.
+- [x] Complete a clean Copilot review on the implementation commit.
+
+Review: React Doctor's formatter warning is addressed by a per-currency cache. A mocked constructor test confirms repeated normalized currency codes create one formatter; its static rule still flags the cache-miss construction.
+
+Copilot completed two reviews; the latest targets `dc10411` with no findings. Both React Doctor threads are resolved with cache/test evidence. All 517 tests, typecheck, lint, and PR checks pass.
