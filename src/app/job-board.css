@@ -934,8 +934,9 @@ h1 {
   line-height: 1.2;
 }
 
-.salary-pill svg {
+.salary-currency {
   flex: 0 0 auto;
+  font-size: 15px;
 }
 
 .summary {

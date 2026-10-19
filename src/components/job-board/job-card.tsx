@@ -6,7 +6,6 @@ import {
   BriefcaseBusiness,
   ChevronDown,
   Clock3,
-  DollarSign,
   ExternalLink,
   GitCompareArrows,
   MapPin
@@ -18,6 +17,7 @@ import {
   getFreshnessLabel
 } from "@/lib/jobs";
 import { getJobWorkplace } from "@/lib/workplace";
+import { getCurrencySymbol } from "@/lib/currency";
 import type { Job } from "@/types/job";
 
 import { MatchRecommendation } from "./match-recommendation";
@@ -70,7 +70,7 @@ export function JobCard({
             aria-label={`Salary ${job.salary.label}`}
             className="salary-pill"
           >
-            <DollarSign size={15} aria-hidden="true" />
+            <span className="salary-currency" aria-hidden="true">{getCurrencySymbol(job.salary.currency)}</span>
             {job.salary.label}
           </span>
         </div>

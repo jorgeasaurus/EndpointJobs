@@ -1183,3 +1183,12 @@ Review fix: `on_site` now normalizes to On-site, including roles without a usabl
 Second review: fixed saved-page restoration through both sort controls, added explicit macOS evidence to the Chicago MrBeast role, and classified corporate endpoint-security titles before platform families. Added sort round-trip and metadata regressions; 514 tests, lint, and React Doctor 100/100 pass.
 
 Build, typecheck, production sorting audit (including page-2 sort round trips through both controls), and direct feed-filter assertions pass. Four Copilot findings handled across two cycles; request another review after pushing this verified revision.
+
+# Salary currency symbols
+
+- [x] Replace the fixed dollar icon with the listing currency symbol.
+- [x] Verify currency mappings, typecheck, lint, and React Doctor.
+
+## Review
+
+Salary badges use the listing currency via Intl, preserving country qualifiers such as CA$. Nine currency assertions, typecheck, lint, whitespace checks, and React Doctor (100/100) pass.
