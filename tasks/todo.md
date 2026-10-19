@@ -1192,3 +1192,11 @@ Build, typecheck, production sorting audit (including page-2 sort round trips th
 ## Review
 
 Salary badges use the listing currency via Intl, preserving country qualifiers such as CA$. Nine currency assertions, typecheck, lint, whitespace checks, and React Doctor (100/100) pass.
+
+# Salary badge PR review
+
+- [x] Open PR #77 and request Copilot review.
+- [x] Cache currency symbols and add three regression tests, including formatter call counts.
+- [ ] Complete a clean Copilot review on the final commit.
+
+Review: React Doctor's formatter warning is addressed by a per-currency cache. A mocked constructor test confirms repeated normalized currency codes create one formatter; its static rule still flags the cache-miss construction.
