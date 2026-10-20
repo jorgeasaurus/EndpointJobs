@@ -25,7 +25,7 @@ type ToolPageProps = {
 
 const feed = feedData as JobsFeed;
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 // Static app segments (`/jobs`, `/api`, `/api-docs`) are more specific than
 // this `[tool]` param, so those routes keep winning. Only taxonomy slugs are

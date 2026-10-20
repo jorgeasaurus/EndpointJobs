@@ -31,7 +31,7 @@ type JobPageProps = {
 };
 
 // Refresh expiry-dependent content, metadata, and canonical selection between feed builds.
-export const revalidate = 300;
+export const revalidate = 3600;
 
 const feed = feedData as JobsFeed;
 

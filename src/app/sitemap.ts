@@ -18,7 +18,7 @@ import {
 } from "./site-metadata";
 
 // Refresh directory pagination and job URLs as listings expire between feed builds.
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const feed = feedData as JobsFeed;

@@ -68,7 +68,9 @@ export async function auditFeedIntegrity({ feed, run, sources }: AuditContext) {
     assertEqual(isActiveJob(freshJob, fixedAuditNow), true);
     assertIncludes(sources.jobExclusions, "maxPostedAgeDays: 30", "Adzuna posted-age cap");
     assertIncludes(sources.page, "jobs: feed.jobs.filter((job) => isActiveJob(job))", "page active feed filter");
-    assertIncludes(sources.page, "export const revalidate = 300", "active feed refresh interval");
+    for (const route of ["page", "toolPage", "jobPage", "sitemap"] as const) {
+      assertIncludes(sources[route], "export const revalidate = 3600", `${route} hourly expiry refresh interval`);
+    }
     assertIncludes(sources.workday, "completedQueries", "Workday skips isolated query failures");
     assertIncludes(sources.page, "activeFeed", "home page active feed projection");
     assertIncludes(sources.page, "getHomeJsonLd(activeFeed)", "JSON-LD uses filtered active feed");
