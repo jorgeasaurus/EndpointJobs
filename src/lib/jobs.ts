@@ -66,17 +66,26 @@ export function isPostedWithinDays(
 
 const sourcePostedDatePattern = /(?:\b(?:today|yesterday|just posted)\b|\d+\+?\s+(?:minute|hour|day|week|month)s?\s+ago)/i;
 
-export function isPostedDateKnown(job: Pick<Job, "postedAt" | "fetchedAt" | "tags">) {
+export function findPostedAtEvidence(values: readonly (string | undefined)[]) {
+  for (const value of values) {
+    const text = value?.replace(/\s+/g, " ").trim();
+    if (text && sourcePostedDatePattern.test(text)) return text;
+  }
+  return undefined;
+}
+
+export function isPostedDateKnown(job: Pick<Job, "postedAt" | "fetchedAt" | "tags" | "postedAtEvidence">) {
   if (job.postedAt !== job.fetchedAt) return true;
+  if (job.postedAtEvidence && sourcePostedDatePattern.test(job.postedAtEvidence)) return true;
   return job.tags.some((tag) => sourcePostedDatePattern.test(tag));
 }
 
-export function getJobFreshnessLabel(job: Pick<Job, "postedAt" | "fetchedAt" | "tags">) {
+export function getJobFreshnessLabel(job: Pick<Job, "postedAt" | "fetchedAt" | "tags" | "postedAtEvidence">) {
   if (!isPostedDateKnown(job)) return "Date unknown";
   return getFreshnessLabel(job.postedAt);
 }
 
-export function getJobPostedDateLabel(job: Pick<Job, "postedAt" | "fetchedAt" | "tags">) {
+export function getJobPostedDateLabel(job: Pick<Job, "postedAt" | "fetchedAt" | "tags" | "postedAtEvidence">) {
   if (!isPostedDateKnown(job)) return "Date unknown";
   return formatPostedDate(job.postedAt);
 }

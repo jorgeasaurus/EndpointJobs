@@ -1,6 +1,7 @@
 import { getCurrencySymbol } from "@/lib/currency";
+import { isActiveJob } from "@/lib/jobs";
 import { foldTokens } from "@/lib/text";
-import type { Job } from "@/types/job";
+import type { Job, JobsFeed } from "@/types/job";
 
 const directSources = new Set([
   "Amazon Jobs",
@@ -31,14 +32,13 @@ const locationCurrencies: Array<[RegExp, string]> = [
   [/\b(poland|polska)\b/i, "PLN"],
   [/\b(sweden|sverige)\b/i, "SEK"],
   [/\b(japan|日本)\b/i, "JPY"],
-  [/,\s*(?:es|fr|de|it|nl|pt|ie|at|be)\b/i, "EUR"],
+  [/\b(ontario|quebec|québec|british columbia|alberta|manitoba|saskatchewan|nova scotia|new brunswick|newfoundland|prince edward island)\b/i, "CAD"],
+  [/,\s*(?:es|fr|it|nl|pt|ie|at|be)\b/i, "EUR"],
   [/,\s*(?:gb|uk)\b/i, "GBP"],
   [/,\s*ch\b/i, "CHF"],
-  [/,\s*ca\b/i, "CAD"],
   [/,\s*au\b/i, "AUD"],
   [/,\s*mx\b/i, "MXN"],
   [/,\s*br\b/i, "BRL"],
-  [/,\s*in\b/i, "INR"],
   [/,\s*pl\b/i, "PLN"],
   [/,\s*sg\b/i, "SGD"],
   [/,\s*nz\b/i, "NZD"],
@@ -71,6 +71,13 @@ export function listingLanguage(job: Pick<Job, "title" | "summary" | "descriptio
   const best = ranked[0];
   if (!best || best[1] < 2) return undefined;
   return best[0];
+}
+
+export function prepareBoardFeed(feed: JobsFeed): JobsFeed {
+  return {
+    ...feed,
+    jobs: feed.jobs.filter((job) => isActiveJob(job)).map(withPresentedSalary)
+  };
 }
 
 export function dedupeJobs(jobs: readonly Job[]) {

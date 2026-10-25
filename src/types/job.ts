@@ -32,6 +32,7 @@ export type Job = {
   visaSponsorship?: VisaSponsorship;
   postedAt: string;
   fetchedAt: string;
+  postedAtEvidence?: string;
   staleAfter: string;
   expiresAt?: string;
   source: string;

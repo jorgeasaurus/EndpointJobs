@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 
 import { JobBoard } from "@/components/job-board";
 import feedData from "@/data/jobs.json";
-import { isActiveJob } from "@/lib/jobs";
-import { dedupeJobs, withPresentedSalary } from "@/lib/job-trust";
+import { prepareBoardFeed } from "@/lib/job-trust";
 import type { JobsFeed } from "@/types/job";
 
 import { getHomeJsonLd, serializeJsonLd } from "./structured-data";
@@ -25,11 +24,7 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  const feed = feedData as JobsFeed;
-  const activeFeed = {
-    ...feed,
-    jobs: dedupeJobs(feed.jobs.filter((job) => isActiveJob(job))).map(withPresentedSalary)
-  };
+  const activeFeed = prepareBoardFeed(feedData as JobsFeed);
 
   return (
     <>

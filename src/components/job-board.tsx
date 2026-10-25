@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 
 import type { EndpointTool, JobsFeed } from "@/types/job";
+import { dedupeJobs } from "@/lib/job-trust";
 import { getJobWorkplace } from "@/lib/workplace";
 import type { FilterAction, WorkplaceFilter } from "./job-board/filter-model";
 
@@ -40,9 +41,10 @@ export function JobBoard({
   useSearchFocusShortcut(searchInputRef);
 
   const activeJobs = feed.jobs;
+  const trackedJobsCount = useMemo(() => dedupeJobs(activeJobs).length, [activeJobs]);
   const workplaceEligibleJobs = useMemo(
     () =>
-      filterJobs(activeJobs, {
+      dedupeJobs(filterJobs(activeJobs, {
         query: filters.query,
         locationQuery: filters.locationQuery,
         selectedPlatforms: filters.selectedPlatforms,
@@ -57,7 +59,7 @@ export function JobBoard({
         roleFamily: filters.roleFamily,
         freshness: filters.freshness,
         sort: filters.sort
-      }),
+      })),
     [
       activeJobs,
       filters.freshness,
@@ -198,7 +200,7 @@ export function JobBoard({
           <CommandPanel
             activeFilterCount={activeFilterCount}
             activeFilterLabel={activeFilterLabel}
-            activeJobsCount={activeJobs.length}
+            activeJobsCount={trackedJobsCount}
             clearFilters={clearFilters}
             dispatch={dispatch}
             filters={filters}
@@ -253,7 +255,7 @@ export function JobBoard({
         <details className="search-coverage-mobile">
           <summary>Coverage stats</summary>
           <CommandStatusRail
-            activeJobsCount={activeJobs.length}
+            activeJobsCount={trackedJobsCount}
             mappedJobsCount={visibleJobMetrics.mappedJobsCount}
             remoteJobsCount={visibleJobMetrics.remoteJobsCount}
             salaryJobsCount={visibleJobMetrics.salaryJobsCount}

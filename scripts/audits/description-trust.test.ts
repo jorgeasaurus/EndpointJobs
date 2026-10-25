@@ -4,8 +4,11 @@ import test from "node:test";
 import feedData from "../../src/data/jobs.json";
 import { getCurrencySymbol } from "../../src/lib/currency";
 import { repairJobDescription, toDescriptionBlocks } from "../../src/lib/job-description";
-import { dedupeJobs, listingLanguage, presentSalary } from "../../src/lib/job-trust";
+import { filterJobs } from "../../src/lib/job-filters";
+import { dedupeJobs, inferLocationCurrency, listingLanguage, prepareBoardFeed, presentSalary, withPresentedSalary } from "../../src/lib/job-trust";
 import { getJobDescriptionBlocks, getJobFreshnessLabel, isPostedDateKnown } from "../../src/lib/jobs";
+import { normalizeSerpApiGoogleJob } from "../job-refresh/providers/serpapi";
+import { toEndpointJob } from "../job-refresh/shared";
 import { getEmptyResultsMessage } from "../../src/components/job-board/empty-results-message";
 import { initialFilterState } from "../../src/components/job-board/filter-model";
 import { makeJob } from "./shared";
@@ -126,4 +129,102 @@ test("protected product names survive description repair", () => {
   assert.match(repaired, /macOS/);
   assert.match(repaired, /PowerShell/);
   assert.match(repaired, /OneDrive\nPlan/);
+});
+
+test("description repair leaves already-correct mixed-case terms intact", () => {
+  const repaired = repairJobDescription("Deploy ChromeOS, SaaS, and SentinelOne with macOS, iOS, and PowerShell. DevOps and eDiscovery stay intact.");
+  assert.match(repaired, /ChromeOS/);
+  assert.match(repaired, /SaaS/);
+  assert.match(repaired, /SentinelOne/);
+  assert.match(repaired, /macOS/);
+  assert.match(repaired, /iOS/);
+  assert.match(repaired, /eDiscovery/);
+  assert.doesNotMatch(repaired, /Chrome\nOS|Saa\nS|Sentinel\nOne|e\nDiscovery/);
+});
+
+test("location variants stay searchable until dedupe runs on the filtered set", () => {
+  const champlin = makeJob({
+    id: "champlin",
+    company: "Cardinal Health",
+    title: "Senior Analyst, IT Client Services",
+    location: "Champlin, Minnesota, United States",
+    staleAfter: "2027-01-01T00:00:00.000Z"
+  });
+  const overland = makeJob({
+    id: "overland",
+    company: "Cardinal Health",
+    title: "Senior Analyst, IT Client Services",
+    location: "Overland Park, Kansas, United States",
+    staleAfter: "2027-01-01T00:00:00.000Z"
+  });
+  const prepared = prepareBoardFeed({
+    updatedAt: "2026-10-25T11:24:56.320Z",
+    source: { name: "Test", url: "https://example.com" },
+    jobs: [overland, champlin]
+  });
+  assert.deepEqual(prepared.jobs.map((job) => job.id), ["overland", "champlin"]);
+  const searched = dedupeJobs(filterJobs(prepared.jobs, { ...initialFilterState, query: "Champlin" }));
+  assert.deepEqual(searched.map((job) => job.id), ["champlin"]);
+  assert.equal(dedupeJobs(prepared.jobs).length, 1);
+});
+
+test("US state suffixes are not treated as country currencies", () => {
+  for (const location of ["San Francisco, CA", "Indianapolis, IN", "Wilmington, DE", "London, CA", "Carmel, IN"]) {
+    assert.equal(inferLocationCurrency(location), undefined, location);
+    assert.equal(presentSalary({
+      location,
+      salary: { min: 160000, max: 180000, currency: "USD", label: "$160k-$180k" }
+    })?.currency, "USD", location);
+  }
+  assert.equal(inferLocationCurrency("Toronto, Canada"), "CAD");
+  assert.equal(inferLocationCurrency("Toronto, Ontario"), "CAD");
+  assert.equal(inferLocationCurrency("Berlin, Germany"), "EUR");
+  assert.equal(inferLocationCurrency("Bengaluru, India"), "INR");
+  assert.equal(inferLocationCurrency("Madrid, ES"), "EUR");
+
+  const point72 = withPresentedSalary(makeJob({
+    id: "point72",
+    location: "San Francisco, CA",
+    staleAfter: "2027-01-01T00:00:00.000Z",
+    salary: { min: 160000, max: 180000, currency: "USD", label: "$160k-$180k" }
+  }));
+  assert.equal(filterJobs([point72], { ...initialFilterState, minimumSalary: "150000" }).length, 1);
+});
+
+test("source posted-at evidence is kept when display tags are capped", () => {
+  const fetchedAt = new Date("2026-10-25T11:24:56.320Z");
+  const capped = toEndpointJob({
+    id: "capped-date",
+    title: "Endpoint Engineer",
+    company: "Example",
+    location: "Austin, TX",
+    postedAt: fetchedAt.toISOString(),
+    fetchedAt,
+    source: "Test",
+    sourceUrl: "https://example.com/jobs/capped",
+    attributionLabel: "Test",
+    termsProfile: "seed",
+    description: "Manage Intune endpoints for the enterprise fleet.",
+    sourceTags: [...Array.from({ length: 16 }, (_, index) => `Benefit ${index}`), "3 days ago"]
+  });
+  assert.ok(capped);
+  assert.equal(capped.tags.includes("3 days ago"), false);
+  assert.equal(capped.postedAtEvidence, "3 days ago");
+  assert.equal(isPostedDateKnown(capped), true);
+
+  const today = normalizeSerpApiGoogleJob({
+    title: "Endpoint Engineer",
+    company_name: "Example Co",
+    location: "Austin, TX",
+    description: "Manage Intune and Windows endpoints for the enterprise fleet.",
+    detected_extensions: { posted_at: "today" },
+    extensions: ["Full-time", "Health insurance"],
+    apply_options: [{ title: "Apply", link: "https://example.com/jobs/today" }]
+  }, "endpoint engineer", fetchedAt);
+  assert.ok(today);
+  assert.equal(today.postedAt, fetchedAt.toISOString());
+  assert.equal(today.postedAtEvidence, "today");
+  assert.equal(today.tags.includes("today"), false);
+  assert.equal(isPostedDateKnown(today), true);
+  assert.equal(getJobFreshnessLabel(today), "Posted today");
 });

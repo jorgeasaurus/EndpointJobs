@@ -448,6 +448,8 @@ export function normalizeSerpApiGoogleJob(
   const sourceTags = [raw.via, raw.detected_extensions?.schedule_type, ...extensions]
     .map(cleanText)
     .filter(Boolean);
+  const detectedPostedAt = cleanText(raw.detected_extensions?.posted_at);
+  const extensionPostedAt = extensions.find((value) => /ago|today|yesterday/i.test(value));
 
   return toEndpointJob({
     id: buildStableJobId("serpapi", [company, rawLocation].filter(Boolean).join(" "), title, sourceJobUrl),
@@ -456,6 +458,7 @@ export function normalizeSerpApiGoogleJob(
     location,
     workplace: inferSerpApiGoogleJobsWorkplace(raw),
     postedAt: getSerpApiGoogleJobsPostedAt(raw, fetchedAt),
+    postedAtEvidence: detectedPostedAt || extensionPostedAt,
     fetchedAt,
     source: serpApiJobSourceName,
     sourceUrl: sourceJobUrl,

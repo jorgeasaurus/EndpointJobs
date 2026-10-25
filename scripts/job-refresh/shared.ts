@@ -19,6 +19,7 @@ import {
 } from "../../src/lib/job-taxonomy";
 import { getCurrencySymbol } from "../../src/lib/currency";
 import { repairJobDescription } from "../../src/lib/job-description";
+import { findPostedAtEvidence } from "../../src/lib/jobs";
 import { hasExplicitOnsiteWorkplace } from "../../src/lib/workplace";
 import { classifyVisaSponsorship } from "./visa-sponsorship";
 import { resolveJobMapLocation } from "./map-location";
@@ -57,6 +58,7 @@ export type JobCandidate = {
   // Already-decoded provider text must not be parsed as HTML again.
   descriptionFormat?: "html" | "text";
   sourceTags?: string[];
+  postedAtEvidence?: string;
   haystackParts?: unknown[];
   // Provider search evidence can admit a listing but must not supply published metadata.
   relevanceOnlyParts?: string[];
@@ -105,6 +107,7 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
     return null;
   }
 
+  const postedAtEvidence = findPostedAtEvidence([candidate.postedAtEvidence, ...sourceTags]);
   const postedAt = parseDateLike(candidate.postedAt) ?? candidate.fetchedAt.toISOString();
   const staleAfter = candidate.staleAfter ?? addDays(new Date(postedAt), staleDays).toISOString();
 
@@ -118,6 +121,7 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
       ? "On-site"
       : (candidate.workplace ?? inferWorkplace(rawLocation, haystack)),
     postedAt,
+    ...(postedAtEvidence ? { postedAtEvidence } : {}),
     fetchedAt: candidate.fetchedAt.toISOString(),
     staleAfter,
     expiresAt: staleAfter,

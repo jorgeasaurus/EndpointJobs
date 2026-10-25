@@ -131,6 +131,30 @@ test("mobile layout keeps the first job above collapsed stats", async ({ page },
   await page.screenshot({ path: "/opt/cursor/artifacts/job-mobile-description-after.png", fullPage: false });
 });
 
+test("mobile sticky filters stay below the two-row header", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/?q=Intune");
+  const sticky = page.locator(".sticky-active-filters");
+  await expect(sticky).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 1200));
+  const overlap = await page.evaluate(() => {
+    const header = document.querySelector(".topbar")?.getBoundingClientRect();
+    const bar = document.querySelector(".sticky-active-filters")?.getBoundingClientRect();
+    return {
+      headerBottom: header?.bottom ?? 0,
+      stickyTop: bar?.top ?? 0
+    };
+  });
+  expect(overlap.stickyTop).toBeGreaterThanOrEqual(overlap.headerBottom - 1);
+});
+
+test("a location-only duplicate stays searchable", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "desktop");
+  await page.goto("/?q=Champlin");
+  await expect(page.locator("article.job-card").first()).toContainText("Champlin");
+});
+
 test("measured label contrast is at least 4.5:1 and text is at least 12px", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
   await page.goto("/");

@@ -47,12 +47,7 @@ const bulletPattern = /^(?:[-*•]|\d+[.)])\s+/;
 export function repairJobDescription(value: string) {
   const withoutMarkup = htmlMarkupPattern.test(value) ? stripJobHtml(value) : value;
   const { text, tokens } = protectTermsIn(withoutMarkup);
-  const split = text
-    .replace(/[〕】](?=[A-Z])/g, (mark) => `${mark}\n`)
-    .replace(/\)(?=[A-Z])/g, ")\n")
-    .replace(/(?<=[a-z]{2})(?=[A-Z])/g, "\n")
-    .replace(/(?<=[A-Z]{2})(?=[A-Z][a-z])/g, "\n")
-    .replace(/\uE001(?=[A-Z])/g, "\uE001\n");
+  const split = splitJoinedClauses(text);
   const restored = restoreTerms(
     split
       .replace(/〔[^〕]*〕/g, "")
@@ -156,6 +151,21 @@ function trailingSectionHeading(items: string[]) {
 
 function stripBullet(value: string) {
   return value.replace(bulletPattern, "").trim();
+}
+
+function splitJoinedClauses(value: string) {
+  return value
+    .replace(/[〕】](?=[A-Z])/g, (mark) => `${mark}\n`)
+    .replace(/\)(?=[A-Z][a-z])/g, ")\n")
+    .replace(
+      /(^|[^A-Za-z0-9])([a-z][a-z'-]*[a-z])(?=[A-Z][a-z]{2,}(?:[^A-Za-z]|$))/g,
+      "$1$2\n"
+    )
+    .replace(
+      /(^|[^A-Za-z0-9])([A-Z]{2,})(?=[A-Z][a-z]{2,}(?:[^A-Za-z]|$))/g,
+      "$1$2\n"
+    )
+    .replace(/\uE001(?=[A-Z])/g, "\uE001\n");
 }
 
 function protectTermsIn(value: string) {

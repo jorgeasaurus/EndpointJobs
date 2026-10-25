@@ -894,6 +894,10 @@
             "type": "string",
             "format": "date-time"
           },
+          "postedAtEvidence": {
+            "type": "string",
+            "description": "Source relative-date phrase preserved independently of the capped tags list. Absent when the provider did not supply one."
+          },
           "fetchedAt": {
             "type": "string",
             "format": "date-time"
