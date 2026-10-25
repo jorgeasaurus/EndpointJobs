@@ -94,3 +94,22 @@ test("OAuth redirectTo carries the current path as a safe next parameter", () =>
   const rejected = new URL(buildOAuthRedirectTo("http://localhost:3000", "//evil.example"));
   assert.equal(rejected.searchParams.get("next"), "/");
 });
+
+test("encoded filters survive the OAuth next round trip", () => {
+  const origin = "https://endpointjobs.dev";
+  const cases = [
+    { path: "/?q=C%2B%2B", query: "C++" },
+    { path: "/?q=R%26D", query: "R&D" },
+    { path: "/?q=100%25", query: "100%" }
+  ];
+  for (const { path, query } of cases) {
+    assert.equal(safeNextPath(path), path, path);
+    const next = new URL(buildOAuthRedirectTo(origin, path)).searchParams.get("next");
+    assert.equal(next, path, path);
+    assert.equal(safeNextPath(next), path, path);
+    const destination = safeRedirectUrl(origin, next);
+    assert.equal(destination.href, `${origin}${path}`, path);
+    assert.equal(destination.searchParams.get("q"), query, path);
+    assert.deepEqual([...destination.searchParams.keys()], ["q"], path);
+  }
+});
