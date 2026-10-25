@@ -10,27 +10,80 @@
  * postgresql://postgres:postgres@127.0.0.1:54322/postgres
  * (that password is the local Supabase default, not a hosted credential).
  *
- * Skips when nothing is accepting connections, including CI without Supabase.
- * If the database is up but the migration is missing, the test fails.
+ * Skips only when the default local database is unreachable, including CI
+ * without Supabase. An explicit SUPABASE_DB_URL, a bad password, or a missing
+ * database fails the test. A reachable database with a missing migration fails too.
  */
 import assert from "node:assert/strict";
 import test from "node:test";
 
 import pg from "pg";
 
-const connectionString =
-  process.env.SUPABASE_DB_URL ?? "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
+import { classifyDatabaseProbe, probeDatabase, resolveDatabaseConnection } from "./rls-probe";
+
+const { connectionString, explicitUrl } = resolveDatabaseConnection();
 
 const userA = "00000000-0000-4000-8000-0000000000a1";
 const userB = "00000000-0000-4000-8000-0000000000b2";
 
-async function localDatabaseSkipReason(): Promise<string | false> {
+function errorWithCode(message: string, code: string) {
+  const error = new Error(message);
+  Object.assign(error, { code });
+  return error;
+}
+
+test("the default local database is the only connection failure that skips", () => {
+  assert.equal(classifyDatabaseProbe(false, null), "run");
+  assert.equal(classifyDatabaseProbe(true, null), "run");
+  assert.equal(classifyDatabaseProbe(false, errorWithCode("connect ECONNREFUSED 127.0.0.1:54322", "ECONNREFUSED")), "skip");
+  assert.equal(classifyDatabaseProbe(false, errorWithCode("getaddrinfo ENOTFOUND db.example", "ENOTFOUND")), "skip");
+  assert.equal(classifyDatabaseProbe(false, new Error("timeout expired")), "skip");
+  assert.equal(classifyDatabaseProbe(false, errorWithCode('password authentication failed for user "postgres"', "28P01")), "fail");
+  assert.equal(classifyDatabaseProbe(false, errorWithCode('database "postgres" does not exist', "3D000")), "fail");
+  assert.equal(classifyDatabaseProbe(false, errorWithCode('role "postgres" does not exist', "28000")), "fail");
+  assert.equal(classifyDatabaseProbe(true, errorWithCode("connect ECONNREFUSED 127.0.0.1:54322", "ECONNREFUSED")), "fail");
+  assert.equal(classifyDatabaseProbe(true, errorWithCode('password authentication failed for user "postgres"', "28P01")), "fail");
+  assert.equal(classifyDatabaseProbe(false, new Error("unexpected server response")), "fail");
+});
+
+test("an explicit database URL does not turn a connection error into a skip", async () => {
+  const refused = await probeDatabase({
+    explicitUrl: true,
+    connect: async () => {
+      throw errorWithCode("connect ECONNREFUSED 127.0.0.1:1", "ECONNREFUSED");
+    }
+  });
+  assert.equal(refused.outcome, "fail");
+  assert.match(refused.reason, /ECONNREFUSED/);
+
+  const missing = await probeDatabase({
+    explicitUrl: false,
+    connect: async () => {
+      throw errorWithCode('database "endpointjobs" does not exist', "3D000");
+    }
+  });
+  assert.equal(missing.outcome, "fail");
+
+  const down = await probeDatabase({
+    explicitUrl: false,
+    connect: async () => {
+      throw errorWithCode("connect ECONNREFUSED 127.0.0.1:54322", "ECONNREFUSED");
+    }
+  });
+  assert.equal(down.outcome, "skip");
+  assert.equal(resolveDatabaseConnection({}).explicitUrl, false);
+  assert.equal(resolveDatabaseConnection({ SUPABASE_DB_URL: "postgresql://postgres:wrong@127.0.0.1:54322/postgres" }).explicitUrl, true);
+});
+
+async function liveDatabaseProbe() {
   const client = new pg.Client({ connectionString, connectionTimeoutMillis: 800 });
   try {
-    await client.connect();
-    return false;
-  } catch {
-    return "local Supabase is not accepting connections";
+    return await probeDatabase({
+      explicitUrl,
+      connect: async () => {
+        await client.connect();
+      }
+    });
   } finally {
     await client.end().catch(() => undefined);
   }
@@ -135,9 +188,12 @@ async function become(client: pg.Client, userId: string | null, role: "authentic
   await client.query(`set local role ${role}`);
 }
 
-const skip = await localDatabaseSkipReason();
+const probe = await liveDatabaseProbe();
 
-test("neither user can read or write the other's rows, and record_job_view increments", { skip }, async () => {
+test("neither user can read or write the other's rows, and record_job_view increments", {
+  skip: probe.outcome === "skip" ? probe.reason : false
+}, async () => {
+  if (probe.outcome === "fail") assert.fail(probe.reason);
   const client = new pg.Client({ connectionString });
   await client.connect();
   try {
