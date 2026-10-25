@@ -144,14 +144,26 @@
   font-size: 1.55rem;
 }
 
-.job-detail-description p {
+.job-detail-description p,
+.job-detail-description li {
   color: var(--white-60);
   font-size: 1rem;
   line-height: 1.75;
   white-space: pre-wrap;
 }
 
-.job-detail-description p + p {
+.job-detail-description ul {
+  margin: 0 0 18px;
+  padding-left: 1.25rem;
+}
+
+.job-detail-description li + li {
+  margin-top: 0.45rem;
+}
+
+.job-detail-description p + p,
+.job-detail-description p + ul,
+.job-detail-description ul + p {
   margin-top: 18px;
 }
 

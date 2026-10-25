@@ -17,6 +17,8 @@ import {
   technicalRoleTitleTerms,
   type RoleFamilyInferenceRule
 } from "../../src/lib/job-taxonomy";
+import { getCurrencySymbol } from "../../src/lib/currency";
+import { repairJobDescription } from "../../src/lib/job-description";
 import { hasExplicitOnsiteWorkplace } from "../../src/lib/workplace";
 import { classifyVisaSponsorship } from "./visa-sponsorship";
 import { resolveJobMapLocation } from "./map-location";
@@ -446,7 +448,7 @@ const annualSalaryPatterns = [
   )
 ];
 
-export function normalizeSalary(min?: number, max?: number) {
+export function normalizeSalary(min?: number, max?: number, currency = "USD") {
   const salaryMin = min && min > 0 ? min : undefined;
   const salaryMax = max && max > 0 ? max : undefined;
 
@@ -454,15 +456,17 @@ export function normalizeSalary(min?: number, max?: number) {
     return undefined;
   }
 
+  const code = /^[A-Za-z]{3}$/.test(currency) ? currency.toUpperCase() : "USD";
+  const symbol = getCurrencySymbol(code);
   const label =
     salaryMin && salaryMax
-      ? `$${formatSalaryAmount(salaryMin)}-$${formatSalaryAmount(salaryMax)}`
-      : `$${formatSalaryAmount(salaryMin ?? salaryMax ?? 0)}`;
+      ? `${symbol}${formatSalaryAmount(salaryMin)}-${symbol}${formatSalaryAmount(salaryMax)}`
+      : `${symbol}${formatSalaryAmount(salaryMin ?? salaryMax ?? 0)}`;
 
   return {
     ...(salaryMin ? { min: salaryMin } : {}),
     ...(salaryMax ? { max: salaryMax } : {}),
-    currency: "USD",
+    currency: code,
     label
   };
 }
@@ -562,7 +566,7 @@ export function summarize(value: string) {
 }
 
 export function normalizeDescription(value: string | undefined, format: "html" | "text" = "html") {
-  const formatted = cleanMultilineText(format === "text" ? value ?? "" : stripHtml(value ?? ""));
+  const formatted = repairJobDescription(cleanMultilineText(format === "text" ? value ?? "" : stripHtml(value ?? "")));
   const compact = cleanText(formatted);
 
   if (!formatted || compact.length < descriptionMinLength) {
@@ -847,7 +851,9 @@ export function parseRelativeAgeDate(value: string | undefined, fetchedAt: Date)
 
   const amount = Number(match[1]);
   const unit = match[2];
-  const days = unit === "month" ? amount * 30 : unit === "week" ? amount * 7 : unit === "day" ? amount : 0;
+  if (unit === "hour") return new Date(fetchedAt.getTime() - amount * 60 * 60 * 1000).toISOString();
+  if (unit === "minute") return new Date(fetchedAt.getTime() - amount * 60 * 1000).toISOString();
+  const days = unit === "month" ? amount * 30 : unit === "week" ? amount * 7 : amount;
 
   return addDays(fetchedAt, -days).toISOString();
 }

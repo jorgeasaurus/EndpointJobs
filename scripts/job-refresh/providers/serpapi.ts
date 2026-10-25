@@ -474,11 +474,7 @@ export function normalizeSerpApiGoogleJob(
 function restoreSerpApiDescriptionStructure(raw: SerpApiGoogleJob) {
   const description = (raw.description ?? "").replace(/\\r\\n|\\n|\\r/g, "\n");
 
-  if (!description || description.includes("\n")) {
-    return description;
-  }
-
-  if (!Array.isArray(raw.job_highlights)) {
+  if (!description || !Array.isArray(raw.job_highlights)) {
     return description;
   }
 

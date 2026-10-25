@@ -54,9 +54,9 @@
 }
 
 .search-result-count {
-  color: var(--white-45);
+  color: var(--label-strong);
   font-family: var(--mono);
-  font-size: 0.74rem;
+  font-size: max(0.75rem, 12px);
   font-weight: 600;
   text-transform: uppercase;
   white-space: nowrap;

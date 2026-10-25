@@ -51,6 +51,8 @@ export function LocationFilters({
         <MapPin size={19} aria-hidden="true" />
         <span className="sr-only">Search locations</span>
         <input
+          id="location-query"
+          name="location"
           type="search"
           value={locationQuery}
           onChange={(event) =>

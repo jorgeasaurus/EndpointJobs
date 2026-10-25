@@ -8,7 +8,7 @@ import type { FilterAction, WorkplaceFilter } from "./job-board/filter-model";
 
 import { getActiveFilterItems } from "./job-board/active-filters";
 import { updateComparisonSelection } from "./job-board/comparison-selection";
-import { CommandPanel, StickyActiveFilters } from "./job-board/controls";
+import { CommandPanel, CommandStatusRail, StickyActiveFilters } from "./job-board/controls";
 import { filterJobs } from "./job-board/filter-model";
 import { JobMap } from "./job-board/job-map";
 import { JobComparison } from "./job-board/job-comparison";
@@ -235,6 +235,7 @@ export function JobBoard({
           <ResultsPanel
             clearFilters={clearFilters}
             currentPage={safeCurrentPage}
+            filters={filters}
             onPageChange={changePage}
             onSortChange={(value) => dispatch({ type: "setSort", value })}
             sort={filters.sort}
@@ -248,6 +249,17 @@ export function JobBoard({
             visibleJobs={pagedJobs}
           />
         </section>
+
+        <details className="search-coverage-mobile">
+          <summary>Coverage stats</summary>
+          <CommandStatusRail
+            activeJobsCount={activeJobs.length}
+            mappedJobsCount={visibleJobMetrics.mappedJobsCount}
+            remoteJobsCount={visibleJobMetrics.remoteJobsCount}
+            salaryJobsCount={visibleJobMetrics.salaryJobsCount}
+            visibleJobsCount={visibleJobs.length}
+          />
+        </details>
 
         <SiteFooter updatedAt={feed.updatedAt} />
       </div>

@@ -1,5 +1,5 @@
 import type { SponsorshipStatus } from "./visa-sponsorship";
-import { getSalarySortValue, getSearchText, isPostedWithinDays } from "@/lib/jobs";
+import { getSalarySortValue, getSearchText, isPostedDateKnown, isPostedWithinDays } from "@/lib/jobs";
 import { isLeadershipTitle } from "@/lib/job-taxonomy";
 import { metroAreaMatcher, type MetroAreaFilter } from "@/lib/metro-areas";
 import { foldTokens } from "@/lib/text";
@@ -69,10 +69,12 @@ export function filterJobs(jobs: Job[], filters: JobFilters, now = new Date()) {
     if (minimumSalary !== null && (job.salary?.currency !== "USD" || (job.salary.max ?? job.salary.min ?? 0) < minimumSalary)) return false;
     if (filters.seniority !== "All" && job.seniority !== filters.seniority) return false;
     if (filters.roleFamily !== "All" && job.roleFamily !== filters.roleFamily) return false;
-    return maximumAgeDays === null || isPostedWithinDays(job.postedAt, maximumAgeDays, now);
-  }).sort((a, b) => filters.sort === "salary"
-    ? getSalarySortValue(b) - getSalarySortValue(a)
-    : filters.sort === "company"
-      ? a.company.localeCompare(b.company)
-      : new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime());
+    return maximumAgeDays === null || (isPostedDateKnown(job) && isPostedWithinDays(job.postedAt, maximumAgeDays, now));
+  }).sort((a, b) => {
+    if (filters.sort === "salary") return getSalarySortValue(b) - getSalarySortValue(a);
+    if (filters.sort === "company") return a.company.localeCompare(b.company);
+    const knownDelta = Number(isPostedDateKnown(b)) - Number(isPostedDateKnown(a));
+    if (knownDelta !== 0) return knownDelta;
+    return new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime();
+  });
 }

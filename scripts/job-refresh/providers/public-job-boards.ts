@@ -201,7 +201,7 @@ async function fetchAdzunaJobs(url: string, fetchedAt: Date) {
       try {
         const payload = await fetchAdzunaSearch(queryUrl);
         successfulSearches += 1;
-        jobs.push(...payload.map((job) => normalizeAdzunaJob(job, fetchedAt)));
+        jobs.push(...payload.map((job) => normalizeAdzunaJob(job, fetchedAt, country)));
         console.log(`Fetched ${payload.length} raw jobs from Adzuna/${country} query ${query}`);
       } catch (error) {
         const detail = formatProviderError(error);
@@ -546,7 +546,29 @@ function normalizeMuseJob(raw: MuseJob, fetchedAt: Date): Job | null {
   });
 }
 
-function normalizeAdzunaJob(raw: AdzunaJob, fetchedAt: Date): Job | null {
+const adzunaCurrencies: Record<string, string> = {
+  at: "EUR",
+  au: "AUD",
+  be: "EUR",
+  br: "BRL",
+  ca: "CAD",
+  ch: "CHF",
+  de: "EUR",
+  es: "EUR",
+  fr: "EUR",
+  gb: "GBP",
+  in: "INR",
+  it: "EUR",
+  mx: "MXN",
+  nl: "EUR",
+  nz: "NZD",
+  pl: "PLN",
+  sg: "SGD",
+  us: "USD",
+  za: "ZAR"
+};
+
+function normalizeAdzunaJob(raw: AdzunaJob, fetchedAt: Date, country = "us"): Job | null {
   const title = cleanText(raw.title);
   const company = cleanText(raw.company?.display_name);
   const sourceJobUrl = cleanAdzunaJobUrl(raw.redirect_url);
@@ -565,7 +587,11 @@ function normalizeAdzunaJob(raw: AdzunaJob, fetchedAt: Date): Job | null {
     raw.created && !Number.isNaN(new Date(raw.created).getTime())
       ? new Date(raw.created).toISOString()
       : fetchedAt.toISOString();
-  const salary = normalizeSalary(raw.salary_min, raw.salary_max);
+  const salary = normalizeSalary(
+    raw.salary_min,
+    raw.salary_max,
+    adzunaCurrencies[country.trim().toLowerCase()] ?? "USD"
+  );
 
   const job = toEndpointJob({
     id: `adzuna-${raw.id}`,
