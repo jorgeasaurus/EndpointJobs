@@ -25,6 +25,20 @@ export function isAmbiguousPanamaCity(normalizedLocation: string) {
     && !/\b(?:panama city panama|ciudad de panama|republic of panama)\b/.test(normalizedLocation);
 }
 
+const usCountryPattern = /(?:^| )(?:united states(?: of america)?|usa|us|u s a|u s)(?: |$)/;
+
+export function hasUsLocationContext(normalizedLocation: string) {
+  if (getUsStateSuffix(normalizedLocation) || usCountryPattern.test(normalizedLocation)) {
+    return true;
+  }
+
+  const haystack = ` ${normalizedLocation} `;
+  for (const name of usStateNames) {
+    if (haystack.includes(` ${name} `)) return true;
+  }
+  return false;
+}
+
 export function isNewMexicoUsLocation(normalizedLocation: string) {
   if (` ${normalizedLocation} `.includes(" new mexico ")) {
     return true;

@@ -1,5 +1,6 @@
 import { getCurrencySymbol } from "@/lib/currency";
 import { isActiveJob } from "@/lib/jobs";
+import { hasUsLocationContext } from "@/lib/location-context";
 import { foldTokens } from "@/lib/text";
 import { getJobWorkplace } from "@/lib/workplace";
 import type { Job, JobsFeed, Workplace } from "@/types/job";
@@ -16,39 +17,56 @@ const directSources = new Set([
   "Workday"
 ]);
 
+// Patterns run on foldTokens() output: lowercase, diacritics folded, punctuation
+// turned into spaces. UK regions are listed before EUR so "Northern Ireland"
+// cannot match the Ireland rule. Mexico and England use lookbehinds so a
+// leading "New " cannot be read as the country or as England. Country codes
+// match a comma-separated segment or the final token, so a hyphen inside
+// "Champagne-au-Mont-d'Or" is not read as Australia.
 const locationCurrencies: Array<[RegExp, string]> = [
-  [/\b(spain|españa|espana|comunidad de madrid|cataluña|cataluna|catalunya|andaluc[ií]a|pa[ií]s vasco|galicia|comunidad valenciana|madrid|barcelona)\b/i, "EUR"],
-  [/\b(france|ile-de-france|île-de-france|deutschland|germany|italia|italy|nederland|netherlands|belgium|belgique|belgië|austria|österreich|osterreich|portugal|ireland|éire)\b/i, "EUR"],
-  [/\bprovincia di\b/i, "EUR"],
-  [/\b(united kingdom|england|scotland|wales|great britain)\b/i, "GBP"],
-  [/(?:^|,|\s)(?:uk|gb)(?:$|,|\s)/i, "GBP"],
-  [/\b(switzerland|schweiz|suisse|svizzera)\b/i, "CHF"],
-  [/\bcanada\b/i, "CAD"],
-  [/\baustralia\b/i, "AUD"],
-  [/\bnew zealand\b/i, "NZD"],
-  [/\bindia\b/i, "INR"],
-  [/\bsingapore\b/i, "SGD"],
-  [/\b(mexico|méxico)\b/i, "MXN"],
-  [/\b(brazil|brasil)\b/i, "BRL"],
-  [/\b(poland|polska)\b/i, "PLN"],
-  [/\b(sweden|sverige)\b/i, "SEK"],
-  [/\b(japan|日本)\b/i, "JPY"],
-  [/\b(ontario|quebec|québec|british columbia|alberta|manitoba|saskatchewan|nova scotia|new brunswick|newfoundland|prince edward island)\b/i, "CAD"],
-  [/,\s*(?:es|fr|it|nl|pt|ie|at|be)\b/i, "EUR"],
-  [/,\s*(?:gb|uk)\b/i, "GBP"],
-  [/,\s*ch\b/i, "CHF"],
-  [/,\s*au\b/i, "AUD"],
-  [/,\s*mx\b/i, "MXN"],
-  [/,\s*br\b/i, "BRL"],
-  [/,\s*pl\b/i, "PLN"],
-  [/,\s*sg\b/i, "SGD"],
-  [/,\s*nz\b/i, "NZD"],
-  [/,\s*jp\b/i, "JPY"]
+  [/\b(?:united kingdom|great britain|northern ireland|(?<!new )england|scotland|wales)\b/, "GBP"],
+  [/\b(?:spain|espana|comunidad de madrid|cataluna|catalunya|andalucia|pais vasco|galicia|comunidad valenciana|madrid|barcelona)\b/, "EUR"],
+  [/\b(?:france|ile de france|deutschland|germany|italia|italy|nederland|netherlands|belgium|belgique|belgie|austria|osterreich|portugal|(?<!northern )ireland|eire)\b/, "EUR"],
+  [/\bprovincia di\b/, "EUR"],
+  [/\b(?:switzerland|schweiz|suisse|svizzera)\b/, "CHF"],
+  [/\bcanada\b/, "CAD"],
+  [/\baustralia\b/, "AUD"],
+  [/\bnew zealand\b/, "NZD"],
+  [/\bindia\b/, "INR"],
+  [/\bsingapore\b/, "SGD"],
+  [/(?<!new )\bmexico\b/, "MXN"],
+  [/\b(?:brazil|brasil)\b/, "BRL"],
+  [/\b(?:poland|polska)\b/, "PLN"],
+  [/\b(?:sweden|sverige)\b/, "SEK"],
+  [/(?:^| )(?:japan|日本)(?: |$)/, "JPY"],
+  [/\b(?:ontario|quebec|british columbia|alberta|manitoba|saskatchewan|nova scotia|new brunswick|newfoundland|prince edward island)\b/, "CAD"]
 ];
+
+const countryCodeCurrencies = new Map<string, string>([
+  ["gb", "GBP"],
+  ["uk", "GBP"],
+  ["at", "EUR"],
+  ["be", "EUR"],
+  ["es", "EUR"],
+  ["fr", "EUR"],
+  ["ie", "EUR"],
+  ["it", "EUR"],
+  ["nl", "EUR"],
+  ["pt", "EUR"],
+  ["ch", "CHF"],
+  ["au", "AUD"],
+  ["mx", "MXN"],
+  ["br", "BRL"],
+  ["pl", "PLN"],
+  ["sg", "SGD"],
+  ["nz", "NZD"],
+  ["jp", "JPY"]
+]);
 
 const languageRules: Array<{ label: string; pattern: RegExp; weight: number }> = [
   { label: "Spanish", weight: 2, pattern: /\b(años|buscamos|conocimientos|experiencia|habilidades|ingenier[oa]s?|jornada|ofrecemos|requisitos|administrador|especialista|plataformas|seguridad|funciones|incorporación|contrato)\b/i },
-  { label: "Spanish", weight: 3, pattern: /[¿¡ñ]|\/a\b|\(h\/x\/m\)/i },
+  { label: "Spanish", weight: 3, pattern: /[¿¡]|\b\w+o\/a\b|\(h\/x\/m\)/i },
+  { label: "Spanish", weight: 1, pattern: /ñ/i },
   { label: "French", weight: 2, pattern: /\b(affaires|chargé|compétences|conformité|contrat|entreprise|expérience|ingénieur|poste|recherchons)\b/i },
   { label: "French", weight: 3, pattern: /\(h\/f\)|[œ]/i },
   { label: "German", weight: 2, pattern: /\b(berufserfahrung|erfahrung|kenntnisse|stellenangebot)\b/i },
@@ -82,15 +100,47 @@ export function prepareBoardFeed(feed: JobsFeed): JobsFeed {
 }
 
 export function dedupeJobs(jobs: readonly Job[]) {
-  const winners = new Map<string, Job>();
+  const parent = jobs.map((_, index) => index);
+  const find = (index: number) => {
+    let root = index;
+    while (parent[root] !== root) root = parent[root];
+    while (parent[index] !== root) {
+      const next = parent[index];
+      parent[index] = root;
+      index = next;
+    }
+    return root;
+  };
+  const union = (left: number, right: number) => {
+    const leftRoot = find(left);
+    const rightRoot = find(right);
+    if (leftRoot !== rightRoot) parent[leftRoot] = rightRoot;
+  };
 
-  for (const job of jobs) {
-    const key = duplicateKey(job);
-    const current = winners.get(key);
-    if (!current || preferDuplicate(job, current)) winners.set(key, job);
-  }
+  const roleOwners = new Map<string, number>();
+  const postingOwners = new Map<string, number>();
+  jobs.forEach((job, index) => {
+    const role = duplicateKey(job);
+    const roleOwner = roleOwners.get(role);
+    if (roleOwner === undefined) roleOwners.set(role, index);
+    else union(roleOwner, index);
 
-  return jobs.filter((job) => winners.get(duplicateKey(job)) === job);
+    const posting = postingKey(job);
+    if (!posting) return;
+    const postingOwner = postingOwners.get(posting);
+    if (postingOwner === undefined) postingOwners.set(posting, index);
+    else union(postingOwner, index);
+  });
+
+  const winnerAt = new Map<number, number>();
+  jobs.forEach((job, index) => {
+    const root = find(index);
+    const currentIndex = winnerAt.get(root);
+    if (currentIndex === undefined || preferDuplicate(job, jobs[currentIndex])) winnerAt.set(root, index);
+  });
+
+  const winners = new Set(winnerAt.values());
+  return jobs.filter((_, index) => winners.has(index));
 }
 
 export function dedupeWorkplaceJobs(
@@ -113,10 +163,27 @@ export function dedupedWorkplaceCounts(jobs: readonly Job[]) {
 }
 
 export function inferLocationCurrency(location: string) {
+  const folded = foldTokens(location);
+  if (!folded || hasUsLocationContext(folded)) return undefined;
   for (const [pattern, currency] of locationCurrencies) {
-    if (pattern.test(location)) return currency;
+    if (pattern.test(folded)) return currency;
+  }
+  const codes = locationCountryCodes(location);
+  for (const [code, currency] of countryCodeCurrencies) {
+    if (codes.has(code)) return currency;
   }
   return undefined;
+}
+
+function locationCountryCodes(location: string) {
+  const codes = new Set<string>();
+  for (const part of location.split(",")) {
+    const folded = foldTokens(part);
+    if (folded && !folded.includes(" ")) codes.add(folded);
+  }
+  const lastToken = foldTokens(location).split(" ").at(-1);
+  if (lastToken) codes.add(lastToken);
+  return codes;
 }
 
 const explicitCurrencyMarker = /(?:US\$|A\$|C\$|NZ\$|S\$|[€£]|\b(?:AUD|CAD|CHF|EUR|GBP|INR|JPY|MXN|NZD|SGD|USD)\b)/i;
@@ -142,7 +209,26 @@ export function withPresentedSalary<T extends Pick<Job, "location" | "salary">>(
 }
 
 function duplicateKey(job: Job) {
-  return `${foldTokens(job.company)}|${foldTokens(job.title)}`;
+  return [
+    foldTokens(job.company),
+    foldTokens(job.title),
+    foldTokens(job.location),
+    foldTokens(getJobWorkplace(job))
+  ].join("|");
+}
+
+function postingKey(job: Job) {
+  return (job.applyUrl && canonicalPostingUrl(job.applyUrl)) || canonicalPostingUrl(job.sourceUrl);
+}
+
+function canonicalPostingUrl(value: string) {
+  try {
+    const url = new URL(value);
+    const path = url.pathname.replace(/\/+$/, "") || "/";
+    return `${url.host.toLowerCase()}${path.toLowerCase()}`;
+  } catch {
+    return undefined;
+  }
 }
 
 function shouldInferLocationCurrency(salary: NonNullable<Job["salary"]>) {
