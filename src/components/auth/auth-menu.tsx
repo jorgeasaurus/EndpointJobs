@@ -1,13 +1,14 @@
 "use client";
 
-import { Github, LogIn, UserRound } from "lucide-react";
+import { Github, LogIn } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import { buildOAuthRedirectTo } from "@/lib/auth/safe-next-path";
-import { signOut } from "@/lib/auth/sign-out";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+
+import { AccountMenu } from "./account-menu";
 
 type Provider = "google" | "github";
 
@@ -46,24 +47,7 @@ export function AuthMenu() {
 
   if (!configured) return null;
 
-  if (email) {
-    return (
-      <details className="auth-menu">
-        <summary className="feedback-link auth-entry" aria-label={`Account menu for ${email}`}>
-          <UserRound size={15} aria-hidden="true" />
-          <span className="auth-entry-label">{email}</span>
-        </summary>
-        <div className="auth-menu-panel">
-          <p className="auth-menu-email">{email}</p>
-          <form action={signOut}>
-            <button className="auth-menu-action" type="submit">
-              Sign out
-            </button>
-          </form>
-        </div>
-      </details>
-    );
-  }
+  if (email) return <AccountMenu email={email} />;
 
   return (
     <>

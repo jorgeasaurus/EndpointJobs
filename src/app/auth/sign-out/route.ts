@@ -1,14 +1,13 @@
-"use server";
+import { NextResponse } from "next/server";
 
-import { redirect } from "next/navigation";
-
+import { signOutRedirectUrl } from "@/lib/auth/sign-out-navigation";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 
-export async function signOut() {
+export async function POST(request: Request) {
   if (isSupabaseConfigured()) {
     const supabase = await createClient();
     await supabase.auth.signOut();
   }
-  redirect("/");
+  return NextResponse.redirect(signOutRedirectUrl(request.url), 303);
 }
