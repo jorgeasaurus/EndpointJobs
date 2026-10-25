@@ -2,6 +2,9 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import type { Job } from "../../src/types/job";
 
+import { initialFilterState } from "../../src/components/job-board/filter-model";
+import { filterJobs } from "../../src/lib/job-filters";
+import { isPostedDateKnown } from "../../src/lib/jobs";
 import { workdayProvider, WorkdayDetailError, WorkdayIncompleteSnapshotError } from "../job-refresh/providers/workday";
 import { defaultWorkdaySites } from "../job-refresh/providers/workday-sites";
 
@@ -218,6 +221,14 @@ test("Workday publishes genuine bullet evidence without the search term", async 
     assert.match(job.summary, /PowerShell automation/);
     assert.match(job.description ?? "", /PowerShell automation/);
     assert.doesNotMatch(`${job.summary}\n${job.description ?? ""}`, /Intune/i);
+    assert.equal(job.postedAtEvidence, "Posted Today");
+    assert.equal(job.postedAt, "2026-07-15T12:00:00.000Z");
+    assert.equal(job.tags.includes("Posted Today"), false);
+    assert.equal(isPostedDateKnown(job), true);
+    assert.deepEqual(
+      filterJobs([job], { ...initialFilterState, freshness: "1" }, new Date(job.fetchedAt)).map((item) => item.id),
+      [job.id]
+    );
   } finally {
     globalThis.fetch = originalFetch;
     process.env = originalEnv;

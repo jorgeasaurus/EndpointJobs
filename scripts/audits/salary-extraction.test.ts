@@ -7,6 +7,7 @@ test("salary extraction recognizes ATS ranges separated by Hangul filler", () =>
     min: 97916,
     max: 139880,
     currency: "USD",
+    currencySource: "source",
     label: "$98k-$140k"
   });
 });

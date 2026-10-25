@@ -1061,6 +1061,11 @@
           "currency": {
             "type": "string"
           },
+          "currencySource": {
+            "type": "string",
+            "enum": ["source", "default"],
+            "description": "source means the listing stated this currency. default means it was assumed and the board may infer a location currency."
+          },
           "label": {
             "type": "string"
           }

@@ -54,6 +54,7 @@ export type Job = {
     max?: number;
     currency: string;
     label: string;
+    currencySource?: "source" | "default";
   };
 };
 

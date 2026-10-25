@@ -1,7 +1,8 @@
 import { getCurrencySymbol } from "@/lib/currency";
 import { isActiveJob } from "@/lib/jobs";
 import { foldTokens } from "@/lib/text";
-import type { Job, JobsFeed } from "@/types/job";
+import { getJobWorkplace } from "@/lib/workplace";
+import type { Job, JobsFeed, Workplace } from "@/types/job";
 
 const directSources = new Set([
   "Amazon Jobs",
@@ -82,20 +83,33 @@ export function prepareBoardFeed(feed: JobsFeed): JobsFeed {
 
 export function dedupeJobs(jobs: readonly Job[]) {
   const winners = new Map<string, Job>();
-  const order: string[] = [];
 
   for (const job of jobs) {
-    const key = `${foldTokens(job.company)}|${foldTokens(job.title)}`;
+    const key = duplicateKey(job);
     const current = winners.get(key);
-    if (!current) {
-      winners.set(key, job);
-      order.push(key);
-      continue;
-    }
-    if (preferDuplicate(job, current)) winners.set(key, job);
+    if (!current || preferDuplicate(job, current)) winners.set(key, job);
   }
 
-  return order.map((key) => winners.get(key)).filter((job): job is Job => Boolean(job));
+  return jobs.filter((job) => winners.get(duplicateKey(job)) === job);
+}
+
+export function dedupeWorkplaceJobs(
+  jobs: readonly Job[],
+  workplace: "Any" | Exclude<Workplace, "Unknown">
+) {
+  const scoped = workplace === "Any"
+    ? jobs
+    : jobs.filter((job) => getJobWorkplace(job) === workplace);
+  return dedupeJobs(scoped);
+}
+
+export function dedupedWorkplaceCounts(jobs: readonly Job[]) {
+  return {
+    Any: dedupeWorkplaceJobs(jobs, "Any").length,
+    Remote: dedupeWorkplaceJobs(jobs, "Remote").length,
+    Hybrid: dedupeWorkplaceJobs(jobs, "Hybrid").length,
+    "On-site": dedupeWorkplaceJobs(jobs, "On-site").length
+  };
 }
 
 export function inferLocationCurrency(location: string) {
@@ -105,25 +119,37 @@ export function inferLocationCurrency(location: string) {
   return undefined;
 }
 
+const explicitCurrencyMarker = /(?:US\$|A\$|C\$|NZ\$|S\$|[€£]|\b(?:AUD|CAD|CHF|EUR|GBP|INR|JPY|MXN|NZD|SGD|USD)\b)/i;
+
 export function presentSalary(job: Pick<Job, "location" | "salary">) {
   const salary = job.salary;
-  if (!salary) return undefined;
-  const inferred = salary.currency === "USD" ? inferLocationCurrency(job.location) : undefined;
-  const currency = inferred ?? salary.currency;
-  if (currency === salary.currency) return salary;
+  if (!salary || !shouldInferLocationCurrency(salary)) return salary;
+  const currency = inferLocationCurrency(job.location);
+  if (!currency || currency === salary.currency) return salary;
 
   const symbol = getCurrencySymbol(currency);
   const label = salary.min || salary.max
     ? formatSalaryRange(symbol, salary.min, salary.max)
     : salary.label.replaceAll("$", symbol);
 
-  return { ...salary, currency, label };
+  return { ...salary, currency, currencySource: "default" as const, label };
 }
 
 export function withPresentedSalary<T extends Pick<Job, "location" | "salary">>(job: T): T {
   const salary = presentSalary(job);
   if (!salary || salary === job.salary) return job;
   return { ...job, salary };
+}
+
+function duplicateKey(job: Job) {
+  return `${foldTokens(job.company)}|${foldTokens(job.title)}`;
+}
+
+function shouldInferLocationCurrency(salary: NonNullable<Job["salary"]>) {
+  if (salary.currency !== "USD") return false;
+  if (salary.currencySource === "source") return false;
+  if (salary.currencySource === "default") return true;
+  return !explicitCurrencyMarker.test(salary.label);
 }
 
 function preferDuplicate(candidate: Job, current: Job) {

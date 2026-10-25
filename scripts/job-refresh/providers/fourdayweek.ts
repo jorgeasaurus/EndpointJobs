@@ -293,10 +293,11 @@ function normalizeFourDayWeekSalary(raw: FourDayWeekJob) {
     return undefined;
   }
 
-  const currency = cleanText(raw.salary_currency).toUpperCase() || "USD";
+  const statedCurrency = cleanText(raw.salary_currency).toUpperCase();
+  const currency = statedCurrency || "USD";
 
   if (currency === "USD") {
-    return normalizeSalary(min, max);
+    return normalizeSalary(min, max, "USD", statedCurrency ? "source" : "default");
   }
 
   if (!/^[A-Z]{3}$/.test(currency)) {
@@ -316,6 +317,7 @@ function normalizeFourDayWeekSalary(raw: FourDayWeekJob) {
     ...(min ? { min } : {}),
     ...(max ? { max } : {}),
     currency,
+    currencySource: "source" as const,
     label
   };
 }

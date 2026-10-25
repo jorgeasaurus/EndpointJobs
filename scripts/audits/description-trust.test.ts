@@ -5,7 +5,7 @@ import feedData from "../../src/data/jobs.json";
 import { getCurrencySymbol } from "../../src/lib/currency";
 import { repairJobDescription, toDescriptionBlocks } from "../../src/lib/job-description";
 import { filterJobs } from "../../src/lib/job-filters";
-import { dedupeJobs, inferLocationCurrency, listingLanguage, prepareBoardFeed, presentSalary, withPresentedSalary } from "../../src/lib/job-trust";
+import { dedupeJobs, dedupeWorkplaceJobs, dedupedWorkplaceCounts, inferLocationCurrency, listingLanguage, prepareBoardFeed, presentSalary, withPresentedSalary } from "../../src/lib/job-trust";
 import { getJobDescriptionBlocks, getJobFreshnessLabel, isPostedDateKnown } from "../../src/lib/jobs";
 import { normalizeSerpApiGoogleJob } from "../job-refresh/providers/serpapi";
 import { toEndpointJob } from "../job-refresh/shared";
@@ -62,7 +62,51 @@ test("duplicate company and title listings collapse to one card", () => {
   assert.deepEqual(unique.map((job) => job.id), ["a-cardinal", "other"]);
 });
 
-test("missing source dates are unknown and real dates stay", () => {
+test("duplicate winners keep the sorted position of the winning listing", () => {
+  const low = makeJob({
+    id: "low",
+    company: "Acme",
+    title: "Endpoint Engineer",
+    salary: { min: 80000, currency: "USD", currencySource: "source", label: "$80k" }
+  });
+  const other = makeJob({
+    id: "other",
+    company: "Other Co",
+    title: "Other role",
+    salary: { min: 90000, currency: "USD", currencySource: "source", label: "$90k" }
+  });
+  const winner = makeJob({
+    id: "winner",
+    company: "Acme",
+    title: "Endpoint Engineer",
+    description: "Endpoint operations ".repeat(40),
+    salary: { min: 200000, currency: "USD", currencySource: "source", label: "$200k" }
+  });
+  assert.deepEqual(dedupeJobs([low, other, winner]).map((job) => job.id), ["other", "winner"]);
+});
+
+test("workplace counts dedupe each workplace after the other filters", () => {
+  const onsite = makeJob({
+    id: "onsite",
+    company: "Acme",
+    title: "Endpoint Engineer",
+    workplace: "On-site",
+    description: "Endpoint operations ".repeat(40)
+  });
+  const remote = makeJob({
+    id: "remote",
+    company: "Acme",
+    title: "Endpoint Engineer",
+    workplace: "Remote"
+  });
+  const matches = [onsite, remote];
+  assert.deepEqual(dedupeWorkplaceJobs(matches, "Any").map((job) => job.id), ["onsite"]);
+  assert.deepEqual(dedupeWorkplaceJobs(matches, "Remote").map((job) => job.id), ["remote"]);
+  assert.deepEqual(dedupedWorkplaceCounts(matches), { Any: 1, Remote: 1, Hybrid: 0, "On-site": 1 });
+});
+
+test("missing source dates are unknown and real dates stay", (t) => {
+  t.mock.timers.enable({ apis: ["Date"], now: new Date("2026-10-25T11:24:56.320Z") });
   const unknown = makeJob({
     postedAt: "2026-10-25T11:24:56.320Z",
     fetchedAt: "2026-10-25T11:24:56.320Z",
@@ -191,7 +235,45 @@ test("US state suffixes are not treated as country currencies", () => {
   assert.equal(filterJobs([point72], { ...initialFilterState, minimumSalary: "150000" }).length, 1);
 });
 
-test("source posted-at evidence is kept when display tags are capped", () => {
+test("tab indentation is expanded without eating the line", () => {
+  assert.equal(repairJobDescription("\tManage Intune endpoints"), "    Manage Intune endpoints");
+});
+
+test("explicit source currency survives a foreign location", () => {
+  const authoritative = presentSalary({
+    location: "Toronto, Ontario",
+    salary: { min: 120000, currency: "USD", currencySource: "source", label: "US$120k" }
+  });
+  assert.equal(authoritative?.currency, "USD");
+  assert.equal(authoritative?.label, "US$120k");
+
+  const assumed = presentSalary({
+    location: "Toronto, Ontario",
+    salary: { min: 120000, currency: "USD", currencySource: "default", label: "$120k" }
+  });
+  assert.equal(assumed?.currency, "CAD");
+  assert.equal(assumed?.label, "CA$120k");
+
+  const fetchedAt = new Date("2026-10-25T11:24:56.320Z");
+  const serp = normalizeSerpApiGoogleJob({
+    title: "Endpoint Engineer",
+    company_name: "Example Co",
+    location: "Toronto, Ontario",
+    description: "Manage Intune and Windows endpoints for the enterprise fleet.",
+    detected_extensions: { salary: "US$120,000-US$160,000 a year" },
+    apply_options: [{ title: "Apply", link: "https://example.com/jobs/toronto-usd" }]
+  }, "endpoint engineer", fetchedAt, "CAD");
+  assert.ok(serp?.salary);
+  assert.equal(serp.salary.currencySource, "source");
+  assert.equal(serp.salary.currency, "USD");
+  assert.equal(serp.salary.min, 120000);
+  const presented = withPresentedSalary(serp);
+  assert.equal(presented.salary?.currency, "USD");
+  assert.equal(filterJobs([presented], { ...initialFilterState, minimumSalary: "100000" }).length, 1);
+});
+
+test("source posted-at evidence is kept when display tags are capped", (t) => {
+  t.mock.timers.enable({ apis: ["Date"], now: new Date("2026-10-25T11:24:56.320Z") });
   const fetchedAt = new Date("2026-10-25T11:24:56.320Z");
   const capped = toEndpointJob({
     id: "capped-date",

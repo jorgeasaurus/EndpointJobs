@@ -351,19 +351,24 @@ function inferTheirStackWorkplace(raw: TheirStackJob): Workplace | undefined {
 }
 
 function normalizeTheirStackSalary(raw: TheirStackJob) {
-  const currency = cleanText(raw.salary_currency) || "USD";
+  const stated = cleanText(raw.salary_currency);
+  const currency = stated || "USD";
+  const usesUsdAmount = raw.min_annual_salary_usd != null || raw.max_annual_salary_usd != null;
+  const currencySource = stated || usesUsdAmount ? "source" as const : "default" as const;
   const numericSalary = normalizeSalary(
     raw.min_annual_salary_usd ?? raw.min_annual_salary,
-    raw.max_annual_salary_usd ?? raw.max_annual_salary
+    raw.max_annual_salary_usd ?? raw.max_annual_salary,
+    "USD",
+    currencySource
   );
 
   if (numericSalary) {
-    return currency === "USD" ? numericSalary : { ...numericSalary, currency };
+    return { ...numericSalary, currency, currencySource };
   }
 
   const label = cleanText(raw.salary_string);
 
-  return label ? { currency, label } : undefined;
+  return label ? { currency, currencySource, label } : undefined;
 }
 
 function normalizeTheirStackEmploymentType(values: string[] | undefined) {

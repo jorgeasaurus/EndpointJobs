@@ -624,18 +624,18 @@ function getSerpApiGoogleJobsSalary(raw: SerpApiGoogleJob, marketCurrency: strin
   return {
     ...(numericSalary?.min ? { min: numericSalary.min } : {}),
     ...(numericSalary?.max ? { max: numericSalary.max } : {}),
-    currency: getSerpApiSalaryCurrency(label, marketCurrency),
+    ...getSerpApiSalaryCurrency(label, marketCurrency),
     label
   };
 }
 
 function getSerpApiSalaryCurrency(label: string, marketCurrency: string) {
-  if (/A\$|\bAUD\b/i.test(label)) return "AUD";
-  if (/\bCHF\b/i.test(label)) return "CHF";
-  if (/€|\bEUR\b/i.test(label)) return "EUR";
-  if (/£|\bGBP\b/i.test(label)) return "GBP";
-  if (/US\$|\bUSD\b/i.test(label)) return "USD";
-  return marketCurrency;
+  if (/A\$|\bAUD\b/i.test(label)) return { currency: "AUD", currencySource: "source" as const };
+  if (/\bCHF\b/i.test(label)) return { currency: "CHF", currencySource: "source" as const };
+  if (/€|\bEUR\b/i.test(label)) return { currency: "EUR", currencySource: "source" as const };
+  if (/£|\bGBP\b/i.test(label)) return { currency: "GBP", currencySource: "source" as const };
+  if (/US\$|\bUSD\b/i.test(label)) return { currency: "USD", currencySource: "source" as const };
+  return { currency: marketCurrency, currencySource: "default" as const };
 }
 
 function inferSerpApiGoogleJobsWorkplace(raw: SerpApiGoogleJob): Workplace | undefined {

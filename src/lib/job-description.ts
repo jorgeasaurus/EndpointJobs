@@ -62,8 +62,9 @@ export function repairJobDescription(value: string) {
     .split("\n")
     .map((line) => {
       if (!line.trim()) return "";
-      const indent = (line.match(/^[ \t]*/)?.[0] ?? "").replace(/\t/g, "    ");
-      const body = line.slice(indent.length).replace(/[^\S\n]+/g, " ").trim();
+      const rawIndent = line.match(/^[ \t]*/)?.[0] ?? "";
+      const indent = rawIndent.replace(/\t/g, "    ");
+      const body = line.slice(rawIndent.length).replace(/[^\S\n]+/g, " ").trim();
       return body ? `${indent}${body}` : "";
     })
     .join("\n")

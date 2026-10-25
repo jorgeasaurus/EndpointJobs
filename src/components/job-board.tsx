@@ -3,9 +3,9 @@
 import { useMemo, useRef, useState } from "react";
 
 import type { EndpointTool, JobsFeed } from "@/types/job";
-import { dedupeJobs } from "@/lib/job-trust";
+import { dedupeJobs, dedupeWorkplaceJobs, dedupedWorkplaceCounts } from "@/lib/job-trust";
 import { getJobWorkplace } from "@/lib/workplace";
-import type { FilterAction, WorkplaceFilter } from "./job-board/filter-model";
+import type { FilterAction } from "./job-board/filter-model";
 
 import { getActiveFilterItems } from "./job-board/active-filters";
 import { updateComparisonSelection } from "./job-board/comparison-selection";
@@ -42,9 +42,9 @@ export function JobBoard({
 
   const activeJobs = feed.jobs;
   const trackedJobsCount = useMemo(() => dedupeJobs(activeJobs).length, [activeJobs]);
-  const workplaceEligibleJobs = useMemo(
+  const matchedJobs = useMemo(
     () =>
-      dedupeJobs(filterJobs(activeJobs, {
+      filterJobs(activeJobs, {
         query: filters.query,
         locationQuery: filters.locationQuery,
         selectedPlatforms: filters.selectedPlatforms,
@@ -59,7 +59,7 @@ export function JobBoard({
         roleFamily: filters.roleFamily,
         freshness: filters.freshness,
         sort: filters.sort
-      })),
+      }),
     [
       activeJobs,
       filters.freshness,
@@ -77,32 +77,14 @@ export function JobBoard({
       filters.sort
     ]
   );
-  const workplaceCounts = useMemo(() => {
-    const counts: Record<WorkplaceFilter, number> = {
-      Any: workplaceEligibleJobs.length,
-      Remote: 0,
-      Hybrid: 0,
-      "On-site": 0
-    };
-
-    for (const job of workplaceEligibleJobs) {
-      const workplace = getJobWorkplace(job);
-      if (workplace !== "Unknown") {
-        counts[workplace] += 1;
-      }
-    }
-
-    return counts;
-  }, [workplaceEligibleJobs]);
+  const workplaceCounts = useMemo(
+    () => dedupedWorkplaceCounts(matchedJobs),
+    [matchedJobs]
+  );
 
   const visibleJobs = useMemo(
-    () =>
-      filters.workplace === "Any"
-        ? workplaceEligibleJobs
-        : workplaceEligibleJobs.filter(
-            (job) => getJobWorkplace(job) === filters.workplace
-          ),
-    [filters.workplace, workplaceEligibleJobs]
+    () => dedupeWorkplaceJobs(matchedJobs, filters.workplace),
+    [filters.workplace, matchedJobs]
   );
   const visibleJobMetrics = useMemo(() => {
     let mappedJobsCount = 0;

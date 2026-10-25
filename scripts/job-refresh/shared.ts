@@ -107,7 +107,11 @@ export function toEndpointJob(candidate: JobCandidate): Job | null {
     return null;
   }
 
-  const postedAtEvidence = findPostedAtEvidence([candidate.postedAtEvidence, ...sourceTags]);
+  const postedAtEvidence = findPostedAtEvidence([
+    candidate.postedAtEvidence,
+    candidate.postedAt,
+    ...sourceTags
+  ]);
   const postedAt = parseDateLike(candidate.postedAt) ?? candidate.fetchedAt.toISOString();
   const staleAfter = candidate.staleAfter ?? addDays(new Date(postedAt), staleDays).toISOString();
 
@@ -452,7 +456,12 @@ const annualSalaryPatterns = [
   )
 ];
 
-export function normalizeSalary(min?: number, max?: number, currency = "USD") {
+export function normalizeSalary(
+  min?: number,
+  max?: number,
+  currency = "USD",
+  currencySource: "source" | "default" = "default"
+) {
   const salaryMin = min && min > 0 ? min : undefined;
   const salaryMax = max && max > 0 ? max : undefined;
 
@@ -471,6 +480,7 @@ export function normalizeSalary(min?: number, max?: number, currency = "USD") {
     ...(salaryMin ? { min: salaryMin } : {}),
     ...(salaryMax ? { max: salaryMax } : {}),
     currency: code,
+    currencySource,
     label
   };
 }
@@ -524,7 +534,7 @@ function salaryFromRangeMatch(text: string, match: RegExpExecArray) {
     return undefined;
   }
 
-  return normalizeSalary(min, max);
+  return normalizeSalary(min, max, "USD", /\bUSD\b|US\$/i.test(context) ? "source" : "default");
 }
 
 function parseSalaryAmount(value: string | undefined, suffix: string | undefined, usesThousands: boolean) {
