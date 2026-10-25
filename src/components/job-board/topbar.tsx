@@ -6,11 +6,13 @@ import {
   MonitorSmartphone,
   Rows3,
   RefreshCw,
+  Shield,
   SquareTerminal
 } from "lucide-react";
 import Link from "next/link";
 
 import { AppreciateButton } from "@/components/appreciate-button";
+import { AuthMenu } from "@/components/auth/auth-menu";
 import { formatUpdatedAt } from "@/lib/jobs";
 import { appVersion, getApiDocsPath, getJobsDirectoryPath, getMcpDocsPath } from "@/app/site-metadata";
 
@@ -25,6 +27,7 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
       </Link>
 
       <div className="topbar-actions">
+        <AuthMenu />
         <span className="refresh-pill">
           <RefreshCw size={15} aria-hidden="true" />
           {formatUpdatedAt(updatedAt)}
@@ -114,6 +117,10 @@ export function SiteFooter({ updatedAt }: { updatedAt: string }) {
             <MessageSquarePlus size={15} aria-hidden="true" />
             <span>Report / request</span>
           </a>
+          <Link className="feedback-link footer-link" href="/privacy">
+            <Shield size={15} aria-hidden="true" />
+            <span>Privacy</span>
+          </Link>
           <a
             aria-label="Open the Endpoint Jobs GitHub repository"
             className="feedback-link footer-link"

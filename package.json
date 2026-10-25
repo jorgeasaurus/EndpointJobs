@@ -1,6 +1,6 @@
 {
   "name": "endpoint-jobs",
-  "version": "0.1.23",
+  "version": "0.1.24",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,7 +11,9 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test scripts/audits/*.test.ts src/components/job-board/*.test.ts",
+    "test": "tsx --test scripts/audits/*.test.ts src/components/job-board/*.test.ts src/lib/auth/*.test.ts src/lib/supabase/*.test.ts",
+    "test:rls": "tsx --test scripts/audits/rls-user-isolation.test.ts",
+    "audit:signed-out": "node scripts/audits/signed-out-board-browser.mjs",
     "jobs:refresh": "tsx scripts/refresh-jobs.ts",
     "jobs:classify-sponsorship": "tsx scripts/backfill-sponsorship.ts",
     "docs:api": "tsx scripts/generate-openapi.ts",
@@ -28,6 +30,8 @@
   },
   "dependencies": {
     "@modelcontextprotocol/server": "^2.3.0",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.118.0",
     "@typesafe-ai/sdk": "^0.6.0",
     "@vercel/analytics": "^2.0.1",
     "fast-xml-parser": "^5.8.0",
@@ -49,6 +53,7 @@
     "@remotion/google-fonts": "4.0.491",
     "@tailwindcss/postcss": "^4.1.0",
     "@types/node": "^22.10.2",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "@types/three": "^0.185.0",
@@ -57,6 +62,7 @@
     "eslint": "^9.17.0",
     "eslint-config-next": "^16.0.0",
     "ipaddr.js": "^2.5.0",
+    "pg": "^8.23.1",
     "postcss": "^8.4.49",
     "react-doctor": "^0.5.5",
     "remotion": "4.0.491",
