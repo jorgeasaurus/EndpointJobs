@@ -43,6 +43,17 @@ if (expectSignIn) {
 await page.getByRole("link", { name: "Privacy", exact: true }).click();
 await expect(page).toHaveURL(/\/privacy$/);
 await expect(page.getByRole("heading", { level: 1, name: "Privacy policy" })).toBeVisible();
+
+if (expectSignIn) {
+  await page.getByRole("button", { name: "Sign in" }).click();
+  const privacyDialog = page.getByRole("dialog", { name: "Sign in" });
+  await expect(privacyDialog).toBeVisible();
+  await privacyDialog.getByRole("link", { name: "Privacy policy" }).click();
+  await expect(page).toHaveURL(/\/privacy$/);
+  await expect(privacyDialog).toBeHidden();
+  await expect(page.locator("dialog[open]")).toHaveCount(0);
+  await expect(page.getByRole("heading", { level: 1, name: "Privacy policy" })).toBeVisible();
+}
 await expect(page.locator(".privacy-version")).toHaveText("Version 2026-10-24");
 for (const heading of [
   "What we collect",

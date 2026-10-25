@@ -80,7 +80,15 @@ export function AuthMenu() {
             </p>
           ) : null}
           <p className="auth-dialog-privacy">
-            <Link href="/privacy">Privacy policy</Link>
+            <Link
+              href="/privacy"
+              onClick={() => {
+                // Same-route navigation does not unmount this dialog, so the backdrop would stay up.
+                dialogRef.current?.close();
+              }}
+            >
+              Privacy policy
+            </Link>
           </p>
           <button className="auth-dialog-close" type="submit" value="cancel">
             Close
