@@ -72,6 +72,7 @@ test("an explicit database URL does not turn a connection error into a skip", as
   });
   assert.equal(down.outcome, "skip");
   assert.equal(resolveDatabaseConnection({}).explicitUrl, false);
+  assert.equal(resolveDatabaseConnection({ SUPABASE_DB_URL: "  " }).explicitUrl, false);
   assert.equal(resolveDatabaseConnection({ SUPABASE_DB_URL: "postgresql://postgres:wrong@127.0.0.1:54322/postgres" }).explicitUrl, true);
 });
 

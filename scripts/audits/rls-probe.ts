@@ -12,7 +12,7 @@ const UNREACHABLE_CODES = new Set([
 export type DatabaseProbeOutcome = "run" | "skip" | "fail";
 
 export function resolveDatabaseConnection(
-  env: Record<string, string | undefined> = process.env as Record<string, string | undefined>
+  env: { SUPABASE_DB_URL?: string } = { SUPABASE_DB_URL: process.env.SUPABASE_DB_URL }
 ): {
   connectionString: string;
   explicitUrl: boolean;
