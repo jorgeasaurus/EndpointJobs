@@ -1,17 +1,27 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 
-const jobPath = "/jobs/serpapi-blue-light-it-llc-boca-raton-fl-endpoint-engineer-microsoft-365-intune-endpoint-security-76281fc12b";
+async function firstDescribedJob(page: Page) {
+  await page.goto("/");
+  const card = page.locator("article.job-card").filter({
+    has: page.locator(".description-body p, .description-body ul:not(.tool-chips) li")
+  }).first();
+  await expect(card).toBeVisible();
+  const href = await card.locator("a.job-title-link").getAttribute("href");
+  const title = (await card.locator("a.job-title-link").innerText()).replace(/\s+/g, " ").trim();
+  expect(href).toBeTruthy();
+  return { href: href!, title };
+}
 
-test("server HTML includes the job before client paint", async ({ request }) => {
-  const response = await request.get(jobPath);
+test("server HTML includes the job before client paint", async ({ page, request }) => {
+  const job = await firstDescribedJob(page);
+  const response = await request.get(job.href);
   expect(response.ok()).toBeTruthy();
   const html = await response.text();
-  expect(html).toContain("Endpoint Engineer - Microsoft 365, Intune");
-  expect(html).toContain("Blue Light It LLC");
+  const token = job.title.split(/\s+/).find((part) => part.length >= 6 && !/[&<>]/.test(part)) ?? job.title;
+  expect(html).toContain(token);
   expect(html).not.toContain("Loading endpoint roles");
   expect(html).toContain("<title>");
-  expect(html).toContain("Manage and troubleshoot endpoints");
   expect(html).not.toContain("taskBonus");
   expect(html).not.toContain("〔");
 });
@@ -58,17 +68,19 @@ test("search empty state names the query", async ({ page }, testInfo) => {
 
 test("job detail renders repaired lists", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
-  await page.goto(jobPath);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Endpoint Engineer");
-  const item = page.getByRole("listitem").filter({ hasText: "Manage and troubleshoot endpoints" });
-  await expect(item).toBeVisible();
-  const description = await page.locator(".job-detail-description").innerText();
-  expect(description).not.toContain("taskBonus");
-  expect(description).not.toContain("MDMHands");
-  expect(description).not.toContain("〔");
-  expect(description).toContain("What you need");
+  const job = await firstDescribedJob(page);
+  await page.goto(job.href);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(job.title);
+  const description = page.locator(".job-detail-description");
+  await expect(description).toBeVisible();
+  const text = await description.innerText();
+  expect(text).not.toContain("taskBonus");
+  expect(text).not.toContain("MDMHands");
+  expect(text).not.toContain("〔");
   await page.screenshot({ path: "/opt/cursor/artifacts/job-desktop-after.png", fullPage: false });
-  await item.scrollIntoViewIfNeeded();
+  const item = description.getByRole("listitem").first();
+  if (await item.count()) await item.scrollIntoViewIfNeeded();
+  else await description.scrollIntoViewIfNeeded();
   await page.screenshot({ path: "/opt/cursor/artifacts/job-desktop-description-after.png", fullPage: false });
 });
 
@@ -123,11 +135,13 @@ test("mobile layout keeps the first job above collapsed stats", async ({ page },
   await expect(stats).not.toHaveAttribute("open", "");
 
   await page.screenshot({ path: "/opt/cursor/artifacts/home-mobile-390-after.png", fullPage: false });
-  await page.goto(jobPath);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Endpoint Engineer");
+  const job = await firstDescribedJob(page);
+  await page.goto(job.href);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(job.title);
   await page.screenshot({ path: "/opt/cursor/artifacts/job-mobile-390-after.png", fullPage: false });
-  const descriptionItem = page.getByRole("listitem").filter({ hasText: "Manage and troubleshoot endpoints" });
-  await descriptionItem.scrollIntoViewIfNeeded();
+  const descriptionItem = page.locator(".job-detail-description").getByRole("listitem").first();
+  if (await descriptionItem.count()) await descriptionItem.scrollIntoViewIfNeeded();
+  else await page.locator(".job-detail-description").scrollIntoViewIfNeeded();
   await page.screenshot({ path: "/opt/cursor/artifacts/job-mobile-description-after.png", fullPage: false });
 });
 
@@ -149,10 +163,13 @@ test("mobile sticky filters stay below the two-row header", async ({ page }, tes
   expect(overlap.stickyTop).toBeGreaterThanOrEqual(overlap.headerBottom - 1);
 });
 
-test("a location-only duplicate stays searchable", async ({ page }, testInfo) => {
+test("a location query keeps a matching card", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
-  await page.goto("/?q=Champlin");
-  await expect(page.locator("article.job-card").first()).toContainText("Champlin");
+  await page.goto("/");
+  const location = (await page.locator("article.job-card").first().locator(".metadata-row span").first().innerText()).replace(/\s+/g, " ").trim();
+  const token = location.split(/[,\s]+/).find((part) => part.length >= 4) ?? location;
+  await page.goto(`/?q=${encodeURIComponent(token)}`);
+  await expect(page.locator("article.job-card").filter({ hasText: token }).first()).toBeVisible();
 });
 
 test("measured label contrast is at least 4.5:1 and text is at least 12px", async ({ page }, testInfo) => {

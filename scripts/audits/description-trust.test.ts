@@ -1,22 +1,16 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import feedData from "../../src/data/jobs.json";
 import { getCurrencySymbol } from "../../src/lib/currency";
 import { repairJobDescription, toDescriptionBlocks } from "../../src/lib/job-description";
 import { filterJobs } from "../../src/lib/job-filters";
 import { canonicalPostingUrl, dedupeJobs, dedupeWorkplaceJobs, dedupedWorkplaceCounts, inferLocationCurrency, listingLanguage, prepareBoardFeed, presentSalary, withPresentedSalary } from "../../src/lib/job-trust";
-import { foldTokens } from "../../src/lib/text";
 import { getJobDescriptionBlocks, getJobFreshnessLabel, isPostedDateKnown } from "../../src/lib/jobs";
 import { normalizeSerpApiGoogleJob } from "../job-refresh/providers/serpapi";
 import { toEndpointJob } from "../job-refresh/shared";
 import { getEmptyResultsMessage } from "../../src/components/job-board/empty-results-message";
 import { initialFilterState } from "../../src/components/job-board/filter-model";
 import { makeJob } from "./shared";
-import type { JobsFeed } from "../../src/types/job";
-
-const feed = feedData as JobsFeed;
-const blueLightId = "serpapi-blue-light-it-llc-boca-raton-fl-endpoint-engineer-microsoft-365-intune-endpoint-security-76281fc12b";
 
 function distinctPosting(id: string) {
   return {
@@ -26,8 +20,23 @@ function distinctPosting(id: string) {
 }
 
 test("job descriptions keep paragraphs and lists and drop placeholder text", () => {
-  const job = feed.jobs.find((candidate) => candidate.id === blueLightId);
-  assert.ok(job);
+  const job = makeJob({
+    summary: "Endpoint engineer role.",
+    description: [
+      "Manage and troubleshoot endpoints in Microsoft Intune.",
+      "applicationsManage the device lifecycle with care and keep the fleet healthy for the team.",
+      "",
+      "What you need",
+      "- Deploy compliance baselines for the Windows fleet",
+      "- Bonus points for automation and reporting",
+      "",
+      "What it's like here",
+      "- Partner with the endpoint team through the year",
+      "",
+      "〔placeholder〕",
+      "Endpoint operations continue after those lists so the description stays long enough to render on the card and the detail page."
+    ].join("\n")
+  });
   const blocks = getJobDescriptionBlocks(job);
   const text = blocks.flatMap((block) => block.type === "paragraph" ? [block.text] : block.items).join("\n");
   const lists = blocks.filter((block) => block.type === "list");
@@ -641,33 +650,4 @@ test("aggregator job ids stay in the posting key and tracking params do not", ()
     dedupeJobs([samePosting, otherEmployer, samePostingTracked]).map((job) => job.id),
     ["tr-other", "tr-tracked"]
   );
-});
-
-test("real feed urls do not merge distinct company and title pairs", () => {
-  const byKey = new Map<string, Set<string>>();
-  for (const job of feed.jobs) {
-    const key = (job.applyUrl && canonicalPostingUrl(job.applyUrl)) || canonicalPostingUrl(job.sourceUrl);
-    if (!key) continue;
-    const identity = `${foldTokens(job.company)}|${foldTokens(job.title)}`;
-    const identities = byKey.get(key) ?? new Set<string>();
-    identities.add(identity);
-    byKey.set(key, identities);
-  }
-
-  for (const [key, identities] of byKey) {
-    if (identities.size < 2) continue;
-    const titles = new Set([...identities].map((identity) => identity.split("|")[1]));
-    assert.equal(titles.size, 1, key);
-    const companyTokens = [...identities].map((identity) => new Set(identity.split("|")[0].split(" ").filter((token) => token.length >= 4)));
-    const [first, ...rest] = companyTokens;
-    for (const tokens of rest) {
-      assert.ok([...first].some((token) => tokens.has(token)), `${key} merges ${[...identities].join(" / ")}`);
-    }
-  }
-
-  for (const needle of ["indeed.com/viewjob", "glassdoor.com/job-listing", "jamf.com/about/careers/jobs", "a16z.com/about/jobs"]) {
-    const matches = feed.jobs.filter((job) => `${job.applyUrl ?? ""} ${job.sourceUrl}`.includes(needle));
-    const pairs = new Set(matches.map((job) => `${foldTokens(job.company)}|${foldTokens(job.title)}`));
-    assert.ok(dedupeJobs(matches).length >= pairs.size, needle);
-  }
 });

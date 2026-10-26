@@ -91,6 +91,9 @@ jobs:
       - name: Verify build
         run: npm run build
 
+      - name: Audit posting URL collisions
+        run: npm run audit:posting-urls
+
       - name: Commit updated listings
         run: |
           if git diff --quiet -- src/data/jobs.json; then
