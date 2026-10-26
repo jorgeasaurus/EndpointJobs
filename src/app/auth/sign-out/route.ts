@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { signOutRedirectDecision, signOutRedirectUrl, signOutRequestAllowed } from "@/lib/auth/sign-out-navigation";
+import { authCookiesToClear, signOutRedirectDecision, signOutRedirectUrl, signOutRequestAllowed } from "@/lib/auth/sign-out-navigation";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
+import { fetchWithAuthDeadline } from "@/lib/supabase/session-refresh";
 
 export async function POST(request: Request) {
   if (
@@ -14,22 +15,25 @@ export async function POST(request: Request) {
     return new NextResponse("Sign out must come from this site", { status: 403 });
   }
 
-  if (isSupabaseConfigured()) {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.signOut({ scope: "local" });
-    let stillSignedIn = false;
-    if (error) {
-      try {
-        const { data } = await supabase.auth.getClaims();
-        stillSignedIn = typeof data?.claims?.sub === "string" && data.claims.sub.length > 0;
-      } catch {
-        stillSignedIn = true;
-      }
-    }
-    if (signOutRedirectDecision({ error, stillSignedIn }) === "unavailable") {
-      return new NextResponse("Sign out failed", { status: 503 });
+  const redirect = NextResponse.redirect(signOutRedirectUrl(request.url), 303);
+  if (!isSupabaseConfigured()) return redirect;
+
+  let error: unknown = null;
+  try {
+    const supabase = await createClient({ fetch: fetchWithAuthDeadline });
+    ({ error } = await supabase.auth.signOut({ scope: "local" }));
+  } catch (caught) {
+    error = caught;
+  }
+
+  if (error && signOutRedirectDecision(error) === "home") {
+    // Match @supabase/ssr's host-only removal: Path=/, SameSite=Lax, not HttpOnly,
+    // and no Secure attribute. A Secure clear would not replace the session cookie
+    // this server actually stored.
+    for (const name of authCookiesToClear(request.headers.get("cookie"))) {
+      redirect.cookies.set(name, "", { path: "/", maxAge: 0, sameSite: "lax", httpOnly: false });
     }
   }
 
-  return NextResponse.redirect(signOutRedirectUrl(request.url), 303);
+  return redirect;
 }

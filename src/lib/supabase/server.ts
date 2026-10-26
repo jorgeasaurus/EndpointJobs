@@ -3,11 +3,14 @@ import { cookies } from "next/headers";
 
 import { supabaseBrowserEnv } from "./env";
 
-export async function createClient() {
+type AuthFetch = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+
+export async function createClient(options?: { fetch?: AuthFetch }) {
   const { url, anonKey } = supabaseBrowserEnv();
   const cookieStore = await cookies();
 
   return createServerClient(url, anonKey, {
+    ...(options?.fetch ? { global: { fetch: options.fetch } } : {}),
     cookies: {
       getAll() {
         return cookieStore.getAll();

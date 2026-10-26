@@ -18,11 +18,29 @@ export function signOutRequestAllowed(
   }
 }
 
+const AUTH_COOKIE_NAME = /^sb-[A-Za-z0-9._-]*-auth-token[A-Za-z0-9._-]*$/;
+
 /**
- * Local sign-out clears this browser even when the server revoke returns an
- * error. Stay on an error response only when that session is still present.
+ * A failed revoke still sends the browser home. auth-js 2.118 posts /logout
+ * even for scope "local". A session-load failure returns before _removeSession(),
+ * and a /logout network or 5xx result removes the session only when that write
+ * reaches the browser. The route expires this browser's auth cookies on the 303
+ * instead of answering 503.
  */
-export function signOutRedirectDecision(input: { error: unknown; stillSignedIn: boolean }): "home" | "unavailable" {
-  if (input.error && input.stillSignedIn) return "unavailable";
+export function signOutRedirectDecision(error: unknown): "home" {
+  if (error) return "home";
   return "home";
+}
+
+/** sb-*-auth-token* names from a Cookie header, including chunked .0/.1 cookies. */
+export function authCookiesToClear(cookieHeader: string | null): string[] {
+  if (!cookieHeader) return [];
+  const names = new Set<string>();
+  for (const part of cookieHeader.split(";")) {
+    const name = part.split("=", 1)[0]?.trim() ?? "";
+    // Trim only surrounding whitespace. A CR, LF, or other character inside the
+    // name fails the pattern so it cannot be copied into Set-Cookie.
+    if (AUTH_COOKIE_NAME.test(name)) names.add(name);
+  }
+  return [...names];
 }
