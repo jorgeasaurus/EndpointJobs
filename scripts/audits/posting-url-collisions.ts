@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { appendFile, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
@@ -16,20 +16,58 @@ export type PostingUrlGroup = {
 export type PostingUrlReport = {
   aliases: PostingUrlGroup[];
   collisions: PostingUrlGroup[];
+  droppedIds: string[];
 };
 
-export function companiesShareEmployer(left: string, right: string) {
-  const leftName = foldTokens(left);
-  const rightName = foldTokens(right);
-  if (!leftName || !rightName) return false;
-  if (leftName === rightName || containsCompanyName(leftName, rightName) || containsCompanyName(rightName, leftName)) {
-    return true;
-  }
+// Legal and generic words are not an employer. Compared names keep only the
+// distinctive remainder, so "Corp" or "Systems" cannot glue two companies together.
+const genericEmployerTokens = new Set([
+  "ag",
+  "bv",
+  "co",
+  "companies",
+  "company",
+  "consulting",
+  "corp",
+  "corporation",
+  "global",
+  "gmbh",
+  "group",
+  "groups",
+  "holding",
+  "holdings",
+  "inc",
+  "incorporated",
+  "limited",
+  "llc",
+  "llp",
+  "lp",
+  "ltd",
+  "ltda",
+  "nv",
+  "pc",
+  "plc",
+  "pllc",
+  "pty",
+  "sa",
+  "sarl",
+  "sas",
+  "service",
+  "services",
+  "solution",
+  "solutions",
+  "system",
+  "systems",
+  "technologies",
+  "technology"
+]);
 
-  const leftTokens = employerTokens(leftName);
-  const rightTokens = employerTokens(rightName);
-  if (leftTokens.length === 0 || rightTokens.length === 0) return false;
-  return leftTokens.some((token) => rightTokens.includes(token));
+export function companiesShareEmployer(left: string, right: string) {
+  const leftName = distinctiveEmployerName(left);
+  const rightName = distinctiveEmployerName(right);
+  if (leftName.length < 2 || rightName.length < 2) return false;
+  if (leftName === rightName) return true;
+  return leftName.startsWith(`${rightName} `) || rightName.startsWith(`${leftName} `);
 }
 
 export function classifyPostingUrlGroups(jobs: readonly Job[]): PostingUrlReport {
@@ -54,21 +92,35 @@ export function classifyPostingUrlGroups(jobs: readonly Job[]): PostingUrlReport
     else collisions.push(reported);
   }
 
-  return { aliases, collisions };
+  return { aliases, collisions, droppedIds: collisions.flatMap((group) => group.ids) };
 }
 
-function employerTokens(name: string) {
-  const tokens = name.split(" ").filter((token) => token.length >= 2);
-  const longTokens = tokens.filter((token) => token.length >= 4);
-  return longTokens.length > 0 ? longTokens : tokens;
+export async function quarantinePostingUrlCollisions(path: string) {
+  const original = await readFile(path, "utf8");
+  const parsed: unknown = JSON.parse(original);
+  if (!isJobsFeed(parsed)) throw new Error(`${path} is not a jobs feed`);
+  const report = classifyPostingUrlGroups(parsed.jobs);
+  for (const group of report.aliases) printGroup("alias", group);
+  for (const group of report.collisions) printGroup("collision", group);
+
+  if (report.droppedIds.length === 0) {
+    console.log(`Posting URL aliases: ${report.aliases.length}. Distinct-employer collisions: 0.`);
+    return report;
+  }
+
+  const dropped = new Set(report.droppedIds);
+  parsed.jobs = parsed.jobs.filter((job) => !dropped.has(job.id));
+  await writeFile(path, `${JSON.stringify(parsed, null, 2)}\n`);
+  for (const group of report.collisions) await warn(postingCollisionWarning(group));
+  console.log(`Dropped ${report.droppedIds.length} colliding listings. Posting URL aliases: ${report.aliases.length}. Distinct-employer collisions: ${report.collisions.length}.`);
+  return report;
 }
 
-function containsCompanyName(haystack: string, name: string) {
-  if (name.length < 2) return false;
-  return haystack === name
-    || haystack.startsWith(`${name} `)
-    || haystack.endsWith(` ${name}`)
-    || haystack.includes(` ${name} `);
+function distinctiveEmployerName(value: string) {
+  return foldTokens(value)
+    .split(" ")
+    .filter((token) => token.length >= 2 && !genericEmployerTokens.has(token))
+    .join(" ");
 }
 
 function sameEmployerGroup(companies: readonly string[]) {
@@ -98,14 +150,8 @@ function isJobsFeed(value: unknown): value is JobsFeed {
   return Array.isArray((value as { jobs?: unknown }).jobs);
 }
 
-export async function reportPostingUrlCollisions(path: string) {
-  const parsed: unknown = JSON.parse(await readFile(path, "utf8"));
-  if (!isJobsFeed(parsed)) throw new Error(`${path} is not a jobs feed`);
-  const report = classifyPostingUrlGroups(parsed.jobs);
-  for (const group of report.aliases) printGroup("alias", group);
-  for (const group of report.collisions) printGroup("collision", group);
-  console.log(`Posting URL aliases: ${report.aliases.length}. Distinct-employer collisions: ${report.collisions.length}.`);
-  return report;
+export function postingCollisionWarning(group: PostingUrlGroup) {
+  return `Dropped ${group.ids.length} listings sharing ${group.key} across distinct employers: ${group.companies.join(" | ")} (${group.ids.join(", ")})`;
 }
 
 function printGroup(kind: string, group: PostingUrlGroup) {
@@ -115,6 +161,12 @@ function printGroup(kind: string, group: PostingUrlGroup) {
   console.log(`  ids: ${group.ids.join(", ")}`);
 }
 
+async function warn(message: string) {
+  console.log(`::warning::${message}`);
+  const summary = process.env.GITHUB_STEP_SUMMARY;
+  if (summary) await appendFile(summary, `- ${message}\n`);
+}
+
 function isDirectRun() {
   const entry = process.argv[1];
   return Boolean(entry) && import.meta.url === pathToFileURL(entry).href;
@@ -122,6 +174,5 @@ function isDirectRun() {
 
 if (isDirectRun()) {
   const path = resolve(process.argv[2] ?? "src/data/jobs.json");
-  const report = await reportPostingUrlCollisions(path);
-  if (report.collisions.length > 0) process.exit(1);
+  await quarantinePostingUrlCollisions(path);
 }

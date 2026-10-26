@@ -91,7 +91,9 @@ jobs:
       - name: Verify build
         run: npm run build
 
-      - name: Audit posting URL collisions
+      # Distinct employers on one posting URL are removed from the feed and
+      # annotated on this run. The step exits 0 so the refresh still commits.
+      - name: Drop posting URL collisions
         run: npm run audit:posting-urls
 
       - name: Commit updated listings
