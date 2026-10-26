@@ -82,10 +82,9 @@ export function companiesShareEmployer(left: string, right: string) {
   if (leftName && rightName && namesMatch(leftName, rightName)) return true;
 
   // A generic-only name has no distinctive tokens, so prefix matching would alias
-  // "Global" with "Global Payments". The legal-suffix forms must be the same
-  // name. Trailing generic words are removed only for that equality check, so
-  // "Group One" can meet "GroupOne Services" without "Global" meeting every
-  // longer name that starts with it.
+  // "Global" with "Global Payments". Legal-suffix forms must be the same name.
+  // Trailing generic words can sit on either side, so "Next Solutions" meets
+  // "NextSolutions Group" only when both compared forms still have a distinctive token.
   const leftLegal = employerName(left, legalSuffixTokens);
   const rightLegal = employerName(right, legalSuffixTokens);
   return sameLegalEmployer(leftLegal, rightLegal);
@@ -184,16 +183,23 @@ function namesEqual(left: string, right: string) {
 
 function sameLegalEmployer(left: string, right: string) {
   if (namesEqual(left, right)) return true;
-  const leftCore = withoutTrailingGenericTokens(left);
-  const rightCore = withoutTrailingGenericTokens(right);
-  if (!hasDistinctiveToken(leftCore) || !hasDistinctiveToken(rightCore)) return false;
-  return namesEqual(leftCore, rightCore);
+  const leftForms = trailingGenericForms(left);
+  const rightForms = trailingGenericForms(right);
+  return leftForms.some((leftForm) =>
+    hasDistinctiveToken(leftForm) && rightForms.some((rightForm) =>
+      hasDistinctiveToken(rightForm) && namesEqual(leftForm, rightForm)
+    )
+  );
 }
 
-function withoutTrailingGenericTokens(name: string) {
+function trailingGenericForms(name: string) {
+  const forms = [name];
   const tokens = name.split(" ").filter((token) => token.length > 0);
-  while (tokens.length > 0 && genericEmployerTokens.has(tokens[tokens.length - 1])) tokens.pop();
-  return tokens.join(" ");
+  while (tokens.length > 0 && genericEmployerTokens.has(tokens[tokens.length - 1])) {
+    tokens.pop();
+    forms.push(tokens.join(" "));
+  }
+  return forms;
 }
 
 function hasDistinctiveToken(name: string) {

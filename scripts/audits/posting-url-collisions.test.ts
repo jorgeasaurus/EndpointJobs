@@ -50,6 +50,61 @@ test("punctuation, connectors, and abbreviations stay the same employer", () => 
   assert.equal(companiesShareEmployer("The Group One", "GroupOne Services LLC"), true);
 });
 
+test("split and joined brands match across generic tails, legal suffixes, and a leading the", () => {
+  const aliases = [
+    ["Next Solutions", "NextSolutions"],
+    ["Next Solutions", "NextSolutions Group"],
+    ["Next Solutions", "NextSolutions Inc"],
+    ["Next Solutions", "NextSolutions Group LLC"],
+    ["NextSolutions", "Next Solutions Group"],
+    ["Next Solutions Group", "NextSolutions"],
+    ["Next Solutions Group", "NextSolutions Group"],
+    ["Next Solutions Inc", "NextSolutions Group"],
+    ["The Next Solutions", "NextSolutions Group"],
+    ["The Next Solutions", "The NextSolutions"],
+    ["NextSolutions Services", "Next Solutions"],
+    ["Acme Global", "AcmeGlobal"],
+    ["Acme Global", "AcmeGlobal Group"],
+    ["Acme Global", "AcmeGlobal Inc"],
+    ["AcmeGlobal", "Acme Global Group"],
+    ["The Acme Global", "AcmeGlobal Group LLC"],
+    ["Group One", "GroupOne Services"],
+    ["The Group One", "GroupOne Services LLC"],
+    ["Global Tech Services", "GlobalTech"],
+    ["Global Tech Services", "GlobalTech Group"],
+    ["TEKsystems", "TEK Systems"],
+    ["TEK Systems Inc", "TEKsystems"],
+    ["ServiceNow", "Service Now"],
+    ["Service Now Inc", "ServiceNow"]
+  ] as const;
+  for (const [left, right] of aliases) {
+    assert.equal(companiesShareEmployer(left, right), true, `${left} / ${right}`);
+  }
+
+  const distinct = [
+    ["TEKsystems", "Tek"],
+    ["ServiceNow", "Service"],
+    ["Technology Solutions", "Technology Solutions Group"],
+    ["Technology Solutions", "TechnologySolutions Group"],
+    ["Global", "Global Payments"],
+    ["The Group", "Group One"],
+    ["Services", "GroupOne Services"],
+    ["Now Service", "ServiceNow"],
+    ["Technology Solutions", "Technology Solutions Partners"],
+    ["Technology Solutions", "Global Systems"],
+    ["Technology Solutions", "Technology Solutions Services"],
+    ["Next", "NextSolutions"],
+    ["NextSolutions", "Next Group"],
+    ["Solutions", "Next Solutions"],
+    ["Group", "GroupOne"],
+    ["Tech", "GlobalTech"],
+    ["Solutions Next", "NextSolutions"]
+  ] as const;
+  for (const [left, right] of distinct) {
+    assert.equal(companiesShareEmployer(left, right), false, `${left} / ${right}`);
+  }
+});
+
 test("shared generic company words are not the same employer", () => {
   assert.equal(companiesShareEmployer("Acme Corp", "IBM Corp"), false);
   assert.equal(companiesShareEmployer("Cisco Systems", "Insight Global Systems"), false);
