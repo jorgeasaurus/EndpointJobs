@@ -19,16 +19,24 @@ test("platform chip fixture stays active and carries Windows and macOS", () => {
   assert.ok(getJobDescriptionBlocks(fixture).some((block) => block.type === "list" && block.items.length > 1));
 });
 
-test("platform chip fixture is prepended only when seeding is enabled", () => {
+test("platform chip fixture is prepended only when E2E_FIXTURES=1", () => {
   const existing = createPlatformChipFixture();
   existing.id = "real-job";
-  const disabled = seedPlatformChipFixture([existing], false);
-  assert.deepEqual(disabled.map((job) => job.id), ["real-job"]);
+  const previous = process.env.E2E_FIXTURES;
 
-  const enabled = seedPlatformChipFixture([existing], true);
-  assert.deepEqual(enabled.map((job) => job.id), [platformChipFixtureId, "real-job"]);
-  assert.deepEqual(
-    seedPlatformChipFixture(enabled, true).map((job) => job.id),
-    [platformChipFixtureId, "real-job"]
-  );
+  try {
+    delete process.env.E2E_FIXTURES;
+    assert.deepEqual(seedPlatformChipFixture([existing]).map((job) => job.id), ["real-job"]);
+
+    process.env.E2E_FIXTURES = "1";
+    const enabled = seedPlatformChipFixture([existing]);
+    assert.deepEqual(enabled.map((job) => job.id), [platformChipFixtureId, "real-job"]);
+    assert.deepEqual(
+      seedPlatformChipFixture(enabled).map((job) => job.id),
+      [platformChipFixtureId, "real-job"]
+    );
+  } finally {
+    if (previous === undefined) delete process.env.E2E_FIXTURES;
+    else process.env.E2E_FIXTURES = previous;
+  }
 });

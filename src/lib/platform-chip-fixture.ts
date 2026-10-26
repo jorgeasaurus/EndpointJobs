@@ -38,12 +38,12 @@ export function createPlatformChipFixture(now = new Date()): Job {
   };
 }
 
-export function seedPlatformChipFixture(
-  jobs: readonly Job[],
-  enabled = process.env.NODE_ENV === "development",
-  now = new Date()
-): Job[] {
-  if (!enabled || jobs.some((job) => job.id === platformChipFixtureId)) {
+export function platformChipFixturesEnabled() {
+  return process.env.E2E_FIXTURES === "1";
+}
+
+export function seedPlatformChipFixture(jobs: readonly Job[], now = new Date()): Job[] {
+  if (!platformChipFixturesEnabled() || jobs.some((job) => job.id === platformChipFixtureId)) {
     return [...jobs];
   }
 

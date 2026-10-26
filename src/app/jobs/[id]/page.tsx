@@ -40,11 +40,7 @@ export const revalidate = 3600;
 const feed = feedData as JobsFeed;
 
 function getActiveJobs(now = new Date()) {
-  return seedPlatformChipFixture(
-    feed.jobs.filter((job) => isActiveJob(job, now)),
-    process.env.NODE_ENV === "development",
-    now
-  );
+  return seedPlatformChipFixture(feed.jobs.filter((job) => isActiveJob(job, now)), now);
 }
 
 export function generateStaticParams() {
