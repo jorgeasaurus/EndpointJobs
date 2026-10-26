@@ -1,5 +1,10 @@
 const STATIC_ASSET = /\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|mjs|json|webmanifest|woff2?)$/i;
 
+/** A Supabase session cookie, not the PKCE verifier that sits beside it. */
+export function carriesAuthSessionCookie(cookieNames: readonly string[]): boolean {
+  return cookieNames.some((name) => name.includes("-auth-token") && !name.includes("code-verifier"));
+}
+
 /** Paths that must keep working without a session refresh. */
 export function skipsSessionRefresh(pathname: string): boolean {
   if (pathname === "/api/jobs" || pathname.startsWith("/api/jobs/")) return true;
