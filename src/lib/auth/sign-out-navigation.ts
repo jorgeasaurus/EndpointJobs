@@ -20,18 +20,6 @@ export function signOutRequestAllowed(
 
 const AUTH_COOKIE_NAME = /^sb-[A-Za-z0-9._-]*-auth-token[A-Za-z0-9._-]*$/;
 
-/**
- * A failed revoke still sends the browser home. auth-js 2.118 posts /logout
- * even for scope "local". A session-load failure returns before _removeSession(),
- * and a /logout network or 5xx result removes the session only when that write
- * reaches the browser. The route expires this browser's auth cookies on the 303
- * instead of answering 503.
- */
-export function signOutRedirectDecision(error: unknown): "home" {
-  if (error) return "home";
-  return "home";
-}
-
 /** sb-*-auth-token* names from a Cookie header, including chunked .0/.1 cookies. */
 export function authCookiesToClear(cookieHeader: string | null): string[] {
   if (!cookieHeader) return [];

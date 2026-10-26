@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { authCookiesToClear, signOutRedirectDecision, signOutRedirectUrl, signOutRequestAllowed } from "@/lib/auth/sign-out-navigation";
+import { authCookiesToClear, signOutRedirectUrl, signOutRequestAllowed } from "@/lib/auth/sign-out-navigation";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 import { fetchWithAuthDeadline } from "@/lib/supabase/session-refresh";
@@ -26,10 +26,10 @@ export async function POST(request: Request) {
     error = caught;
   }
 
-  if (error && signOutRedirectDecision(error) === "home") {
-    // Match @supabase/ssr's host-only removal: Path=/, SameSite=Lax, not HttpOnly,
-    // and no Secure attribute. A Secure clear would not replace the session cookie
-    // this server actually stored.
+  // auth-js 2.118 still posts /logout for scope "local". A session-load failure
+  // returns before _removeSession(), so a failed revoke expires the cookies here.
+  // Match @supabase/ssr: Path=/, SameSite=Lax, not HttpOnly, and no Secure flag.
+  if (error) {
     for (const name of authCookiesToClear(request.headers.get("cookie"))) {
       redirect.cookies.set(name, "", { path: "/", maxAge: 0, sameSite: "lax", httpOnly: false });
     }
