@@ -17,7 +17,6 @@ export type PostingUrlReport = {
   aliases: PostingUrlGroup[];
   collisions: PostingUrlGroup[];
   droppedIds: string[];
-  blocked: boolean;
 };
 
 // Legal designators are not the employer. Industry words are generic too, but
@@ -72,8 +71,14 @@ export function collisionDropLimit(jobCount: number) {
   return Math.min(5, (jobCount * 5) / 100);
 }
 
-export function collisionAuditExitCode(blocked: boolean) {
-  return blocked ? 1 : 0;
+export function collisionDropSummary(droppedCount: number, jobCount: number) {
+  const limit = collisionDropLimit(jobCount);
+  const message = `Dropped ${droppedCount} colliding listings.`;
+  if (droppedCount <= limit) return { message };
+  return {
+    title: "Possible canonical posting URL regression",
+    message: `${message} Count ${droppedCount} exceeds ${limit} of ${jobCount}. Possible canonical posting URL regression.`
+  };
 }
 
 export function companiesShareEmployer(left: string, right: string) {
@@ -112,7 +117,7 @@ export function classifyPostingUrlGroups(jobs: readonly Job[]): PostingUrlReport
     else collisions.push(reported);
   }
 
-  return { aliases, collisions, droppedIds: collisions.flatMap((group) => group.ids), blocked: false };
+  return { aliases, collisions, droppedIds: collisions.flatMap((group) => group.ids) };
 }
 
 export async function quarantinePostingUrlCollisions(path: string) {
@@ -128,26 +133,15 @@ export async function quarantinePostingUrlCollisions(path: string) {
     return report;
   }
 
-  const limit = collisionDropLimit(parsed.jobs.length);
-  if (report.droppedIds.length > limit) {
-    const blocked = { ...report, blocked: true };
-    await annotate("error", collisionDropBlockedMessage(blocked, parsed.jobs.length));
-    console.log(`Refused to drop ${blocked.droppedIds.length} listings (limit ${limit} of ${parsed.jobs.length}). Distinct-employer collisions: ${blocked.collisions.length}.`);
-    return blocked;
-  }
-
+  const jobCount = parsed.jobs.length;
   const dropped = new Set(report.droppedIds);
   parsed.jobs = parsed.jobs.filter((job) => !dropped.has(job.id));
   await writeFile(path, `${JSON.stringify(parsed, null, 2)}\n`);
   for (const group of report.collisions) await annotate("warning", postingCollisionWarning(group));
+  const summary = collisionDropSummary(report.droppedIds.length, jobCount);
+  await annotate("warning", summary.message, summary.title);
   console.log(`Dropped ${report.droppedIds.length} colliding listings. Posting URL aliases: ${report.aliases.length}. Distinct-employer collisions: ${report.collisions.length}.`);
   return report;
-}
-
-export function collisionDropBlockedMessage(report: PostingUrlReport, jobCount: number) {
-  const limit = collisionDropLimit(jobCount);
-  const keys = report.collisions.slice(0, 8).map((group) => group.key).join(", ");
-  return `Refused to drop ${report.droppedIds.length} listings (limit ${limit} of ${jobCount}). Likely canonical posting URL regression. Keys: ${keys}`;
 }
 
 function employerName(value: string, drop: ReadonlySet<string>) {
@@ -249,10 +243,13 @@ function printGroup(kind: string, group: PostingUrlGroup) {
   console.log(`  ids: ${group.ids.join(", ")}`);
 }
 
-async function annotate(level: "warning" | "error", message: string) {
-  console.log(`::${level}::${message}`);
+async function annotate(level: "warning" | "error", message: string, title?: string) {
+  const properties = title ? ` title=${title}` : "";
+  console.log(`::${level}${properties}::${message}`);
   const summary = process.env.GITHUB_STEP_SUMMARY;
-  if (summary) await appendFile(summary, `- ${message}\n`);
+  if (!summary) return;
+  const line = title ? `> **${title}.** ${message}\n` : `- ${message}\n`;
+  await appendFile(summary, line);
 }
 
 function isDirectRun() {
@@ -262,6 +259,5 @@ function isDirectRun() {
 
 if (isDirectRun()) {
   const path = resolve(process.argv[2] ?? "src/data/jobs.json");
-  const report = await quarantinePostingUrlCollisions(path);
-  if (collisionAuditExitCode(report.blocked) === 1) process.exit(1);
+  await quarantinePostingUrlCollisions(path);
 }

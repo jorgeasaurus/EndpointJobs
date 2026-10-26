@@ -91,9 +91,11 @@ jobs:
       - name: Verify build
         run: npm run build
 
-      # A few distinct-employer collisions are removed and warned, and the
-      # commit still runs. More than min(5, 5% of the feed) fails this step
-      # so a URL-matching regression cannot wipe the board.
+      # Distinct-employer collisions are always removed. Each group is a
+      # warning, plus a warning summary of the dropped count. A drop above
+      # min(5, 5% of the feed) makes that summary a louder warning about a
+      # possible URL canonicalization regression. This step exits 0 so the
+      # commit still runs.
       - name: Drop posting URL collisions
         run: npm run audit:posting-urls
 

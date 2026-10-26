@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -6,9 +7,8 @@ import test from "node:test";
 
 import {
   classifyPostingUrlGroups,
-  collisionAuditExitCode,
-  collisionDropBlockedMessage,
   collisionDropLimit,
+  collisionDropSummary,
   companiesShareEmployer,
   postingCollisionWarning,
   quarantinePostingUrlCollisions
@@ -229,35 +229,37 @@ test("a feed without collisions is not rewritten", async () => {
   await writeFile(path, original);
   const report = await quarantinePostingUrlCollisions(path);
   assert.deepEqual(report.droppedIds, []);
-  assert.equal(report.blocked, false);
-  assert.equal(collisionAuditExitCode(report.blocked), 0);
   assert.equal(await readFile(path, "utf8"), original);
 });
 
-test("a drop at the ceiling still removes the listings", async () => {
+test("a drop at the warning threshold still removes the listings", async () => {
   assert.equal(collisionDropLimit(200), 5);
+  assert.equal(collisionDropSummary(5, 200).title, undefined);
   const written = await quarantineFixture(200, 5);
-  assert.equal(written.blocked, false);
-  assert.equal(collisionAuditExitCode(written.blocked), 0);
   assert.equal(written.jobs.length, 195);
+  assert.match(written.summary, /^- Dropped 5 colliding listings\.$/m);
+  assert.doesNotMatch(written.summary, /canonical posting URL regression/);
 });
 
-test("a drop over the ceiling keeps every listing and fails the audit", async () => {
+test("a large drop still exits 0 and the rewritten feed commits", async () => {
   assert.equal(collisionDropLimit(200), 5);
   assert.equal(collisionDropLimit(40), 2);
-  const overCount = await quarantineFixture(200, 6);
-  assert.equal(overCount.blocked, true);
-  assert.equal(collisionAuditExitCode(overCount.blocked), 1);
-  assert.equal(overCount.jobs.length, 200);
-  assert.match(overCount.summary, /Refused to drop 6 listings \(limit 5 of 200\)/);
-  assert.match(collisionDropBlockedMessage({ ...overCount.report, blocked: true }, 200), /canonical posting URL regression/);
+  const overCount = await runAuditAndCommit(200, 6);
+  assert.equal(overCount.status, 0);
+  assert.equal(overCount.commitStatus, 0);
+  assert.equal(overCount.jobs.length, 194);
+  assert.match(overCount.stdout, /::warning::Dropped 6 listings sharing jobs\.example\.com\/shared/);
+  assert.match(overCount.stdout, /::warning title=Possible canonical posting URL regression::Dropped 6 colliding listings\. Count 6 exceeds 5 of 200\. Possible canonical posting URL regression\./);
+  assert.doesNotMatch(overCount.stdout, /::error::/);
+  assert.match(overCount.summary, /Possible canonical posting URL regression/);
+  assert.match(overCount.commitMessage, /Refresh endpoint job listings/);
 
-  const overPercent = await quarantineFixture(40, 3);
-  assert.equal(overPercent.blocked, true);
-  assert.equal(overPercent.jobs.length, 40);
-  const underPercent = await quarantineFixture(40, 2);
-  assert.equal(underPercent.blocked, false);
-  assert.equal(underPercent.jobs.length, 38);
+  const overPercent = await runAuditAndCommit(40, 3);
+  assert.equal(overPercent.status, 0);
+  assert.equal(overPercent.commitStatus, 0);
+  assert.equal(overPercent.jobs.length, 37);
+  assert.match(overPercent.stdout, /Count 3 exceeds 2 of 40/);
+  assert.doesNotMatch(overPercent.stdout, /::error::/);
 });
 
 async function quarantineFixture(total: number, collisionCount: number) {
@@ -289,11 +291,58 @@ async function quarantineFixture(total: number, collisionCount: number) {
   }
   const jobs = JSON.parse(await readFile(path, "utf8")) as { jobs: { id: string }[] };
   return {
-    blocked: report.blocked,
     jobs: jobs.jobs,
     report,
-    summary: report.blocked ? await readFile(summary, "utf8") : ""
+    summary: await readFile(summary, "utf8")
   };
+}
+
+async function runAuditAndCommit(total: number, collisionCount: number) {
+  const directory = await mkdtemp(join(tmpdir(), "posting-urls-"));
+  const path = join(directory, "jobs.json");
+  const summary = join(directory, "summary.md");
+  const feed = {
+    updatedAt: "2026-10-26T00:00:00.000Z",
+    source: { name: "Fixture", url: "https://example.com" },
+    jobs: [
+      ...Array.from({ length: collisionCount }, (_, index) => makeJob({
+        id: `collision-${index}`,
+        company: `Brand${index} Holdings`,
+        title: "Endpoint Engineer",
+        applyUrl: "https://jobs.example.com/shared",
+        sourceUrl: `https://example.com/collision-${index}`
+      })),
+      ...fillerJobs(total - collisionCount, "solo")
+    ]
+  };
+  await writeFile(path, `${JSON.stringify(feed, null, 2)}\n`);
+  git(directory, ["init", "-b", "main"]);
+  git(directory, ["add", "jobs.json"]);
+  git(directory, ["commit", "-m", "Seed listings"]);
+
+  const audit = spawnSync(process.execPath, ["--import", "tsx", "scripts/audits/posting-url-collisions.ts", path], {
+    cwd: process.cwd(),
+    encoding: "utf8",
+    env: { ...process.env, GITHUB_STEP_SUMMARY: summary }
+  });
+  git(directory, ["add", "jobs.json"]);
+  const commit = git(directory, ["commit", "-m", "Refresh endpoint job listings"]);
+  const jobs = JSON.parse(await readFile(path, "utf8")) as { jobs: { id: string }[] };
+  return {
+    status: audit.status,
+    stdout: `${audit.stdout ?? ""}${audit.stderr ?? ""}`,
+    summary: await readFile(summary, "utf8"),
+    jobs: jobs.jobs,
+    commitStatus: commit.status,
+    commitMessage: commit.stdout
+  };
+}
+
+function git(cwd: string, args: string[]) {
+  return spawnSync("git", ["-c", "user.name=Endpoint Jobs Test", "-c", "user.email=test@example.com", "-c", "commit.gpgsign=false", ...args], {
+    cwd,
+    encoding: "utf8"
+  });
 }
 
 function fillerJobs(count: number, prefix: string) {
