@@ -79,8 +79,15 @@ export function collisionAuditExitCode(blocked: boolean) {
 export function companiesShareEmployer(left: string, right: string) {
   const leftName = employerName(left, genericEmployerTokens);
   const rightName = employerName(right, genericEmployerTokens);
-  if (leftName && rightName) return namesMatch(leftName, rightName);
-  return namesMatch(employerName(left, legalSuffixTokens), employerName(right, legalSuffixTokens));
+  if (leftName && rightName && namesMatch(leftName, rightName)) return true;
+
+  // A generic-only name has no distinctive tokens, so prefix matching would alias
+  // "Global" with "Global Payments". The legal-suffix forms must be the same
+  // name. That same full-string compare also rejoins "TEK Systems" with "TEKsystems"
+  // after generic words such as "systems" were removed from the distinctive form.
+  const leftLegal = employerName(left, legalSuffixTokens);
+  const rightLegal = employerName(right, legalSuffixTokens);
+  return namesEqual(leftLegal, rightLegal);
 }
 
 export function classifyPostingUrlGroups(jobs: readonly Job[]): PostingUrlReport {
@@ -165,9 +172,18 @@ function normalizeEmployer(value: string) {
 
 function namesMatch(left: string, right: string) {
   if (left.length < 2 || right.length < 2) return false;
-  if (left === right) return true;
-  if (left.startsWith(`${right} `) || right.startsWith(`${left} `)) return true;
-  return left.replaceAll(" ", "") === right.replaceAll(" ", "");
+  if (left === right || sameCompactName(left, right)) return true;
+  return left.startsWith(`${right} `) || right.startsWith(`${left} `);
+}
+
+function namesEqual(left: string, right: string) {
+  if (left.length < 2 || right.length < 2) return false;
+  return left === right || sameCompactName(left, right);
+}
+
+function sameCompactName(left: string, right: string) {
+  const compactLeft = left.replaceAll(" ", "");
+  return compactLeft.length >= 2 && compactLeft === right.replaceAll(" ", "");
 }
 
 function sameEmployerGroup(companies: readonly string[]) {

@@ -41,6 +41,10 @@ test("punctuation, connectors, and abbreviations stay the same employer", () => 
   assert.equal(companiesShareEmployer("IBM Int'l", "IBM International"), true);
   assert.equal(companiesShareEmployer("Acme Inc", "Acme Incorporated"), true);
   assert.equal(companiesShareEmployer("The Global Systems", "Global Systems Inc"), true);
+  assert.equal(companiesShareEmployer("The Global Group", "Global Group"), true);
+  assert.equal(companiesShareEmployer("The Global Group", "Global Group Inc"), true);
+  assert.equal(companiesShareEmployer("TEKsystems", "TEK Systems"), true);
+  assert.equal(companiesShareEmployer("ServiceNow", "Service Now"), true);
 });
 
 test("shared generic company words are not the same employer", () => {
@@ -50,6 +54,15 @@ test("shared generic company words are not the same employer", () => {
   assert.equal(companiesShareEmployer("Global Alliant", "Global Payments"), false);
   assert.equal(companiesShareEmployer("Robert Half Technology", "Robert Bosch Technology"), false);
   assert.equal(companiesShareEmployer("Systems Inc", "Global Systems"), false);
+  assert.equal(companiesShareEmployer("Global", "Global Payments"), false);
+  assert.equal(companiesShareEmployer("The Group", "Group One"), false);
+  assert.equal(companiesShareEmployer("Technology Solutions", "Technology Solutions Partners"), false);
+  assert.equal(companiesShareEmployer("The Global Group", "The Group"), false);
+  assert.equal(companiesShareEmployer("The Global Group", "Global"), false);
+  assert.equal(companiesShareEmployer("The Global Group", "Group One"), false);
+  assert.equal(companiesShareEmployer("TEKsystems", "Tek"), false);
+  assert.equal(companiesShareEmployer("ServiceNow", "Service"), false);
+  assert.equal(companiesShareEmployer("Now Service", "ServiceNow"), false);
 });
 
 test("the same posting url reports title aliases and flags distinct employers", () => {
