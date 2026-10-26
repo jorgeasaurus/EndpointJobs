@@ -92,4 +92,6 @@ test("the callback route only signs out the session it just established", () => 
   const source = readFileSync(new URL("../../app/auth/callback/route.ts", import.meta.url), "utf8");
   assert.match(source, /signOut\(\{\s*scope:\s*"local"\s*\}\)/);
   assert.doesNotMatch(source, /signOut\(\s*\)/);
+  assert.doesNotMatch(source, /\.upsert\(/);
+  assert.match(source, /saveProfileOnSignIn/);
 });
