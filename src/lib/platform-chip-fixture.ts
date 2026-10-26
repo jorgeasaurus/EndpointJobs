@@ -38,7 +38,14 @@ export function createPlatformChipFixture(now = new Date()): Job {
   };
 }
 
+const productionPhases = new Set(["phase-production-build", "phase-production-server"]);
+
 export function platformChipFixturesEnabled() {
+  // Production renders keep NODE_ENV=production. `next build` also sets
+  // NEXT_PHASE, so a development NODE_ENV during the build still cannot
+  // bake this listing into the static site. Opt in with E2E_FIXTURES=1.
+  if (process.env.NODE_ENV === "production") return false;
+  if (productionPhases.has(process.env.NEXT_PHASE ?? "")) return false;
   return process.env.E2E_FIXTURES === "1";
 }
 

@@ -51,7 +51,10 @@ function expectUniformRow(row: ChipBox[]) {
 async function openFixtureCard(page: Page) {
   await page.goto("/");
   const card = page.locator(`#${fixtureCardId}`);
-  await expect(card).toBeVisible();
+  await expect(
+    card,
+    "Fixture job missing: start the dev server with E2E_FIXTURES=1 or let Playwright start it"
+  ).toBeVisible();
   await card.locator("summary").click();
   const chips = card.locator("ul.tool-chips");
   await chips.scrollIntoViewIfNeeded();
