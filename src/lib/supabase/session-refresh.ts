@@ -1,8 +1,30 @@
 const STATIC_ASSET = /\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|mjs|json|webmanifest|woff2?)$/i;
 
-/** A Supabase session cookie, not the PKCE verifier that sits beside it. */
-export function carriesAuthSessionCookie(cookieNames: readonly string[]): boolean {
-  return cookieNames.some((name) => name.includes("-auth-token") && !name.includes("code-verifier"));
+export const AUTH_LOOKUP_TIMEOUT_MS = 2000;
+export const AUTH_TOKEN_TIMEOUT_MS = 8000;
+
+/** The refresh POST can rotate the token. Other auth calls stay on the short deadline. */
+export function authFetchTimeoutMs(input: RequestInfo | URL): number {
+  const href = input instanceof URL ? input.href : typeof input === "string" ? input : input.url;
+  try {
+    if (new URL(href).pathname.endsWith("/auth/v1/token")) return AUTH_TOKEN_TIMEOUT_MS;
+  } catch {
+    return AUTH_LOOKUP_TIMEOUT_MS;
+  }
+  return AUTH_LOOKUP_TIMEOUT_MS;
+}
+
+export function authFetchSignal(
+  input: RequestInfo | URL,
+  init?: RequestInit,
+  timeout: (ms: number) => AbortSignal = AbortSignal.timeout
+): AbortSignal {
+  const deadline = timeout(authFetchTimeoutMs(input));
+  return init?.signal ? AbortSignal.any([init.signal, deadline]) : deadline;
+}
+
+export function fetchWithAuthDeadline(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  return fetch(input, { ...init, signal: authFetchSignal(input, init) });
 }
 
 /** Paths that must keep working without a session refresh. */
