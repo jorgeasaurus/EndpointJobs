@@ -13,6 +13,7 @@ import {
 } from "@/lib/jobs";
 import { getJobWorkplace } from "@/lib/workplace";
 import { listingLanguage, presentSalary } from "@/lib/job-trust";
+import { seedPlatformChipFixture } from "@/lib/platform-chip-fixture";
 import type { Job, JobsFeed } from "@/types/job";
 
 import { DescriptionContent } from "@/components/job-board/description-content";
@@ -39,7 +40,7 @@ export const revalidate = 3600;
 const feed = feedData as JobsFeed;
 
 function getActiveJobs(now = new Date()) {
-  return feed.jobs.filter((job) => isActiveJob(job, now));
+  return seedPlatformChipFixture(feed.jobs.filter((job) => isActiveJob(job, now)), now);
 }
 
 export function generateStaticParams() {

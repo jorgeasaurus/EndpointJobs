@@ -79,6 +79,8 @@ npm install
 npm run dev
 ```
 
+Browser checks run with `npx playwright test`. Playwright starts that dev server on `127.0.0.1:3000` with `E2E_FIXTURES=1` so the platform-chip spec has a known card. CI always starts its own server. A server already on port 3000 is reused and does not receive the flag, so stop it or start it with `E2E_FIXTURES=1`. The fixture stays off unless that variable is exactly `1` outside a production build or server. A normal `npm run dev` does not set it.
+
 ## Refresh Jobs Locally
 
 ```bash
