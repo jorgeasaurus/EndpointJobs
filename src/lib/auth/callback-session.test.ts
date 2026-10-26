@@ -4,16 +4,9 @@ import test from "node:test";
 
 import { PRIVACY_POLICY_VERSION } from "@/app/privacy/version";
 
-import { callbackSessionCleanup, handleAuthCallback } from "./callback-session";
+import { handleAuthCallback } from "./callback-session";
 
 const origin = "https://endpointjobs.dev";
-
-test("failed exchange and a finished profile do not clean up a session", () => {
-  assert.equal(callbackSessionCleanup({ exchangeSucceeded: false, profileFailed: false }), "none");
-  assert.equal(callbackSessionCleanup({ exchangeSucceeded: false, profileFailed: true }), "none");
-  assert.equal(callbackSessionCleanup({ exchangeSucceeded: true, profileFailed: false }), "none");
-  assert.equal(callbackSessionCleanup({ exchangeSucceeded: true, profileFailed: true }), "local");
-});
 
 test("a failed code exchange redirects home without signing out", async () => {
   let signOuts = 0;
@@ -29,8 +22,7 @@ test("a failed code exchange redirects home without signing out", async () => {
   });
 
   assert.equal(signOuts, 0);
-  assert.equal(result.cleanup, "none");
-  assert.equal(result.redirectTo.href, `${origin}/`);
+  assert.equal(result.href, `${origin}/`);
 });
 
 test("a session this callback just established is cleared locally when the profile cannot be saved", async () => {
@@ -48,8 +40,7 @@ test("a session this callback just established is cleared locally when the profi
   });
 
   assert.deepEqual(calls, [`upsert:a@example.com:${PRIVACY_POLICY_VERSION}`, "local"]);
-  assert.equal(result.cleanup, "local");
-  assert.equal(result.redirectTo.href, `${origin}/`);
+  assert.equal(result.href, `${origin}/`);
 });
 
 test("a user with no email is signed out locally and not written to profiles", async () => {
@@ -69,8 +60,7 @@ test("a user with no email is signed out locally and not written to profiles", a
 
   assert.equal(upserts, 0);
   assert.equal(signOuts, 1);
-  assert.equal(result.cleanup, "local");
-  assert.equal(result.redirectTo.href, `${origin}/`);
+  assert.equal(result.href, `${origin}/`);
 });
 
 test("a successful callback keeps the escaped next path and does not sign out", async () => {
@@ -94,9 +84,8 @@ test("a successful callback keeps the escaped next path and does not sign out", 
   });
 
   assert.equal(signOuts, 0);
-  assert.equal(result.cleanup, "none");
-  assert.equal(result.redirectTo.href, `${origin}/?q=R%26D`);
-  assert.equal(result.redirectTo.searchParams.get("q"), "R&D");
+  assert.equal(result.href, `${origin}/?q=R%26D`);
+  assert.equal(result.searchParams.get("q"), "R&D");
 });
 
 test("the callback route only signs out the session it just established", () => {

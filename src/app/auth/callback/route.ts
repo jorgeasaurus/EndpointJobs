@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   if (!isSupabaseConfigured()) return NextResponse.redirect(home);
 
   const supabase = await createClient();
-  const result = await handleAuthCallback({
+  const redirectTo = await handleAuthCallback({
     requestUrl: request.url,
     exchangeCode: async (code) => {
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
@@ -29,5 +29,5 @@ export async function GET(request: Request) {
     signOutLocal: () => supabase.auth.signOut({ scope: "local" })
   });
 
-  return NextResponse.redirect(result.redirectTo);
+  return NextResponse.redirect(redirectTo);
 }
