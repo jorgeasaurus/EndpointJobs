@@ -62,9 +62,9 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: var(--white-45);
+  color: var(--label-strong);
   font-family: var(--mono);
-  font-size: 0.65rem;
+  font-size: max(0.75rem, 12px);
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -89,8 +89,8 @@
   display: inline-flex;
   flex: 1 1 0;
   align-items: center;
-  justify-content: space-between;
-  gap: 7px;
+  justify-content: flex-start;
+  gap: 8px;
   min-height: 38px;
   padding: 0 10px;
   color: var(--white-60);
@@ -122,10 +122,15 @@
 }
 
 .workplace-filter-button strong {
-  min-width: 20px;
+  min-width: 0;
+  color: var(--label-strong);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: max(0.75rem, 12px);
   font-variant-numeric: tabular-nums;
+}
+
+.workplace-filter-button.is-active strong {
+  color: var(--black);
 }
 
 .workplace-filter-button > span {

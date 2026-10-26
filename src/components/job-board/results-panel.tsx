@@ -1,9 +1,11 @@
 import { Clock3, Layers3 } from "lucide-react";
 
 import type { Job } from "@/types/job";
+import type { FilterState } from "./filter-model";
 
 import { AnimatedNumber } from "./animated-number";
 import { maximumComparedJobs } from "./comparison-selection";
+import { getEmptyResultsMessage } from "./empty-results-message";
 import { JobCard } from "./job-card";
 import { sortOptions, type SortKey } from "./filter-model";
 import { toSortKey } from "./filter-url";
@@ -20,11 +22,13 @@ export function ResultsPanel({
   totalJobs,
   totalPages,
   query,
+  filters,
   selectedJobIds,
   toggleComparison,
   visibleJobs
 }: PaginationState & {
   clearFilters: () => void;
+  filters: FilterState;
   onPageChange: (page: number) => void;
   onSortChange: (sort: SortKey) => void;
   sort: SortKey;
@@ -51,6 +55,8 @@ export function ResultsPanel({
           <label className="field results-sort">
             <span>Sort by</span>
             <select
+              id="results-sort"
+              name="resultsSort"
               value={sort}
               onChange={(event) => onSortChange(toSortKey(event.currentTarget.value))}
             >
@@ -103,7 +109,7 @@ export function ResultsPanel({
         <div className="empty-state">
           <Layers3 size={34} aria-hidden="true" />
           <h3>No matching roles</h3>
-          <p>Try fewer tool filters or search for a broader platform term.</p>
+          <p>{getEmptyResultsMessage(filters)}</p>
           <button className="clear-button" type="button" onClick={clearFilters}>
             Reset filters
           </button>

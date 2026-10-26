@@ -9,7 +9,7 @@ import {
   getEndpointToolBySlug,
   getEndpointToolSlug
 } from "@/lib/job-taxonomy";
-import { isActiveJob } from "@/lib/jobs";
+import { prepareBoardFeed } from "@/lib/job-trust";
 import type { JobsFeed } from "@/types/job";
 
 import {
@@ -93,10 +93,7 @@ export default async function EndpointToolPage({ params }: ToolPageProps) {
     notFound();
   }
 
-  const activeFeed = {
-    ...feed,
-    jobs: feed.jobs.filter((job) => isActiveJob(job))
-  };
+  const activeFeed = prepareBoardFeed(feed);
 
   return <JobBoard feed={activeFeed} initialSelectedTools={[tool]} />;
 }

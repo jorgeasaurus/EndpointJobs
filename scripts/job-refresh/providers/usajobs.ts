@@ -281,7 +281,9 @@ function normalizeUsaJobsSalary(remuneration: UsaJobsRemuneration[] | undefined)
 
   return normalizeSalary(
     toPositiveNumber(annual.MinimumRange),
-    toPositiveNumber(annual.MaximumRange)
+    toPositiveNumber(annual.MaximumRange),
+    "USD",
+    "source"
   );
 }
 

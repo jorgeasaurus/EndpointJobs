@@ -5,14 +5,18 @@ import { notFound, permanentRedirect } from "next/navigation";
 import feedData from "@/data/jobs.json";
 import { getCanonicalSeoIndex } from "@/lib/job-seo";
 import {
-  formatPostedDate,
-  getExpandedDescriptionParagraphs,
-  getFreshnessLabel,
-  isActiveJob
+  getJobDescriptionBlocks,
+  getJobFreshnessLabel,
+  getJobPostedDateLabel,
+  isActiveJob,
+  isPostedDateKnown
 } from "@/lib/jobs";
 import { getJobWorkplace } from "@/lib/workplace";
+import { listingLanguage, presentSalary } from "@/lib/job-trust";
+import { seedPlatformChipFixture } from "@/lib/platform-chip-fixture";
 import type { Job, JobsFeed } from "@/types/job";
 
+import { DescriptionContent } from "@/components/job-board/description-content";
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
 import { JobContextCards } from "@/components/job-board/job-context-cards";
 import { VisaSponsorship } from "@/components/job-board/visa-sponsorship";
@@ -36,7 +40,7 @@ export const revalidate = 3600;
 const feed = feedData as JobsFeed;
 
 function getActiveJobs(now = new Date()) {
-  return feed.jobs.filter((job) => isActiveJob(job, now));
+  return seedPlatformChipFixture(feed.jobs.filter((job) => isActiveJob(job, now)), now);
 }
 
 export function generateStaticParams() {
@@ -110,12 +114,10 @@ export default async function JobPage({ params }: JobPageProps) {
   }
 
   const applicationUrl = job.applyUrl ?? job.sourceUrl;
-  const paragraphOccurrences = new Map<string, number>();
-  const descriptionParagraphs = getExpandedDescriptionParagraphs(job).map((text) => {
-    const occurrence = paragraphOccurrences.get(text) ?? 0;
-    paragraphOccurrences.set(text, occurrence + 1);
-    return { text, key: JSON.stringify([text, occurrence]) };
-  });
+  const descriptionBlocks = getJobDescriptionBlocks(job);
+  const salary = presentSalary(job);
+  const language = listingLanguage(job);
+  const postedDateKnown = isPostedDateKnown(job);
 
   return (
     <main className="site-frame job-detail-frame">
@@ -134,7 +136,12 @@ export default async function JobPage({ params }: JobPageProps) {
           <header className="job-detail-header">
             <div className="job-detail-kicker">
               <span className="source-pill">{job.source}</span>
-              <time dateTime={job.postedAt}>{getFreshnessLabel(job.postedAt)}</time>
+              {language ? <span className="language-pill">{language}</span> : null}
+              {postedDateKnown ? (
+                <time dateTime={job.postedAt}>{getJobFreshnessLabel(job)}</time>
+              ) : (
+                <span>Date unknown</span>
+              )}
             </div>
 
             <h1>{job.title}</h1>
@@ -158,18 +165,16 @@ export default async function JobPage({ params }: JobPageProps) {
 
           <div
             className={
-              descriptionParagraphs.length > 0
+              descriptionBlocks.length > 0
                 ? "job-detail-layout"
                 : "job-detail-layout job-detail-layout--summary-only"
             }
           >
-            {descriptionParagraphs.length > 0 ? (
+            {descriptionBlocks.length > 0 ? (
               <section aria-labelledby="job-description-heading" className="job-detail-description">
                 <span className="section-kicker">Role overview</span>
                 <h2 id="job-description-heading">Job description</h2>
-                {descriptionParagraphs.map((paragraph) => (
-                  <p key={paragraph.key}>{paragraph.text}</p>
-                ))}
+                <DescriptionContent blocks={descriptionBlocks} />
               </section>
             ) : null}
 
@@ -195,13 +200,17 @@ export default async function JobPage({ params }: JobPageProps) {
                 <div>
                   <dt>Posted</dt>
                   <dd>
-                    <time dateTime={job.postedAt}>{formatPostedDate(job.postedAt)}</time>
+                    {postedDateKnown ? (
+                      <time dateTime={job.postedAt}>{getJobPostedDateLabel(job)}</time>
+                    ) : (
+                      "Date unknown"
+                    )}
                   </dd>
                 </div>
-                {job.salary ? (
+                {salary ? (
                   <div>
                     <dt>Salary</dt>
-                    <dd>{job.salary.label}</dd>
+                    <dd>{salary.label}</dd>
                   </div>
                 ) : null}
               </dl>

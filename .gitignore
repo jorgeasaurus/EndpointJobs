@@ -7,6 +7,8 @@ coverage/
 powershell/EndpointJobs/build/
 .vercel/
 .playwright-mcp/
+playwright-report/
+test-results/
 endpoint-jobs-*.png
 endpoint-lime-*.png
 .env

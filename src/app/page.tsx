@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 
 import { JobBoard } from "@/components/job-board";
 import feedData from "@/data/jobs.json";
-import { isActiveJob } from "@/lib/jobs";
+import { prepareBoardFeed } from "@/lib/job-trust";
+import { seedPlatformChipFixture } from "@/lib/platform-chip-fixture";
 import type { JobsFeed } from "@/types/job";
 
 import { getHomeJsonLd, serializeJsonLd } from "./structured-data";
@@ -24,10 +25,10 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  const feed = feedData as JobsFeed;
+  const preparedFeed = prepareBoardFeed(feedData as JobsFeed);
   const activeFeed = {
-    ...feed,
-    jobs: feed.jobs.filter((job) => isActiveJob(job))
+    ...preparedFeed,
+    jobs: seedPlatformChipFixture(preparedFeed.jobs)
   };
 
   return (

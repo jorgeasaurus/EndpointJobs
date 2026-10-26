@@ -406,11 +406,9 @@ function getRapidApiLinkedInSalary(
     firstFieldText(raw, rapidApiLinkedInFields.currency)
   );
 
-  if (!salary || !currency || salary.currency === currency) {
-    return salary;
-  }
-
-  return { ...salary, currency };
+  if (!salary) return undefined;
+  if (!currency) return salary;
+  return { ...salary, currency, currencySource: "source" as const };
 }
 
 function firstFieldText(

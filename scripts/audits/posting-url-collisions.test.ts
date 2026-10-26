@@ -1,0 +1,376 @@
+import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
+import { mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import test from "node:test";
+
+import {
+  classifyPostingUrlGroups,
+  collisionDropLimit,
+  collisionDropSummary,
+  companiesShareEmployer,
+  postingCollisionWarning,
+  quarantinePostingUrlCollisions
+} from "./posting-url-collisions";
+import { makeJob } from "./shared";
+
+test("short company names still count as the same employer", () => {
+  assert.equal(companiesShareEmployer("IBM", "IBM Corp"), true);
+  assert.equal(companiesShareEmployer("HP", "HP Inc"), true);
+  assert.equal(companiesShareEmployer("Harvey", "Harvey AI"), true);
+  assert.equal(companiesShareEmployer("Acme", "Acme Corporation"), true);
+  assert.equal(companiesShareEmployer("Cisco", "Cisco Systems"), true);
+  assert.equal(companiesShareEmployer("The Home Depot", "Home Depot"), true);
+  assert.equal(companiesShareEmployer("Global Systems", "Global Systems Inc"), true);
+  assert.equal(companiesShareEmployer("Technology Solutions", "Technology Solutions LLC"), true);
+  assert.equal(companiesShareEmployer("Accenture", "Bloomberg"), false);
+  assert.equal(companiesShareEmployer("A", "A Corp"), false);
+});
+
+test("punctuation, connectors, and abbreviations stay the same employer", () => {
+  assert.equal(companiesShareEmployer("Hewlett-Packard", "Hewlett Packard"), true);
+  assert.equal(companiesShareEmployer("O'Reilly", "OReilly"), true);
+  assert.equal(companiesShareEmployer("Procter & Gamble", "Procter and Gamble"), true);
+  assert.equal(companiesShareEmployer("AT&T", "AT and T"), true);
+  assert.equal(companiesShareEmployer("Nestlé", "Nestle"), true);
+  assert.equal(companiesShareEmployer("Société Générale", "Societe Generale"), true);
+  assert.equal(companiesShareEmployer("Harvey", "Harvey Labs"), true);
+  assert.equal(companiesShareEmployer("Harvey", "Harvey AI"), true);
+  assert.equal(companiesShareEmployer("IBM Intl", "IBM International"), true);
+  assert.equal(companiesShareEmployer("IBM Int'l", "IBM International"), true);
+  assert.equal(companiesShareEmployer("Acme Inc", "Acme Incorporated"), true);
+  assert.equal(companiesShareEmployer("The Global Systems", "Global Systems Inc"), true);
+  assert.equal(companiesShareEmployer("The Global Group", "Global Group"), true);
+  assert.equal(companiesShareEmployer("The Global Group", "Global Group Inc"), true);
+  assert.equal(companiesShareEmployer("TEKsystems", "TEK Systems"), true);
+  assert.equal(companiesShareEmployer("ServiceNow", "Service Now"), true);
+  assert.equal(companiesShareEmployer("Group One", "GroupOne Services"), true);
+  assert.equal(companiesShareEmployer("Global Tech Services", "GlobalTech"), true);
+  assert.equal(companiesShareEmployer("The Group One", "GroupOne Services LLC"), true);
+});
+
+test("split and joined brands match across generic tails, legal suffixes, and a leading the", () => {
+  const aliases = [
+    ["Next Solutions", "NextSolutions"],
+    ["Next Solutions", "NextSolutions Group"],
+    ["Next Solutions", "NextSolutions Inc"],
+    ["Next Solutions", "NextSolutions Group LLC"],
+    ["NextSolutions", "Next Solutions Group"],
+    ["Next Solutions Group", "NextSolutions"],
+    ["Next Solutions Group", "NextSolutions Group"],
+    ["Next Solutions Inc", "NextSolutions Group"],
+    ["The Next Solutions", "NextSolutions Group"],
+    ["The Next Solutions", "The NextSolutions"],
+    ["NextSolutions Services", "Next Solutions"],
+    ["Acme Global", "AcmeGlobal"],
+    ["Acme Global", "AcmeGlobal Group"],
+    ["Acme Global", "AcmeGlobal Inc"],
+    ["AcmeGlobal", "Acme Global Group"],
+    ["The Acme Global", "AcmeGlobal Group LLC"],
+    ["Group One", "GroupOne Services"],
+    ["The Group One", "GroupOne Services LLC"],
+    ["Global Tech Services", "GlobalTech"],
+    ["Global Tech Services", "GlobalTech Group"],
+    ["TEKsystems", "TEK Systems"],
+    ["TEK Systems Inc", "TEKsystems"],
+    ["ServiceNow", "Service Now"],
+    ["Service Now Inc", "ServiceNow"]
+  ] as const;
+  for (const [left, right] of aliases) {
+    assert.equal(companiesShareEmployer(left, right), true, `${left} / ${right}`);
+  }
+
+  const distinct = [
+    ["TEKsystems", "Tek"],
+    ["ServiceNow", "Service"],
+    ["Technology Solutions", "Technology Solutions Group"],
+    ["Technology Solutions", "TechnologySolutions Group"],
+    ["Global", "Global Payments"],
+    ["The Group", "Group One"],
+    ["Services", "GroupOne Services"],
+    ["Now Service", "ServiceNow"],
+    ["Technology Solutions", "Technology Solutions Partners"],
+    ["Technology Solutions", "Global Systems"],
+    ["Technology Solutions", "Technology Solutions Services"],
+    ["Next", "NextSolutions"],
+    ["NextSolutions", "Next Group"],
+    ["Solutions", "Next Solutions"],
+    ["Group", "GroupOne"],
+    ["Tech", "GlobalTech"],
+    ["Solutions Next", "NextSolutions"]
+  ] as const;
+  for (const [left, right] of distinct) {
+    assert.equal(companiesShareEmployer(left, right), false, `${left} / ${right}`);
+  }
+});
+
+test("shared generic company words are not the same employer", () => {
+  assert.equal(companiesShareEmployer("Acme Corp", "IBM Corp"), false);
+  assert.equal(companiesShareEmployer("Cisco Systems", "Insight Global Systems"), false);
+  assert.equal(companiesShareEmployer("Robert Half Technology", "Apex Technology"), false);
+  assert.equal(companiesShareEmployer("Global Alliant", "Global Payments"), false);
+  assert.equal(companiesShareEmployer("Robert Half Technology", "Robert Bosch Technology"), false);
+  assert.equal(companiesShareEmployer("Systems Inc", "Global Systems"), false);
+  assert.equal(companiesShareEmployer("Global", "Global Payments"), false);
+  assert.equal(companiesShareEmployer("The Group", "Group One"), false);
+  assert.equal(companiesShareEmployer("Technology Solutions", "Technology Solutions Partners"), false);
+  assert.equal(companiesShareEmployer("The Global Group", "The Group"), false);
+  assert.equal(companiesShareEmployer("The Global Group", "Global"), false);
+  assert.equal(companiesShareEmployer("The Global Group", "Group One"), false);
+  assert.equal(companiesShareEmployer("TEKsystems", "Tek"), false);
+  assert.equal(companiesShareEmployer("ServiceNow", "Service"), false);
+  assert.equal(companiesShareEmployer("Now Service", "ServiceNow"), false);
+  assert.equal(companiesShareEmployer("Technology Solutions", "Global Systems"), false);
+  assert.equal(companiesShareEmployer("Technology Solutions", "Technology Solutions Services"), false);
+  assert.equal(companiesShareEmployer("Services", "GroupOne Services"), false);
+});
+
+test("the same posting url reports title aliases and flags distinct employers", () => {
+  const ibm = makeJob({
+    id: "ibm",
+    company: "IBM",
+    title: "Sr. Systems Engineer",
+    applyUrl: "https://jobs.example.com/req/1?utm_source=board",
+    sourceUrl: "https://example.com/ibm"
+  });
+  const ibmCorp = makeJob({
+    id: "ibm-corp",
+    company: "IBM Corp",
+    title: "Senior Systems Engineer",
+    applyUrl: "https://jobs.example.com/req/1",
+    sourceUrl: "https://example.com/ibm-corp"
+  });
+  const accenture = makeJob({
+    id: "accenture",
+    company: "Accenture",
+    title: "Endpoint Engineer",
+    applyUrl: "https://www.indeed.com/viewjob?utm_source=google",
+    sourceUrl: "https://example.com/accenture"
+  });
+  const bloomberg = makeJob({
+    id: "bloomberg",
+    company: "Bloomberg",
+    title: "Endpoint Engineer",
+    applyUrl: "https://www.indeed.com/viewjob",
+    sourceUrl: "https://example.com/bloomberg"
+  });
+  const separate = makeJob({
+    id: "separate",
+    company: "Global Alliant",
+    title: "Endpoint Engineer",
+    applyUrl: "https://www.indeed.com/viewjob?jk=separate",
+    sourceUrl: "https://example.com/separate"
+  });
+
+  const report = classifyPostingUrlGroups([ibm, ibmCorp, accenture, bloomberg, separate]);
+  assert.deepEqual(report.aliases.map((group) => group.key), ["jobs.example.com/req/1"]);
+  assert.deepEqual(report.aliases[0]?.titles, ["Sr. Systems Engineer", "Senior Systems Engineer"]);
+  assert.deepEqual(report.collisions.map((group) => group.key), ["www.indeed.com/viewjob"]);
+  assert.deepEqual(report.collisions[0]?.companies, ["Accenture", "Bloomberg"]);
+  assert.deepEqual(report.droppedIds, ["accenture", "bloomberg"]);
+});
+
+test("a collision drops every listing on that url and leaves aliases in the feed", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "posting-urls-"));
+  const path = join(directory, "jobs.json");
+  const summary = join(directory, "summary.md");
+  const stranger = makeJob({
+    id: "stranger",
+    company: "Accenture",
+    title: "Endpoint Engineer",
+    applyUrl: "https://jobs.example.com/req/1",
+    sourceUrl: "https://example.com/stranger"
+  });
+  const harvey = makeJob({
+    id: "harvey",
+    company: "Harvey",
+    title: "Staff Engineer",
+    applyUrl: "https://jobs.ashbyhq.com/harvey/1/application",
+    sourceUrl: "https://example.com/harvey"
+  });
+  const harveyAi = makeJob({
+    id: "harvey-ai",
+    company: "Harvey AI",
+    title: "Staff Engineer",
+    applyUrl: "https://jobs.ashbyhq.com/harvey/1/application?utm_source=board",
+    sourceUrl: "https://example.com/harvey-ai"
+  });
+  const feed = {
+    updatedAt: "2026-10-26T00:00:00.000Z",
+    source: { name: "Fixture", url: "https://example.com" },
+    jobs: [ibmJob(), ibmCorpJob(), stranger, harvey, harveyAi, ...fillerJobs(55, "pad")]
+  };
+  await writeFile(path, `${JSON.stringify(feed, null, 2)}\n`);
+  process.env.GITHUB_STEP_SUMMARY = summary;
+  let report;
+  try {
+    report = await quarantinePostingUrlCollisions(path);
+  } finally {
+    delete process.env.GITHUB_STEP_SUMMARY;
+  }
+
+  assert.deepEqual(report.droppedIds, ["ibm", "ibm-corp", "stranger"]);
+  assert.match(postingCollisionWarning(report.collisions[0]!), /Dropped 3 listings sharing jobs\.example\.com\/req\/1/);
+  const written = JSON.parse(await readFile(path, "utf8")) as { jobs: { id: string }[] };
+  assert.deepEqual(written.jobs.map((job) => job.id), ["harvey", "harvey-ai", ...fillerJobs(55, "pad").map((job) => job.id)]);
+  assert.match(await readFile(summary, "utf8"), /Dropped 3 listings sharing jobs\.example\.com\/req\/1/);
+});
+
+test("a feed without collisions is not rewritten", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "posting-urls-"));
+  const path = join(directory, "jobs.json");
+  const feed = {
+    updatedAt: "2026-10-26T00:00:00.000Z",
+    source: { name: "Fixture", url: "https://example.com" },
+    jobs: [ibmJob(), ibmCorpJob()]
+  };
+  const original = `${JSON.stringify(feed, null, 2)}\n`;
+  await writeFile(path, original);
+  const report = await quarantinePostingUrlCollisions(path);
+  assert.deepEqual(report.droppedIds, []);
+  assert.equal(await readFile(path, "utf8"), original);
+});
+
+test("a drop at the warning threshold still removes the listings", async () => {
+  assert.equal(collisionDropLimit(200), 5);
+  assert.equal(collisionDropSummary(5, 200).title, undefined);
+  const written = await quarantineFixture(200, 5);
+  assert.equal(written.jobs.length, 195);
+  assert.match(written.summary, /^- Dropped 5 colliding listings\.$/m);
+  assert.doesNotMatch(written.summary, /canonical posting URL regression/);
+});
+
+test("a large drop still exits 0 and the rewritten feed commits", async () => {
+  assert.equal(collisionDropLimit(200), 5);
+  assert.equal(collisionDropLimit(40), 2);
+  const overCount = await runAuditAndCommit(200, 6);
+  assert.equal(overCount.status, 0);
+  assert.equal(overCount.commitStatus, 0);
+  assert.equal(overCount.jobs.length, 194);
+  assert.match(overCount.stdout, /::warning::Dropped 6 listings sharing jobs\.example\.com\/shared/);
+  assert.match(overCount.stdout, /::warning title=Possible canonical posting URL regression::Dropped 6 colliding listings\. Count 6 exceeds 5 of 200\. Possible canonical posting URL regression\./);
+  assert.doesNotMatch(overCount.stdout, /::error::/);
+  assert.match(overCount.summary, /Possible canonical posting URL regression/);
+  assert.match(overCount.commitMessage, /Refresh endpoint job listings/);
+
+  const overPercent = await runAuditAndCommit(40, 3);
+  assert.equal(overPercent.status, 0);
+  assert.equal(overPercent.commitStatus, 0);
+  assert.equal(overPercent.jobs.length, 37);
+  assert.match(overPercent.stdout, /Count 3 exceeds 2 of 40/);
+  assert.doesNotMatch(overPercent.stdout, /::error::/);
+});
+
+async function quarantineFixture(total: number, collisionCount: number) {
+  const directory = await mkdtemp(join(tmpdir(), "posting-urls-"));
+  const path = join(directory, "jobs.json");
+  const summary = join(directory, "summary.md");
+  const feed = {
+    updatedAt: "2026-10-26T00:00:00.000Z",
+    source: { name: "Fixture", url: "https://example.com" },
+    jobs: [
+      ...Array.from({ length: collisionCount }, (_, index) => makeJob({
+        id: `collision-${index}`,
+        company: `Brand${index} Holdings`,
+        title: "Endpoint Engineer",
+        applyUrl: "https://jobs.example.com/shared",
+        sourceUrl: `https://example.com/collision-${index}`
+      })),
+      ...fillerJobs(total - collisionCount, "solo")
+    ]
+  };
+  const original = `${JSON.stringify(feed, null, 2)}\n`;
+  await writeFile(path, original);
+  process.env.GITHUB_STEP_SUMMARY = summary;
+  let report;
+  try {
+    report = await quarantinePostingUrlCollisions(path);
+  } finally {
+    delete process.env.GITHUB_STEP_SUMMARY;
+  }
+  const jobs = JSON.parse(await readFile(path, "utf8")) as { jobs: { id: string }[] };
+  return {
+    jobs: jobs.jobs,
+    report,
+    summary: await readFile(summary, "utf8")
+  };
+}
+
+async function runAuditAndCommit(total: number, collisionCount: number) {
+  const directory = await mkdtemp(join(tmpdir(), "posting-urls-"));
+  const path = join(directory, "jobs.json");
+  const summary = join(directory, "summary.md");
+  const feed = {
+    updatedAt: "2026-10-26T00:00:00.000Z",
+    source: { name: "Fixture", url: "https://example.com" },
+    jobs: [
+      ...Array.from({ length: collisionCount }, (_, index) => makeJob({
+        id: `collision-${index}`,
+        company: `Brand${index} Holdings`,
+        title: "Endpoint Engineer",
+        applyUrl: "https://jobs.example.com/shared",
+        sourceUrl: `https://example.com/collision-${index}`
+      })),
+      ...fillerJobs(total - collisionCount, "solo")
+    ]
+  };
+  await writeFile(path, `${JSON.stringify(feed, null, 2)}\n`);
+  git(directory, ["init", "-b", "main"]);
+  git(directory, ["add", "jobs.json"]);
+  git(directory, ["commit", "-m", "Seed listings"]);
+
+  const audit = spawnSync(process.execPath, ["--import", "tsx", "scripts/audits/posting-url-collisions.ts", path], {
+    cwd: process.cwd(),
+    encoding: "utf8",
+    env: { ...process.env, GITHUB_STEP_SUMMARY: summary }
+  });
+  git(directory, ["add", "jobs.json"]);
+  const commit = git(directory, ["commit", "-m", "Refresh endpoint job listings"]);
+  const jobs = JSON.parse(await readFile(path, "utf8")) as { jobs: { id: string }[] };
+  return {
+    status: audit.status,
+    stdout: `${audit.stdout ?? ""}${audit.stderr ?? ""}`,
+    summary: await readFile(summary, "utf8"),
+    jobs: jobs.jobs,
+    commitStatus: commit.status,
+    commitMessage: commit.stdout
+  };
+}
+
+function git(cwd: string, args: string[]) {
+  return spawnSync("git", ["-c", "user.name=Endpoint Jobs Test", "-c", "user.email=test@example.com", "-c", "commit.gpgsign=false", ...args], {
+    cwd,
+    encoding: "utf8"
+  });
+}
+
+function fillerJobs(count: number, prefix: string) {
+  return Array.from({ length: count }, (_, index) => makeJob({
+    id: `${prefix}-${index}`,
+    company: `Solo ${prefix} ${index}`,
+    title: "Endpoint Engineer",
+    applyUrl: `https://jobs.example.com/${prefix}/${index}`,
+    sourceUrl: `https://example.com/${prefix}-${index}`
+  }));
+}
+
+function ibmJob() {
+  return makeJob({
+    id: "ibm",
+    company: "IBM",
+    title: "Sr. Systems Engineer",
+    applyUrl: "https://jobs.example.com/req/1?utm_source=board",
+    sourceUrl: "https://example.com/ibm"
+  });
+}
+
+function ibmCorpJob() {
+  return makeJob({
+    id: "ibm-corp",
+    company: "IBM Corp",
+    title: "Senior Systems Engineer",
+    applyUrl: "https://jobs.example.com/req/1",
+    sourceUrl: "https://example.com/ibm-corp"
+  });
+}
