@@ -179,7 +179,7 @@ export function StickyActiveFilters({
   );
 }
 
-function CommandStatusRail({
+export function CommandStatusRail({
   activeJobsCount,
   mappedJobsCount,
   remoteJobsCount,
@@ -327,6 +327,8 @@ function HighSignalFilters({
         <BriefcaseBusiness size={17} aria-hidden="true" />
         <span>Role</span>
         <select
+          id="role-family"
+          name="roleFamily"
           value={roleFamily}
           onChange={(event) =>
             dispatch({
@@ -348,6 +350,8 @@ function HighSignalFilters({
         <Clock3 size={17} aria-hidden="true" />
         <span>Freshness</span>
         <select
+          id="freshness"
+          name="freshness"
           value={freshness}
           onChange={(event) =>
             dispatch({
@@ -524,6 +528,8 @@ function AdvancedFilters({
           <label className="field">
             <span>Visa sponsorship</span>
             <select
+              id="visa-sponsorship"
+              name="sponsorship"
               value={sponsorship}
               onChange={(event) => dispatch({ type: "setSponsorship", value: toSponsorshipFilter(event.currentTarget.value) })}
             >
@@ -536,6 +542,8 @@ function AdvancedFilters({
           <label className="field">
             <span>Minimum salary</span>
             <select
+              id="minimum-salary"
+              name="minimumSalary"
               value={minimumSalary}
               aria-label="Minimum salary"
               onChange={(event) =>
@@ -556,6 +564,8 @@ function AdvancedFilters({
           <label className="field">
             <span>Seniority</span>
             <select
+              id="seniority"
+              name="seniority"
               value={seniority}
               aria-label="Seniority"
               onChange={(event) =>
@@ -577,6 +587,8 @@ function AdvancedFilters({
           <label className="field">
             <span>Sort</span>
             <select
+              id="sort"
+              name="sort"
               value={sort}
               aria-label="Sort"
               onChange={(event) =>

@@ -442,6 +442,7 @@ function normalizeWorkdayJob(
     location,
     workplace: inferWorkdayWorkplace(location, haystack, detail?.remoteType),
     postedAt,
+    postedAtEvidence: raw.postedOn,
     fetchedAt,
     staleAfter,
     source: "Workday",

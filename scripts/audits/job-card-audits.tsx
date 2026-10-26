@@ -171,17 +171,15 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
   });
 
   await run("FEAT-077", "Technology chips stay compact and disclose overflow", () => {
-    const denseJob = feed.jobs.find((job) => job.platforms.length + job.tools.length > 8);
-    assertTruthy(denseJob, "feed needs a technology-dense listing fixture");
-    if (!denseJob) return;
-
+    const platforms = ["Windows", "macOS"] as const;
+    const tools = ["Intune", "Jamf", "Kandji", "Autopilot", "SCCM", "Tanium", "NinjaOne", "Defender"] as const;
     const markup = renderToStaticMarkup(
       createElement(ToolChips, {
-        platforms: denseJob.platforms,
-        tools: denseJob.tools
+        platforms,
+        tools
       })
     );
-    const hiddenCount = denseJob.platforms.length + denseJob.tools.length - 8;
+    const hiddenCount = platforms.length + tools.length - 8;
     assertIncludes(markup, `+${hiddenCount} more`);
     assertIncludes(
       markup,

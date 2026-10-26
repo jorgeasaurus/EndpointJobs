@@ -31,6 +31,7 @@ export function JobSearch({
         <input
           aria-describedby="job-search-status"
           id="job-search-input"
+          name="q"
           ref={inputRef}
           data-job-search="true"
           type="search"
@@ -38,9 +39,6 @@ export function JobSearch({
           onChange={(event) => onQueryChange(event.currentTarget.value)}
           placeholder="Search Jamf, Intune, macOS, Kandji/Iru..."
         />
-        <span className="search-result-count" aria-hidden="true">
-          {resultLabel}
-        </span>
         {query ? (
           <button
             aria-label="Clear job search"

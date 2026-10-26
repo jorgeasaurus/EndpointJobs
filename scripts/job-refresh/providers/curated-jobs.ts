@@ -351,7 +351,7 @@ function normalizeCuratedJob(job: CuratedJob, fetchedAt: Date, available: boolea
     attributionLabel: job.company,
     termsProfile: "seed",
     description: job.description,
-    salary: job.salary,
+    salary: job.salary ? { ...job.salary, currencySource: "source" } : undefined,
     sourceTags: job.sourceTags,
     haystackParts: [job.description],
     employmentType: job.employmentType

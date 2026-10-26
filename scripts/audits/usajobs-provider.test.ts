@@ -167,6 +167,7 @@ test("USAJOBS result preserves structured federal job details", async () => {
     min: 98496,
     max: 153354,
     currency: "USD",
+    currencySource: "source",
     label: "$98k-$153k"
   });
   assert.equal(job.employmentType, "Full-time");

@@ -1,5 +1,6 @@
 import type { Job } from "@/types/job";
 
+import { repairJobDescription, toDescriptionBlocks, type DescriptionBlock } from "@/lib/job-description";
 import { normalizeText } from "@/lib/text";
 import {
   endpointToolOptions,
@@ -61,6 +62,32 @@ export function isPostedWithinDays(
 ) {
   const postedAt = new Date(value).getTime();
   return Number.isFinite(postedAt) && postedAt > now.getTime() - maximumAgeDays * millisecondsPerDay;
+}
+
+const sourcePostedDatePattern = /(?:\b(?:today|yesterday|just posted)\b|\d+\+?\s+(?:minute|hour|day|week|month)s?\s+ago)/i;
+
+export function findPostedAtEvidence(values: readonly (string | undefined)[]) {
+  for (const value of values) {
+    const text = value?.replace(/\s+/g, " ").trim();
+    if (text && sourcePostedDatePattern.test(text)) return text;
+  }
+  return undefined;
+}
+
+export function isPostedDateKnown(job: Pick<Job, "postedAt" | "fetchedAt" | "tags" | "postedAtEvidence">) {
+  if (job.postedAt !== job.fetchedAt) return true;
+  if (job.postedAtEvidence && sourcePostedDatePattern.test(job.postedAtEvidence)) return true;
+  return job.tags.some((tag) => sourcePostedDatePattern.test(tag));
+}
+
+export function getJobFreshnessLabel(job: Pick<Job, "postedAt" | "fetchedAt" | "tags" | "postedAtEvidence">) {
+  if (!isPostedDateKnown(job)) return "Date unknown";
+  return getFreshnessLabel(job.postedAt);
+}
+
+export function getJobPostedDateLabel(job: Pick<Job, "postedAt" | "fetchedAt" | "tags" | "postedAtEvidence">) {
+  if (!isPostedDateKnown(job)) return "Date unknown";
+  return formatPostedDate(job.postedAt);
 }
 
 export function getFreshnessLabel(value: string) {
@@ -131,20 +158,19 @@ export function getSalarySortValue(job: Job) {
 }
 
 export function getExpandedDescriptionParagraphs(job: Job) {
+  return getJobDescriptionBlocks(job).flatMap((block) =>
+    block.type === "paragraph" ? [block.text] : block.items
+  );
+}
+
+export function getJobDescriptionBlocks(job: Job): DescriptionBlock[] {
   const additionalDescription = getAdditionalDescription(job);
-
-  if (!additionalDescription) {
-    return [];
-  }
-
-  return additionalDescription.split(/\n+/).flatMap((paragraph) => {
-    const trimmed = paragraph.trim();
-    return trimmed ? [trimmed] : [];
-  });
+  if (!additionalDescription) return [];
+  return toDescriptionBlocks(additionalDescription);
 }
 
 function getAdditionalDescription(job: Job) {
-  const description = job.description?.trim();
+  const description = repairJobDescription(job.description?.trim() ?? "");
 
   if (!description) {
     return undefined;

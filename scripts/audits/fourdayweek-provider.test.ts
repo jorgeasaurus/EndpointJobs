@@ -82,6 +82,7 @@ test("4 Day Week keeps jobs whose tools include Intune", async () => {
     min: 120000,
     max: 150000,
     currency: "USD",
+    currencySource: "source",
     label: "$120k-$150k"
   });
 });

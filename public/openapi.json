@@ -894,6 +894,10 @@
             "type": "string",
             "format": "date-time"
           },
+          "postedAtEvidence": {
+            "type": "string",
+            "description": "Source relative-date phrase preserved independently of the capped tags list. Absent when the provider did not supply one."
+          },
           "fetchedAt": {
             "type": "string",
             "format": "date-time"
@@ -1056,6 +1060,11 @@
           },
           "currency": {
             "type": "string"
+          },
+          "currencySource": {
+            "type": "string",
+            "enum": ["source", "default"],
+            "description": "source means the listing stated this currency. default means it was assumed and the board may infer a location currency."
           },
           "label": {
             "type": "string"

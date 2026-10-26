@@ -352,8 +352,8 @@ test("SerpAPI preserves numeric bounds from explicit Australian salary labels", 
   );
 
   assert.deepEqual(jobs.map((job) => job?.salary), [
-    { currency: "AUD", label: "AUD 120K–140K a year", max: 140_000, min: 120_000 },
-    { currency: "AUD", label: "A$120K–A$140K a year", max: 140_000, min: 120_000 }
+    { currency: "AUD", currencySource: "source", label: "AUD 120K–140K a year", max: 140_000, min: 120_000 },
+    { currency: "AUD", currencySource: "source", label: "A$120K–A$140K a year", max: 140_000, min: 120_000 }
   ]);
 });
 

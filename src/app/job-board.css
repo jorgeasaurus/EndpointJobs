@@ -562,7 +562,8 @@ h1 {
 .mini-field span {
   min-width: 0;
   overflow: hidden;
-  font-size: 0.72rem;
+  color: var(--label-strong);
+  font-size: max(0.75rem, 12px);
   font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -860,7 +861,7 @@ h1 {
   min-height: 30px;
   padding: 0 9px;
   border-radius: 8px;
-  font-size: 0.68rem;
+  font-size: max(0.75rem, 12px);
   font-weight: 700;
 }
 
@@ -987,12 +988,12 @@ h1 {
   gap: 12px;
   min-height: 42px;
   padding: 0 14px;
-  color: var(--white-60);
+  color: var(--label-strong);
   cursor: pointer;
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: max(0.75rem, 12px);
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.04em;
   list-style: none;
   text-transform: uppercase;
 }
@@ -1020,12 +1021,71 @@ h1 {
   border-top: 1px solid rgb(255 255 255 / 8%);
 }
 
-.description-body p {
+.description-body p,
+.description-body li {
   margin: 0;
   color: var(--white-60);
   font-size: 0.92rem;
   line-height: 1.62;
   overflow-wrap: anywhere;
+}
+
+.description-body .tool-chip {
+  font-size: max(0.75rem, 12px);
+  line-height: 1.2;
+}
+
+.description-body .tool-chip--platform {
+  color: var(--cyan);
+}
+
+.description-body .tool-chip--tool {
+  color: var(--emerald);
+}
+
+.description-body .tool-chip--more {
+  color: var(--label-strong);
+}
+
+.description-body ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.description-body li + li {
+  margin-top: 0.45rem;
+}
+
+.description-body .match-recommendation,
+.description-body .tag-row {
+  grid-column: auto;
+  margin-top: 12px;
+}
+
+.job-card-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.language-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 9px;
+  color: var(--label-strong);
+  background: rgb(255 255 255 / 6%);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: max(0.75rem, 12px);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.search-coverage-mobile {
+  display: none;
 }
 
 .metadata-row {
