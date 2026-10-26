@@ -1022,7 +1022,7 @@ h1 {
 }
 
 .description-body p,
-.description-body li {
+.description-body li:not(.tool-chip) {
   margin: 0;
   color: var(--white-60);
   font-size: 0.92rem;
@@ -1031,6 +1031,7 @@ h1 {
 }
 
 .description-body .tool-chip {
+  margin: 0;
   font-size: max(0.75rem, 12px);
   line-height: 1.2;
 }
@@ -1047,12 +1048,12 @@ h1 {
   color: var(--label-strong);
 }
 
-.description-body ul {
+.description-body ul:not(.tool-chips) {
   margin: 0;
   padding-left: 1.2rem;
 }
 
-.description-body li + li {
+.description-body li:not(.tool-chip) + li:not(.tool-chip) {
   margin-top: 0.45rem;
 }
 
