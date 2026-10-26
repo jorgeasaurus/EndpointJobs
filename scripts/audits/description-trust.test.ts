@@ -5,7 +5,8 @@ import feedData from "../../src/data/jobs.json";
 import { getCurrencySymbol } from "../../src/lib/currency";
 import { repairJobDescription, toDescriptionBlocks } from "../../src/lib/job-description";
 import { filterJobs } from "../../src/lib/job-filters";
-import { dedupeJobs, dedupeWorkplaceJobs, dedupedWorkplaceCounts, inferLocationCurrency, listingLanguage, prepareBoardFeed, presentSalary, withPresentedSalary } from "../../src/lib/job-trust";
+import { canonicalPostingUrl, dedupeJobs, dedupeWorkplaceJobs, dedupedWorkplaceCounts, inferLocationCurrency, listingLanguage, prepareBoardFeed, presentSalary, withPresentedSalary } from "../../src/lib/job-trust";
+import { foldTokens } from "../../src/lib/text";
 import { getJobDescriptionBlocks, getJobFreshnessLabel, isPostedDateKnown } from "../../src/lib/jobs";
 import { normalizeSerpApiGoogleJob } from "../job-refresh/providers/serpapi";
 import { toEndpointJob } from "../job-refresh/shared";
@@ -298,6 +299,9 @@ test("US state suffixes are not treated as country currencies", () => {
     "Columbia, SC",
     "Columbia, Maryland",
     "Boston, New England",
+    "Newark, New Jersey",
+    "Jersey City, NJ",
+    "Jersey City, Hudson County",
     "London, CA",
     "Indianapolis, IN",
     "United States; Mexico",
@@ -409,6 +413,7 @@ test("UK regions map to GBP and colliding place names keep their own currency", 
     "England",
     "Scotland",
     "Wales",
+    "South Wales",
     "London, UK",
     "London, GB",
     "Manchester, United Kingdom"
@@ -438,6 +443,16 @@ test("UK regions map to GBP and colliding place names keep their own currency", 
   assert.equal(inferLocationCurrency("Zürich, CH"), "CHF");
   assert.equal(inferLocationCurrency("Sydney, AU"), "AUD");
   assert.equal(inferLocationCurrency("Sydney, AU, NSW"), "AUD");
+  assert.equal(inferLocationCurrency("Sydney, New South Wales"), "AUD");
+  assert.equal(inferLocationCurrency("Sydney, New South Wales, Australia"), "AUD");
+  assert.equal(inferLocationCurrency("Western Australia"), "AUD");
+  assert.equal(inferLocationCurrency("New Zealand"), "NZD");
+  assert.equal(inferLocationCurrency("Boston, New England"), undefined);
+  assert.equal(inferLocationCurrency("Newark, New Jersey"), undefined);
+  assert.equal(inferLocationCurrency("Jersey City, Hudson County"), undefined);
+  assert.equal(inferLocationCurrency("Saint Helier, Jersey"), undefined);
+  assert.equal(inferLocationCurrency("Atlanta, Georgia"), undefined);
+  assert.equal(inferLocationCurrency("Tbilisi, Georgia"), undefined);
   assert.equal(inferLocationCurrency("Champagne-au-Mont-d'Or, Lyon"), undefined);
   assert.equal(inferLocationCurrency("Madrid ES"), "EUR");
 
@@ -447,6 +462,13 @@ test("UK regions map to GBP and colliding place names keep their own currency", 
   });
   assert.equal(belfast?.currency, "GBP");
   assert.equal(belfast?.label, "£80k-£100k");
+
+  const sydney = presentSalary({
+    location: "Sydney, New South Wales, Australia",
+    salary: { min: 140000, max: 180000, currency: "USD", currencySource: "default", label: "$140k-$180k" }
+  });
+  assert.equal(sydney?.currency, "AUD");
+  assert.equal(sydney?.label, `${getCurrencySymbol("AUD")}140k-${getCurrencySymbol("AUD")}180k`);
 
   const mexicoCity = withPresentedSalary(makeJob({
     ...distinctPosting("mexico-city"),
@@ -485,7 +507,7 @@ test("same apply URL is one posting even when the location text differs", () => 
     title: "Endpoint Engineer",
     location: "Austin, Texas",
     applyUrl: undefined,
-    sourceUrl: "https://boards.example.com/jobs/9?x=1",
+    sourceUrl: "https://boards.example.com/jobs/9?utm_source=email",
     description: "Endpoint operations ".repeat(20)
   });
   const sourceTwin = makeJob({
@@ -497,4 +519,155 @@ test("same apply URL is one posting even when the location text differs", () => 
     sourceUrl: "https://boards.example.com/jobs/9"
   });
   assert.deepEqual(dedupeJobs([sourceTwin, sourceOnly]).map((job) => job.id), ["source-win"]);
+});
+
+test("aggregator job ids stay in the posting key and tracking params do not", () => {
+  const accenture = makeJob({
+    id: "indeed-accenture",
+    company: "Accenture",
+    title: "Endpoint Engineer",
+    location: "Chicago, IL",
+    applyUrl: "https://www.indeed.com/viewjob?jk=aaa111&utm_source=google_jobs_apply&utm_medium=organic",
+    sourceUrl: "https://boards.example.com/accenture"
+  });
+  const bloomberg = makeJob({
+    id: "indeed-bloomberg",
+    company: "Bloomberg",
+    title: "Endpoint Engineer",
+    location: "New York, NY",
+    applyUrl: "https://www.indeed.com/viewjob?jk=bbb222&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply",
+    sourceUrl: "https://boards.example.com/bloomberg"
+  });
+  assert.deepEqual(dedupeJobs([accenture, bloomberg]).map((job) => job.id), ["indeed-accenture", "indeed-bloomberg"]);
+
+  const jamfA = makeJob({
+    id: "gh-a",
+    company: "Jamf",
+    title: "Mac Admin",
+    location: "Eau Claire, WI",
+    applyUrl: "https://www.jamf.com/about/careers/jobs/?gh_jid=111&utm_source=google",
+    sourceUrl: "https://boards.example.com/jamf-a"
+  });
+  const jamfB = makeJob({
+    id: "gh-b",
+    company: "Jamf",
+    title: "Mac Admin",
+    location: "Minneapolis, MN",
+    applyUrl: "https://www.jamf.com/about/careers/jobs/?utm_medium=organic&gh_jid=222",
+    sourceUrl: "https://boards.example.com/jamf-b"
+  });
+  assert.deepEqual(dedupeJobs([jamfA, jamfB]).map((job) => job.id), ["gh-a", "gh-b"]);
+
+  const glassdoorA = makeJob({
+    id: "gd-a",
+    company: "ETC Solutions",
+    title: "Desktop Support",
+    applyUrl: "https://www.glassdoor.com/job-listing/jv?jl=101&utm_source=google_jobs_apply",
+    sourceUrl: "https://boards.example.com/gd-a"
+  });
+  const glassdoorB = makeJob({
+    id: "gd-b",
+    company: "ServiceNow",
+    title: "Desktop Support",
+    applyUrl: "https://www.glassdoor.com/job-listing/jv?jl=202&gclid=abc&fbclid=def",
+    sourceUrl: "https://boards.example.com/gd-b"
+  });
+  assert.deepEqual(dedupeJobs([glassdoorA, glassdoorB]).map((job) => job.id), ["gd-a", "gd-b"]);
+
+  const tracked = makeJob({
+    id: "tracked-low",
+    company: "Acme",
+    title: "Endpoint Engineer",
+    location: "Austin, TX",
+    applyUrl: "https://jobs.example.com/jobs/AbC123?utm_source=a&utm_medium=b&ref=newsletter",
+    sourceUrl: "https://boards.example.com/tracked-low"
+  });
+  const trackedTwin = makeJob({
+    id: "tracked-win",
+    company: "Acme",
+    title: "Endpoint Engineer",
+    location: "Austin, Texas",
+    description: "Endpoint operations ".repeat(40),
+    applyUrl: "https://jobs.example.com/jobs/AbC123?utm_campaign=c&src=email",
+    sourceUrl: "https://boards.example.com/tracked-win"
+  });
+  assert.deepEqual(dedupeJobs([tracked, trackedTwin]).map((job) => job.id), ["tracked-win"]);
+
+  const upper = makeJob({
+    id: "case-upper",
+    company: "Case Co",
+    title: "Endpoint Engineer",
+    location: "Denver, CO",
+    applyUrl: "https://ats.example.com/jobs/AbC123",
+    sourceUrl: "https://boards.example.com/case-upper"
+  });
+  const lower = makeJob({
+    id: "case-lower",
+    company: "Other Co",
+    title: "Endpoint Engineer",
+    location: "Boulder, CO",
+    applyUrl: "https://ats.example.com/jobs/abc123",
+    sourceUrl: "https://boards.example.com/case-lower"
+  });
+  assert.deepEqual(dedupeJobs([upper, lower]).map((job) => job.id), ["case-upper", "case-lower"]);
+  assert.equal(canonicalPostingUrl("https://ATS.Example.com/jobs/AbC123/?utm_source=a"), "ats.example.com/jobs/AbC123");
+
+  const samePosting = makeJob({
+    id: "tr-same",
+    company: "Accenture",
+    title: "Endpoint Engineer",
+    location: "Chicago, IL",
+    applyUrl: "https://www.indeed.com/viewjob?jk=same111",
+    sourceUrl: "https://boards.example.com/tr-same"
+  });
+  const samePostingTracked = makeJob({
+    id: "tr-tracked",
+    company: "Accenture",
+    title: "Endpoint Engineer",
+    location: "Chicago, IL",
+    description: "Endpoint operations ".repeat(20),
+    applyUrl: "https://www.indeed.com/viewjob?jk=same111&utm_source=google",
+    sourceUrl: "https://boards.example.com/tr-tracked"
+  });
+  const otherEmployer = makeJob({
+    id: "tr-other",
+    company: "Bloomberg",
+    title: "Endpoint Engineer",
+    location: "Chicago, IL",
+    applyUrl: "https://www.indeed.com/viewjob?jk=other222",
+    sourceUrl: "https://boards.example.com/tr-other"
+  });
+  assert.deepEqual(
+    dedupeJobs([samePosting, otherEmployer, samePostingTracked]).map((job) => job.id),
+    ["tr-other", "tr-tracked"]
+  );
+});
+
+test("real feed urls do not merge distinct company and title pairs", () => {
+  const byKey = new Map<string, Set<string>>();
+  for (const job of feed.jobs) {
+    const key = (job.applyUrl && canonicalPostingUrl(job.applyUrl)) || canonicalPostingUrl(job.sourceUrl);
+    if (!key) continue;
+    const identity = `${foldTokens(job.company)}|${foldTokens(job.title)}`;
+    const identities = byKey.get(key) ?? new Set<string>();
+    identities.add(identity);
+    byKey.set(key, identities);
+  }
+
+  for (const [key, identities] of byKey) {
+    if (identities.size < 2) continue;
+    const titles = new Set([...identities].map((identity) => identity.split("|")[1]));
+    assert.equal(titles.size, 1, key);
+    const companyTokens = [...identities].map((identity) => new Set(identity.split("|")[0].split(" ").filter((token) => token.length >= 4)));
+    const [first, ...rest] = companyTokens;
+    for (const tokens of rest) {
+      assert.ok([...first].some((token) => tokens.has(token)), `${key} merges ${[...identities].join(" / ")}`);
+    }
+  }
+
+  for (const needle of ["indeed.com/viewjob", "glassdoor.com/job-listing", "jamf.com/about/careers/jobs", "a16z.com/about/jobs"]) {
+    const matches = feed.jobs.filter((job) => `${job.applyUrl ?? ""} ${job.sourceUrl}`.includes(needle));
+    const pairs = new Set(matches.map((job) => `${foldTokens(job.company)}|${foldTokens(job.title)}`));
+    assert.ok(dedupeJobs(matches).length >= pairs.size, needle);
+  }
 });

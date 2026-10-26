@@ -20,17 +20,18 @@ const directSources = new Set([
 // Patterns run on foldTokens() output: lowercase, diacritics folded, punctuation
 // turned into spaces. UK regions are listed before EUR so "Northern Ireland"
 // cannot match the Ireland rule. Mexico and England use lookbehinds so a
-// leading "New " cannot be read as the country or as England. Country codes
+// leading "New " cannot be read as the country or as England, and "wales"
+// ignores a leading "New South ". Country codes
 // match a comma-separated segment or the final token, so a hyphen inside
 // "Champagne-au-Mont-d'Or" is not read as Australia.
 const locationCurrencies: Array<[RegExp, string]> = [
-  [/\b(?:united kingdom|great britain|northern ireland|(?<!new )england|scotland|wales)\b/, "GBP"],
+  [/\b(?:united kingdom|great britain|northern ireland|(?<!new )england|scotland|(?<!new south )wales)\b/, "GBP"],
   [/\b(?:spain|espana|comunidad de madrid|cataluna|catalunya|andalucia|pais vasco|galicia|comunidad valenciana|madrid|barcelona)\b/, "EUR"],
   [/\b(?:france|ile de france|deutschland|germany|italia|italy|nederland|netherlands|belgium|belgique|belgie|austria|osterreich|portugal|(?<!northern )ireland|eire)\b/, "EUR"],
   [/\bprovincia di\b/, "EUR"],
   [/\b(?:switzerland|schweiz|suisse|svizzera)\b/, "CHF"],
   [/\bcanada\b/, "CAD"],
-  [/\baustralia\b/, "AUD"],
+  [/\b(?:australia|new south wales)\b/, "AUD"],
   [/\bnew zealand\b/, "NZD"],
   [/\bindia\b/, "INR"],
   [/\bsingapore\b/, "SGD"],
@@ -221,11 +222,52 @@ function postingKey(job: Job) {
   return (job.applyUrl && canonicalPostingUrl(job.applyUrl)) || canonicalPostingUrl(job.sourceUrl);
 }
 
-function canonicalPostingUrl(value: string) {
+const trackingParamNames = new Set([
+  "ref",
+  "src",
+  "source",
+  "gclid",
+  "fbclid",
+  "dclid",
+  "gclsrc",
+  "gbraid",
+  "wbraid",
+  "msclkid",
+  "mc_eid",
+  "mc_cid",
+  "yclid",
+  "twclid",
+  "ttclid",
+  "igshid",
+  "gad_source",
+  "gad_campaignid",
+  "_ga",
+  "_gl",
+  "trackingid",
+  "refid"
+]);
+
+function isTrackingParam(key: string) {
+  const name = key.toLowerCase();
+  return name.startsWith("utm_") || trackingParamNames.has(name);
+}
+
+function compareQueryParams(left: [string, string], right: [string, string]) {
+  if (left[0] !== right[0]) return left[0] < right[0] ? -1 : 1;
+  if (left[1] === right[1]) return 0;
+  return left[1] < right[1] ? -1 : 1;
+}
+
+export function canonicalPostingUrl(value: string) {
   try {
     const url = new URL(value);
     const path = url.pathname.replace(/\/+$/, "") || "/";
-    return `${url.host.toLowerCase()}${path.toLowerCase()}`;
+    const params = [...url.searchParams.entries()]
+      .filter(([key]) => !isTrackingParam(key))
+      .sort(compareQueryParams)
+      .map(([key, item]) => `${encodeURIComponent(key)}=${encodeURIComponent(item)}`);
+    const query = params.join("&");
+    return `${url.host.toLowerCase()}${path}${query ? `?${query}` : ""}`;
   } catch {
     return undefined;
   }
