@@ -1048,7 +1048,8 @@ h1 {
   color: var(--label-strong);
 }
 
-.description-body ul:not(.tool-chips) {
+/* Chip rows keep this list inset. .tool-chips { padding: 0 } is less specific. */
+.description-body ul {
   margin: 0;
   padding-left: 1.2rem;
 }

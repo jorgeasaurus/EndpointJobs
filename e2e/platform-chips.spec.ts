@@ -1,5 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+const fixtureCardId = "job-e2e-platform-chip-fixture";
+
 type ChipBox = {
   height: number;
   label: string;
@@ -46,13 +48,9 @@ function expectUniformRow(row: ChipBox[]) {
   expect(heightSpread, row.map((box) => `${box.label}:${box.height}`).join(", ")).toBeLessThanOrEqual(1);
 }
 
-async function openPlatformChipCard(page: Page) {
+async function openFixtureCard(page: Page) {
   await page.goto("/");
-  const card = page
-    .locator("article.job-card")
-    .filter({ has: page.locator(".tool-chip--platform", { hasText: /^Windows$/ }) })
-    .filter({ has: page.locator(".tool-chip--platform", { hasText: /^macOS$/ }) })
-    .first();
+  const card = page.locator(`#${fixtureCardId}`);
   await expect(card).toBeVisible();
   await card.locator("summary").click();
   const chips = card.locator("ul.tool-chips");
@@ -61,7 +59,7 @@ async function openPlatformChipCard(page: Page) {
 }
 
 test("expanded description OS chips in one row share height and top offset", async ({ page }) => {
-  const { chips } = await openPlatformChipCard(page);
+  const { card, chips } = await openFixtureCard(page);
   const boxes = await platformChipBoxes(chips);
   const rows = rowsOf(boxes);
   expect(rows.length).toBeGreaterThan(0);
@@ -69,17 +67,29 @@ test("expanded description OS chips in one row share height and top offset", asy
 
   const windows = boxes.find((box) => box.label === "Windows");
   const macos = boxes.find((box) => box.label === "macOS");
-  expect(windows).toBeTruthy();
-  expect(macos).toBeTruthy();
+  expect(windows).toBeDefined();
+  expect(macos).toBeDefined();
   if (!windows || !macos) return;
   expect(Math.abs(windows.top - macos.top)).toBeLessThanOrEqual(1);
   expect(Math.abs(windows.height - macos.height)).toBeLessThanOrEqual(1);
+
+  const chipPadding = await chips.evaluate((list) => getComputedStyle(list).paddingLeft);
+  const proseList = card.locator(".description-body ul:not(.tool-chips)").first();
+  await expect(proseList).toBeVisible();
+  const prosePadding = await proseList.evaluate((list) => getComputedStyle(list).paddingLeft);
+  expect(chipPadding).toBe(prosePadding);
+  expect(Number.parseFloat(chipPadding)).toBeGreaterThan(16);
+
+  const margins = await chips.locator(".tool-chip--platform").evaluateAll((nodes) =>
+    nodes.map((node) => getComputedStyle(node).marginTop)
+  );
+  expect(margins.every((margin) => margin === "0px")).toBe(true);
 });
 
 test("job detail platform chips in one row share height and top offset", async ({ page }) => {
-  const { card } = await openPlatformChipCard(page);
+  const { card } = await openFixtureCard(page);
   const href = await card.locator("a.job-title-link").getAttribute("href");
-  expect(href).toBeTruthy();
+  expect(href).toBe("/jobs/e2e-platform-chip-fixture");
   await page.goto(href!);
   const chips = page.locator(".job-context-card--stack .tool-chips").first();
   await chips.scrollIntoViewIfNeeded();
