@@ -83,11 +83,12 @@ export function companiesShareEmployer(left: string, right: string) {
 
   // A generic-only name has no distinctive tokens, so prefix matching would alias
   // "Global" with "Global Payments". The legal-suffix forms must be the same
-  // name. That same full-string compare also rejoins "TEK Systems" with "TEKsystems"
-  // after generic words such as "systems" were removed from the distinctive form.
+  // name. Trailing generic words are removed only for that equality check, so
+  // "Group One" can meet "GroupOne Services" without "Global" meeting every
+  // longer name that starts with it.
   const leftLegal = employerName(left, legalSuffixTokens);
   const rightLegal = employerName(right, legalSuffixTokens);
-  return namesEqual(leftLegal, rightLegal);
+  return sameLegalEmployer(leftLegal, rightLegal);
 }
 
 export function classifyPostingUrlGroups(jobs: readonly Job[]): PostingUrlReport {
@@ -179,6 +180,24 @@ function namesMatch(left: string, right: string) {
 function namesEqual(left: string, right: string) {
   if (left.length < 2 || right.length < 2) return false;
   return left === right || sameCompactName(left, right);
+}
+
+function sameLegalEmployer(left: string, right: string) {
+  if (namesEqual(left, right)) return true;
+  const leftCore = withoutTrailingGenericTokens(left);
+  const rightCore = withoutTrailingGenericTokens(right);
+  if (!hasDistinctiveToken(leftCore) || !hasDistinctiveToken(rightCore)) return false;
+  return namesEqual(leftCore, rightCore);
+}
+
+function withoutTrailingGenericTokens(name: string) {
+  const tokens = name.split(" ").filter((token) => token.length > 0);
+  while (tokens.length > 0 && genericEmployerTokens.has(tokens[tokens.length - 1])) tokens.pop();
+  return tokens.join(" ");
+}
+
+function hasDistinctiveToken(name: string) {
+  return name.split(" ").some((token) => token.length >= 2 && !genericEmployerTokens.has(token));
 }
 
 function sameCompactName(left: string, right: string) {
