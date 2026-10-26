@@ -17,25 +17,19 @@ export type PostingUrlReport = {
   aliases: PostingUrlGroup[];
   collisions: PostingUrlGroup[];
   droppedIds: string[];
+  blocked: boolean;
 };
 
-// Legal and generic words are not an employer. Compared names keep only the
-// distinctive remainder, so "Corp" or "Systems" cannot glue two companies together.
-const genericEmployerTokens = new Set([
+// Legal designators are not the employer. Industry words are generic too, but
+// a name that is only those words falls back to the legal-suffix form so
+// "Global Systems" still matches "Global Systems Inc".
+const legalSuffixTokens = new Set([
   "ag",
   "bv",
   "co",
-  "companies",
-  "company",
-  "consulting",
   "corp",
   "corporation",
-  "global",
   "gmbh",
-  "group",
-  "groups",
-  "holding",
-  "holdings",
   "inc",
   "incorporated",
   "limited",
@@ -51,7 +45,19 @@ const genericEmployerTokens = new Set([
   "pty",
   "sa",
   "sarl",
-  "sas",
+  "sas"
+]);
+
+const genericEmployerTokens = new Set([
+  ...legalSuffixTokens,
+  "companies",
+  "company",
+  "consulting",
+  "global",
+  "group",
+  "groups",
+  "holding",
+  "holdings",
   "service",
   "services",
   "solution",
@@ -62,12 +68,19 @@ const genericEmployerTokens = new Set([
   "technology"
 ]);
 
+export function collisionDropLimit(jobCount: number) {
+  return Math.min(5, (jobCount * 5) / 100);
+}
+
+export function collisionAuditExitCode(blocked: boolean) {
+  return blocked ? 1 : 0;
+}
+
 export function companiesShareEmployer(left: string, right: string) {
-  const leftName = distinctiveEmployerName(left);
-  const rightName = distinctiveEmployerName(right);
-  if (leftName.length < 2 || rightName.length < 2) return false;
-  if (leftName === rightName) return true;
-  return leftName.startsWith(`${rightName} `) || rightName.startsWith(`${leftName} `);
+  const leftName = employerName(left, genericEmployerTokens);
+  const rightName = employerName(right, genericEmployerTokens);
+  if (leftName && rightName) return namesMatch(leftName, rightName);
+  return namesMatch(employerName(left, legalSuffixTokens), employerName(right, legalSuffixTokens));
 }
 
 export function classifyPostingUrlGroups(jobs: readonly Job[]): PostingUrlReport {
@@ -92,7 +105,7 @@ export function classifyPostingUrlGroups(jobs: readonly Job[]): PostingUrlReport
     else collisions.push(reported);
   }
 
-  return { aliases, collisions, droppedIds: collisions.flatMap((group) => group.ids) };
+  return { aliases, collisions, droppedIds: collisions.flatMap((group) => group.ids), blocked: false };
 }
 
 export async function quarantinePostingUrlCollisions(path: string) {
@@ -108,19 +121,53 @@ export async function quarantinePostingUrlCollisions(path: string) {
     return report;
   }
 
+  const limit = collisionDropLimit(parsed.jobs.length);
+  if (report.droppedIds.length > limit) {
+    const blocked = { ...report, blocked: true };
+    await annotate("error", collisionDropBlockedMessage(blocked, parsed.jobs.length));
+    console.log(`Refused to drop ${blocked.droppedIds.length} listings (limit ${limit} of ${parsed.jobs.length}). Distinct-employer collisions: ${blocked.collisions.length}.`);
+    return blocked;
+  }
+
   const dropped = new Set(report.droppedIds);
   parsed.jobs = parsed.jobs.filter((job) => !dropped.has(job.id));
   await writeFile(path, `${JSON.stringify(parsed, null, 2)}\n`);
-  for (const group of report.collisions) await warn(postingCollisionWarning(group));
+  for (const group of report.collisions) await annotate("warning", postingCollisionWarning(group));
   console.log(`Dropped ${report.droppedIds.length} colliding listings. Posting URL aliases: ${report.aliases.length}. Distinct-employer collisions: ${report.collisions.length}.`);
   return report;
 }
 
-function distinctiveEmployerName(value: string) {
-  return foldTokens(value)
+export function collisionDropBlockedMessage(report: PostingUrlReport, jobCount: number) {
+  const limit = collisionDropLimit(jobCount);
+  const keys = report.collisions.slice(0, 8).map((group) => group.key).join(", ");
+  return `Refused to drop ${report.droppedIds.length} listings (limit ${limit} of ${jobCount}). Likely canonical posting URL regression. Keys: ${keys}`;
+}
+
+function employerName(value: string, drop: ReadonlySet<string>) {
+  const tokens = normalizeEmployer(value)
     .split(" ")
-    .filter((token) => token.length >= 2 && !genericEmployerTokens.has(token))
+    .filter((token) => token.length >= 2 && !drop.has(token));
+  while (tokens[0] === "the") tokens.shift();
+  return tokens.join(" ");
+}
+
+function normalizeEmployer(value: string) {
+  const prepared = value
+    .replace(/int['’]l\b/gi, "international")
+    .replace(/['’]/g, "")
+    .replace(/&/g, " and ");
+  return foldTokens(prepared)
+    .split(" ")
+    .filter((token) => token.length > 0 && token !== "and")
+    .map((token) => (token === "intl" ? "international" : token))
     .join(" ");
+}
+
+function namesMatch(left: string, right: string) {
+  if (left.length < 2 || right.length < 2) return false;
+  if (left === right) return true;
+  if (left.startsWith(`${right} `) || right.startsWith(`${left} `)) return true;
+  return left.replaceAll(" ", "") === right.replaceAll(" ", "");
 }
 
 function sameEmployerGroup(companies: readonly string[]) {
@@ -161,8 +208,8 @@ function printGroup(kind: string, group: PostingUrlGroup) {
   console.log(`  ids: ${group.ids.join(", ")}`);
 }
 
-async function warn(message: string) {
-  console.log(`::warning::${message}`);
+async function annotate(level: "warning" | "error", message: string) {
+  console.log(`::${level}::${message}`);
   const summary = process.env.GITHUB_STEP_SUMMARY;
   if (summary) await appendFile(summary, `- ${message}\n`);
 }
@@ -174,5 +221,6 @@ function isDirectRun() {
 
 if (isDirectRun()) {
   const path = resolve(process.argv[2] ?? "src/data/jobs.json");
-  await quarantinePostingUrlCollisions(path);
+  const report = await quarantinePostingUrlCollisions(path);
+  if (collisionAuditExitCode(report.blocked) === 1) process.exit(1);
 }

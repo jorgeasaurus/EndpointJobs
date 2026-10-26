@@ -4,7 +4,15 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 
-import { classifyPostingUrlGroups, companiesShareEmployer, postingCollisionWarning, quarantinePostingUrlCollisions } from "./posting-url-collisions";
+import {
+  classifyPostingUrlGroups,
+  collisionAuditExitCode,
+  collisionDropBlockedMessage,
+  collisionDropLimit,
+  companiesShareEmployer,
+  postingCollisionWarning,
+  quarantinePostingUrlCollisions
+} from "./posting-url-collisions";
 import { makeJob } from "./shared";
 
 test("short company names still count as the same employer", () => {
@@ -13,8 +21,26 @@ test("short company names still count as the same employer", () => {
   assert.equal(companiesShareEmployer("Harvey", "Harvey AI"), true);
   assert.equal(companiesShareEmployer("Acme", "Acme Corporation"), true);
   assert.equal(companiesShareEmployer("Cisco", "Cisco Systems"), true);
+  assert.equal(companiesShareEmployer("The Home Depot", "Home Depot"), true);
+  assert.equal(companiesShareEmployer("Global Systems", "Global Systems Inc"), true);
+  assert.equal(companiesShareEmployer("Technology Solutions", "Technology Solutions LLC"), true);
   assert.equal(companiesShareEmployer("Accenture", "Bloomberg"), false);
   assert.equal(companiesShareEmployer("A", "A Corp"), false);
+});
+
+test("punctuation, connectors, and abbreviations stay the same employer", () => {
+  assert.equal(companiesShareEmployer("Hewlett-Packard", "Hewlett Packard"), true);
+  assert.equal(companiesShareEmployer("O'Reilly", "OReilly"), true);
+  assert.equal(companiesShareEmployer("Procter & Gamble", "Procter and Gamble"), true);
+  assert.equal(companiesShareEmployer("AT&T", "AT and T"), true);
+  assert.equal(companiesShareEmployer("Nestlé", "Nestle"), true);
+  assert.equal(companiesShareEmployer("Société Générale", "Societe Generale"), true);
+  assert.equal(companiesShareEmployer("Harvey", "Harvey Labs"), true);
+  assert.equal(companiesShareEmployer("Harvey", "Harvey AI"), true);
+  assert.equal(companiesShareEmployer("IBM Intl", "IBM International"), true);
+  assert.equal(companiesShareEmployer("IBM Int'l", "IBM International"), true);
+  assert.equal(companiesShareEmployer("Acme Inc", "Acme Incorporated"), true);
+  assert.equal(companiesShareEmployer("The Global Systems", "Global Systems Inc"), true);
 });
 
 test("shared generic company words are not the same employer", () => {
@@ -99,7 +125,7 @@ test("a collision drops every listing on that url and leaves aliases in the feed
   const feed = {
     updatedAt: "2026-10-26T00:00:00.000Z",
     source: { name: "Fixture", url: "https://example.com" },
-    jobs: [ibmJob(), ibmCorpJob(), stranger, harvey, harveyAi]
+    jobs: [ibmJob(), ibmCorpJob(), stranger, harvey, harveyAi, ...fillerJobs(55, "pad")]
   };
   await writeFile(path, `${JSON.stringify(feed, null, 2)}\n`);
   process.env.GITHUB_STEP_SUMMARY = summary;
@@ -113,7 +139,7 @@ test("a collision drops every listing on that url and leaves aliases in the feed
   assert.deepEqual(report.droppedIds, ["ibm", "ibm-corp", "stranger"]);
   assert.match(postingCollisionWarning(report.collisions[0]!), /Dropped 3 listings sharing jobs\.example\.com\/req\/1/);
   const written = JSON.parse(await readFile(path, "utf8")) as { jobs: { id: string }[] };
-  assert.deepEqual(written.jobs.map((job) => job.id), ["harvey", "harvey-ai"]);
+  assert.deepEqual(written.jobs.map((job) => job.id), ["harvey", "harvey-ai", ...fillerJobs(55, "pad").map((job) => job.id)]);
   assert.match(await readFile(summary, "utf8"), /Dropped 3 listings sharing jobs\.example\.com\/req\/1/);
 });
 
@@ -129,8 +155,82 @@ test("a feed without collisions is not rewritten", async () => {
   await writeFile(path, original);
   const report = await quarantinePostingUrlCollisions(path);
   assert.deepEqual(report.droppedIds, []);
+  assert.equal(report.blocked, false);
+  assert.equal(collisionAuditExitCode(report.blocked), 0);
   assert.equal(await readFile(path, "utf8"), original);
 });
+
+test("a drop at the ceiling still removes the listings", async () => {
+  assert.equal(collisionDropLimit(200), 5);
+  const written = await quarantineFixture(200, 5);
+  assert.equal(written.blocked, false);
+  assert.equal(collisionAuditExitCode(written.blocked), 0);
+  assert.equal(written.jobs.length, 195);
+});
+
+test("a drop over the ceiling keeps every listing and fails the audit", async () => {
+  assert.equal(collisionDropLimit(200), 5);
+  assert.equal(collisionDropLimit(40), 2);
+  const overCount = await quarantineFixture(200, 6);
+  assert.equal(overCount.blocked, true);
+  assert.equal(collisionAuditExitCode(overCount.blocked), 1);
+  assert.equal(overCount.jobs.length, 200);
+  assert.match(overCount.summary, /Refused to drop 6 listings \(limit 5 of 200\)/);
+  assert.match(collisionDropBlockedMessage({ ...overCount.report, blocked: true }, 200), /canonical posting URL regression/);
+
+  const overPercent = await quarantineFixture(40, 3);
+  assert.equal(overPercent.blocked, true);
+  assert.equal(overPercent.jobs.length, 40);
+  const underPercent = await quarantineFixture(40, 2);
+  assert.equal(underPercent.blocked, false);
+  assert.equal(underPercent.jobs.length, 38);
+});
+
+async function quarantineFixture(total: number, collisionCount: number) {
+  const directory = await mkdtemp(join(tmpdir(), "posting-urls-"));
+  const path = join(directory, "jobs.json");
+  const summary = join(directory, "summary.md");
+  const feed = {
+    updatedAt: "2026-10-26T00:00:00.000Z",
+    source: { name: "Fixture", url: "https://example.com" },
+    jobs: [
+      ...Array.from({ length: collisionCount }, (_, index) => makeJob({
+        id: `collision-${index}`,
+        company: `Brand${index} Holdings`,
+        title: "Endpoint Engineer",
+        applyUrl: "https://jobs.example.com/shared",
+        sourceUrl: `https://example.com/collision-${index}`
+      })),
+      ...fillerJobs(total - collisionCount, "solo")
+    ]
+  };
+  const original = `${JSON.stringify(feed, null, 2)}\n`;
+  await writeFile(path, original);
+  process.env.GITHUB_STEP_SUMMARY = summary;
+  let report;
+  try {
+    report = await quarantinePostingUrlCollisions(path);
+  } finally {
+    delete process.env.GITHUB_STEP_SUMMARY;
+  }
+  const jobs = JSON.parse(await readFile(path, "utf8")) as { jobs: { id: string }[] };
+  return {
+    blocked: report.blocked,
+    jobs: jobs.jobs,
+    report,
+    summary: report.blocked ? await readFile(summary, "utf8") : ""
+  };
+}
+
+function fillerJobs(count: number, prefix: string) {
+  return Array.from({ length: count }, (_, index) => makeJob({
+    id: `${prefix}-${index}`,
+    company: `Solo ${prefix} ${index}`,
+    title: "Endpoint Engineer",
+    applyUrl: `https://jobs.example.com/${prefix}/${index}`,
+    sourceUrl: `https://example.com/${prefix}-${index}`
+  }));
+}
 
 function ibmJob() {
   return makeJob({
