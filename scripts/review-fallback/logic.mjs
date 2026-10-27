@@ -135,22 +135,25 @@ export function parseTime(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+const EXISTING_COMMENT_ACTIONS = new Set(["ready_for_review", "reopened"]);
+
 /**
- * A `bugbot run` comment covers this head when it was created at or after
- * the head was pushed. Timeline position is not used: `committed` events
- * are ordered by commit date, so a commit authored earlier and pushed later
- * can sort before a comment that belongs to the previous head.
- *
- * `headPushedAtMs` is the pull request event's `updated_at`, or the run
- * start when that value is missing.
+ * On `synchronize` and `opened`, `updated_at` is the push or open time, so a
+ * `bugbot run` comment counts only when it was created at or after that time.
+ * On `ready_for_review` and `reopened`, `updated_at` is the time of that
+ * action. Any existing `bugbot run` comment then blocks another post, so
+ * coming back to the same head does not comment twice.
  *
  * @returns {{known: boolean, requested: boolean}}
  */
-export function bugbotAlreadyRequestedForHead({ issueComments = [], headPushedAtMs }) {
+export function bugbotAlreadyRequestedForHead({ issueComments = [], headPushedAtMs, action }) {
+  const comments = (issueComments ?? []).filter((comment) => isExactBugbotBody(comment?.body));
+  if (EXISTING_COMMENT_ACTIONS.has(action)) {
+    return { known: true, requested: comments.length > 0 };
+  }
   const pushedAt = parseTime(headPushedAtMs);
   if (pushedAt == null) return { known: false, requested: false };
-  const requested = (issueComments ?? []).some((comment) => {
-    if (!isExactBugbotBody(comment?.body)) return false;
+  const requested = comments.some((comment) => {
     const created = parseTime(comment?.created_at);
     return created != null && created >= pushedAt;
   });
@@ -268,6 +271,7 @@ export async function runReviewFallback({
   pollTimeoutSeconds = 600,
   reviewer = COPILOT_REVIEWER,
   headPushedAt,
+  action = "",
   github,
   fetchImpl,
   apiBase = "https://api.github.com",
@@ -338,7 +342,7 @@ export async function runReviewFallback({
     unavailableReason = redact(unavailableReason, secret);
 
     const issueComments = await listAll(client, `/issues/${pullNumber}/comments`);
-    const dedup = bugbotAlreadyRequestedForHead({ issueComments, headPushedAtMs: pushedAtMs });
+    const dedup = bugbotAlreadyRequestedForHead({ issueComments, headPushedAtMs: pushedAtMs, action });
     if (!dedup.known && issueComments.some((comment) => isExactBugbotBody(comment?.body))) {
       return result({
         exitCode: 0,

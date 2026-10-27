@@ -374,6 +374,47 @@ test("a failed dedup read does not post bugbot", async () => {
   assert.match(result.logs.join("\n"), /HTTP 403/);
 });
 
+test("each pull request action dedups an earlier bugbot run", async () => {
+  const earlier = [{ id: 3, body: "bugbot run", created_at: "2026-10-27T11:00:00Z" }];
+  const cases = [
+    ["synchronize", "bugbot-triggered"],
+    ["opened", "bugbot-triggered"],
+    ["ready_for_review", "bugbot-already-requested"],
+    ["reopened", "bugbot-already-requested"],
+  ];
+  for (const [action, outcome] of cases) {
+    const github = fakeGithub({
+      postStatus: 402,
+      postBody: { message: "quota" },
+      issueComments: earlier,
+    });
+    const result = await runReviewFallback({
+      token: fixtureReviewCredential,
+      repo: "jorgeasaurus/EndpointJobs",
+      prNumber: "12",
+      headSha: HEAD,
+      headPushedAt: "2026-10-27T12:00:00Z",
+      action,
+      github,
+    });
+    assert.equal(result.outcome, outcome, action);
+    assert.deepEqual(postedBodies(github), outcome === "bugbot-triggered" ? [BUGBOT_COMMENT_BODY] : [], action);
+  }
+
+  const firstFallback = fakeGithub({ postStatus: 402, postBody: { message: "quota" } });
+  const fresh = await runReviewFallback({
+    token: fixtureReviewCredential,
+    repo: "jorgeasaurus/EndpointJobs",
+    prNumber: "12",
+    headSha: HEAD,
+    headPushedAt: "2026-10-27T12:00:00Z",
+    action: "reopened",
+    github: firstFallback,
+  });
+  assert.equal(fresh.outcome, "bugbot-triggered");
+  assert.deepEqual(postedBodies(firstFallback), [BUGBOT_COMMENT_BODY]);
+});
+
 test("an earlier bugbot comment does not cover a head pushed later", async () => {
   const github = fakeGithub({
     postStatus: 403,
@@ -473,6 +514,7 @@ test("workflow contract", () => {
   assert.match(yaml, /github\.event\.pull_request\.draft == false/);
   assert.match(yaml, /github\.event\.pull_request\.head\.sha/);
   assert.match(yaml, /HEAD_PUSHED_AT: \$\{\{ github\.event\.pull_request\.updated_at \}\}/);
+  assert.match(yaml, /PR_ACTION: \$\{\{ github\.event\.action \}\}/);
   assert.match(yaml, /REVIEW_TRIGGER_TOKEN: \$\{\{ secrets\.REVIEW_TRIGGER_TOKEN \}\}/);
   assert.match(yaml, /POLL_INTERVAL_SECONDS: "30"/);
   assert.match(yaml, /POLL_TIMEOUT_SECONDS: "600"/);

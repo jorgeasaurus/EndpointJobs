@@ -41,6 +41,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           HEAD_PUSHED_AT: ${{ github.event.pull_request.updated_at }}
+          PR_ACTION: ${{ github.event.action }}
           POLL_INTERVAL_SECONDS: ${{ env.POLL_INTERVAL_SECONDS }}
           POLL_TIMEOUT_SECONDS: ${{ env.POLL_TIMEOUT_SECONDS }}
         run: node scripts/review-fallback/run.mjs

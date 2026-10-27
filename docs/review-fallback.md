@@ -28,7 +28,7 @@ A submitted Copilot review whose `commit_id` is the pull request head, and whose
 
 ## The Bugbot comment
 
-The comment body is exactly `bugbot run`. The head SHA is not stored in that comment. Before posting, the job lists pull request comments and skips a second `bugbot run` when one was created at or after this head's push time. That time is the pull request event's `updated_at`. If `updated_at` is missing, the job uses the time this run started. Commit order is not used, because timeline `committed` events follow commit dates rather than push time. The comment-list read that makes this decision has to succeed. If it fails, the job stops without posting. The job summary includes a hidden marker for the run, for example:
+The comment body is exactly `bugbot run`. The head SHA is not stored in that comment. Before posting, the job lists pull request comments. On `synchronize` and `opened`, it skips a second `bugbot run` when one was created at or after `pull_request.updated_at` (the push or open time; the run start is used only if that value is missing). On `ready_for_review` and `reopened`, `updated_at` is the time of that action, so any existing `bugbot run` comment blocks another post for the same head. The comment-list read that makes this decision has to succeed. If it fails, the job stops without posting. The job summary includes a hidden marker for the run, for example:
 
 ```html
 <!-- review-fallback: outcome=bugbot-triggered sha=<head> -->
