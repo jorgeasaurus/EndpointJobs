@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 import { AccountMenu } from "./account-menu";
+import { registerSignInOpener } from "./open-sign-in";
 
 type Provider = "google" | "github";
 
@@ -32,6 +33,15 @@ export function AuthMenu() {
       active = false;
     };
   }, [configured]);
+
+  useEffect(() => {
+    if (!configured || email) return;
+    return registerSignInOpener(() => {
+      setError(null);
+      const dialog = dialogRef.current;
+      if (dialog && !dialog.open) dialog.showModal();
+    });
+  }, [configured, email]);
 
   async function signIn(provider: Provider) {
     setError(null);

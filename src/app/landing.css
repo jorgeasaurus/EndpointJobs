@@ -78,7 +78,7 @@
 
 .landing-jobs-link:focus-visible,
 .landing-preview a:focus-visible,
-.landing-account a:focus-visible {
+.landing-sign-in button:focus-visible {
   outline: 2px solid var(--lime);
   outline-offset: 3px;
 }
@@ -276,23 +276,30 @@
   color: var(--white-60);
 }
 
-.landing-account {
+.landing-sign-in {
   max-width: 68ch;
   margin: 0 0 18px;
-  color: var(--white-45);
-  font-size: 0.95rem;
-  line-height: 1.5;
 }
 
-.landing-account strong {
-  color: var(--white);
-  font-weight: 700;
-}
-
-.landing-account a {
+.landing-sign-in button {
+  display: inline-block;
+  max-width: 100%;
+  padding: 8px 0;
+  border: 0;
+  background: none;
   color: var(--lime);
+  font: inherit;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  text-align: left;
   text-decoration: underline;
+  text-decoration-thickness: 1px;
   text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.landing-sign-in button:focus:not(:focus-visible) {
+  outline: none;
 }
 
 @media (max-width: 980px) {

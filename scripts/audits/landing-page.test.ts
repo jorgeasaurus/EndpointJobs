@@ -13,23 +13,33 @@ import { boardHomeRedirectKeys, filterSearchParamKeys } from "../../src/lib/boar
 import { legacyHomeBoardRedirect } from "../../src/lib/legacy-board-url";
 import { getJobWorkplace } from "../../src/lib/workplace";
 import type { Job } from "../../src/types/job";
+import { openSignInDialog, registerSignInOpener } from "../../src/components/auth/open-sign-in";
 import { assertPrerenderedHomeHtml, prerenderedHomeHtmlPath } from "./home-html-size";
 import { daysAgo, makeJob } from "./shared";
 
 const homePath = fileURLToPath(new URL("../../src/app/page.tsx", import.meta.url));
+const landingSignInPath = fileURLToPath(new URL("../../src/components/auth/landing-sign-in.tsx", import.meta.url));
+const authMenuPath = fileURLToPath(new URL("../../src/components/auth/auth-menu.tsx", import.meta.url));
+const openSignInPath = fileURLToPath(new URL("../../src/components/auth/open-sign-in.ts", import.meta.url));
 const srcRoot = fileURLToPath(new URL("../../src/", import.meta.url));
 const home = readFileSync(homePath, "utf8");
 const board = readFileSync(new URL("../../src/app/board/page.tsx", import.meta.url), "utf8");
 
-test("the home page is a landing page with a privacy link and an account reason", () => {
+test("the home page is a landing page with a sign-in line", () => {
   assert.match(home, /See the jobs/);
   assert.match(home, /href=\{getBoardPath\(\)\}/);
-  assert.match(home, /href="\/privacy"/);
-  assert.match(home, /Why an account/);
-  assert.match(home, /jobs you save/i);
-  assert.match(home, /filters you choose to keep/i);
-  assert.match(home, /which listings you have opened/i);
-  assert.match(home, /An account is optional/);
+  assert.match(home, /Sign in to save jobs, filters, and viewed job history/);
+  assert.match(home, /<LandingSignIn>/);
+  assert.match(readFileSync(landingSignInPath, "utf8"), /openSignInDialog/);
+  assert.match(readFileSync(openSignInPath, "utf8"), /export function openSignInDialog/);
+  assert.match(readFileSync(authMenuPath, "utf8"), /registerSignInOpener/);
+  assert.match(readFileSync(authMenuPath, "utf8"), /dialog\.showModal\(\)/);
+  assert.doesNotMatch(home, /Why an account/);
+  assert.doesNotMatch(home, /jobs you save/i);
+  assert.doesNotMatch(home, /filters you choose to keep/i);
+  assert.doesNotMatch(home, /which listings you have opened/i);
+  assert.doesNotMatch(home, /An account is optional/);
+  assert.doesNotMatch(home, /href="\/privacy"/);
   assert.match(home, /export const revalidate = 3600/);
   assert.match(home, /selectLandingPreview\(activeFeed\.jobs, initialFilterState\)/);
   assert.match(home, /Newest with salary/);
@@ -52,6 +62,18 @@ test("the home page is a landing page with a privacy link and an account reason"
   assert.equal(clientProps.offenders, "");
   assert.match(board, /<JobBoard initialPage=\{initialPage\} \/>/);
   assert.match(board, /export const revalidate = 3600/);
+});
+
+test("the home sign-in line opens the existing sign-in dialog", () => {
+  let opened = 0;
+  const unregister = registerSignInOpener(() => {
+    opened += 1;
+  });
+  openSignInDialog();
+  assert.equal(opened, 1);
+  unregister();
+  openSignInDialog();
+  assert.equal(opened, 1);
 });
 
 test("an unresolved local import fails the client-prop guard", () => {

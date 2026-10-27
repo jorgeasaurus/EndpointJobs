@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { LandingSignIn } from "@/components/auth/landing-sign-in";
 import { initialFilterState } from "@/components/job-board/filter-model";
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
 import { SiteFooter, Topbar } from "@/components/job-board/topbar";
@@ -128,11 +129,9 @@ export default function Home() {
           </aside>
         </section>
 
-        <p className="landing-account">
-          <strong id="landing-account-title">Why an account.</strong> An account is optional.
-          Sign in with Google or GitHub to keep jobs you save, filters you choose to keep, and
-          which listings you have opened. <Link href="/privacy">Privacy policy</Link>
-        </p>
+        <LandingSignIn>
+          Sign in to save jobs, filters, and viewed job history
+        </LandingSignIn>
 
         <SiteFooter updatedAt={activeFeed.updatedAt} />
       </div>
