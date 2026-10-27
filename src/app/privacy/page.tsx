@@ -80,9 +80,10 @@ export default function PrivacyPage() {
           <section>
             <h2>Retention and control</h2>
             <p>
-              Account data is kept until you delete the account. The account page is where you
-              export your data, delete the account, and clear view history. Deleting the account
-              removes the profile, saved filters, saved jobs, and view history.
+              Account data is kept until you delete the account. The{" "}
+              <Link href="/account">account page</Link> is where you export your data, delete the
+              account, and clear view history. Deleting the account removes the profile, saved
+              filters, saved jobs, and view history.
             </p>
           </section>
 

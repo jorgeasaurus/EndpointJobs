@@ -6,6 +6,7 @@ import { isSupabaseConfigured } from "@/lib/supabase/env";
 export type SignInSession = {
   configured: boolean;
   email: string | null;
+  userId?: string | null;
 };
 
 export function canShowSignInOffer(session: SignInSession) {
@@ -14,7 +15,8 @@ export function canShowSignInOffer(session: SignInSession) {
 
 let session: SignInSession = {
   configured: isSupabaseConfigured(),
-  email: null
+  email: null,
+  userId: null
 };
 let started = false;
 const listeners = new Set<() => void>();
@@ -30,18 +32,21 @@ function ensureLoaded() {
   void createClient()
     .auth.getClaims()
     .then(({ data }) => {
-      if (!data?.claims?.sub) {
-        publish({ configured: true, email: null });
+      const claims = data?.claims;
+      const userId = typeof claims?.sub === "string" ? claims.sub : null;
+      if (!claims || !userId) {
+        publish({ configured: true, email: null, userId: null });
         return;
       }
-      const claimEmail = data.claims.email;
+      const claimEmail = claims.email;
       publish({
         configured: true,
+        userId,
         email: typeof claimEmail === "string" && claimEmail ? claimEmail : "Signed in"
       });
     })
     .catch(() => {
-      publish({ configured: true, email: null });
+      publish({ configured: true, email: null, userId: null });
     });
 }
 

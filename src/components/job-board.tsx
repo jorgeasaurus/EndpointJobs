@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 
+import { hideViewedJobs } from "@/lib/account/records";
 import type { BoardListing, BoardPage } from "@/lib/board-page";
 import type { EndpointTool } from "@/types/job";
 import { withInitialTools, type FilterAction } from "./job-board/filter-model";
@@ -15,6 +16,7 @@ import { ParallaxBackground } from "./job-board/parallax-background";
 import { ResultsPanel } from "./job-board/results-panel";
 import { SiteFooter, Topbar } from "./job-board/topbar";
 import { useBoardMap, useBoardPage, useDebouncedFilters } from "./job-board/use-board-results";
+import { useAccountBoard } from "./job-board/use-account-board";
 import { useSearchFocusShortcut } from "./job-board/use-search-focus-shortcut";
 import { useUrlSyncedFilters } from "./job-board/use-url-synced-filters";
 
@@ -45,6 +47,7 @@ export function JobBoard({
 
   useSearchFocusShortcut(searchInputRef);
 
+  const account = useAccountBoard(filters, dispatchFilters);
   const debouncedFilters = useDebouncedFilters(filters);
   const debouncedFilterKey = JSON.stringify(debouncedFilters);
   const requestedPage = pagination.filterKey === debouncedFilterKey ? pagination.page : 1;
@@ -196,8 +199,12 @@ export function JobBoard({
             clearFilters={clearFilters}
             currentPage={currentPage}
             filters={filters}
+            hideViewed={account.signedIn ? account.hideViewed : undefined}
             onPageChange={changePage}
             onSortChange={(value) => dispatch({ type: "setSort", value })}
+            onToggleHideViewed={account.signedIn ? account.toggleHideViewed : undefined}
+            onToggleSaved={account.signedIn ? account.toggleSaved : undefined}
+            savedIds={account.savedIds}
             sort={filters.sort}
             pageEnd={pageEnd}
             pageStart={pageStart}
@@ -206,7 +213,8 @@ export function JobBoard({
             query={filters.query}
             selectedJobIds={selectedJobIds}
             toggleComparison={toggleComparison}
-            visibleJobs={snapshot.jobs}
+            viewedIds={account.viewedIds}
+            visibleJobs={hideViewedJobs(snapshot.jobs, account.viewedIds, account.signedIn && account.hideViewed)}
           />
         </section>
 

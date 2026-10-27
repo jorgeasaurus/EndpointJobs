@@ -1,0 +1,69 @@
+.account-page {
+  display: grid;
+  gap: 22px;
+  padding: 28px 0 48px;
+}
+
+.account-page h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  letter-spacing: -0.05em;
+}
+
+.account-page p,
+.account-page li {
+  color: var(--white-60);
+  line-height: 1.5;
+}
+
+.account-section {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  background: rgb(0 0 0 / 35%);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+}
+
+.account-section h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.account-actions,
+.saved-job {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.saved-job {
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid var(--glass-border);
+}
+
+.saved-job a {
+  color: var(--white);
+  font-weight: 700;
+}
+
+.account-confirm {
+  display: grid;
+  gap: 8px;
+  max-width: 420px;
+}
+
+.account-confirm input {
+  min-height: 44px;
+  padding: 0 12px;
+  color: var(--white);
+  background: rgb(0 0 0 / 42%);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+}
+
+.account-error {
+  color: var(--danger);
+}
