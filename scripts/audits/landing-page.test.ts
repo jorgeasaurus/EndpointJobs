@@ -1,13 +1,21 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
+import { initialFilterState } from "../../src/components/job-board/filter-model";
 import { getLandingJsonLd, serializeJsonLd } from "../../src/app/structured-data";
+import { queryBoardPage } from "../../src/lib/board-page";
 import { boardHomeRedirectKeys, filterSearchParamKeys } from "../../src/lib/board-search-params";
 import { legacyHomeBoardRedirect } from "../../src/lib/legacy-board-url";
+import { getJobWorkplace } from "../../src/lib/workplace";
+import { makeJob } from "./shared";
 
-const home = readFileSync(new URL("../../src/app/page.tsx", import.meta.url), "utf8");
+const homePath = fileURLToPath(new URL("../../src/app/page.tsx", import.meta.url));
+const home = readFileSync(homePath, "utf8");
 const board = readFileSync(new URL("../../src/app/board/page.tsx", import.meta.url), "utf8");
+const homeHtmlPath = fileURLToPath(new URL("../../.next/server/app/index.html", import.meta.url));
 
 test("the home page is a landing page with a privacy link and an account reason", () => {
   assert.match(home, /See the jobs/);
@@ -20,9 +28,63 @@ test("the home page is a landing page with a privacy link and an account reason"
   assert.match(home, /An account is optional/);
   assert.match(home, /export const revalidate = 3600/);
   assert.match(home, /\.slice\(0, 4\)/);
+  assert.match(home, /label: "Open roles", value: board\.total/);
+  assert.match(home, /label: "Remote or hybrid", value: board\.metrics\.remoteJobsCount/);
+  assert.doesNotMatch(home, /label: "Remote",/);
+  assert.doesNotMatch(home, /trackedJobsCount/);
   assert.doesNotMatch(home, /<JobBoard/);
+  assert.doesNotMatch(home, /board\.jobs\b(?!\.slice)/);
+  assert.equal(clientComponentsReceiving(home, homePath, "board"), "");
   assert.match(board, /<JobBoard initialPage=\{initialPage\} \/>/);
   assert.match(board, /export const revalidate = 3600/);
+});
+
+test("the remote metric includes hybrid roles on the same jobs as the open-role total", () => {
+  const page = queryBoardPage({
+    updatedAt: "2026-10-26T00:00:00.000Z",
+    source: { name: "Audit", url: "https://example.com/audit" },
+    jobs: [
+      makeJob({
+        id: "remote-role",
+        title: "Remote endpoint engineer",
+        company: "Remote Co",
+        workplace: "Remote",
+        sourceUrl: "https://example.com/remote-role",
+        applyUrl: "https://example.com/remote-role/apply"
+      }),
+      makeJob({
+        id: "hybrid-role",
+        title: "Hybrid endpoint engineer",
+        company: "Hybrid Co",
+        location: "Seattle, WA",
+        workplace: "Hybrid",
+        sourceUrl: "https://example.com/hybrid-role",
+        applyUrl: "https://example.com/hybrid-role/apply"
+      }),
+      makeJob({
+        id: "onsite-role",
+        title: "Onsite endpoint engineer",
+        company: "Onsite Co",
+        location: "Austin, TX",
+        workplace: "On-site",
+        sourceUrl: "https://example.com/onsite-role",
+        applyUrl: "https://example.com/onsite-role/apply"
+      })
+    ]
+  }, initialFilterState, 1);
+  const remoteOnly = page.jobs.filter((job) => getJobWorkplace(job) === "Remote").length;
+
+  assert.equal(page.total, 3);
+  assert.equal(page.metrics.remoteJobsCount, 2);
+  assert.ok(page.metrics.remoteJobsCount > remoteOnly);
+  assert.ok(page.metrics.salaryJobsCount <= page.total);
+});
+
+test("prerendered home HTML stays under 100 KB", () => {
+  assert.equal(existsSync(homeHtmlPath), true, "next build must prerender / before this audit");
+  const html = readFileSync(homeHtmlPath);
+  assert.ok(html.byteLength < 100_000, `prerendered / is ${html.byteLength} bytes`);
+  assert.match(html.toString("utf8"), /Remote or hybrid/);
 });
 
 test("landing JSON-LD describes the site without embedding listings", () => {
@@ -71,3 +133,56 @@ test("a new board search key redirects because the home redirect reads one key s
     assert.equal(redirected?.searchParams.get(key), "1");
   }
 });
+
+function clientComponentsReceiving(source: string, filePath: string, prop: string) {
+  const offenders: string[] = [];
+
+  for (const match of source.matchAll(/^import\s+(?!type\b)([\s\S]*?)\s+from\s+"([^"]+)";$/gm)) {
+    const specifier = match[2];
+    const modulePath = resolveLocalModule(specifier, filePath);
+    if (!modulePath) continue;
+    const moduleSource = readFileSync(modulePath, "utf8");
+    if (!/^["']use client["'];?/m.test(moduleSource)) continue;
+
+    for (const name of importedNames(match[1])) {
+      for (const tag of source.matchAll(new RegExp(`<${name}(\\s[^>]*)?>`, "g"))) {
+        if (new RegExp(`\\b${prop}\\b`).test(tag[0])) offenders.push(name);
+      }
+    }
+  }
+
+  return offenders.join(",");
+}
+
+function importedNames(clause: string) {
+  const names: string[] = [];
+  const named = clause.match(/\{([\s\S]*)\}/);
+
+  if (named) {
+    for (const part of named[1].split(",")) {
+      const trimmed = part.trim();
+      if (!trimmed || trimmed.startsWith("type ")) continue;
+      const alias = trimmed.split(/\s+as\s+/).pop()?.trim();
+      if (alias) names.push(alias);
+    }
+  }
+
+  const binding = clause.replace(/\{[\s\S]*\}/, "").replace(/,/g, "").trim();
+  if (binding) names.push(binding);
+  return names;
+}
+
+function resolveLocalModule(specifier: string, fromFile: string) {
+  const base = specifier.startsWith("@/")
+    ? resolve(process.cwd(), "src", specifier.slice(2))
+    : specifier.startsWith(".")
+      ? resolve(dirname(fromFile), specifier)
+      : null;
+  if (!base) return null;
+
+  for (const candidate of [base, `${base}.tsx`, `${base}.ts`, `${base}.jsx`, `${base}.js`]) {
+    if (existsSync(candidate)) return candidate;
+  }
+
+  return null;
+}

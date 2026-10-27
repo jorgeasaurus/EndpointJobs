@@ -41,8 +41,8 @@ export default function Home() {
     workplace: getJobWorkplace(job)
   }));
   const stats = [
-    { label: "Open roles", value: board.trackedJobsCount },
-    { label: "Remote", value: board.metrics.remoteJobsCount },
+    { label: "Open roles", value: board.total },
+    { label: "Remote or hybrid", value: board.metrics.remoteJobsCount },
     { label: "Salary shown", value: board.metrics.salaryJobsCount }
   ];
 
