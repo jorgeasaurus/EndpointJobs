@@ -49,6 +49,7 @@ test("the map fetch uses the same debounced filters as the page", () => {
   assert.match(board, /const debouncedFilters = useDebouncedFilters\(filters\)/);
   assert.match(board, /useBoardPage\(initialPage, debouncedFilters, requestedPage, initialFilterKey\)/);
   assert.match(board, /useBoardMap\(debouncedFilters, mapExpanded\)/);
+  assert.match(board, /setPagination\(\{ filterKey: debouncedFilterKey, page: nextPage \}\)/);
   assert.match(results, /export function useDebouncedFilters/);
   assert.match(results, /boardFilterDebounceMs = 200/);
   assert.doesNotMatch(pageHook, /boardFilterDebounceMs/);

@@ -26,7 +26,6 @@ export function JobBoard({
   initialSelectedTools?: readonly EndpointTool[];
 }) {
   const [filters, dispatchFilters] = useUrlSyncedFilters(initialSelectedTools);
-  const filterKey = JSON.stringify(filters);
   const initialFilterKey = useMemo(
     () => JSON.stringify(withInitialTools(initialSelectedTools ?? [])),
     [initialSelectedTools]
@@ -93,7 +92,7 @@ export function JobBoard({
   function changePage(page: number) {
     const nextPage = Math.min(Math.max(page, 1), totalPages);
 
-    setPagination({ filterKey, page: nextPage });
+    setPagination({ filterKey: debouncedFilterKey, page: nextPage });
     requestAnimationFrame(() => {
       const prefersReducedMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)"
