@@ -22,7 +22,7 @@ async function expectOrder(key) {
 }
 
 try {
-  await page.goto(baseUrl, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}/board`, { waitUntil: "networkidle" });
   await expect(sort).toBeVisible();
   await expect(sort).toHaveValue("newest");
   await expectOrder("newest");

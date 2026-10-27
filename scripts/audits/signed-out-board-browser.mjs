@@ -11,7 +11,7 @@ const browser = await chromium.launch({
 });
 
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
-await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
+await page.goto(`${baseUrl}/board`, { waitUntil: "domcontentloaded" });
 
 await expect(page.getByRole("link", { name: "Endpoint Jobs home" })).toBeVisible();
 const search = page.locator('input[data-job-search="true"]');

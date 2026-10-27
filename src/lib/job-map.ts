@@ -1,15 +1,20 @@
 import type { Job } from "@/types/job";
 
+export type JobMapRecord = Pick<
+  Job,
+  "applyUrl" | "attributionLabel" | "company" | "id" | "mapLocation" | "salary" | "title"
+>;
+
 export type JobMapPoint = {
   id: string;
-  job: Job;
+  job: JobMapRecord;
   label: string;
   latitude: number;
   longitude: number;
 };
 
-export function buildJobMapPoints(jobs: Job[]) {
-  const grouped = new Map<string, { location: NonNullable<Job["mapLocation"]>; jobs: Job[] }>();
+export function buildJobMapPoints(jobs: readonly JobMapRecord[]) {
+  const grouped = new Map<string, { location: NonNullable<Job["mapLocation"]>; jobs: JobMapRecord[] }>();
 
   for (const job of jobs) {
     const location = job.mapLocation;

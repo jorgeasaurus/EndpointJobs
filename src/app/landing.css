@@ -1,0 +1,260 @@
+.landing-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: 16px;
+  align-items: stretch;
+  margin-bottom: 16px;
+}
+
+.landing-copy,
+.landing-preview {
+  background:
+    linear-gradient(160deg, rgb(190 242 100 / 7%), transparent 38%),
+    rgb(13 17 20 / 90%);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.landing-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 36px;
+  min-height: 100%;
+  padding: clamp(28px, 4vw, 52px);
+}
+
+.landing-intro {
+  display: grid;
+  gap: 18px;
+  justify-items: start;
+}
+
+.landing-copy h1 {
+  max-width: 10ch;
+  margin: 0;
+  font-size: clamp(3.15rem, 6.2vw, 5.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.065em;
+}
+
+.landing-lead {
+  max-width: 46rem;
+  margin: 0;
+  color: var(--white-60);
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+.landing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.landing-jobs-link {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 18px;
+  color: var(--black);
+  background: var(--lime);
+  border-radius: 8px;
+  box-shadow: var(--glow-lime);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.landing-jobs-link:hover,
+.landing-jobs-link:focus-visible {
+  color: var(--black);
+  background: var(--white);
+}
+
+.landing-jobs-link:focus-visible,
+.landing-preview a:focus-visible,
+.landing-account a:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+}
+
+.landing-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: 0;
+}
+
+.landing-stats div {
+  display: flex;
+  flex-direction: column-reverse;
+  min-width: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--glass-border);
+}
+
+.landing-stats dd {
+  margin: 0;
+  color: var(--white);
+  font-size: clamp(1.7rem, 3vw, 2.35rem);
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.landing-stats dt {
+  margin-top: 8px;
+  color: var(--white-45);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.landing-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+}
+
+.landing-preview header {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.landing-preview header p {
+  margin: 0;
+}
+
+.landing-preview header a {
+  color: var(--lime);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.landing-preview header a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.landing-preview ol {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.landing-preview li {
+  flex: 1;
+}
+
+.landing-preview li a {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  height: 100%;
+  min-height: 84px;
+  padding: 14px;
+  background: rgb(0 0 0 / 32%);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+}
+
+.landing-preview li a:hover {
+  border-color: rgb(190 242 100 / 55%);
+  background: rgb(190 242 100 / 6%);
+}
+
+.landing-preview strong {
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+}
+
+.landing-preview li a > span {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--white-45);
+  font-size: 0.86rem;
+}
+
+.landing-workplace {
+  flex: none;
+  color: var(--lime);
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.landing-preview-empty {
+  margin: 0;
+  color: var(--white-60);
+}
+
+.landing-account {
+  max-width: 68ch;
+  margin: 0 0 18px;
+  color: var(--white-45);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.landing-account strong {
+  color: var(--white);
+  font-weight: 700;
+}
+
+.landing-account a {
+  color: var(--lime);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 980px) {
+  .landing-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-copy h1 {
+    max-width: 12ch;
+  }
+
+  .landing-preview li a {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .landing-stats {
+    gap: 12px;
+  }
+
+  .landing-stats dd {
+    font-size: 1.45rem;
+  }
+
+  .landing-jobs-link {
+    width: 100%;
+  }
+}

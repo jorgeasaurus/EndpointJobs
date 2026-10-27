@@ -14,6 +14,9 @@ test("session refresh skips the jobs API, MCP, and static assets", () => {
   for (const pathname of [
     "/api/jobs",
     "/api/jobs/adzuna-1",
+    "/api/board",
+    "/api/board/map",
+    "/api/board/listings/example",
     "/api/mcp",
     "/mcp",
     "/mcp/guide",
@@ -29,7 +32,7 @@ test("session refresh skips the jobs API, MCP, and static assets", () => {
 });
 
 test("session refresh still runs for the board and auth callback", () => {
-  for (const pathname of ["/", "/jobs", "/jobs/example", "/privacy", "/auth/callback", "/api-docs"]) {
+  for (const pathname of ["/", "/board", "/jobs", "/jobs/example", "/privacy", "/auth/callback", "/api-docs"]) {
     assert.equal(skipsSessionRefresh(pathname), false, pathname);
   }
 });
@@ -37,6 +40,7 @@ test("session refresh still runs for the board and auth callback", () => {
 test("proxy matcher excludes the jobs API, MCP, and static files", () => {
   const source = readFileSync(new URL("../../proxy.ts", import.meta.url), "utf8");
   assert.match(source, /api\/jobs/);
+  assert.match(source, /api\/board/);
   assert.match(source, /api\/mcp/);
   assert.match(source, /mcp/);
   assert.match(source, /_next\/static/);

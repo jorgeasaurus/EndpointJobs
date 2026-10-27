@@ -30,6 +30,7 @@ export function fetchWithAuthDeadline(input: RequestInfo | URL, init?: RequestIn
 /** Paths that must keep working without a session refresh. */
 export function skipsSessionRefresh(pathname: string): boolean {
   if (pathname === "/api/jobs" || pathname.startsWith("/api/jobs/")) return true;
+  if (pathname === "/api/board" || pathname.startsWith("/api/board/")) return true;
   if (pathname === "/api/mcp" || pathname.startsWith("/api/mcp/")) return true;
   if (pathname === "/mcp" || pathname.startsWith("/mcp/")) return true;
   if (pathname.startsWith("/_next/static") || pathname.startsWith("/_next/image")) return true;

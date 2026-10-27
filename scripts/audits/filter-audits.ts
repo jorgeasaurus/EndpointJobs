@@ -359,7 +359,7 @@ export async function auditFilters({ filterFixtureJobs, run, sources }: AuditCon
         ...initialFilterState,
         selectedTools: ["Intune", "Jamf"]
       }),
-      "/"
+      "/board"
     );
     const pathAndQuery = filterStateFromLocation(
       "/intune",
@@ -391,7 +391,7 @@ export async function auditFilters({ filterFixtureJobs, run, sources }: AuditCon
         ...initialFilterState,
         selectedTools: ["Intune", "Jamf"]
       }),
-      "/"
+      "/board"
     );
   });
 

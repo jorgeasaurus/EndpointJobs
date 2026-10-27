@@ -93,10 +93,10 @@ export function listingLanguage(job: Pick<Job, "title" | "summary" | "descriptio
   return best[0];
 }
 
-export function prepareBoardFeed(feed: JobsFeed): JobsFeed {
+export function prepareBoardFeed(feed: JobsFeed, now = new Date()): JobsFeed {
   return {
     ...feed,
-    jobs: feed.jobs.filter((job) => isActiveJob(job)).map(withPresentedSalary)
+    jobs: feed.jobs.filter((job) => isActiveJob(job, now)).map(withPresentedSalary)
   };
 }
 

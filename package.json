@@ -1,6 +1,6 @@
 {
   "name": "endpoint-jobs",
-  "version": "0.1.26",
+  "version": "0.1.27",
   "private": true,
   "type": "module",
   "scripts": {
@@ -24,6 +24,7 @@
     "audit:sorting": "tsx scripts/audits/job-sort-browser.mjs",
     "audit:accessibility": "tsx scripts/audits/scroll-region-browser.mjs",
     "audit:data": "tsx scripts/audit-user-stories-data.ts",
+    "audit:html-size": "tsx scripts/audits/home-html-size.ts",
     "audit:links": "tsx scripts/audit-links.ts",
     "audit:posting-urls": "tsx scripts/audits/posting-url-collisions.ts",
     "audit:mcp": "tsx scripts/audits/jobs-mcp-smoke.ts",

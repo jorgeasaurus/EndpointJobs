@@ -1,12 +1,16 @@
-import { sponsorshipStatuses } from "@/lib/visa-sponsorship";
+import {
+  filterSearchParamKeys,
+  filterSearchParams
+} from "@/lib/board-search-params";
+import { isFreshnessFilter } from "@/lib/job-filters";
 import {
   platformOptions,
   roleFamilyOptions,
   seniorityOptions,
   toolOptions
 } from "@/lib/jobs";
-import { isFreshnessFilter } from "@/lib/job-filters";
 import { getEndpointToolBySlug, getEndpointToolSlug } from "@/lib/job-taxonomy";
+import { sponsorshipStatuses } from "@/lib/visa-sponsorship";
 
 import type {
   FilterState,
@@ -19,37 +23,14 @@ import type {
 } from "./filter-model";
 import { isMinimumSalaryFilter, metroAreaOptions } from "./filter-model";
 
-const filterParams = {
-  query: "q",
-  locationQuery: "location",
-  selectedPlatforms: "platforms",
-  selectedTools: "tools",
-  selectedMetroAreas: "metroAreas",
-  workplace: "workplace",
-  sponsorship: "sponsorship",
-  salaryOnly: "salary",
-  leadershipOnly: "leadership",
-  minimumSalary: "minSalary",
-  seniority: "seniority",
-  roleFamily: "family",
-  freshness: "freshness",
-  sort: "sort"
-} satisfies Record<keyof FilterState, string>;
-
-const currentFilterSearchParamKeys = Object.values(filterParams);
-
-const legacyFilterSearchParamKeys = ["locations", "remote"];
-const filterSearchParamKeys = [
-  ...currentFilterSearchParamKeys,
-  ...legacyFilterSearchParamKeys
-];
+const filterParams = filterSearchParams satisfies Record<keyof FilterState, string>;
 
 export function getBoardPathnameForFilters(filters: FilterState) {
   if (filters.selectedTools.length === 1) {
     return `/${getEndpointToolSlug(filters.selectedTools[0])}`;
   }
 
-  return "/";
+  return "/board";
 }
 
 export function filterStateFromLocation(
@@ -154,6 +135,18 @@ export function toSortKey(value: string): SortKey {
   }
 
   return "newest";
+}
+
+export function filterStateToBoardSearchParams(filters: FilterState, page = 1) {
+  const params = filterStateToSearchParams(filters);
+
+  if (filters.selectedTools.length === 1) {
+    params.set(filterParams.selectedTools, filters.selectedTools.join(","));
+  }
+
+  if (page > 1) params.set("page", String(page));
+
+  return params;
 }
 
 function filterStateToSearchParams(filters: FilterState) {

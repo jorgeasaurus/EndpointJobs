@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 
 async function firstDescribedJob(page: Page) {
-  await page.goto("/");
+  await page.goto("/board");
   const card = page.locator("article.job-card").filter({
     has: page.locator(".description-body p, .description-body ul:not(.tool-chips) li")
   }).first();
@@ -28,7 +28,7 @@ test("server HTML includes the job before client paint", async ({ page, request 
 
 test("home desktop keeps counts with their labels and shortens cards", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
-  await page.goto("/");
+  await page.goto("/board");
   await expect(page.getByRole("heading", { name: "Endpoint Jobs" })).toBeVisible();
 
   const remote = page.getByRole("button", { name: /Remote/ }).first();
@@ -61,7 +61,7 @@ test("home desktop keeps counts with their labels and shortens cards", async ({ 
 
 test("search empty state names the query", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
-  await page.goto("/?q=zzzz");
+  await page.goto("/board?q=zzzz");
   await expect(page.getByText(/Nothing matches search “zzzz”/)).toBeVisible();
   await expect(page.getByText("Try fewer tool filters")).toHaveCount(0);
 });
@@ -87,7 +87,7 @@ test("job detail renders repaired lists", async ({ page }, testInfo) => {
 test("mobile layout keeps the first job above collapsed stats", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile");
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
+  await page.goto("/board");
   const topbar = page.locator(".topbar");
   const topbarBox = await topbar.boundingBox();
   expect(topbarBox?.width).toBeLessThanOrEqual(390);
@@ -148,7 +148,7 @@ test("mobile layout keeps the first job above collapsed stats", async ({ page },
 test("mobile sticky filters stay below the two-row header", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile");
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/?q=Intune");
+  await page.goto("/board?q=Intune");
   const sticky = page.locator(".sticky-active-filters");
   await expect(sticky).toBeVisible();
   await page.evaluate(() => window.scrollTo(0, 1200));
@@ -165,16 +165,16 @@ test("mobile sticky filters stay below the two-row header", async ({ page }, tes
 
 test("a location query keeps a matching card", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
-  await page.goto("/");
+  await page.goto("/board");
   const location = (await page.locator("article.job-card").first().locator(".metadata-row span").first().innerText()).replace(/\s+/g, " ").trim();
   const token = location.split(/[,\s]+/).find((part) => part.length >= 4) ?? location;
-  await page.goto(`/?q=${encodeURIComponent(token)}`);
+  await page.goto(`/board?q=${encodeURIComponent(token)}`);
   await expect(page.locator("article.job-card").filter({ hasText: token }).first()).toBeVisible();
 });
 
 test("measured label contrast is at least 4.5:1 and text is at least 12px", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
-  await page.goto("/");
+  await page.goto("/board");
   await page.locator("article.job-card").first().locator("summary").click();
   const samples = await page.evaluate(() => {
     function parseColor(value: string) {

@@ -24,7 +24,9 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
     assertTruthy(feed.jobs.length > 0, "feed has no jobs");
     assertTruthy(feed.jobs.some((job) => isActiveJob(job)), "feed has no active jobs");
     assertIncludes(sources.page, "import feedData from \"@/data/jobs.json\"");
-    assertIncludes(sources.page, "<JobBoard feed={activeFeed} />");
+    assertIncludes(sources.page, "See the jobs");
+    assertIncludes(sources.jobBoardPage, "<JobBoard initialPage={initialPage} />");
+    assertNotIncludes(sources.page, "<JobBoard");
   });
 
   await run("FEAT-002", "Topbar brand and documentation links are present", () => {
@@ -49,7 +51,8 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
       (term) => assertIncludes(sources.controls, term)
     );
     assertIncludes(sources.controls, "activeJobsCount");
-    assertIncludes(sources.jobBoard, "activeJobs.length");
+    assertIncludes(sources.jobBoard, "trackedJobsCount");
+    assertIncludes(sources.boardPage, "dedupeJobs(activeJobs).length");
     assertIncludes(sources.animatedNumber, "<span", "counter renders plain text");
     assertNotIncludes(sources.animatedNumber, "slot-text", "counter should not import slot-text");
     assertNotIncludes(sources.layout, "slot-text/style.css", "layout should not import slot-text CSS");

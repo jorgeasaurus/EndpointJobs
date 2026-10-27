@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 
 import { getJobPath } from "@/app/site-metadata";
 import {
@@ -18,9 +20,9 @@ import {
   isPostedDateKnown
 } from "@/lib/jobs";
 import { getJobWorkplace } from "@/lib/workplace";
+import { boardListingHasMore, type BoardListing } from "@/lib/board-page";
 import { listingLanguage, presentSalary } from "@/lib/job-trust";
 import { getCurrencySymbol } from "@/lib/currency";
-import type { Job } from "@/types/job";
 
 import { DescriptionContent } from "./description-content";
 import { MatchRecommendation } from "./match-recommendation";
@@ -36,15 +38,21 @@ export function JobCard({
 }: {
   compareDisabled: boolean;
   isCompared: boolean;
-  job: Job;
-  onToggleComparison: (job: Job) => void;
+  job: BoardCardJob;
+  onToggleComparison: (job: BoardCardJob) => void;
   query: string;
 }) {
-  const descriptionBlocks = getJobDescriptionBlocks(job);
+  const listingDescription = useListingDescription(job);
+  const descriptionBlocks = getJobDescriptionBlocks({
+    summary: job.summary,
+    description: listingDescription.description
+  });
   const salary = presentSalary(job);
-  const language = listingLanguage(job);
+  const language = listingDescription.description
+    ? listingLanguage({ ...job, description: listingDescription.description })
+    : job.language;
   const postedLabel = getJobPostedDateLabel(job);
-  const hasMore = descriptionBlocks.length > 0 || job.matchReasons.length > 0 || job.platforms.length > 0 || job.tools.length > 0;
+  const hasMore = boardListingHasMore(job, descriptionBlocks.length);
 
   return (
     <article className="job-card" id={`job-${job.id}`}>
@@ -95,17 +103,11 @@ export function JobCard({
       </p>
 
       {hasMore ? (
-        <details className="description-details">
-          <summary>
-            <span>More description</span>
-            <ChevronDown size={16} aria-hidden="true" />
-          </summary>
-          <div className="description-body">
-            <DescriptionContent blocks={descriptionBlocks} />
-            {job.matchReasons.length > 0 ? <MatchRecommendation reasons={job.matchReasons} /> : null}
-            <ToolChips platforms={job.platforms} tools={job.tools} />
-          </div>
-        </details>
+        <JobCardDetails
+          blocks={descriptionBlocks}
+          job={job}
+          listingDescription={listingDescription}
+        />
       ) : null}
 
       <VisaSponsorship sponsorship={job.visaSponsorship} />
@@ -160,6 +162,80 @@ type HighlightPart = {
   isMatch: boolean;
   text: string;
 };
+
+type BoardCardJob = BoardListing & { description?: string };
+
+type ListingDescription = ReturnType<typeof useListingDescription>;
+
+function JobCardDetails({
+  blocks,
+  job,
+  listingDescription
+}: {
+  blocks: ReturnType<typeof getJobDescriptionBlocks>;
+  job: BoardCardJob;
+  listingDescription: ListingDescription;
+}) {
+  const { descriptionStatus, loadDescription } = listingDescription;
+
+  return (
+    <details
+      className="description-details"
+      onToggle={(event) => {
+        if (event.currentTarget.open) loadDescription();
+      }}
+    >
+      <summary>
+        <span>More description</span>
+        <ChevronDown size={16} aria-hidden="true" />
+      </summary>
+      <div className="description-body">
+        {descriptionStatus === "loading" ? <p>Loading description…</p> : null}
+        {descriptionStatus === "error" ? (
+          <p>
+            Description did not load.{" "}
+            <button type="button" onClick={loadDescription}>
+              Try again
+            </button>
+          </p>
+        ) : null}
+        <DescriptionContent blocks={blocks} />
+        {job.matchReasons.length > 0 ? <MatchRecommendation reasons={job.matchReasons} /> : null}
+        <ToolChips platforms={job.platforms} tools={job.tools} />
+      </div>
+    </details>
+  );
+}
+
+function useListingDescription(job: BoardCardJob) {
+  const [fetchedDescription, setFetchedDescription] = useState<string | null | undefined>(undefined);
+  const [descriptionStatus, setDescriptionStatus] = useState<"idle" | "loading" | "error">("idle");
+  const description = fetchedDescription === undefined ? job.description : fetchedDescription ?? undefined;
+
+  function loadDescription() {
+    if (!job.hasDescription || job.description || fetchedDescription !== undefined || descriptionStatus === "loading") return;
+
+    setDescriptionStatus("loading");
+    fetch(`/api/board/listings/${encodeURIComponent(job.id)}`)
+      .then(async (response) => {
+        if (!response.ok) throw new Error(`Description request failed (${response.status})`);
+        return response.json() as Promise<{ description?: string | null }>;
+      })
+      .then((body) => {
+        setFetchedDescription(body.description ?? null);
+        setDescriptionStatus("idle");
+      })
+      .catch(() => {
+        setDescriptionStatus("error");
+      });
+  }
+
+  return {
+    description,
+    descriptionStatus,
+    loadDescription
+  };
+}
 
 function HighlightedText({ query, text }: { query: string; text: string }) {
   return getHighlightParts(text, query).map((part, index) =>

@@ -7,7 +7,7 @@ export async function auditSponsorshipBrowser({
   for (const viewport of [desktopViewport, mobileViewport]) {
     await run(`SPONSORSHIP-${viewport.width}`, "Sponsorship filters match the API, preserve URLs, and expose evidence", async () => {
       const page = await newPage(browser, viewport);
-      await page.goto(`${baseUrl}/?sponsorship=unavailable&utm_source=audit`);
+      await page.goto(`${baseUrl}/board?sponsorship=unavailable&utm_source=audit`);
       const select = page.getByRole("combobox", { name: "Visa sponsorship", exact: true });
       await expect(select).toHaveValue("unavailable");
 

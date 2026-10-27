@@ -2,131 +2,75 @@
 
 import { useMemo, useRef, useState } from "react";
 
-import type { EndpointTool, JobsFeed } from "@/types/job";
-import { dedupeJobs, dedupeWorkplaceJobs, dedupedWorkplaceCounts } from "@/lib/job-trust";
-import { getJobWorkplace } from "@/lib/workplace";
-import type { FilterAction } from "./job-board/filter-model";
+import type { BoardListing, BoardPage } from "@/lib/board-page";
+import type { EndpointTool } from "@/types/job";
+import { withInitialTools, type FilterAction } from "./job-board/filter-model";
 
 import { getActiveFilterItems } from "./job-board/active-filters";
 import { updateComparisonSelection } from "./job-board/comparison-selection";
 import { CommandPanel, CommandStatusRail, StickyActiveFilters } from "./job-board/controls";
-import { filterJobs } from "./job-board/filter-model";
 import { JobMap } from "./job-board/job-map";
 import { JobComparison } from "./job-board/job-comparison";
 import { ParallaxBackground } from "./job-board/parallax-background";
 import { ResultsPanel } from "./job-board/results-panel";
 import { SiteFooter, Topbar } from "./job-board/topbar";
+import { useBoardMap, useBoardPage, useDebouncedFilters } from "./job-board/use-board-results";
 import { useSearchFocusShortcut } from "./job-board/use-search-focus-shortcut";
 import { useUrlSyncedFilters } from "./job-board/use-url-synced-filters";
 
-const jobsPerPage = 20;
-
 export function JobBoard({
-  feed,
+  initialPage,
   initialSelectedTools
 }: {
-  feed: JobsFeed;
+  initialPage: BoardPage;
   initialSelectedTools?: readonly EndpointTool[];
 }) {
   const [filters, dispatchFilters] = useUrlSyncedFilters(initialSelectedTools);
-  const filterKey = JSON.stringify(filters);
+  const initialFilterKey = useMemo(
+    () => JSON.stringify(withInitialTools(initialSelectedTools ?? [])),
+    [initialSelectedTools]
+  );
   const [pagination, setPagination] = useState({
-    filterKey: "",
+    filterKey: initialFilterKey,
     page: 1
   });
+  const [mapExpanded, setMapExpanded] = useState(false);
   const [selectedJobIds, setSelectedJobIds] = useState<Set<string>>(new Set());
+  const [seenState, setSeenState] = useState(() => ({
+    jobs: initialPage.jobs,
+    map: new Map(initialPage.jobs.map((job) => [job.id, job]))
+  }));
   const resultsSectionRef = useRef<HTMLElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useSearchFocusShortcut(searchInputRef);
 
-  const activeJobs = feed.jobs;
-  const trackedJobsCount = useMemo(() => dedupeJobs(activeJobs).length, [activeJobs]);
-  const matchedJobs = useMemo(
-    () =>
-      filterJobs(activeJobs, {
-        query: filters.query,
-        locationQuery: filters.locationQuery,
-        selectedPlatforms: filters.selectedPlatforms,
-        selectedTools: filters.selectedTools,
-        selectedMetroAreas: filters.selectedMetroAreas,
-        workplace: "Any",
-        sponsorship: filters.sponsorship,
-        salaryOnly: filters.salaryOnly,
-        leadershipOnly: filters.leadershipOnly,
-        minimumSalary: filters.minimumSalary,
-        seniority: filters.seniority,
-        roleFamily: filters.roleFamily,
-        freshness: filters.freshness,
-        sort: filters.sort
-      }),
-    [
-      activeJobs,
-      filters.freshness,
-      filters.leadershipOnly,
-      filters.locationQuery,
-      filters.minimumSalary,
-      filters.query,
-      filters.roleFamily,
-      filters.salaryOnly,
-      filters.sponsorship,
-      filters.selectedMetroAreas,
-      filters.selectedPlatforms,
-      filters.selectedTools,
-      filters.seniority,
-      filters.sort
-    ]
-  );
-  const workplaceCounts = useMemo(
-    () => dedupedWorkplaceCounts(matchedJobs),
-    [matchedJobs]
-  );
+  const debouncedFilters = useDebouncedFilters(filters);
+  const debouncedFilterKey = JSON.stringify(debouncedFilters);
+  const requestedPage = pagination.filterKey === debouncedFilterKey ? pagination.page : 1;
+  const board = useBoardPage(initialPage, debouncedFilters, requestedPage, initialFilterKey);
+  const map = useBoardMap(debouncedFilters, mapExpanded);
+  const snapshot = board.page;
+  let seenJobs = seenState.map;
 
-  const visibleJobs = useMemo(
-    () => dedupeWorkplaceJobs(matchedJobs, filters.workplace),
-    [filters.workplace, matchedJobs]
-  );
-  const visibleJobMetrics = useMemo(() => {
-    let mappedJobsCount = 0;
-    let remoteJobsCount = 0;
-    let salaryJobsCount = 0;
+  if (seenState.jobs !== snapshot.jobs) {
+    const nextMap = new Map(seenState.map);
+    for (const job of snapshot.jobs) nextMap.set(job.id, job);
+    seenJobs = nextMap;
+    setSeenState({ jobs: snapshot.jobs, map: nextMap });
+  }
 
-    for (const job of visibleJobs) {
-      const workplace = getJobWorkplace(job);
-
-      if (job.mapLocation) {
-        mappedJobsCount += 1;
-      }
-
-      if (workplace === "Remote" || workplace === "Hybrid") {
-        remoteJobsCount += 1;
-      }
-
-      if (job.salary) {
-        salaryJobsCount += 1;
-      }
-    }
-
-    return { mappedJobsCount, remoteJobsCount, salaryJobsCount };
-  }, [visibleJobs]);
-  const jobsById = useMemo(
-    () => new Map(activeJobs.map((job) => [job.id, job])),
-    [activeJobs]
-  );
   const comparedJobs = useMemo(() => {
     return [...selectedJobIds]
-      .map((jobId) => jobsById.get(jobId))
-      .filter((job): job is JobsFeed["jobs"][number] => Boolean(job));
-  }, [jobsById, selectedJobIds]);
+      .map((jobId) => seenJobs.get(jobId))
+      .filter((job): job is BoardListing => Boolean(job));
+  }, [seenJobs, selectedJobIds]);
 
-  const totalPages = Math.max(1, Math.ceil(visibleJobs.length / jobsPerPage));
-  const currentPage = pagination.filterKey === filterKey ? pagination.page : 1;
-  const safeCurrentPage = Math.min(currentPage, totalPages);
-  const pageStartIndex = (safeCurrentPage - 1) * jobsPerPage;
-  const pagedJobs = visibleJobs.slice(pageStartIndex, pageStartIndex + jobsPerPage);
-  const pageStart = visibleJobs.length === 0 ? 0 : pageStartIndex + 1;
-  const pageEnd = Math.min(pageStartIndex + jobsPerPage, visibleJobs.length);
-
+  const totalPages = snapshot.totalPages;
+  const currentPage = board.status === "loading" ? requestedPage : snapshot.page;
+  const pageStartIndex = (currentPage - 1) * snapshot.pageSize;
+  const pageStart = snapshot.total === 0 ? 0 : pageStartIndex + 1;
+  const pageEnd = Math.min(pageStartIndex + snapshot.pageSize, snapshot.total);
   const activeFilterItems = getActiveFilterItems(filters);
   const activeFilterCount = activeFilterItems.length;
   const activeFilterLabel =
@@ -148,7 +92,7 @@ export function JobBoard({
   function changePage(page: number) {
     const nextPage = Math.min(Math.max(page, 1), totalPages);
 
-    setPagination({ filterKey, page: nextPage });
+    setPagination({ filterKey: debouncedFilterKey, page: nextPage });
     requestAnimationFrame(() => {
       const prefersReducedMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)"
@@ -161,7 +105,13 @@ export function JobBoard({
     });
   }
 
-  function toggleComparison(job: JobsFeed["jobs"][number]) {
+  function toggleComparison(job: BoardListing) {
+    setSeenState((current) => {
+      if (current.map.get(job.id) === job) return current;
+      const nextMap = new Map(current.map);
+      nextMap.set(job.id, job);
+      return { jobs: current.jobs, map: nextMap };
+    });
     setSelectedJobIds((current) =>
       updateComparisonSelection(current, { type: "toggle", jobId: job.id })
     );
@@ -172,7 +122,7 @@ export function JobBoard({
       <ParallaxBackground />
 
       <div className="site-content">
-        <Topbar updatedAt={feed.updatedAt} />
+        <Topbar updatedAt={snapshot.updatedAt} />
 
         <section
           className="workbench"
@@ -182,14 +132,16 @@ export function JobBoard({
           <CommandPanel
             activeFilterCount={activeFilterCount}
             activeFilterLabel={activeFilterLabel}
-            activeJobsCount={trackedJobsCount}
+            activeJobsCount={snapshot.trackedJobsCount}
             clearFilters={clearFilters}
             dispatch={dispatch}
             filters={filters}
-            workplaceCounts={workplaceCounts}
+            workplaceCounts={snapshot.workplaceCounts}
             searchInputRef={searchInputRef}
-            visibleJobsCount={visibleJobs.length}
-            {...visibleJobMetrics}
+            visibleJobsCount={snapshot.total}
+            mappedJobsCount={snapshot.metrics.mappedJobsCount}
+            remoteJobsCount={snapshot.metrics.remoteJobsCount}
+            salaryJobsCount={snapshot.metrics.salaryJobsCount}
           />
         </section>
 
@@ -199,7 +151,17 @@ export function JobBoard({
           dispatch={dispatch}
         />
 
-        <JobMap id="map" jobs={visibleJobs} />
+        <JobMap
+          expanded={mapExpanded}
+          id="map"
+          isLoading={map.status === "loading"}
+          jobs={map.jobs}
+          knownMappedCount={snapshot.metrics.mappedJobsCount}
+          loadFailed={map.status === "error"}
+          onExpandedChange={setMapExpanded}
+          onRetry={map.retry}
+          totalJobCount={snapshot.total}
+        />
 
         <JobComparison
           jobs={comparedJobs}
@@ -215,37 +177,51 @@ export function JobBoard({
           }
         />
 
-        <section className="board-grid" id="open-roles" ref={resultsSectionRef}>
+        <section
+          aria-busy={board.status === "loading"}
+          className="board-grid"
+          id="open-roles"
+          ref={resultsSectionRef}
+        >
+          {board.status === "loading" ? <p className="sr-only">Loading results</p> : null}
+          {board.status === "error" ? (
+            <p className="board-query-error" role="alert">
+              Results did not refresh.
+              <button type="button" onClick={board.retry}>
+                Try again
+              </button>
+            </p>
+          ) : null}
           <ResultsPanel
             clearFilters={clearFilters}
-            currentPage={safeCurrentPage}
+            currentPage={currentPage}
             filters={filters}
             onPageChange={changePage}
             onSortChange={(value) => dispatch({ type: "setSort", value })}
             sort={filters.sort}
             pageEnd={pageEnd}
             pageStart={pageStart}
-            totalJobs={visibleJobs.length}
+            totalJobs={snapshot.total}
             totalPages={totalPages}
             query={filters.query}
             selectedJobIds={selectedJobIds}
             toggleComparison={toggleComparison}
-            visibleJobs={pagedJobs}
+            visibleJobs={snapshot.jobs}
           />
         </section>
 
         <details className="search-coverage-mobile">
           <summary>Coverage stats</summary>
           <CommandStatusRail
-            activeJobsCount={trackedJobsCount}
-            mappedJobsCount={visibleJobMetrics.mappedJobsCount}
-            remoteJobsCount={visibleJobMetrics.remoteJobsCount}
-            salaryJobsCount={visibleJobMetrics.salaryJobsCount}
-            visibleJobsCount={visibleJobs.length}
+            activeJobsCount={snapshot.trackedJobsCount}
+            mappedJobsCount={snapshot.metrics.mappedJobsCount}
+            remoteJobsCount={snapshot.metrics.remoteJobsCount}
+            salaryJobsCount={snapshot.metrics.salaryJobsCount}
+            visibleJobsCount={snapshot.total}
           />
         </details>
 
-        <SiteFooter updatedAt={feed.updatedAt} />
+        <SiteFooter updatedAt={snapshot.updatedAt} />
       </div>
     </main>
   );
