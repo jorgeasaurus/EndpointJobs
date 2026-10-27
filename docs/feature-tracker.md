@@ -25,6 +25,17 @@ Phase 1 filled `status` from the code, tests, migrations, and README. Phase 2 ex
 
 `AUTH-03` and the `AUTH-02` success path are Blocked on a real OAuth login. `AUTH-02` itself is Pass: a bad code does not sign the user out. `AUTH-08` is Blocked on a keyless build, because production has the Supabase public keys and renders Sign in. RLS for `ACCT-08` passed: 75 of 75 checks on `profiles`, `user_preferences`, `saved_jobs`, `job_views`, and `record_job_view`.
 
+## Fix pull requests
+
+`status` and `test_result` stay as recorded on 2026-10-27. `fix_pr` points at the pull request that addresses the failure.
+
+| Pull request | Stories |
+| --- | --- |
+| https://github.com/jorgeasaurus/EndpointJobs/pull/87 | `RESP-01`, `SAL-02`, `HOME-06`, `API-05`, `BOARD-04`, `FEED-01`, `JOB-11` |
+| https://github.com/jorgeasaurus/EndpointJobs/pull/88 | `ACCT-01` through `ACCT-07`, `HOME-04`, `PRIV-01` |
+
+`HOME-04` points at #88 because that pull request adds saved jobs, saved filters, and view history. The home sign-in line itself is not part of #88. `AUTH-09` (menu position at 390px, Escape and outside-click close) and that home line are owned by a separate pull request titled “Fix mobile account menu and show inline sign-in on home”. That pull request was not open when `fix_pr` was filled, so `AUTH-09` stays empty.
+
 ## Columns
 
 | Column | Meaning |
