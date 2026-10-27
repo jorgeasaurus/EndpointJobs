@@ -1,0 +1,49 @@
+# Request a GitHub Copilot review for each ready pull request update.
+# If Copilot does not review, comment "bugbot run" as the REVIEW_TRIGGER_TOKEN
+# user so Cursor Bugbot can take over. Bugbot ignores comments from bots and
+# GitHub Apps, so the Actions token must not post that comment.
+
+name: Review fallback
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: review-fallback-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  POLL_INTERVAL_SECONDS: "30"
+  POLL_TIMEOUT_SECONDS: "600"
+
+jobs:
+  review:
+    name: Copilot review or Bugbot fallback
+    if: ${{ github.event.pull_request.draft == false }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Require Node 20
+        run: node -e 'const major = Number(process.versions.node.split(".")[0]); if (major < 20) { console.error("Node 20 or newer is required"); process.exit(1); }'
+
+      - name: Request Copilot or fall back to Bugbot
+        env:
+          REVIEW_TRIGGER_TOKEN: ${{ secrets.REVIEW_TRIGGER_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_PUSHED_AT: ${{ github.event.pull_request.updated_at }}
+          PR_ACTION: ${{ github.event.action }}
+          CONTENTS_TOKEN: ${{ github.token }}
+          POLL_INTERVAL_SECONDS: ${{ env.POLL_INTERVAL_SECONDS }}
+          POLL_TIMEOUT_SECONDS: ${{ env.POLL_TIMEOUT_SECONDS }}
+        run: node scripts/review-fallback/run.mjs

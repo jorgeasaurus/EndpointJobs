@@ -11,7 +11,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test scripts/audits/*.test.ts src/components/job-board/*.test.ts src/lib/auth/*.test.ts src/lib/supabase/*.test.ts",
+    "test": "tsx --test scripts/audits/*.test.ts src/components/job-board/*.test.ts src/lib/auth/*.test.ts src/lib/supabase/*.test.ts scripts/review-fallback/*.test.mjs",
     "test:rls": "tsx --test scripts/audits/rls-user-isolation.test.ts",
     "audit:signed-out": "node scripts/audits/signed-out-board-browser.mjs",
     "jobs:refresh": "tsx scripts/refresh-jobs.ts",
