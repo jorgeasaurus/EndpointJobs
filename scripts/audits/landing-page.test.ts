@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { preProcessFile } from "typescript";
+import ts from "typescript";
 
 import { initialFilterState } from "../../src/components/job-board/filter-model";
 import { getLandingJsonLd, serializeJsonLd } from "../../src/app/structured-data";
@@ -91,6 +91,35 @@ test("a directory import reads index.ts instead of throwing", () => {
     assert.equal(result.unresolved, "./empty");
     assert.equal(result.dynamic, "");
     assert.equal(result.offenders, "Barrel");
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("names containing import or export still reach the client-prop check", () => {
+  const root = mkdtempSync(resolve(tmpdir(), "landing-ast-"));
+  try {
+    writeFileSync(resolve(root, "card.tsx"), "\"use client\";\nexport function Card() { return null; }\nexport function exportCsv() { return null; }\n");
+    writeFileSync(resolve(root, "dialogs.tsx"), "\"use client\";\nexport function ImportDialog() { return null; }\nexport function reexportJobs() { return null; }\n");
+    writeFileSync(resolve(root, "listed.tsx"), "\"use client\";\nexport function Listed() { return null; }\n");
+    writeFileSync(resolve(root, "lazy.tsx"), "\"use client\";\nexport default function Lazy() { return null; }\n");
+    const source = [
+      "import { exportCsv, Card } from \"./card\";",
+      "import { ImportDialog, reexportJobs } from \"./dialogs\";",
+      "export { Listed } from \"./listed\";",
+      "const View = dynamic(() => import(\"./lazy\"));",
+      "<Card board={board} />",
+      "<ImportDialog board={board} />",
+      "<reexportJobs board={board} />",
+      "<Listed board={board} />"
+    ].join("\n");
+    const result = clientComponentsReceiving(source, resolve(root, "page.tsx"), "board");
+
+    assert.equal(result.local, 4);
+    assert.equal(result.resolved, 4);
+    assert.equal(result.unresolved, "");
+    assert.equal(result.dynamic, "./lazy");
+    assert.equal(result.offenders, "Card,ImportDialog,reexportJobs,Listed,./lazy");
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
@@ -198,27 +227,31 @@ function clientComponentsReceiving(source: string, filePath: string, prop: strin
   const dynamic: string[] = [];
   let local = 0;
   let resolved = 0;
+  const sourceFile = ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, false, ts.ScriptKind.TSX);
 
-  for (const ref of preProcessFile(source).importedFiles) {
-    const specifier = ref.fileName;
-    const imported = classifyImport(source, ref.pos);
-    if (imported.kind === "dynamic") dynamic.push(specifier);
-    if (!specifier.startsWith("@/") && !specifier.startsWith(".")) continue;
+  function note(specifier: string | null, imported: ParsedImport) {
+    if (imported.kind === "dynamic") dynamic.push(specifier ?? "<non-literal>");
+    if (specifier !== null && !specifier.startsWith("@/") && !specifier.startsWith(".")) return;
+    if (specifier === null) {
+      local += 1;
+      unresolved.push("<non-literal>");
+      return;
+    }
 
     local += 1;
     const modulePath = resolveLocalModule(specifier, filePath);
     if (!modulePath) {
       unresolved.push(specifier);
-      continue;
+      return;
     }
     resolved += 1;
-    if (imported.kind === "type") continue;
+    if (imported.kind === "type") return;
 
     const moduleSource = readFileSync(modulePath, "utf8");
-    if (!/^["']use client["'];?/m.test(moduleSource)) continue;
+    if (!/^["']use client["'];?/m.test(moduleSource)) return;
     if (imported.kind === "dynamic") {
       offenders.push(specifier);
-      continue;
+      return;
     }
 
     for (const name of imported.names) {
@@ -228,6 +261,19 @@ function clientComponentsReceiving(source: string, filePath: string, prop: strin
     }
   }
 
+  function visit(node: ts.Node) {
+    if (ts.isImportDeclaration(node)) {
+      note(literalSpecifier(node.moduleSpecifier), namesFromImport(node));
+    } else if (ts.isExportDeclaration(node) && node.moduleSpecifier) {
+      note(literalSpecifier(node.moduleSpecifier), namesFromExport(node));
+    } else if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
+      const argument = node.arguments[0];
+      note(argument ? literalSpecifier(argument) : null, { kind: "dynamic", names: [] });
+    }
+    ts.forEachChild(node, visit);
+  }
+
+  visit(sourceFile);
   return {
     offenders: offenders.join(","),
     unresolved: unresolved.join(","),
@@ -237,37 +283,40 @@ function clientComponentsReceiving(source: string, filePath: string, prop: strin
   };
 }
 
-function classifyImport(source: string, pos: number) {
-  const before = source.slice(0, pos);
-  if (/import\s*\(\s*$/.test(before)) return { kind: "dynamic" as const, names: [] as string[] };
+type ParsedImport = { kind: "dynamic" | "type" | "value"; names: string[] };
 
-  const keywordAt = Math.max(before.lastIndexOf("import"), before.lastIndexOf("export"));
-  if (keywordAt < 0) return { kind: "value" as const, names: [] as string[] };
+function namesFromImport(node: ts.ImportDeclaration): ParsedImport {
+  const clause = node.importClause;
+  if (!clause) return { kind: "value", names: [] };
+  if (clause.isTypeOnly) return { kind: "type", names: [] };
 
-  let body = before.slice(keywordAt).replace(/^(?:import|export)\s*/, "");
-  if (/^type\b/.test(body)) return { kind: "type" as const, names: [] as string[] };
-  body = body.replace(/\s*from\s*$/, "").trim();
-  if (!body || body === "*") return { kind: "value" as const, names: [] as string[] };
-  return { kind: "value" as const, names: importedNames(body) };
-}
-
-function importedNames(clause: string) {
   const names: string[] = [];
-  const named = clause.match(/\{([\s\S]*)\}/);
-
-  if (named) {
-    for (const part of named[1].split(",")) {
-      const trimmed = part.trim();
-      if (!trimmed || trimmed.startsWith("type ")) continue;
-      const alias = trimmed.split(/\s+as\s+/).pop()?.trim();
-      if (alias) names.push(alias);
+  if (clause.name) names.push(clause.name.text);
+  const bindings = clause.namedBindings;
+  if (bindings && ts.isNamespaceImport(bindings)) names.push(bindings.name.text);
+  if (bindings && ts.isNamedImports(bindings)) {
+    for (const element of bindings.elements) {
+      if (!element.isTypeOnly) names.push(element.name.text);
     }
   }
+  return { kind: "value", names };
+}
 
-  const binding = clause.replace(/\{[\s\S]*\}/, "").replace(/,/g, "").trim();
-  const alias = binding.split(/\s+as\s+/).pop()?.trim();
-  if (alias && alias !== "*") names.push(alias);
-  return names;
+function namesFromExport(node: ts.ExportDeclaration): ParsedImport {
+  if (node.isTypeOnly) return { kind: "type", names: [] };
+  const clause = node.exportClause;
+  if (!clause) return { kind: "value", names: [] };
+  if (ts.isNamespaceExport(clause)) return { kind: "value", names: [clause.name.text] };
+
+  const names: string[] = [];
+  for (const element of clause.elements) {
+    if (!element.isTypeOnly) names.push(element.name.text);
+  }
+  return { kind: "value", names };
+}
+
+function literalSpecifier(expr: ts.Expression) {
+  return ts.isStringLiteralLike(expr) ? expr.text : null;
 }
 
 function resolveLocalModule(specifier: string, fromFile: string) {
