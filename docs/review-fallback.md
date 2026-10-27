@@ -22,13 +22,13 @@ The workflow treats Copilot as unavailable, and goes straight to Bugbot, when an
 
 - The review request returns a non-2xx response, including quota, budget, plan, or permission errors.
 - Copilot submits a review or comment on this head whose body reports a usage, quota, or credit limit. Matching is case-insensitive and looks for limit language such as "reached their quota limit" or "exceeded your monthly quota", not for a review that merely discusses a quota field.
-- No Copilot review for this head arrives within `POLL_TIMEOUT_SECONDS` (default `600`, checked every `POLL_INTERVAL_SECONDS`, default `30`). Both are set at the top of the workflow.
+- No Copilot review for this head arrives within `POLL_TIMEOUT_SECONDS` (default `600`, checked every `POLL_INTERVAL_SECONDS`, default `30`). Both are set at the top of the workflow. A failed read during that wait, such as HTTP 502 or a secondary rate limit, is logged and the next poll still runs. The wait ends at the deadline.
 
 A submitted Copilot review whose `commit_id` is the pull request head, and whose body is not a limit message, counts as reviewed. The job then exits without commenting.
 
 ## The Bugbot comment
 
-The comment body is exactly `bugbot run`. The head SHA is not stored in that comment. Before posting, the job reads the pull request timeline and skips a second comment when `bugbot run` already appears after this head SHA was introduced. The job summary includes a hidden marker for the run, for example:
+The comment body is exactly `bugbot run`. The head SHA is not stored in that comment. Before posting, the job lists pull request comments and skips a second `bugbot run` when one was created at or after this head's push time. That time is the pull request event's `updated_at`. If `updated_at` is missing, the job uses the time this run started. Commit order is not used, because timeline `committed` events follow commit dates rather than push time. The comment-list read that makes this decision has to succeed. If it fails, the job stops without posting. The job summary includes a hidden marker for the run, for example:
 
 ```html
 <!-- review-fallback: outcome=bugbot-triggered sha=<head> -->

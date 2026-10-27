@@ -20,7 +20,7 @@ import { main, readConfig } from "./run.mjs";
 
 const HEAD = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const OTHER = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
-const TOKEN = "github_pat_testtokenvalue";
+const fixtureReviewCredential = "fixture-review-trigger";
 const QUOTA_BODY = "Copilot was unable to review this pull request because the user who requested the review has reached their quota limit.";
 
 function copilot(login = COPILOT_REVIEWER) {
@@ -148,31 +148,43 @@ test("Copilot activity for the head SHA", () => {
   assert.equal(pendingReview.kind, "pending");
 });
 
-test("bugbot dedup follows timeline order, not committer dates", () => {
-  const timeline = [
-    { event: "committed", sha: OTHER, committer: { date: "2026-10-27T12:00:00Z" } },
-    { event: "commented", id: 1, body: "bugbot run\n", created_at: "2026-10-27T11:00:00Z" },
-    { event: "committed", sha: HEAD, committer: { date: "2026-10-26T00:00:00Z" } },
+test("bugbot dedup follows push time when commit order and push order differ", () => {
+  const headPushedAtMs = Date.parse("2026-10-27T12:00:00Z");
+  // Authored at 10:00, pushed at 12:00. A timeline sorted by commit date places
+  // this head before the 11:00 comment, which would treat the old comment as covering it.
+  const timelineByCommitDate = [
+    { event: "committed", sha: HEAD, committer: { date: "2026-10-27T10:00:00Z" } },
+    { event: "commented", id: 1, body: "bugbot run", created_at: "2026-10-27T11:00:00Z" },
   ];
-  assert.deepEqual(bugbotAlreadyRequestedForHead({ headSha: HEAD, timeline }), { known: true, requested: false });
-  timeline.push({ event: "commented", id: 2, body: "please bugbot run" });
-  assert.equal(bugbotAlreadyRequestedForHead({ headSha: HEAD, timeline }).requested, false);
-  timeline.push({ event: "head_ref_force_pushed", after: HEAD });
-  timeline.push({ event: "commented", id: 3, body: BUGBOT_COMMENT_BODY });
-  assert.equal(bugbotAlreadyRequestedForHead({ headSha: HEAD, timeline }).requested, true);
-  assert.equal(bugbotAlreadyRequestedForHead({ headSha: "cccccccccccccccccccccccccccccccccccccccc", timeline }).known, false);
-});
+  const commitIndex = timelineByCommitDate.findIndex((event) => event.sha === HEAD);
+  const commentIndex = timelineByCommitDate.findIndex((event) => event.created_at === "2026-10-27T11:00:00Z");
+  assert.ok(commitIndex < commentIndex);
 
-test("bugbot dedup can match a later timeline comment id to its issue comment", () => {
-  const decision = bugbotAlreadyRequestedForHead({
-    headSha: HEAD,
-    timeline: [
-      { event: "committed", sha: HEAD },
-      { event: "commented", id: 9 },
-    ],
-    issueComments: [{ id: 9, body: "bugbot run" }],
+  assert.deepEqual(
+    bugbotAlreadyRequestedForHead({
+      issueComments: [{ id: 1, body: "bugbot run\n", created_at: "2026-10-27T11:00:00Z" }],
+      headPushedAtMs,
+    }),
+    { known: true, requested: false },
+  );
+  assert.deepEqual(
+    bugbotAlreadyRequestedForHead({
+      issueComments: [{ id: 2, body: "please bugbot run", created_at: "2026-10-27T12:30:00Z" }],
+      headPushedAtMs,
+    }),
+    { known: true, requested: false },
+  );
+  assert.deepEqual(
+    bugbotAlreadyRequestedForHead({
+      issueComments: [{ id: 3, body: BUGBOT_COMMENT_BODY, created_at: "2026-10-27T12:00:00Z" }],
+      headPushedAtMs,
+    }),
+    { known: true, requested: true },
+  );
+  assert.deepEqual(bugbotAlreadyRequestedForHead({ issueComments: [], headPushedAtMs: "not-a-time" }), {
+    known: false,
+    requested: false,
   });
-  assert.deepEqual(decision, { known: true, requested: true });
   assert.equal(isExactBugbotBody("bugbot run"), true);
   assert.equal(isExactBugbotBody("bugbot run\r\n"), true);
   assert.equal(isExactBugbotBody("bugbot run please"), false);
@@ -204,7 +216,7 @@ test("a real Copilot review exits without posting bugbot", async () => {
   });
   const time = clock();
   const result = await runReviewFallback({
-    token: TOKEN,
+    token: fixtureReviewCredential,
     repo: "jorgeasaurus/EndpointJobs",
     prNumber: "12",
     headSha: HEAD.toUpperCase(),
@@ -219,7 +231,7 @@ test("a real Copilot review exits without posting bugbot", async () => {
   assert.deepEqual(postedBodies(github), []);
   assert.equal(github.calls[0].body.reviewers[0], COPILOT_REVIEWER);
   assert.match(result.summary, new RegExp(`outcome=copilot-reviewed sha=${HEAD}`));
-  assert.equal(result.summary.includes(TOKEN), false);
+  assert.equal(result.summary.includes(fixtureReviewCredential), false);
 });
 
 test("non-2xx Copilot requests fall back immediately", async () => {
@@ -229,7 +241,7 @@ test("non-2xx Copilot requests fall back immediately", async () => {
     timeline: [{ event: "committed", sha: HEAD }],
   });
   const result = await runReviewFallback({
-    token: TOKEN,
+    token: fixtureReviewCredential,
     repo: "jorgeasaurus/EndpointJobs",
     prNumber: "12",
     headSha: HEAD,
@@ -237,29 +249,28 @@ test("non-2xx Copilot requests fall back immediately", async () => {
   });
   assert.equal(result.outcome, "bugbot-triggered");
   assert.deepEqual(postedBodies(github), [BUGBOT_COMMENT_BODY]);
+  assert.equal(postedBodies(github).some((body) => body.includes("review-fallback:")), false);
   assert.equal(github.calls.some((call) => call.path.includes("/reviews?")), false);
   assert.match(result.summary, /HTTP 402/);
   assert.match(result.summary, /<!-- review-fallback: outcome=bugbot-triggered sha=/);
-  assert.equal(result.logs.join("\n").includes(TOKEN), false);
+  assert.equal(result.logs.join("\n").includes(fixtureReviewCredential), false);
 });
 
 test("a quota review skips the rest of the wait and does not double-post", async () => {
   const github = fakeGithub({
     reviews: [{ user: copilot(), commit_id: HEAD, state: "COMMENTED", body: QUOTA_BODY }],
-    timeline: [
-      { event: "committed", sha: HEAD },
-      { event: "commented", id: 4, body: BUGBOT_COMMENT_BODY },
-    ],
+    issueComments: [{ id: 4, body: BUGBOT_COMMENT_BODY, created_at: "2026-10-27T10:05:00Z" }],
   });
   const time = clock();
   let slept = 0;
   const result = await runReviewFallback({
-    token: TOKEN,
+    token: fixtureReviewCredential,
     repo: "jorgeasaurus/EndpointJobs",
     prNumber: "12",
     headSha: HEAD,
     pollIntervalSeconds: 30,
     pollTimeoutSeconds: 600,
+    headPushedAt: "2026-10-27T10:00:00Z",
     github,
     now: time.now,
     sleep: async (ms) => {
@@ -277,7 +288,7 @@ test("timeout is the fallback signal when Copilot never reviews", async () => {
   const github = fakeGithub({ timeline: [{ event: "committed", sha: HEAD }] });
   const time = clock();
   const result = await runReviewFallback({
-    token: TOKEN,
+    token: fixtureReviewCredential,
     repo: "jorgeasaurus/EndpointJobs",
     prNumber: "12",
     headSha: HEAD,
@@ -294,46 +305,92 @@ test("timeout is the fallback signal when Copilot never reviews", async () => {
   assert.equal(reviewGets.length, 3);
 });
 
-test("read failures do not post bugbot", async () => {
+test("poll read errors keep waiting until the deadline", async () => {
+  const time = clock();
+  let gets = 0;
   const github = {
     calls: [],
     async request(method, path, body) {
       this.calls.push({ method, path, body });
-      if (method === "POST") return { status: 201, body: {} };
-      throw new Error(`network down ${TOKEN}`);
+      if (method === "POST" && path.endsWith("/requested_reviewers")) return { status: 201, body: {} };
+      if (method === "POST" && path.endsWith("/comments")) return { status: 201, body: { id: 1, body: body?.body ?? "" } };
+      gets += 1;
+      if (gets <= 6) return { status: 502, body: { message: `Bad gateway ${fixtureReviewCredential}` } };
+      return { status: 200, body: [] };
     },
   };
   const result = await runReviewFallback({
-    token: TOKEN,
+    token: fixtureReviewCredential,
     repo: "jorgeasaurus/EndpointJobs",
     prNumber: "12",
     headSha: HEAD,
+    pollIntervalSeconds: 30,
+    pollTimeoutSeconds: 60,
     github,
+    sleep: time.sleep,
+    now: time.now,
+  });
+  assert.equal(result.exitCode, 0);
+  assert.equal(result.outcome, "bugbot-triggered");
+  assert.deepEqual(postedBodies(github), [BUGBOT_COMMENT_BODY]);
+  assert.equal(postedBodies(github).some((body) => body.includes("review-fallback:")), false);
+  assert.ok(result.logs.some((line) => line.includes("Copilot poll read failed") && line.includes("HTTP 502")));
+  assert.equal(result.logs.join("\n").includes(fixtureReviewCredential), false);
+  const reviewGets = github.calls.filter((call) => call.method === "GET" && call.path.includes("/reviews?"));
+  assert.ok(reviewGets.length >= 3);
+});
+
+test("a failed dedup read does not post bugbot", async () => {
+  let commentGets = 0;
+  const github = {
+    calls: [],
+    async request(method, path, body) {
+      this.calls.push({ method, path, body });
+      if (method === "POST" && path.endsWith("/requested_reviewers")) return { status: 201, body: {} };
+      if (method === "POST") return { status: 201, body: { id: 1, body: body?.body ?? "" } };
+      if (path.includes("/issues/") && path.includes("/comments?")) {
+        commentGets += 1;
+        if (commentGets > 1) return { status: 403, body: { message: "secondary rate limit" } };
+      }
+      return { status: 200, body: [] };
+    },
+  };
+  const result = await runReviewFallback({
+    token: fixtureReviewCredential,
+    repo: "jorgeasaurus/EndpointJobs",
+    prNumber: "12",
+    headSha: HEAD,
+    pollIntervalSeconds: 30,
+    pollTimeoutSeconds: 0,
+    github,
+    now: () => 1_000,
+    sleep: async () => {
+      throw new Error("sleep should not run when the deadline has already passed");
+    },
   });
   assert.equal(result.exitCode, 1);
   assert.equal(result.outcome, "failed");
   assert.deepEqual(postedBodies(github), []);
-  assert.equal(result.summary.includes(TOKEN), false);
-  assert.match(result.logs[0], /\[redacted\]/);
+  assert.match(result.logs.join("\n"), /HTTP 403/);
 });
 
-test("an unknown head does not add a second bugbot comment when one already exists", async () => {
+test("an earlier bugbot comment does not cover a head pushed later", async () => {
   const github = fakeGithub({
     postStatus: 403,
     postBody: { message: "Resource not accessible by integration" },
-    issueComments: [{ id: 3, body: "bugbot run" }],
-    timeline: [{ event: "committed", sha: OTHER }],
+    issueComments: [{ id: 3, body: "bugbot run", created_at: "2026-10-27T11:00:00Z" }],
   });
   const result = await runReviewFallback({
-    token: TOKEN,
+    token: fixtureReviewCredential,
     repo: "jorgeasaurus/EndpointJobs",
     prNumber: "12",
     headSha: HEAD,
+    headPushedAt: "2026-10-27T12:00:00Z",
     github,
   });
-  assert.equal(result.outcome, "bugbot-skipped-uncertain");
-  assert.match(result.summary, /timeline did not include/);
-  assert.deepEqual(postedBodies(github), []);
+  assert.equal(result.outcome, "bugbot-triggered");
+  assert.deepEqual(postedBodies(github), [BUGBOT_COMMENT_BODY]);
+  assert.equal(postedBodies(github).some((body) => body.includes("review-fallback:")), false);
 });
 
 test("GitHub client uses the documented review request", async () => {
@@ -343,7 +400,7 @@ test("GitHub client uses the documented review request", async () => {
     return { status: 201, text: async () => JSON.stringify({ ok: true }) };
   };
   const client = createGithubClient({
-    token: TOKEN,
+    token: fixtureReviewCredential,
     repo: "jorgeasaurus/EndpointJobs",
     fetchImpl,
     apiBase: "https://api.github.com/",
@@ -353,24 +410,25 @@ test("GitHub client uses the documented review request", async () => {
   });
   assert.equal(response.status, 201);
   assert.equal(seen[0].url, "https://api.github.com/repos/jorgeasaurus/EndpointJobs/pulls/12/requested_reviewers");
-  assert.equal(seen[0].init.headers.Authorization, `Bearer ${TOKEN}`);
+  assert.equal(seen[0].init.headers.Authorization, `Bearer ${fixtureReviewCredential}`);
   assert.equal(seen[0].init.headers["X-GitHub-Api-Version"], "2026-03-10");
   assert.equal(seen[0].init.headers.Accept, "application/vnd.github+json");
   assert.deepEqual(JSON.parse(seen[0].init.body), { reviewers: [COPILOT_REVIEWER] });
-  assert.equal(seen[0].url.includes(TOKEN), false);
+  assert.equal(seen[0].url.includes(fixtureReviewCredential), false);
 });
 
-test("secrets are redacted and the summary marker stays out of the comment", () => {
-  assert.equal(redact(`bearer ${TOKEN} and ${TOKEN}`, TOKEN).includes(TOKEN), false);
+test("fixture credentials are redacted", () => {
+  assert.equal(redact(`bearer ${fixtureReviewCredential} and ${fixtureReviewCredential}`, fixtureReviewCredential).includes(fixtureReviewCredential), false);
+  const shapedLikeAPat = ["github", "pat", "fixturevalue"].join("_");
+  assert.equal(redact(shapedLikeAPat, "").includes(shapedLikeAPat), false);
   const summary = renderSummary({ outcome: "bugbot-triggered", headSha: HEAD, detail: "HTTP 403" });
   assert.match(summary, /<!-- review-fallback: outcome=bugbot-triggered sha=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa -->/);
-  assert.equal(summary.includes("sha=") && summary.split("bugbot run").length >= 1, true);
-  assert.equal(BUGBOT_COMMENT_BODY, "bugbot run");
+  assert.equal(summary.includes(fixtureReviewCredential), false);
 });
 
 test("config clamps the poll interval and preserves an explicit timeout", () => {
   const config = readConfig({
-    REVIEW_TRIGGER_TOKEN: TOKEN,
+    REVIEW_TRIGGER_TOKEN: fixtureReviewCredential,
     GITHUB_REPOSITORY: "jorgeasaurus/EndpointJobs",
     PR_NUMBER: "4",
     HEAD_SHA: HEAD,
@@ -414,6 +472,7 @@ test("workflow contract", () => {
   assert.match(yaml, /pull-requests: read/);
   assert.match(yaml, /github\.event\.pull_request\.draft == false/);
   assert.match(yaml, /github\.event\.pull_request\.head\.sha/);
+  assert.match(yaml, /HEAD_PUSHED_AT: \$\{\{ github\.event\.pull_request\.updated_at \}\}/);
   assert.match(yaml, /REVIEW_TRIGGER_TOKEN: \$\{\{ secrets\.REVIEW_TRIGGER_TOKEN \}\}/);
   assert.match(yaml, /POLL_INTERVAL_SECONDS: "30"/);
   assert.match(yaml, /POLL_TIMEOUT_SECONDS: "600"/);

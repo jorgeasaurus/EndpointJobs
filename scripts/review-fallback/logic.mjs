@@ -128,46 +128,32 @@ export function classifyCopilotActivity({
   return { kind: "pending" };
 }
 
-function introducedSha(event) {
-  if (!event || typeof event !== "object") return null;
-  if (event.event === "committed") return event.sha || event.commit_id || event.oid || null;
-  if (event.event === "head_ref_force_pushed") return event.after || event.sha || null;
-  return null;
-}
-
-function isTimelineComment(event) {
-  return event?.event === "commented" || event?.event === "comment";
+export function parseTime(value) {
+  if (typeof value === "number") return Number.isFinite(value) ? value : null;
+  if (typeof value !== "string" || value.trim() === "") return null;
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 /**
- * A `bugbot run` comment counts for this head only when the pull request
- * timeline shows it after the head SHA was introduced. Author dates are
- * ignored because they are not push order.
+ * A `bugbot run` comment covers this head when it was created at or after
+ * the head was pushed. Timeline position is not used: `committed` events
+ * are ordered by commit date, so a commit authored earlier and pushed later
+ * can sort before a comment that belongs to the previous head.
+ *
+ * `headPushedAtMs` is the pull request event's `updated_at`, or the run
+ * start when that value is missing.
  *
  * @returns {{known: boolean, requested: boolean}}
  */
-export function bugbotAlreadyRequestedForHead({ headSha, timeline, issueComments = [] }) {
-  const events = Array.isArray(timeline) ? timeline : [];
-  let lastHeadIndex = -1;
-  events.forEach((event, index) => {
-    if (sameSha(introducedSha(event), headSha)) lastHeadIndex = index;
+export function bugbotAlreadyRequestedForHead({ issueComments = [], headPushedAtMs }) {
+  const pushedAt = parseTime(headPushedAtMs);
+  if (pushedAt == null) return { known: false, requested: false };
+  const requested = (issueComments ?? []).some((comment) => {
+    if (!isExactBugbotBody(comment?.body)) return false;
+    const created = parseTime(comment?.created_at);
+    return created != null && created >= pushedAt;
   });
-  if (lastHeadIndex < 0) return { known: false, requested: false };
-
-  const later = events.slice(lastHeadIndex + 1);
-  const laterCommentIds = new Set();
-  for (const event of later) {
-    if (!isTimelineComment(event)) continue;
-    if (isExactBugbotBody(event.body) || isExactBugbotBody(event.comment?.body)) {
-      return { known: true, requested: true };
-    }
-    const id = event.id ?? event.comment?.id;
-    if (id != null) laterCommentIds.add(String(id));
-  }
-
-  const requested = (issueComments ?? []).some(
-    (comment) => isExactBugbotBody(comment?.body) && comment?.id != null && laterCommentIds.has(String(comment.id)),
-  );
   return { known: true, requested };
 }
 
@@ -193,7 +179,7 @@ export function renderSummary({ outcome, headSha = "", detail = "" }) {
       break;
     case "bugbot-skipped-uncertain":
       lines.push(`Copilot was unavailable (${detail}).`);
-      lines.push(`The pull request timeline did not include head \`${sha}\`. An existing \`${BUGBOT_COMMENT_BODY}\` comment was left in place so this run would not post a duplicate.`);
+      lines.push(`This head's push time was not available. An existing \`${BUGBOT_COMMENT_BODY}\` comment was left in place so this run would not post a duplicate.`);
       break;
     case "failed":
       lines.push(`Review fallback failed before it could finish (${detail}).`);
@@ -281,6 +267,7 @@ export async function runReviewFallback({
   pollIntervalSeconds = 30,
   pollTimeoutSeconds = 600,
   reviewer = COPILOT_REVIEWER,
+  headPushedAt,
   github,
   fetchImpl,
   apiBase = "https://api.github.com",
@@ -288,6 +275,7 @@ export async function runReviewFallback({
   now = () => Date.now(),
 } = {}) {
   const secret = typeof token === "string" ? token.trim() : "";
+  const notes = [];
   try {
     if (!secret) {
       return result({
@@ -307,6 +295,7 @@ export async function runReviewFallback({
     const intervalMs = Math.max(0, Number(pollIntervalSeconds) || 0) * 1000;
     const timeoutMs = Math.max(0, Number(pollTimeoutSeconds) || 0) * 1000;
     const requestedAtMs = now();
+    const pushedAtMs = parseTime(headPushedAt) ?? requestedAtMs;
 
     const request = await client.request("POST", `/pulls/${pullNumber}/requested_reviewers`, {
       reviewers: [reviewer],
@@ -318,23 +307,29 @@ export async function runReviewFallback({
     } else {
       const deadline = requestedAtMs + timeoutMs;
       while (!unavailableReason) {
-        const activity = await loadActivity(client, pullNumber);
-        const state = classifyCopilotActivity({ ...activity, headSha: sha, requestedAtMs });
-        if (state.kind === "reviewed") {
-          return result({
-            exitCode: 0,
-            outcome: "copilot-reviewed",
-            headSha: sha,
-            logs: [`Copilot reviewed ${sha}.`],
-          });
-        }
-        if (state.kind === "unavailable") {
-          unavailableReason = usageLimitDetail(state.source);
-          break;
+        try {
+          const activity = await loadActivity(client, pullNumber);
+          const state = classifyCopilotActivity({ ...activity, headSha: sha, requestedAtMs });
+          if (state.kind === "reviewed") {
+            return result({
+              exitCode: 0,
+              outcome: "copilot-reviewed",
+              headSha: sha,
+              logs: [...notes, `Copilot reviewed ${sha}.`],
+            });
+          }
+          if (state.kind === "unavailable") {
+            unavailableReason = usageLimitDetail(state.source);
+            break;
+          }
+        } catch (error) {
+          const message = redact(error instanceof Error ? error.message : "read failed", secret);
+          notes.push(`Copilot poll read failed: ${message}`);
         }
         const remaining = deadline - now();
         if (remaining <= 0) {
           unavailableReason = `no Copilot review for this head after ${Math.round(timeoutMs / 1000)}s`;
+          if (notes.length > 0) unavailableReason += `. ${notes[notes.length - 1]}`;
           break;
         }
         await sleep(Math.min(intervalMs, remaining));
@@ -342,18 +337,15 @@ export async function runReviewFallback({
     }
     unavailableReason = redact(unavailableReason, secret);
 
-    const [issueComments, timeline] = await Promise.all([
-      listAll(client, `/issues/${pullNumber}/comments`),
-      listAll(client, `/issues/${pullNumber}/timeline`),
-    ]);
-    const dedup = bugbotAlreadyRequestedForHead({ headSha: sha, timeline, issueComments });
+    const issueComments = await listAll(client, `/issues/${pullNumber}/comments`);
+    const dedup = bugbotAlreadyRequestedForHead({ issueComments, headPushedAtMs: pushedAtMs });
     if (!dedup.known && issueComments.some((comment) => isExactBugbotBody(comment?.body))) {
       return result({
         exitCode: 0,
         outcome: "bugbot-skipped-uncertain",
         reason: unavailableReason,
         headSha: sha,
-        logs: [`Copilot unavailable (${unavailableReason}). Skipped a second bugbot run comment because this head was not found in the timeline.`],
+        logs: [...notes, `Copilot unavailable (${unavailableReason}). Skipped a second bugbot run comment because this head's push time was not available.`],
       });
     }
     if (dedup.requested) {
@@ -362,7 +354,7 @@ export async function runReviewFallback({
         outcome: "bugbot-already-requested",
         reason: unavailableReason,
         headSha: sha,
-        logs: [`Copilot unavailable (${unavailableReason}). bugbot run already covers ${sha}.`],
+        logs: [...notes, `Copilot unavailable (${unavailableReason}). bugbot run already covers ${sha}.`],
       });
     }
 
@@ -381,7 +373,7 @@ export async function runReviewFallback({
       outcome: "bugbot-triggered",
       reason: unavailableReason,
       headSha: sha,
-      logs: [`Copilot unavailable (${unavailableReason}). Posted bugbot run for ${sha}.`],
+      logs: [...notes, `Copilot unavailable (${unavailableReason}). Posted bugbot run for ${sha}.`],
     });
   } catch (error) {
     const message = redact(error instanceof Error ? error.message : "unexpected error", secret);
@@ -390,7 +382,7 @@ export async function runReviewFallback({
       outcome: "failed",
       reason: message,
       headSha: typeof headSha === "string" ? headSha : "",
-      logs: [`Review fallback failed: ${message}`],
+      logs: [...notes, `Review fallback failed: ${message}`],
     });
   }
 }

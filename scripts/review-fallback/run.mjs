@@ -10,6 +10,7 @@ export function readConfig(env) {
     repo: env.GITHUB_REPOSITORY ?? "",
     prNumber: env.PR_NUMBER ?? "",
     headSha: env.HEAD_SHA ?? "",
+    headPushedAt: typeof env.HEAD_PUSHED_AT === "string" ? env.HEAD_PUSHED_AT : "",
     pollIntervalSeconds: Number.isFinite(interval) ? Math.max(1, interval) : 30,
     pollTimeoutSeconds: Number.isFinite(timeout) && timeout >= 0 ? timeout : 600,
   };
