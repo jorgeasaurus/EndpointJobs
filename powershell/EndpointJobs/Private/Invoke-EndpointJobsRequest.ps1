@@ -20,9 +20,13 @@ function Invoke-EndpointJobsRequest {
         }
 
         if ($apiError) {
+            $statusCode = Get-EndpointJobsHttpStatusCode -ErrorRecord $_
             $message = [string]$apiError.message
             if ($apiError.details) {
                 $message = '{0} {1}' -f $message, ($apiError.details -join '; ')
+            }
+            if ($null -ne $statusCode) {
+                $message = 'HTTP {0}: {1}' -f $statusCode, $message
             }
 
             $category = if ($apiError.code -eq 'JOB_NOT_FOUND') {
@@ -32,6 +36,9 @@ function Invoke-EndpointJobsRequest {
                 [System.Management.Automation.ErrorCategory]::InvalidData
             }
             $exception = [System.InvalidOperationException]::new($message, $_.Exception)
+            if ($null -ne $statusCode) {
+                $exception | Add-Member -NotePropertyName StatusCode -NotePropertyValue $statusCode
+            }
             $record = [System.Management.Automation.ErrorRecord]::new(
                 $exception,
                 [string]$apiError.code,
@@ -43,4 +50,28 @@ function Invoke-EndpointJobsRequest {
 
         throw
     }
+}
+
+function Get-EndpointJobsHttpStatusCode {
+    param($ErrorRecord)
+
+    $candidates = @(
+        $ErrorRecord.Exception.Response.StatusCode,
+        $ErrorRecord.Exception.StatusCode,
+        $ErrorRecord.Exception.InnerException.Response.StatusCode,
+        $ErrorRecord.Exception.InnerException.StatusCode
+    )
+    foreach ($candidate in $candidates) {
+        if ($null -eq $candidate -or "$candidate" -eq '') { continue }
+        $number = 0
+        if ([int]::TryParse("$candidate", [ref]$number) -and $number -gt 0) {
+            return $number
+        }
+        if ($candidate -is [System.Enum]) {
+            $number = [int]$candidate
+            if ($number -gt 0) { return $number }
+        }
+    }
+
+    return $null
 }

@@ -116,6 +116,7 @@
 
   .topbar .api-docs-link,
   .topbar .mcp-docs-link,
+  .topbar .topbar-feedback-link,
   .topbar .support-link,
   .topbar .auth-entry {
     display: inline-flex;
@@ -130,6 +131,7 @@
 
   .api-docs-link span,
   .mcp-docs-link span,
+  .topbar-feedback-link span,
   .support-link span {
     display: none;
   }
@@ -306,9 +308,14 @@
   .mode-button {
     width: 100%;
     min-width: 0;
-    min-height: 42px;
+    min-height: 44px;
     padding: 0 10px;
     font-size: 0.92rem;
+  }
+
+  .advanced-filters-summary,
+  .mobile-filter-summary {
+    min-height: 44px;
   }
 
 
@@ -385,10 +392,6 @@
 
   .results-heading h2 {
     font-size: 1.22rem;
-  }
-
-  .results-panel .feed-note {
-    display: none;
   }
 
   .pagination-bar {

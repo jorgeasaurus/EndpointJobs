@@ -107,7 +107,9 @@ function organizationNode() {
 
 function applicationNode() {
   return {
-    "@type": "WebApplication",
+    // A browser job board is a WebApplication. SoftwareApplication is the parent
+    // type, and some consumers only match that name, so both are emitted.
+    "@type": ["WebApplication", "SoftwareApplication"],
     "@id": `${siteUrl}/#app`,
     name: siteName,
     url: siteUrl,

@@ -358,6 +358,13 @@ test("explicit source currency survives a foreign location", () => {
   assert.equal(assumed?.currency, "CAD");
   assert.equal(assumed?.label, "CA$120k");
 
+  const labeledUsd = presentSalary({
+    location: "Paris, France",
+    salary: { min: 80000, currency: "USD", currencySource: "default", label: "USD 80k" }
+  });
+  assert.equal(labeledUsd?.currency, "USD");
+  assert.equal(labeledUsd?.label, "USD 80k");
+
   const fetchedAt = new Date("2026-10-25T11:24:56.320Z");
   const serp = normalizeSerpApiGoogleJob({
     title: "Endpoint Engineer",

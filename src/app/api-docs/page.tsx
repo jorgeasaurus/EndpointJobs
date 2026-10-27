@@ -90,7 +90,7 @@ export default function ApiDocsPage() {
               <a href="https://github.com/jorgeasaurus/EndpointJobs/blob/main/docs/api.md" rel="noopener noreferrer" target="_blank">
                 Full reference
               </a>
-              <Link href="/#open-roles">Browse jobs</Link>
+              <Link href="/board#open-roles">Browse jobs</Link>
             </nav>
           </header>
 
