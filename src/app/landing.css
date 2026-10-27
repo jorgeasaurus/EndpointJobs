@@ -1,0 +1,98 @@
+.landing {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 18px;
+  padding: clamp(22px, 4vw, 48px);
+  background:
+    linear-gradient(125deg, rgb(190 242 100 / 8%), transparent 42%),
+    rgb(13 17 20 / 88%);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.landing h1 {
+  max-width: 16ch;
+  margin: 0;
+  font-size: clamp(2.4rem, 6vw, 4.6rem);
+  line-height: 0.96;
+  letter-spacing: -0.055em;
+}
+
+.landing-lead,
+.landing-account p,
+.landing-account li {
+  max-width: 68ch;
+  margin: 0;
+  color: var(--white-60);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.landing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.landing-jobs-link,
+.landing-account-button {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.landing-jobs-link {
+  color: var(--black);
+  background: var(--lime);
+  box-shadow: var(--glow-lime);
+}
+
+.landing-jobs-link:hover,
+.landing-jobs-link:focus-visible {
+  color: var(--black);
+  background: var(--white);
+}
+
+.landing-jobs-link:focus-visible,
+.landing-account-button:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+}
+
+.landing-account-button {
+  color: var(--lime);
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid rgb(190 242 100 / 42%);
+}
+
+.landing-account-button:hover {
+  color: var(--black);
+  background: var(--lime);
+}
+
+.landing-account {
+  display: grid;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--glass-border);
+}
+
+.landing-account h2 {
+  margin: 8px 0 0;
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+}
+
+.landing-account a {
+  color: var(--lime);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

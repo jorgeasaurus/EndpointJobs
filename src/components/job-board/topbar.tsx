@@ -5,6 +5,7 @@ import {
   MessageSquarePlus,
   MonitorSmartphone,
   Rows3,
+  Search,
   RefreshCw,
   Shield,
   SquareTerminal
@@ -14,7 +15,7 @@ import Link from "next/link";
 import { AppreciateButton } from "@/components/appreciate-button";
 import { AuthMenu } from "@/components/auth/auth-menu";
 import { formatUpdatedAt } from "@/lib/jobs";
-import { appVersion, getApiDocsPath, getJobsDirectoryPath, getMcpDocsPath } from "@/app/site-metadata";
+import { appVersion, getApiDocsPath, getBoardPath, getJobsDirectoryPath, getMcpDocsPath } from "@/app/site-metadata";
 
 export function Topbar({ updatedAt }: { updatedAt: string }) {
   return (
@@ -102,6 +103,10 @@ export function SiteFooter({ updatedAt }: { updatedAt: string }) {
             <SquareTerminal size={15} aria-hidden="true" /><span>PowerShell</span>
           </a>
           {/* Disable speculative prefetch to prevent stale page-one metadata during query pagination. */}
+          <Link className="feedback-link footer-link" href={getBoardPath()}>
+            <Search size={15} aria-hidden="true" />
+            <span>Job board</span>
+          </Link>
           <Link className="feedback-link footer-link" href={getJobsDirectoryPath()} prefetch={false}>
             <Rows3 size={15} aria-hidden="true" />
             <span>All jobs</span>

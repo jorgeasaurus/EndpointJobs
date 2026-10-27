@@ -4,8 +4,8 @@ import { ExternalLink, ListTree, Scale, X } from "lucide-react";
 
 import { ScrollRegion } from "@/components/scroll-region";
 import { formatPostedDate, getFreshnessLabel } from "@/lib/jobs";
+import type { BoardListing } from "@/lib/board-page";
 import { getJobWorkplace } from "@/lib/workplace";
-import type { Job } from "@/types/job";
 
 const minimumComparedJobs = 2;
 
@@ -14,7 +14,7 @@ export function JobComparison({
   onClear,
   onRemove
 }: {
-  jobs: Job[];
+  jobs: readonly BoardListing[];
   onClear: () => void;
   onRemove: (jobId: string) => void;
 }) {
@@ -129,9 +129,9 @@ function ComparisonRow({
   label,
   render
 }: {
-  jobs: Job[];
+  jobs: readonly BoardListing[];
   label: string;
-  render: (job: Job) => string;
+  render: (job: BoardListing) => string;
 }) {
   return (
     <tr>

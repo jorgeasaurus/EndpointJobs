@@ -43,6 +43,15 @@ export type FilterAction =
 
 export type FilterDispatch = (action: FilterAction) => void;
 
+export function withInitialTools(tools: readonly EndpointTool[] = []): FilterState {
+  if (tools.length === 0) return initialFilterState;
+
+  return {
+    ...initialFilterState,
+    selectedTools: [...tools]
+  };
+}
+
 export const initialFilterState: FilterState = {
   query: "",
   locationQuery: "",

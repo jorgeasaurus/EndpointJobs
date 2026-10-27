@@ -51,6 +51,10 @@ export function getJobsDirectoryPath(page = 1): Route {
   return (page > 1 ? `/jobs?page=${page}` : "/jobs") as Route;
 }
 
+export function getBoardPath(): Route {
+  return "/board" as Route;
+}
+
 export function getApiDocsPath(): Route {
   return "/api-docs" as Route;
 }

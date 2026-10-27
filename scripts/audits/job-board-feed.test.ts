@@ -4,6 +4,8 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 import { JobBoard } from "../../src/components/job-board";
+import { initialFilterState } from "../../src/components/job-board/filter-model";
+import { getActiveBoardFeed, queryBoardPage } from "../../src/lib/board-page";
 import { isActiveJob } from "../../src/lib/jobs";
 import type { JobsFeed } from "../../src/types/job";
 
@@ -31,14 +33,17 @@ export async function auditJobBoardFeed(run: AuditContext["run"]) {
     };
 
     assertTruthy(isActiveJob(job, serverNow), "fixture must be active in the server snapshot");
-    mock.timers.enable({ apis: ["Date"], now: clientNow });
+    assertTruthy(!isActiveJob(job, clientNow), "fixture must be expired on the client clock");
+    mock.timers.enable({ apis: ["Date"], now: serverNow });
+    const initialPage = queryBoardPage(getActiveBoardFeed(feed), initialFilterState, 1);
+    mock.timers.setTime(clientNow.getTime());
 
     try {
       const markup = renderToStaticMarkup(
         createElement(
           AppRouterContext.Provider,
           { value: auditAppRouter },
-          createElement(JobBoard, { feed })
+          createElement(JobBoard, { initialPage })
         )
       );
 

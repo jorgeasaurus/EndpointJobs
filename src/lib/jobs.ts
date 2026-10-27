@@ -157,19 +157,19 @@ export function getSalarySortValue(job: Job) {
   return job.salary?.max ?? job.salary?.min ?? 0;
 }
 
-export function getExpandedDescriptionParagraphs(job: Job) {
+export function getExpandedDescriptionParagraphs(job: Pick<Job, "summary" | "description">) {
   return getJobDescriptionBlocks(job).flatMap((block) =>
     block.type === "paragraph" ? [block.text] : block.items
   );
 }
 
-export function getJobDescriptionBlocks(job: Job): DescriptionBlock[] {
+export function getJobDescriptionBlocks(job: Pick<Job, "summary" | "description">): DescriptionBlock[] {
   const additionalDescription = getAdditionalDescription(job);
   if (!additionalDescription) return [];
   return toDescriptionBlocks(additionalDescription);
 }
 
-function getAdditionalDescription(job: Job) {
+function getAdditionalDescription(job: Pick<Job, "summary" | "description">) {
   const description = repairJobDescription(job.description?.trim() ?? "");
 
   if (!description) {

@@ -1,12 +1,11 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useMemo } from "react";
 import dynamic from "next/dynamic";
 
 import { ChevronDown, MapPin } from "lucide-react";
 
-import { buildJobMapPoints, type JobMapPoint } from "@/lib/job-map";
-import type { Job } from "@/types/job";
+import { buildJobMapPoints, type JobMapPoint, type JobMapRecord } from "@/lib/job-map";
 
 import { JobMapCanvasLoading } from "./job-map-loading";
 
@@ -18,20 +17,40 @@ const LazyJobMapCanvas = dynamic<{ points: JobMapPoint[] }>(
   }
 );
 
-export function JobMap({ id, jobs }: { id?: string; jobs: Job[] }) {
-  const [isExpanded, setIsExpanded] = useState(false);
+export function JobMap({
+  expanded,
+  id,
+  isLoading = false,
+  jobs,
+  knownMappedCount,
+  loadFailed = false,
+  onExpandedChange,
+  onRetry,
+  totalJobCount
+}: {
+  expanded: boolean;
+  id?: string;
+  isLoading?: boolean;
+  jobs: readonly JobMapRecord[];
+  knownMappedCount?: number;
+  loadFailed?: boolean;
+  onExpandedChange: (expanded: boolean) => void;
+  onRetry?: () => void;
+  totalJobCount?: number;
+}) {
   const points = useMemo(() => buildJobMapPoints(jobs), [jobs]);
-  const mappedJobCount = points.length;
+  const mappedJobCount = knownMappedCount ?? points.length;
+  const totalJobs = totalJobCount ?? jobs.length;
 
-  const handleToggleMap = useCallback(() => {
-    setIsExpanded((current) => !current);
-  }, []);
+  function handleToggleMap() {
+    onExpandedChange(!expanded);
+  }
 
   return (
     <section
       id={id}
       className={
-        isExpanded
+        expanded
           ? "job-map-section job-map-section--expanded"
           : "job-map-section job-map-section--collapsed"
       }
@@ -45,22 +64,35 @@ export function JobMap({ id, jobs }: { id?: string; jobs: Job[] }) {
         <div className="job-map-heading-actions">
           <span className="map-count-pill">
             <MapPin size={15} aria-hidden="true" />
-            {mappedJobCount} of {jobs.length}
+            {mappedJobCount} of {totalJobs}
           </span>
           <button
             aria-controls="job-map-canvas"
-            aria-expanded={isExpanded}
+            aria-expanded={expanded}
             className="map-toggle-button"
             onClick={handleToggleMap}
             type="button"
           >
-            {isExpanded ? "Hide map" : "Show map"}
+            {expanded ? "Hide map" : "Show map"}
             <ChevronDown size={16} aria-hidden="true" />
           </button>
         </div>
       </div>
 
-      {isExpanded ? <LazyJobMapCanvas points={points} /> : null}
+      {expanded ? (
+        isLoading && points.length === 0 ? (
+          <JobMapCanvasLoading />
+        ) : loadFailed && points.length === 0 ? (
+          <p className="map-load-error" role="alert">
+            Map data did not load.{" "}
+            <button type="button" onClick={onRetry}>
+              Try again
+            </button>
+          </p>
+        ) : (
+          <LazyJobMapCanvas points={points} />
+        )
+      ) : null}
     </section>
   );
 }

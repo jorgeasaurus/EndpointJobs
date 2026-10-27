@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { JobBoard } from "@/components/job-board";
+import { withInitialTools } from "@/components/job-board/filter-model";
 import feedData from "@/data/jobs.json";
+import { getActiveBoardFeed, queryBoardPage } from "@/lib/board-page";
 import { getEndpointToolSeo } from "@/lib/job-seo";
 import {
   endpointToolOptions,
   getEndpointToolBySlug,
   getEndpointToolSlug
 } from "@/lib/job-taxonomy";
-import { prepareBoardFeed } from "@/lib/job-trust";
 import type { JobsFeed } from "@/types/job";
 
 import {
@@ -27,9 +28,9 @@ const feed = feedData as JobsFeed;
 
 export const revalidate = 3600;
 
-// Static app segments (`/jobs`, `/api`, `/api-docs`) are more specific than
-// this `[tool]` param, so those routes keep winning. Only taxonomy slugs are
-// generated; anything else 404s.
+// Static app segments (`/board`, `/jobs`, `/privacy`, `/api`, `/api-docs`) are
+// more specific than this `[tool]` param, so those routes keep winning. Only
+// taxonomy slugs are generated; anything else 404s.
 export const dynamicParams = false;
 
 export function generateStaticParams() {
@@ -93,7 +94,8 @@ export default async function EndpointToolPage({ params }: ToolPageProps) {
     notFound();
   }
 
-  const activeFeed = prepareBoardFeed(feed);
+  const activeFeed = getActiveBoardFeed(feed);
+  const initialPage = queryBoardPage(activeFeed, withInitialTools([tool]), 1);
 
-  return <JobBoard feed={activeFeed} initialSelectedTools={[tool]} />;
+  return <JobBoard initialPage={initialPage} initialSelectedTools={[tool]} />;
 }

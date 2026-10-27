@@ -4,7 +4,7 @@ import { useCallback, useMemo, useSyncExternalStore } from "react";
 
 import type { EndpointTool } from "@/types/job";
 
-import { filterReducer, initialFilterState } from "./filter-model";
+import { filterReducer, initialFilterState, withInitialTools } from "./filter-model";
 import type { FilterAction, FilterState } from "./filter-model";
 import {
   filterStateFromLocation,
@@ -58,14 +58,7 @@ function getFilterSnapshot() {
 }
 
 function getServerFilterSnapshot(initialSelectedTools: readonly EndpointTool[]) {
-  if (initialSelectedTools.length === 0) {
-    return initialFilterState;
-  }
-
-  return {
-    ...initialFilterState,
-    selectedTools: [...initialSelectedTools]
-  };
+  return withInitialTools(initialSelectedTools);
 }
 
 function replaceFilterUrl(
@@ -91,7 +84,7 @@ function replaceFilterUrl(
     return;
   }
 
-  // Crossing `/` ↔ `/intune` is a real App Router segment change. replaceState
+  // Crossing `/board` ↔ `/intune` is a real App Router segment change. replaceState
   // alone updates the address bar without a navigation, so metadata/router
   // state would desync. Same-path query/hash updates stay on replaceState so
   // JobBoard does not remount. Do not location.replace — that full-reloads.

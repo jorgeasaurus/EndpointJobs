@@ -2,7 +2,7 @@
 
 import { Github, LogIn } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { buildOAuthRedirectTo } from "@/lib/auth/safe-next-path";
 import { createClient } from "@/lib/supabase/client";
@@ -12,8 +12,9 @@ import { AccountMenu } from "./account-menu";
 
 type Provider = "google" | "github";
 
-export function AuthMenu() {
+export function AuthMenu({ variant = "toolbar" }: { variant?: "toolbar" | "landing" }) {
   const configured = isSupabaseConfigured();
+  const dialogTitleId = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +53,7 @@ export function AuthMenu() {
   return (
     <>
       <button
-        className="feedback-link auth-entry"
+        className={variant === "landing" ? "landing-account-button" : "feedback-link auth-entry"}
         type="button"
         aria-haspopup="dialog"
         onClick={() => {
@@ -61,12 +62,17 @@ export function AuthMenu() {
         }}
       >
         <LogIn size={15} aria-hidden="true" />
-        <span className="auth-entry-label">Sign in</span>
+        <span className="auth-entry-label">
+          {variant === "landing" ? "Sign in or create an account" : "Sign in"}
+        </span>
       </button>
-      <dialog ref={dialogRef} className="auth-dialog" aria-labelledby="auth-dialog-title">
+      <dialog ref={dialogRef} className="auth-dialog" aria-labelledby={dialogTitleId}>
         <form method="dialog" className="auth-dialog-body">
-          <h2 id="auth-dialog-title">Sign in</h2>
-          <p>Use Google or GitHub. Endpoint Jobs never sees that password.</p>
+          <h2 id={dialogTitleId}>Sign in or create an account</h2>
+          <p>
+            Use Google or GitHub. The first sign-in creates your account. Endpoint Jobs never
+            sees that password.
+          </p>
           <button className="auth-provider" type="button" onClick={() => void signIn("google")}>
             Continue with Google
           </button>

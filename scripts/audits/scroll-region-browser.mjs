@@ -22,13 +22,13 @@ try {
   await page.setViewportSize({ width: 390, height: 844 });
   await expectKeyboardScroll(parameters);
 
-  await page.goto(baseUrl, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}/board`, { waitUntil: "networkidle" });
   for (let selected = 0; selected < 4; selected++) {
     await page.getByRole("button", { name: "Compare", exact: true }).first().click();
   }
   await expectKeyboardScroll(page.getByRole("region", { name: "Scrollable job comparison" }));
 
-  await page.goto(`${baseUrl}/?sort=company`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}/board?sort=company`, { waitUntil: "networkidle" });
   const advanced = page.locator(".advanced-filters");
   await expect(advanced).toHaveAttribute("open", "");
   await page.getByRole("button", { name: "Clear all", exact: true }).first().click();
@@ -37,7 +37,7 @@ try {
   await expect(advanced).not.toHaveAttribute("open", "");
   await page.getByRole("searchbox", { name: "Search jobs" }).fill("Intune");
   await expect(advanced).not.toHaveAttribute("open", "");
-  await page.goto(`${baseUrl}/?sort=company&seniority=Senior`, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}/board?sort=company&seniority=Senior`, { waitUntil: "networkidle" });
   await expect(advanced).toHaveAttribute("open", "");
   await advanced.locator("summary").click();
   await expect(advanced).not.toHaveAttribute("open", "");

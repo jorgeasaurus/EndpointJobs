@@ -49,7 +49,7 @@ function expectUniformRow(row: ChipBox[]) {
 }
 
 async function openFixtureCard(page: Page) {
-  await page.goto("/");
+  await page.goto("/board");
   const card = page.locator(`#${fixtureCardId}`);
   await expect(
     card,

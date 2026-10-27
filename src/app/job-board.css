@@ -769,6 +769,28 @@ h1 {
   overflow: hidden;
 }
 
+.board-grid[aria-busy="true"] .results-panel {
+  opacity: 0.72;
+}
+
+.board-query-error,
+.map-load-error {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 0;
+  padding: 12px 22px;
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.board-query-error button,
+.map-load-error button,
+.description-body button {
+  color: inherit;
+  font-weight: 700;
+}
+
 .results-heading {
   display: flex;
   justify-content: space-between;

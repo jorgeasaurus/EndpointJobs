@@ -1,6 +1,6 @@
 import { Clock3, Layers3 } from "lucide-react";
 
-import type { Job } from "@/types/job";
+import type { BoardListing } from "@/lib/board-page";
 import type { FilterState } from "./filter-model";
 
 import { AnimatedNumber } from "./animated-number";
@@ -34,8 +34,8 @@ export function ResultsPanel({
   sort: SortKey;
   query: string;
   selectedJobIds: Set<string>;
-  toggleComparison: (job: Job) => void;
-  visibleJobs: Job[];
+  toggleComparison: (job: BoardListing) => void;
+  visibleJobs: readonly BoardListing[];
 }) {
   return (
     <section className="results-panel" aria-label="Job listings">

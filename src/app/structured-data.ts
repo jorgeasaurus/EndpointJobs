@@ -15,6 +15,13 @@ import {
   siteUrl
 } from "./site-metadata";
 
+export function getLandingJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [websiteNode(), organizationNode(), applicationNode(), breadcrumbNode()]
+  };
+}
+
 export function getHomeJsonLd(feed: JobsFeed) {
   const topListings = feed.jobs.slice(0, 20).map((job, index) => ({
     "@type": "ListItem",
@@ -29,38 +36,17 @@ export function getHomeJsonLd(feed: JobsFeed) {
       sameAs: job.applyUrl ?? job.sourceUrl
     }
   }));
+
   return {
     "@context": "https://schema.org",
     "@graph": [
-      {
-        "@type": "WebSite",
-        "@id": `${siteUrl}/#website`,
-        name: siteName,
-        url: siteUrl,
-        description: siteDescription,
-        inLanguage: "en-US",
-        keywords: siteKeywords.join(", "),
-        publisher: {
-          "@id": `${siteUrl}/#publisher`
-        },
-        potentialAction: {
-          "@type": "SearchAction",
-          target: `${siteUrl}/?q={search_term_string}`,
-          "query-input": "required name=search_term_string"
-        }
-      },
-      {
-        "@type": "Organization",
-        "@id": `${siteUrl}/#publisher`,
-        name: siteName,
-        url: siteUrl,
-        sameAs: [repositoryUrl]
-      },
+      websiteNode(),
+      organizationNode(),
       {
         "@type": "CollectionPage",
-        "@id": `${siteUrl}/#endpoint-jobs`,
+        "@id": `${siteUrl}/board#listings`,
         name: "Endpoint Engineering job listings",
-        url: siteUrl,
+        url: `${siteUrl}/board`,
         description: siteDescription,
         inLanguage: "en-US",
         dateModified: feed.updatedAt,
@@ -83,30 +69,68 @@ export function getHomeJsonLd(feed: JobsFeed) {
           itemListElement: topListings
         }
       },
+      applicationNode(),
+      breadcrumbNode()
+    ]
+  };
+}
+
+function websiteNode() {
+  return {
+    "@type": "WebSite",
+    "@id": `${siteUrl}/#website`,
+    name: siteName,
+    url: siteUrl,
+    description: siteDescription,
+    inLanguage: "en-US",
+    keywords: siteKeywords.join(", "),
+    publisher: {
+      "@id": `${siteUrl}/#publisher`
+    },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${siteUrl}/board?q={search_term_string}`,
+      "query-input": "required name=search_term_string"
+    }
+  };
+}
+
+function organizationNode() {
+  return {
+    "@type": "Organization",
+    "@id": `${siteUrl}/#publisher`,
+    name: siteName,
+    url: siteUrl,
+    sameAs: [repositoryUrl]
+  };
+}
+
+function applicationNode() {
+  return {
+    "@type": "WebApplication",
+    "@id": `${siteUrl}/#app`,
+    name: siteName,
+    url: siteUrl,
+    description: siteDescription,
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Any",
+    browserRequirements: "Requires JavaScript for filtering and map interactions",
+    isPartOf: {
+      "@id": `${siteUrl}/#website`
+    }
+  };
+}
+
+function breadcrumbNode() {
+  return {
+    "@type": "BreadcrumbList",
+    "@id": `${siteUrl}/#breadcrumbs`,
+    itemListElement: [
       {
-        "@type": "WebApplication",
-        "@id": `${siteUrl}/#app`,
+        "@type": "ListItem",
+        position: 1,
         name: siteName,
-        url: siteUrl,
-        description: siteDescription,
-        applicationCategory: "BusinessApplication",
-        operatingSystem: "Any",
-        browserRequirements: "Requires JavaScript for filtering and map interactions",
-        isPartOf: {
-          "@id": `${siteUrl}/#website`
-        }
-      },
-      {
-        "@type": "BreadcrumbList",
-        "@id": `${siteUrl}/#breadcrumbs`,
-        itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: siteName,
-            item: siteUrl
-          }
-        ]
+        item: siteUrl
       }
     ]
   };

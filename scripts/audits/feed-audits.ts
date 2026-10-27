@@ -67,13 +67,14 @@ export async function auditFeedIntegrity({ feed, run, sources }: AuditContext) {
     assertEqual(isActiveJob(oldPostedJob, fixedAuditNow), false);
     assertEqual(isActiveJob(freshJob, fixedAuditNow), true);
     assertIncludes(sources.jobExclusions, "maxPostedAgeDays: 30", "Adzuna posted-age cap");
-    assertIncludes(sources.page, "jobs: feed.jobs.filter((job) => isActiveJob(job))", "page active feed filter");
-    for (const route of ["page", "toolPage", "jobPage", "sitemap"] as const) {
+    assertIncludes(sources.jobBoardPage, "getActiveBoardFeed(feedData as JobsFeed)", "board page active feed filter");
+    assertIncludes(sources.boardPage, "prepareBoardFeed(feed)", "board feed drops inactive jobs");
+    for (const route of ["page", "jobBoardPage", "toolPage", "jobPage", "sitemap"] as const) {
       assertIncludes(sources[route], "export const revalidate = 3600", `${route} hourly expiry refresh interval`);
     }
     assertIncludes(sources.workday, "completedQueries", "Workday skips isolated query failures");
-    assertIncludes(sources.page, "activeFeed", "home page active feed projection");
-    assertIncludes(sources.page, "getHomeJsonLd(activeFeed)", "JSON-LD uses filtered active feed");
+    assertIncludes(sources.jobBoardPage, "activeFeed", "board page active feed projection");
+    assertIncludes(sources.jobBoardPage, "getHomeJsonLd(activeFeed)", "JSON-LD uses filtered active feed");
     assertIncludes(sources.packageJson, '"audit:data"', "package script for data audit");
 
     const activeExpiredAdzuna = feed.jobs.filter(

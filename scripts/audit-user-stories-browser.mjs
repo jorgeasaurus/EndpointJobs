@@ -61,7 +61,7 @@ async function newPage(browser, viewport, options = {}) {
       resourceErrors.push({ status: response.status(), url: response.url() });
     }
   });
-  await page.goto(baseUrl, { waitUntil: "networkidle" });
+  await page.goto(`${baseUrl}/board`, { waitUntil: "networkidle" });
   return page;
 }
 
@@ -222,9 +222,9 @@ await run("FEAT-072", "Current-view coverage metrics update with filters", async
 
 await run("FEAT-021", "Back navigation restores URL-derived filter state", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
-  await page.goto(baseUrl + "/?q=Jamf", { waitUntil: "domcontentloaded" });
+  await page.goto(baseUrl + "/board?q=Jamf", { waitUntil: "domcontentloaded" });
   await expect(page.locator('input[data-job-search="true"]')).toHaveValue("Jamf");
-  await page.goto(baseUrl + "/?q=Intune", { waitUntil: "domcontentloaded" });
+  await page.goto(baseUrl + "/board?q=Intune", { waitUntil: "domcontentloaded" });
   await expect(page.locator('input[data-job-search="true"]')).toHaveValue("Intune");
   await page.goBack({ waitUntil: "domcontentloaded" });
   await expect(page.locator('input[data-job-search="true"]')).toHaveValue("Jamf");
@@ -278,7 +278,7 @@ await run("QA-009", "Pagination boundaries keep top and bottom controls in sync"
 await run("FEAT-027", "Expandable descriptions open", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
   await page.goto(
-    baseUrl + "/?q=" + encodeURIComponent(descriptionScenario.query),
+    baseUrl + "/board?q=" + encodeURIComponent(descriptionScenario.query),
     { waitUntil: "networkidle" }
   );
   await expect(
@@ -863,7 +863,7 @@ async function clearActiveFilters(page) {
 }
 
 function withQuery(params) {
-  const url = new URL(baseUrl);
+  const url = new URL("/board", baseUrl);
 
   for (const [key, value] of Object.entries(params)) {
     url.searchParams.set(key, value);

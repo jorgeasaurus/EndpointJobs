@@ -49,7 +49,7 @@ export function getBoardPathnameForFilters(filters: FilterState) {
     return `/${getEndpointToolSlug(filters.selectedTools[0])}`;
   }
 
-  return "/";
+  return "/board";
 }
 
 export function filterStateFromLocation(
@@ -154,6 +154,18 @@ export function toSortKey(value: string): SortKey {
   }
 
   return "newest";
+}
+
+export function filterStateToBoardSearchParams(filters: FilterState, page = 1) {
+  const params = filterStateToSearchParams(filters);
+
+  if (filters.selectedTools.length === 1) {
+    params.set(filterParams.selectedTools, filters.selectedTools.join(","));
+  }
+
+  if (page > 1) params.set("page", String(page));
+
+  return params;
 }
 
 function filterStateToSearchParams(filters: FilterState) {

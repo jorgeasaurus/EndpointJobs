@@ -113,7 +113,7 @@ export default function PrivacyPage() {
               accepted this version of the policy.
             </p>
             <p>
-              <Link href="/">Back to the job board</Link>
+              <Link href="/">Back to Endpoint Jobs</Link>
             </p>
           </section>
         </article>
