@@ -5,7 +5,8 @@ import { initialFilterState } from "@/components/job-board/filter-model";
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
 import { SiteFooter, Topbar } from "@/components/job-board/topbar";
 import feedData from "@/data/jobs.json";
-import { getActiveBoardFeed, queryBoardPage } from "@/lib/board-page";
+import { getActiveBoardFeed, queryBoardPage, selectLandingPreview } from "@/lib/board-page";
+import { presentSalary } from "@/lib/job-trust";
 import { getJobWorkplace } from "@/lib/workplace";
 import type { JobsFeed } from "@/types/job";
 
@@ -34,11 +35,12 @@ const countFormat = new Intl.NumberFormat("en-US");
 export default function Home() {
   const activeFeed = getActiveBoardFeed(feedData as JobsFeed);
   const board = queryBoardPage(activeFeed, initialFilterState, 1);
-  const preview = board.jobs.slice(0, 4).map((job) => ({
+  const preview = selectLandingPreview(activeFeed.jobs, initialFilterState).map((job) => ({
     id: job.id,
     title: job.title,
     company: job.company,
-    workplace: getJobWorkplace(job)
+    workplace: getJobWorkplace(job),
+    salary: presentSalary(job)?.label ?? ""
   }));
   const stats = [
     { label: "Open roles", value: board.total },
@@ -75,13 +77,13 @@ export default function Home() {
             </dl>
           </div>
 
-          <aside className="landing-preview" aria-label="Newest open roles">
+          <aside className="landing-preview" aria-label="Newest roles with salary">
             <header>
-              <p className="section-kicker">Newest on the board</p>
+              <p className="section-kicker">Newest with salary</p>
               <Link href={getBoardPath()}>All roles</Link>
             </header>
             {preview.length === 0 ? (
-              <p className="landing-preview-empty">No open roles yet.</p>
+              <p className="landing-preview-empty">No roles with a posted salary yet.</p>
             ) : (
               <ol>
                 {preview.map((job) => (
@@ -90,7 +92,10 @@ export default function Home() {
                       <strong>{job.title}</strong>
                       <span>
                         <span>{job.company}</span>
-                        <span className="landing-workplace">{job.workplace}</span>
+                        <span className="landing-meta">
+                          <span className="landing-salary">{job.salary}</span>
+                          <span className="landing-workplace">{job.workplace}</span>
+                        </span>
                       </span>
                     </Link>
                   </li>

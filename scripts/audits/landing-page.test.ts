@@ -8,12 +8,13 @@ import ts from "typescript";
 
 import { initialFilterState } from "../../src/components/job-board/filter-model";
 import { getLandingJsonLd, serializeJsonLd } from "../../src/app/structured-data";
-import { queryBoardPage } from "../../src/lib/board-page";
+import { hasShownSalary, queryBoardPage, selectLandingPreview } from "../../src/lib/board-page";
 import { boardHomeRedirectKeys, filterSearchParamKeys } from "../../src/lib/board-search-params";
 import { legacyHomeBoardRedirect } from "../../src/lib/legacy-board-url";
 import { getJobWorkplace } from "../../src/lib/workplace";
+import type { Job } from "../../src/types/job";
 import { assertPrerenderedHomeHtml, prerenderedHomeHtmlPath } from "./home-html-size";
-import { makeJob } from "./shared";
+import { daysAgo, makeJob } from "./shared";
 
 const homePath = fileURLToPath(new URL("../../src/app/page.tsx", import.meta.url));
 const srcRoot = fileURLToPath(new URL("../../src/", import.meta.url));
@@ -30,7 +31,10 @@ test("the home page is a landing page with a privacy link and an account reason"
   assert.match(home, /which listings you have opened/i);
   assert.match(home, /An account is optional/);
   assert.match(home, /export const revalidate = 3600/);
-  assert.match(home, /\.slice\(0, 4\)/);
+  assert.match(home, /selectLandingPreview\(activeFeed\.jobs, initialFilterState\)/);
+  assert.match(home, /Newest with salary/);
+  assert.match(home, />All roles</);
+  assert.doesNotMatch(home, /Newest on the board/);
   assert.match(home, /label: "Open roles", value: board\.total/);
   assert.match(home, /label: "Remote or hybrid", value: board\.metrics\.remoteJobsCount/);
   assert.doesNotMatch(home, /label: "Remote",/);
@@ -214,6 +218,104 @@ test("the remote metric includes hybrid roles on the same jobs as the open-role 
   assert.equal(page.metrics.remoteJobsCount, 2);
   assert.ok(page.metrics.remoteJobsCount > remoteOnly);
   assert.ok(page.metrics.salaryJobsCount <= page.total);
+});
+
+test("a shown salary is a posted amount, not an empty or placeholder label", () => {
+  assert.equal(hasShownSalary(makeJob()), false);
+  assert.equal(hasShownSalary(makeJob({ salary: { currency: "USD", label: "   " } })), false);
+  assert.equal(hasShownSalary(makeJob({ salary: { min: 140000, max: 160000, currency: "USD", label: " " } })), false);
+
+  for (const label of ["Competitive", "Salary not listed", "N/A", "TBD", "-", "not disclosed"]) {
+    assert.equal(
+      hasShownSalary(makeJob({ salary: { min: 140000, max: 160000, currency: "USD", label } })),
+      false,
+      label
+    );
+  }
+
+  assert.equal(
+    hasShownSalary(makeJob({ salary: { min: 140000, max: 160000, currency: "USD", label: " $140k-$160k " } })),
+    true
+  );
+  assert.equal(
+    hasShownSalary(makeJob({
+      salary: {
+        min: 110960,
+        max: 138700,
+        currency: "USD",
+        label: "$110,960-$138,700/year in Florida and Denver"
+      }
+    })),
+    true
+  );
+});
+
+test("the landing preview is the newest roles with a shown salary, capped at the same four rows", () => {
+  const paid = (id: string, days: number, label: string, min: number): Job => makeJob({
+    id,
+    title: id,
+    company: id,
+    postedAt: daysAgo(days),
+    sourceUrl: `https://example.com/${id}`,
+    applyUrl: `https://example.com/${id}/apply`,
+    salary: { min, max: min + 20000, currency: "USD", label }
+  });
+  const jobs = [
+    paid("unknown-date-paid", 0, "$150k-$170k", 150000),
+    makeJob({
+      id: "newest-unpaid",
+      title: "Newest unpaid",
+      company: "Unpaid Co",
+      postedAt: daysAgo(1),
+      sourceUrl: "https://example.com/newest-unpaid",
+      applyUrl: "https://example.com/newest-unpaid/apply"
+    }),
+    makeJob({
+      id: "placeholder-salary",
+      title: "Placeholder salary",
+      company: "Placeholder Co",
+      postedAt: daysAgo(1),
+      sourceUrl: "https://example.com/placeholder-salary",
+      applyUrl: "https://example.com/placeholder-salary/apply",
+      salary: { min: 180000, max: 200000, currency: "USD", label: "Competitive" }
+    }),
+    paid("paid-new", 2, "$140k-$160k", 140000),
+    paid("paid-mid", 3, "$130k-$150k", 130000),
+    paid("paid-older", 4, "$120k-$140k", 120000),
+    paid("paid-fourth", 5, "$110k-$130k", 110000),
+    paid("paid-fifth", 6, "$100k-$120k", 100000)
+  ];
+  const feed = {
+    updatedAt: "2026-10-26T00:00:00.000Z",
+    source: { name: "Audit", url: "https://example.com/audit" },
+    jobs
+  };
+  const page = queryBoardPage(feed, initialFilterState, 1);
+  const preview = selectLandingPreview(jobs, initialFilterState);
+  const shownIds = ["paid-new", "paid-mid", "paid-older", "paid-fourth", "paid-fifth", "unknown-date-paid"];
+
+  assert.equal(page.metrics.salaryJobsCount, shownIds.length);
+  assert.deepEqual(preview.map((job) => job.id), shownIds.slice(0, 4));
+  assert.equal(preview.length, 4);
+  for (const job of preview) {
+    assert.equal(hasShownSalary(job), true);
+  }
+
+  const shortFeed = jobs.filter((job) => job.id === "paid-new" || job.id === "newest-unpaid" || job.id === "placeholder-salary");
+  const shortPage = queryBoardPage({ ...feed, jobs: shortFeed }, initialFilterState, 1);
+  const shortPreview = selectLandingPreview(shortFeed, initialFilterState);
+
+  assert.equal(shortPage.metrics.salaryJobsCount, 1);
+  assert.deepEqual(shortPreview.map((job) => job.id), ["paid-new"]);
+});
+
+test("the home preview prints each shown salary and leaves the all-roles link alone", () => {
+  assert.match(home, /aria-label="Newest roles with salary"/);
+  assert.match(home, /presentSalary\(job\)\?\.label/);
+  assert.match(home, /className="landing-salary"/);
+  assert.match(home, /<Link href=\{getBoardPath\(\)\}>All roles<\/Link>/);
+  assert.doesNotMatch(home, /salary=1/);
+  assert.match(home, /No roles with a posted salary yet/);
 });
 
 test(

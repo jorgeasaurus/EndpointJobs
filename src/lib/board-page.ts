@@ -8,6 +8,16 @@ import type { Job, JobsFeed } from "@/types/job";
 
 export const boardPageSize = 20;
 
+export const landingPreviewLimit = 4;
+
+const placeholderSalaryLabel = /^(?:n\/?a|tbd|tba|todo|xxx|competitive|negotiable|doe|depends on experience|not disclosed|not listed|not shown|not available|unavailable|salary not listed|salary not shown|salary not disclosed|placeholder|to be determined|[-–—_.]+)$/i;
+
+export function hasShownSalary(job: Pick<Job, "salary">) {
+  const label = job.salary?.label.trim() ?? "";
+  if (!label || placeholderSalaryLabel.test(label)) return false;
+  return /[1-9]/.test(label);
+}
+
 export const boardCacheControl = "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400";
 
 export const boardListingOmittedFields = [
@@ -138,6 +148,24 @@ export function selectVisibleJobs(jobs: readonly Job[], filters: FilterState) {
   };
 }
 
+export function selectLandingPreview(
+  jobs: readonly Job[],
+  filters: FilterState,
+  limit = landingPreviewLimit
+) {
+  const count = limit > 0 ? Math.floor(limit) : landingPreviewLimit;
+  const { visibleJobs } = selectVisibleJobs(jobs, filters);
+  const preview: Job[] = [];
+
+  for (const job of visibleJobs) {
+    if (!hasShownSalary(job)) continue;
+    preview.push(job);
+    if (preview.length === count) break;
+  }
+
+  return preview;
+}
+
 export function toBoardListing(job: Job): BoardListing {
   const resolved = withResolvedWorkplace(job);
   const language = listingLanguage(resolved);
@@ -192,7 +220,7 @@ function measureVisibleJobs(jobs: readonly Job[]): BoardMetrics {
 
     if (job.mapLocation) mappedJobsCount += 1;
     if (workplace === "Remote" || workplace === "Hybrid") remoteJobsCount += 1;
-    if (job.salary) salaryJobsCount += 1;
+    if (hasShownSalary(job)) salaryJobsCount += 1;
   }
 
   return { mappedJobsCount, remoteJobsCount, salaryJobsCount };
