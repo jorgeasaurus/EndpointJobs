@@ -119,7 +119,35 @@ test("names containing import or export still reach the client-prop check", () =
     assert.equal(result.resolved, 4);
     assert.equal(result.unresolved, "");
     assert.equal(result.dynamic, "./lazy");
-    assert.equal(result.offenders, "Card,ImportDialog,reexportJobs,Listed,./lazy");
+    assert.equal(result.offenders, "./lazy,Card,ImportDialog,reexportJobs,Listed");
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("jsx prop checks read member tags, arrows, and spreads from the AST", () => {
+  const root = mkdtempSync(resolve(tmpdir(), "landing-jsx-"));
+  try {
+    writeFileSync(resolve(root, "ui.tsx"), "\"use client\";\nexport function Card() { return null; }\nexport function Badge() { return null; }\n");
+    writeFileSync(resolve(root, "card.tsx"), "\"use client\";\nexport function Card() { return null; }\n");
+    writeFileSync(resolve(root, "panel.tsx"), "\"use client\";\nexport function Panel() { return null; }\n");
+    const source = [
+      "import * as UI from \"./ui\";",
+      "import { Card } from \"./card\";",
+      "import { Panel } from \"./panel\";",
+      "<UI.Badge />",
+      "<UI.Card board={board} />",
+      "<Card title=\"only\" />",
+      "<Card onClick={() => go()} board={board} />",
+      "<Panel {...props} />"
+    ].join("\n");
+    const result = clientComponentsReceiving(source, resolve(root, "page.tsx"), "board");
+
+    assert.equal(result.local, 3);
+    assert.equal(result.resolved, 3);
+    assert.equal(result.unresolved, "");
+    assert.equal(result.dynamic, "");
+    assert.equal(result.offenders, "UI,Card,Panel");
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
@@ -228,6 +256,7 @@ function clientComponentsReceiving(source: string, filePath: string, prop: strin
   let local = 0;
   let resolved = 0;
   const sourceFile = ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, false, ts.ScriptKind.TSX);
+  const clientNames = new Set<string>();
 
   function note(specifier: string | null, imported: ParsedImport) {
     if (imported.kind === "dynamic") dynamic.push(specifier ?? "<non-literal>");
@@ -245,23 +274,15 @@ function clientComponentsReceiving(source: string, filePath: string, prop: strin
       return;
     }
     resolved += 1;
-    if (imported.kind === "type") return;
-
-    const moduleSource = readFileSync(modulePath, "utf8");
-    if (!/^["']use client["'];?/m.test(moduleSource)) return;
+    if (imported.kind === "type" || !moduleIsClient(modulePath)) return;
     if (imported.kind === "dynamic") {
       offenders.push(specifier);
       return;
     }
-
-    for (const name of imported.names) {
-      for (const tag of source.matchAll(new RegExp(`<${name}(\\s[^>]*)?>`, "g"))) {
-        if (new RegExp(`\\b${prop}\\b`).test(tag[0])) offenders.push(name);
-      }
-    }
+    for (const name of imported.names) clientNames.add(name);
   }
 
-  function visit(node: ts.Node) {
+  function visitImports(node: ts.Node) {
     if (ts.isImportDeclaration(node)) {
       note(literalSpecifier(node.moduleSpecifier), namesFromImport(node));
     } else if (ts.isExportDeclaration(node) && node.moduleSpecifier) {
@@ -270,10 +291,19 @@ function clientComponentsReceiving(source: string, filePath: string, prop: strin
       const argument = node.arguments[0];
       note(argument ? literalSpecifier(argument) : null, { kind: "dynamic", names: [] });
     }
-    ts.forEachChild(node, visit);
+    ts.forEachChild(node, visitImports);
   }
 
-  visit(sourceFile);
+  function visitJsx(node: ts.Node) {
+    if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
+      const root = tagRoot(node.tagName);
+      if (root && clientNames.has(root) && jsxPassesProp(node.attributes, prop)) offenders.push(root);
+    }
+    ts.forEachChild(node, visitJsx);
+  }
+
+  visitImports(sourceFile);
+  visitJsx(sourceFile);
   return {
     offenders: offenders.join(","),
     unresolved: unresolved.join(","),
@@ -317,6 +347,44 @@ function namesFromExport(node: ts.ExportDeclaration): ParsedImport {
 
 function literalSpecifier(expr: ts.Expression) {
   return ts.isStringLiteralLike(expr) ? expr.text : null;
+}
+
+function tagRoot(tagName: ts.JsxTagNameExpression) {
+  let current: ts.Node = tagName;
+  while (ts.isPropertyAccessExpression(current)) current = current.expression;
+  return ts.isIdentifier(current) ? current.text : null;
+}
+
+function jsxPassesProp(attributes: ts.JsxAttributes, prop: string) {
+  for (const property of attributes.properties) {
+    if (ts.isJsxSpreadAttribute(property)) return true;
+    if (ts.isJsxAttribute(property) && jsxAttributeName(property.name) === prop) return true;
+  }
+  return false;
+}
+
+function jsxAttributeName(name: ts.JsxAttributeName) {
+  return ts.isIdentifier(name) ? name.text : name.name.text;
+}
+
+function moduleIsClient(modulePath: string) {
+  const kind = scriptKind(modulePath);
+  if (!kind) return false;
+  const file = ts.createSourceFile(modulePath, readFileSync(modulePath, "utf8"), ts.ScriptTarget.Latest, false, kind);
+  for (const statement of file.statements) {
+    if (ts.isEmptyStatement(statement)) continue;
+    if (!ts.isExpressionStatement(statement) || !ts.isStringLiteralLike(statement.expression)) return false;
+    if (statement.expression.text === "use client") return true;
+  }
+  return false;
+}
+
+function scriptKind(modulePath: string) {
+  if (modulePath.endsWith(".tsx")) return ts.ScriptKind.TSX;
+  if (modulePath.endsWith(".jsx")) return ts.ScriptKind.JSX;
+  if (modulePath.endsWith(".ts") || modulePath.endsWith(".mts") || modulePath.endsWith(".cts")) return ts.ScriptKind.TS;
+  if (modulePath.endsWith(".js") || modulePath.endsWith(".mjs") || modulePath.endsWith(".cjs")) return ts.ScriptKind.JS;
+  return null;
 }
 
 function resolveLocalModule(specifier: string, fromFile: string) {
