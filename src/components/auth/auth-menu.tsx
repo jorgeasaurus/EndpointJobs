@@ -8,6 +8,7 @@ import { buildOAuthRedirectTo } from "@/lib/auth/safe-next-path";
 import { createClient } from "@/lib/supabase/client";
 
 import { AccountMenu } from "./account-menu";
+import { closeDialogOnBackdrop } from "./dialog-backdrop";
 import { registerSignInOpener } from "./open-sign-in";
 import { canShowSignInOffer, useSignInSession } from "./sign-in-session";
 
@@ -49,17 +50,6 @@ export function AuthMenu() {
     });
     if (!dialog) return unregister;
 
-    function closeOnBackdrop(event: MouseEvent) {
-      if (!dialog) return;
-      const box = dialog.getBoundingClientRect();
-      const inside =
-        event.clientX >= box.left &&
-        event.clientX <= box.right &&
-        event.clientY >= box.top &&
-        event.clientY <= box.bottom;
-      if (!inside) dialog.close();
-    }
-
     function trapTab(event: KeyboardEvent) {
       if (event.key !== "Tab" || !dialog) return;
       const focusable = [...dialog.querySelectorAll<HTMLElement>("a[href], button:not([disabled])")];
@@ -78,10 +68,10 @@ export function AuthMenu() {
       }
     }
 
-    dialog.addEventListener("click", closeOnBackdrop);
+    dialog.addEventListener("click", closeDialogOnBackdrop);
     dialog.addEventListener("keydown", trapTab);
     return () => {
-      dialog.removeEventListener("click", closeOnBackdrop);
+      dialog.removeEventListener("click", closeDialogOnBackdrop);
       dialog.removeEventListener("keydown", trapTab);
       unregister();
     };
