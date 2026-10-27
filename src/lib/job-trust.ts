@@ -276,7 +276,6 @@ export function canonicalPostingUrl(value: string) {
 function shouldInferLocationCurrency(salary: NonNullable<Job["salary"]>) {
   if (salary.currency !== "USD") return false;
   if (salary.currencySource === "source") return false;
-  if (salary.currencySource === "default") return true;
   return !explicitCurrencyMarker.test(salary.label);
 }
 

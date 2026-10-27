@@ -128,7 +128,7 @@ export default async function JobPage({ params }: JobPageProps) {
         <Topbar updatedAt={feed.updatedAt} />
 
         <nav aria-label="Breadcrumb" className="job-detail-breadcrumbs">
-          <Link href="/#open-roles">All endpoint jobs</Link>
+          <Link href="/board#open-roles">All endpoint jobs</Link>
           <span aria-hidden="true">/</span>
           <span aria-current="page">{job.title}</span>
         </nav>
@@ -159,7 +159,7 @@ export default async function JobPage({ params }: JobPageProps) {
                 Apply for this role
               </a>
               <JobAccountActions jobId={job.id} />
-              <Link className="job-detail-back" href="/#open-roles">
+              <Link className="job-detail-back" href="/board#open-roles">
                 Browse all roles
               </Link>
             </div>

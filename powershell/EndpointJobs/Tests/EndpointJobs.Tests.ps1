@@ -129,6 +129,24 @@ Describe 'Get-EndpointJob' {
             $thrown.TargetObject.AbsoluteUri | Should -BeLike 'https://example.test/api/jobs?*'
         }
 
+        It 'includes the HTTP status on structured API errors' {
+            Mock Invoke-RestMethod {
+                $exception = [System.Net.Http.HttpRequestException]::new(
+                    'Not found',
+                    $null,
+                    [System.Net.HttpStatusCode]::NotFound
+                )
+                $record = [System.Management.Automation.ErrorRecord]::new($exception, 'HttpError', 'InvalidOperation', $Uri)
+                $record.ErrorDetails = [System.Management.Automation.ErrorDetails]::new('{"error":{"code":"JOB_NOT_FOUND","message":"Job not found."}}')
+                throw $record
+            }
+
+            $thrown = { Get-EndpointJob -Id missing -BaseUri 'https://example.test' } | Should -Throw -PassThru
+            $thrown.FullyQualifiedErrorId | Should -BeLike 'JOB_NOT_FOUND,*'
+            $thrown.Exception.Message | Should -Be 'HTTP 404: Job not found.'
+            $thrown.Exception.StatusCode | Should -Be 404
+        }
+
         It 'maps missing jobs to ObjectNotFound' {
             Mock Invoke-RestMethod {
                 $exception = [System.Net.WebException]::new('Not found')

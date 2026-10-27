@@ -359,6 +359,7 @@ test("landing JSON-LD describes the site without embedding listings", () => {
   const serialized = serializeJsonLd(getLandingJsonLd());
   assert.match(serialized, /WebSite/);
   assert.match(serialized, /WebApplication/);
+  assert.match(serialized, /SoftwareApplication/);
   assert.match(serialized, /endpoint engineering jobs/i);
   assert.match(serialized, /\/board\?q=/);
   assert.doesNotMatch(serialized, /ItemList/);

@@ -112,6 +112,7 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     assertIncludes(serialized, "ItemList");
     assertIncludes(serialized, "SearchAction");
     assertIncludes(serialized, "WebApplication");
+    assertIncludes(serialized, "SoftwareApplication");
     assertIncludes(serialized, "BreadcrumbList");
     assertIncludes(serialized, '"numberOfItems":25');
     assertIncludes(serialized, "/jobs/schema-19");
