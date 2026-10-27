@@ -46,11 +46,13 @@ function fakeGithub({
   issueComments = [],
   timeline = [],
   reviewsByCall,
-  commitStatus = 200,
-  commitBody,
+  activity,
+  activityPages,
+  activityStatus = 200,
 } = {}) {
   const calls = [];
   let reviewReads = 0;
+  let activityReads = 0;
   return {
     calls,
     async request(method, path, body) {
@@ -75,14 +77,17 @@ function fakeGithub({
       if (method === "GET" && path.includes("/timeline?")) {
         return { status: 200, body: timeline };
       }
-      if (method === "GET" && path.startsWith("/commits/")) {
-        if (commitStatus !== 200) return { status: commitStatus, body: commitBody ?? { message: "missing commit" } };
+      if (method === "GET" && path.includes("/activity?")) {
+        if (activityStatus !== 200) return { status: activityStatus, body: { message: "forbidden" }, headers: {} };
+        if (activityPages) {
+          const page = activityPages[activityReads] ?? { body: [], link: "" };
+          activityReads += 1;
+          return { status: 200, body: page.body, headers: { link: page.link ?? "" } };
+        }
         return {
           status: 200,
-          body: commitBody ?? {
-            sha: path.slice("/commits/".length),
-            commit: { committer: { date: "1970-01-01T00:00:00Z" } },
-          },
+          headers: {},
+          body: activity ?? [{ activity_type: "push", after: HEAD, timestamp: "1970-01-01T00:00:00Z" }],
         };
       }
       return { status: 404, body: { message: "missing fake" } };
@@ -386,8 +391,8 @@ test("a failed dedup read does not post bugbot", async () => {
   assert.match(result.logs.join("\n"), /HTTP 403/);
 });
 
-function commitAuthoredAt(date) {
-  return { sha: HEAD, commit: { committer: { date } } };
+function pushActivity({ timestamp, after = HEAD, activityType = "push" }) {
+  return { activity_type: activityType, after, timestamp, ref: "refs/heads/feature" };
 }
 
 test("synchronize and opened ignore a bugbot comment from before the push", async () => {
@@ -409,42 +414,50 @@ test("synchronize and opened ignore a bugbot comment from before the push", asyn
     });
     assert.equal(result.outcome, "bugbot-triggered", action);
     assert.deepEqual(postedBodies(github), [BUGBOT_COMMENT_BODY], action);
-    assert.equal(
-      github.calls.some((call) => call.path.startsWith("/commits/")),
-      false,
-      action,
-    );
+    assert.equal(github.calls.some((call) => call.path.includes("/activity?")), false, action);
+    assert.equal(github.calls.some((call) => call.path.startsWith("/commits/")), false, action);
   }
 });
 
-test("ready_for_review and reopened post when the bugbot comment predates the head commit", async () => {
+test("ready_for_review and reopened post when the bugbot comment predates the push", async () => {
   const earlier = [{ id: 3, body: "bugbot run", created_at: "2026-10-27T11:00:00Z" }];
-  for (const action of ["ready_for_review", "reopened"]) {
+  const cases = [
+    ["ready_for_review", "push"],
+    ["reopened", "force_push"],
+  ];
+  for (const [action, activityType] of cases) {
     const github = fakeGithub({
       postStatus: 402,
       postBody: { message: "quota" },
       issueComments: earlier,
-      commitBody: commitAuthoredAt("2026-10-27T12:00:00Z"),
+      activityStatus: 403,
+    });
+    const contents = fakeGithub({
+      activity: [
+        pushActivity({ timestamp: "2026-10-27T13:00:00Z", after: OTHER }),
+        pushActivity({ timestamp: "2026-10-27T12:00:00Z", activityType }),
+      ],
     });
     const result = await runReviewFallback({
       token: fixtureReviewCredential,
       repo: "jorgeasaurus/EndpointJobs",
       prNumber: "12",
       headSha: HEAD,
+      headRef: "feature",
       headPushedAt: "2026-10-27T10:00:00Z",
       action,
       github,
+      contentsGithub: contents,
     });
     assert.equal(result.outcome, "bugbot-triggered", action);
     assert.deepEqual(postedBodies(github), [BUGBOT_COMMENT_BODY], action);
-    assert.ok(
-      github.calls.some((call) => call.method === "GET" && call.path === `/commits/${HEAD}`),
-      action,
-    );
+    assert.equal(github.calls.some((call) => call.path.includes("/activity?")), false, action);
+    assert.equal(contents.calls.some((call) => call.method === "POST"), false, action);
+    assert.ok(contents.calls.some((call) => call.method === "GET" && call.path.includes("ref=feature")), action);
   }
 });
 
-test("ready_for_review and reopened skip a bugbot comment at or after the head commit", async () => {
+test("ready_for_review and reopened skip a bugbot comment at or after the push", async () => {
   const cases = [
     ["ready_for_review", "2026-10-27T11:00:00Z"],
     ["reopened", "2026-10-27T11:30:00Z"],
@@ -454,57 +467,95 @@ test("ready_for_review and reopened skip a bugbot comment at or after the head c
       postStatus: 402,
       postBody: { message: "quota" },
       issueComments: [{ id: 3, body: "bugbot run", created_at: createdAt }],
-      commitBody: commitAuthoredAt("2026-10-27T11:00:00Z"),
+      activityStatus: 403,
+    });
+    const contents = fakeGithub({
+      activity: [pushActivity({ timestamp: "2026-10-27T11:00:00Z" })],
     });
     const result = await runReviewFallback({
       token: fixtureReviewCredential,
       repo: "jorgeasaurus/EndpointJobs",
       prNumber: "12",
       headSha: HEAD,
+      headRef: "feature",
       headPushedAt: "2026-10-27T13:00:00Z",
       action,
       github,
+      contentsGithub: contents,
     });
     assert.equal(result.outcome, "bugbot-already-requested", action);
     assert.deepEqual(postedBodies(github), [], action);
-    assert.ok(
-      github.calls.some((call) => call.method === "GET" && call.path === `/commits/${HEAD}`),
-      action,
-    );
+    assert.equal(github.calls.some((call) => call.path.includes("/activity?")), false, action);
   }
 });
 
-test("reopened with no bugbot comment still posts", async () => {
-  const firstFallback = fakeGithub({ postStatus: 402, postBody: { message: "quota" } });
-  const fresh = await runReviewFallback({
-    token: fixtureReviewCredential,
-    repo: "jorgeasaurus/EndpointJobs",
-    prNumber: "12",
-    headSha: HEAD,
-    headPushedAt: "2026-10-27T12:00:00Z",
-    action: "reopened",
-    github: firstFallback,
-  });
-  assert.equal(fresh.outcome, "bugbot-triggered");
-  assert.deepEqual(postedBodies(firstFallback), [BUGBOT_COMMENT_BODY]);
-});
-
-test("a failed head commit read does not post bugbot", async () => {
+test("an activity page that names another head does not hide this push", async () => {
   const github = fakeGithub({
     postStatus: 402,
     postBody: { message: "quota" },
-    commitStatus: 404,
-    commitBody: { message: "Not Found" },
+    issueComments: [{ id: 3, body: "bugbot run", created_at: "2026-10-27T12:30:00Z" }],
+    activityStatus: 403,
+  });
+  const contents = fakeGithub({
+    activityPages: [
+      {
+        body: [pushActivity({ timestamp: "2026-10-27T13:00:00Z", after: OTHER })],
+        link: '<https://api.github.com/repos/jorgeasaurus/EndpointJobs/activity?before=cursor-2>; rel="next"',
+      },
+      { body: [pushActivity({ timestamp: "2026-10-27T12:00:00Z" })] },
+    ],
   });
   const result = await runReviewFallback({
     token: fixtureReviewCredential,
     repo: "jorgeasaurus/EndpointJobs",
     prNumber: "12",
     headSha: HEAD,
+    headRef: "feature",
+    headPushedAt: "2026-10-27T14:00:00Z",
+    action: "ready_for_review",
+    github,
+    contentsGithub: contents,
+  });
+  assert.equal(result.outcome, "bugbot-already-requested");
+  assert.deepEqual(postedBodies(github), []);
+  assert.equal(contents.calls.filter((call) => call.path.includes("/activity?")).length, 2);
+  assert.match(contents.calls[1].path, /before=cursor-2/);
+});
+
+test("reopened with no bugbot comment still posts", async () => {
+  const firstFallback = fakeGithub({ postStatus: 402, postBody: { message: "quota" }, activityStatus: 403 });
+  const contents = fakeGithub({});
+  const fresh = await runReviewFallback({
+    token: fixtureReviewCredential,
+    repo: "jorgeasaurus/EndpointJobs",
+    prNumber: "12",
+    headSha: HEAD,
+    headRef: "feature",
+    headPushedAt: "2026-10-27T12:00:00Z",
+    action: "reopened",
+    github: firstFallback,
+    contentsGithub: contents,
+  });
+  assert.equal(fresh.outcome, "bugbot-triggered");
+  assert.deepEqual(postedBodies(firstFallback), [BUGBOT_COMMENT_BODY]);
+  assert.equal(firstFallback.calls.some((call) => call.path.includes("/activity?")), false);
+});
+
+test("a failed push activity read does not post bugbot", async () => {
+  const github = fakeGithub({ postStatus: 402, postBody: { message: "quota" } });
+  const contents = fakeGithub({ activityStatus: 403 });
+  const result = await runReviewFallback({
+    token: fixtureReviewCredential,
+    contentsToken: "contents-token-value",
+    repo: "jorgeasaurus/EndpointJobs",
+    prNumber: "12",
+    headSha: HEAD,
+    headRef: "feature",
     pollTimeoutSeconds: 0,
     headPushedAt: "2026-10-27T12:00:00Z",
     action: "ready_for_review",
     github,
+    contentsGithub: contents,
     now: () => 1_000,
     sleep: async () => {
       throw new Error("sleep should not run when the deadline has already passed");
@@ -513,7 +564,9 @@ test("a failed head commit read does not post bugbot", async () => {
   assert.equal(result.exitCode, 1);
   assert.equal(result.outcome, "failed");
   assert.deepEqual(postedBodies(github), []);
-  assert.match(result.logs.join("\n"), /GET \/commits\/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa failed/);
+  assert.equal(github.calls.some((call) => call.path.includes("/activity?")), false);
+  assert.match(result.logs.join("\n"), /GET \/activity failed/);
+  assert.equal(result.logs.join("\n").includes("contents-token-value"), false);
 });
 
 test("an earlier bugbot comment does not cover a head pushed later", async () => {
@@ -614,12 +667,14 @@ test("workflow contract", () => {
   assert.match(yaml, /pull-requests: read/);
   assert.match(yaml, /github\.event\.pull_request\.draft == false/);
   assert.match(yaml, /github\.event\.pull_request\.head\.sha/);
+  assert.match(yaml, /HEAD_REF: \$\{\{ github\.event\.pull_request\.head\.ref \}\}/);
   assert.match(yaml, /HEAD_PUSHED_AT: \$\{\{ github\.event\.pull_request\.updated_at \}\}/);
   assert.match(yaml, /PR_ACTION: \$\{\{ github\.event\.action \}\}/);
   assert.match(yaml, /REVIEW_TRIGGER_TOKEN: \$\{\{ secrets\.REVIEW_TRIGGER_TOKEN \}\}/);
+  assert.match(yaml, /CONTENTS_TOKEN: \$\{\{ github\.token \}\}/);
   assert.match(yaml, /POLL_INTERVAL_SECONDS: "30"/);
   assert.match(yaml, /POLL_TIMEOUT_SECONDS: "600"/);
   assert.match(yaml, /actions\/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4\.2\.2/);
   assert.doesNotMatch(yaml, /secrets\.GITHUB_TOKEN/);
-  assert.doesNotMatch(yaml, /github\.token/);
+  assert.equal(yaml.match(/github\.token/g).length, 1);
 });

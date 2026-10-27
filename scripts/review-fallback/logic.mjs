@@ -43,7 +43,10 @@ const USAGE_LIMIT_PATTERNS = [
 
 export function redact(text, token) {
   let value = String(text ?? "");
-  if (token) value = value.split(token).join("[redacted]");
+  const tokens = Array.isArray(token) ? token : [token];
+  for (const secret of tokens) {
+    if (secret) value = value.split(secret).join("[redacted]");
+  }
   return value
     .replace(/bearer\s+\S+/gi, "bearer [redacted]")
     .replace(/\b(?:gh[pousr]_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+)\b/g, "[redacted]");
@@ -135,15 +138,15 @@ export function parseTime(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-const COMMITTER_DATE_ACTIONS = new Set(["ready_for_review", "reopened"]);
+const PUSH_BOUND_ACTIONS = new Set(["ready_for_review", "reopened"]);
+const PUSH_ACTIVITY_TYPES = new Set(["push", "force_push", "branch_creation"]);
 
 /**
  * A `bugbot run` comment covers this head when it was created at or after
  * `headPushedAtMs`. Callers pass the push or open time on `synchronize` and
- * `opened`. On `ready_for_review` and `reopened` they pass the head commit's
- * committer date, because `updated_at` is the time of that action and an
- * older comment must not hide a head that was pushed while the pull request
- * was draft or closed.
+ * `opened`. On `ready_for_review` and `reopened` they pass the timestamp of
+ * the push that set this head, because `updated_at` is the time of that
+ * action and the committer date can be earlier than the push.
  *
  * @returns {{known: boolean, requested: boolean}}
  */
@@ -158,20 +161,39 @@ export function bugbotAlreadyRequestedForHead({ issueComments = [], headPushedAt
   return { known: true, requested };
 }
 
-function committerDate(body) {
-  return body?.commit?.committer?.date ?? body?.committer?.date;
+function activityBeforeCursor(headers) {
+  const link = headers?.link ?? "";
+  for (const part of String(link).split(",")) {
+    if (!/rel="next"/i.test(part)) continue;
+    const match = part.match(/[?&]before=([^&>]+)/);
+    if (match) return decodeURIComponent(match[1]);
+  }
+  return null;
 }
 
-async function headCommitBoundMs(client, sha) {
-  const response = await client.request("GET", `/commits/${sha}`);
-  if (!isSuccessStatus(response.status)) {
-    throw new Error(`GET /commits/${sha} failed with ${describeRequestFailure(response.status, response.body)}`);
+async function headPushBoundMs(client, headRef, sha) {
+  if (!client) throw new Error("CONTENTS_TOKEN is not set");
+  const ref = typeof headRef === "string" ? headRef.trim() : "";
+  if (!ref) throw new Error("HEAD_REF is required");
+  let before = "";
+  for (let page = 0; page < 10; page += 1) {
+    const query = new URLSearchParams({ ref, per_page: "100", direction: "desc" });
+    if (before) query.set("before", before);
+    const response = await client.request("GET", `/activity?${query}`);
+    if (!isSuccessStatus(response.status)) {
+      throw new Error(`GET /activity failed with ${describeRequestFailure(response.status, response.body)}`);
+    }
+    const batch = Array.isArray(response.body) ? response.body : [];
+    const match = batch.find((item) => PUSH_ACTIVITY_TYPES.has(item?.activity_type) && sameSha(item?.after, sha));
+    if (match) {
+      const bound = parseTime(match.timestamp);
+      if (bound == null) throw new Error(`GET /activity did not include a push timestamp for ${sha}`);
+      return bound;
+    }
+    before = activityBeforeCursor(response.headers);
+    if (!before || batch.length === 0) break;
   }
-  const bound = parseTime(committerDate(response.body));
-  if (bound == null) {
-    throw new Error(`GET /commits/${sha} did not include a committer date`);
-  }
-  return bound;
+  throw new Error(`GET /activity did not include a push for ${sha}`);
 }
 
 export function renderSummary({ outcome, headSha = "", detail = "" }) {
@@ -285,14 +307,19 @@ export async function runReviewFallback({
   pollTimeoutSeconds = 600,
   reviewer = COPILOT_REVIEWER,
   headPushedAt,
+  headRef = "",
   action = "",
   github,
+  contentsToken = "",
+  contentsGithub,
   fetchImpl,
   apiBase = "https://api.github.com",
   sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
   now = () => Date.now(),
 } = {}) {
   const secret = typeof token === "string" ? token.trim() : "";
+  const contentsSecret = typeof contentsToken === "string" ? contentsToken.trim() : "";
+  const secrets = [secret, contentsSecret].filter(Boolean);
   const notes = [];
   try {
     if (!secret) {
@@ -341,7 +368,7 @@ export async function runReviewFallback({
             break;
           }
         } catch (error) {
-          const message = redact(error instanceof Error ? error.message : "read failed", secret);
+          const message = redact(error instanceof Error ? error.message : "read failed", secrets);
           notes.push(`Copilot poll read failed: ${message}`);
         }
         const remaining = deadline - now();
@@ -353,10 +380,11 @@ export async function runReviewFallback({
         await sleep(Math.min(intervalMs, remaining));
       }
     }
-    unavailableReason = redact(unavailableReason, secret);
+    unavailableReason = redact(unavailableReason, secrets);
 
     const issueComments = await listAll(client, `/issues/${pullNumber}/comments`);
-    const boundMs = COMMITTER_DATE_ACTIONS.has(action) ? await headCommitBoundMs(client, sha) : pushedAtMs;
+    const contentsClient = contentsGithub ?? (contentsSecret ? createGithubClient({ token: contentsSecret, repo: repository, fetchImpl, apiBase }) : null);
+    const boundMs = PUSH_BOUND_ACTIONS.has(action) ? await headPushBoundMs(contentsClient, headRef, sha) : pushedAtMs;
     const dedup = bugbotAlreadyRequestedForHead({ issueComments, headPushedAtMs: boundMs });
     if (!dedup.known && issueComments.some((comment) => isExactBugbotBody(comment?.body))) {
       return result({
@@ -395,7 +423,7 @@ export async function runReviewFallback({
       logs: [...notes, `Copilot unavailable (${unavailableReason}). Posted bugbot run for ${sha}.`],
     });
   } catch (error) {
-    const message = redact(error instanceof Error ? error.message : "unexpected error", secret);
+    const message = redact(error instanceof Error ? error.message : "unexpected error", secrets);
     return result({
       exitCode: 1,
       outcome: "failed",
@@ -437,7 +465,7 @@ export function createGithubClient({ token, repo, fetchImpl = globalThis.fetch, 
           parsed = { message: text.slice(0, 240) };
         }
       }
-      return { status: response.status, body: parsed };
+      return { status: response.status, body: parsed, headers: { link: response.headers?.get?.("link") ?? "" } };
     },
   };
 }

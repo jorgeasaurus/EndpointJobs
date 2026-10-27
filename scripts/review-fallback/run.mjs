@@ -11,7 +11,9 @@ export function readConfig(env) {
     prNumber: env.PR_NUMBER ?? "",
     headSha: env.HEAD_SHA ?? "",
     headPushedAt: typeof env.HEAD_PUSHED_AT === "string" ? env.HEAD_PUSHED_AT : "",
+    headRef: typeof env.HEAD_REF === "string" ? env.HEAD_REF : "",
     action: typeof env.PR_ACTION === "string" ? env.PR_ACTION : "",
+    contentsToken: typeof env.CONTENTS_TOKEN === "string" ? env.CONTENTS_TOKEN : "",
     pollIntervalSeconds: Number.isFinite(interval) ? Math.max(1, interval) : 30,
     pollTimeoutSeconds: Number.isFinite(timeout) && timeout >= 0 ? timeout : 600,
   };
