@@ -135,22 +135,20 @@ export function parseTime(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-const EXISTING_COMMENT_ACTIONS = new Set(["ready_for_review", "reopened"]);
+const COMMITTER_DATE_ACTIONS = new Set(["ready_for_review", "reopened"]);
 
 /**
- * On `synchronize` and `opened`, `updated_at` is the push or open time, so a
- * `bugbot run` comment counts only when it was created at or after that time.
- * On `ready_for_review` and `reopened`, `updated_at` is the time of that
- * action. Any existing `bugbot run` comment then blocks another post, so
- * coming back to the same head does not comment twice.
+ * A `bugbot run` comment covers this head when it was created at or after
+ * `headPushedAtMs`. Callers pass the push or open time on `synchronize` and
+ * `opened`. On `ready_for_review` and `reopened` they pass the head commit's
+ * committer date, because `updated_at` is the time of that action and an
+ * older comment must not hide a head that was pushed while the pull request
+ * was draft or closed.
  *
  * @returns {{known: boolean, requested: boolean}}
  */
-export function bugbotAlreadyRequestedForHead({ issueComments = [], headPushedAtMs, action }) {
+export function bugbotAlreadyRequestedForHead({ issueComments = [], headPushedAtMs }) {
   const comments = (issueComments ?? []).filter((comment) => isExactBugbotBody(comment?.body));
-  if (EXISTING_COMMENT_ACTIONS.has(action)) {
-    return { known: true, requested: comments.length > 0 };
-  }
   const pushedAt = parseTime(headPushedAtMs);
   if (pushedAt == null) return { known: false, requested: false };
   const requested = comments.some((comment) => {
@@ -158,6 +156,22 @@ export function bugbotAlreadyRequestedForHead({ issueComments = [], headPushedAt
     return created != null && created >= pushedAt;
   });
   return { known: true, requested };
+}
+
+function committerDate(body) {
+  return body?.commit?.committer?.date ?? body?.committer?.date;
+}
+
+async function headCommitBoundMs(client, sha) {
+  const response = await client.request("GET", `/commits/${sha}`);
+  if (!isSuccessStatus(response.status)) {
+    throw new Error(`GET /commits/${sha} failed with ${describeRequestFailure(response.status, response.body)}`);
+  }
+  const bound = parseTime(committerDate(response.body));
+  if (bound == null) {
+    throw new Error(`GET /commits/${sha} did not include a committer date`);
+  }
+  return bound;
 }
 
 export function renderSummary({ outcome, headSha = "", detail = "" }) {
@@ -342,7 +356,8 @@ export async function runReviewFallback({
     unavailableReason = redact(unavailableReason, secret);
 
     const issueComments = await listAll(client, `/issues/${pullNumber}/comments`);
-    const dedup = bugbotAlreadyRequestedForHead({ issueComments, headPushedAtMs: pushedAtMs, action });
+    const boundMs = COMMITTER_DATE_ACTIONS.has(action) ? await headCommitBoundMs(client, sha) : pushedAtMs;
+    const dedup = bugbotAlreadyRequestedForHead({ issueComments, headPushedAtMs: boundMs });
     if (!dedup.known && issueComments.some((comment) => isExactBugbotBody(comment?.body))) {
       return result({
         exitCode: 0,

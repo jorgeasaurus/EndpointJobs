@@ -46,6 +46,8 @@ function fakeGithub({
   issueComments = [],
   timeline = [],
   reviewsByCall,
+  commitStatus = 200,
+  commitBody,
 } = {}) {
   const calls = [];
   let reviewReads = 0;
@@ -72,6 +74,16 @@ function fakeGithub({
       }
       if (method === "GET" && path.includes("/timeline?")) {
         return { status: 200, body: timeline };
+      }
+      if (method === "GET" && path.startsWith("/commits/")) {
+        if (commitStatus !== 200) return { status: commitStatus, body: commitBody ?? { message: "missing commit" } };
+        return {
+          status: 200,
+          body: commitBody ?? {
+            sha: path.slice("/commits/".length),
+            commit: { committer: { date: "1970-01-01T00:00:00Z" } },
+          },
+        };
       }
       return { status: 404, body: { message: "missing fake" } };
     },
@@ -374,15 +386,13 @@ test("a failed dedup read does not post bugbot", async () => {
   assert.match(result.logs.join("\n"), /HTTP 403/);
 });
 
-test("each pull request action dedups an earlier bugbot run", async () => {
+function commitAuthoredAt(date) {
+  return { sha: HEAD, commit: { committer: { date } } };
+}
+
+test("synchronize and opened ignore a bugbot comment from before the push", async () => {
   const earlier = [{ id: 3, body: "bugbot run", created_at: "2026-10-27T11:00:00Z" }];
-  const cases = [
-    ["synchronize", "bugbot-triggered"],
-    ["opened", "bugbot-triggered"],
-    ["ready_for_review", "bugbot-already-requested"],
-    ["reopened", "bugbot-already-requested"],
-  ];
-  for (const [action, outcome] of cases) {
+  for (const action of ["synchronize", "opened"]) {
     const github = fakeGithub({
       postStatus: 402,
       postBody: { message: "quota" },
@@ -397,10 +407,74 @@ test("each pull request action dedups an earlier bugbot run", async () => {
       action,
       github,
     });
-    assert.equal(result.outcome, outcome, action);
-    assert.deepEqual(postedBodies(github), outcome === "bugbot-triggered" ? [BUGBOT_COMMENT_BODY] : [], action);
+    assert.equal(result.outcome, "bugbot-triggered", action);
+    assert.deepEqual(postedBodies(github), [BUGBOT_COMMENT_BODY], action);
+    assert.equal(
+      github.calls.some((call) => call.path.startsWith("/commits/")),
+      false,
+      action,
+    );
   }
+});
 
+test("ready_for_review and reopened post when the bugbot comment predates the head commit", async () => {
+  const earlier = [{ id: 3, body: "bugbot run", created_at: "2026-10-27T11:00:00Z" }];
+  for (const action of ["ready_for_review", "reopened"]) {
+    const github = fakeGithub({
+      postStatus: 402,
+      postBody: { message: "quota" },
+      issueComments: earlier,
+      commitBody: commitAuthoredAt("2026-10-27T12:00:00Z"),
+    });
+    const result = await runReviewFallback({
+      token: fixtureReviewCredential,
+      repo: "jorgeasaurus/EndpointJobs",
+      prNumber: "12",
+      headSha: HEAD,
+      headPushedAt: "2026-10-27T10:00:00Z",
+      action,
+      github,
+    });
+    assert.equal(result.outcome, "bugbot-triggered", action);
+    assert.deepEqual(postedBodies(github), [BUGBOT_COMMENT_BODY], action);
+    assert.ok(
+      github.calls.some((call) => call.method === "GET" && call.path === `/commits/${HEAD}`),
+      action,
+    );
+  }
+});
+
+test("ready_for_review and reopened skip a bugbot comment at or after the head commit", async () => {
+  const cases = [
+    ["ready_for_review", "2026-10-27T11:00:00Z"],
+    ["reopened", "2026-10-27T11:30:00Z"],
+  ];
+  for (const [action, createdAt] of cases) {
+    const github = fakeGithub({
+      postStatus: 402,
+      postBody: { message: "quota" },
+      issueComments: [{ id: 3, body: "bugbot run", created_at: createdAt }],
+      commitBody: commitAuthoredAt("2026-10-27T11:00:00Z"),
+    });
+    const result = await runReviewFallback({
+      token: fixtureReviewCredential,
+      repo: "jorgeasaurus/EndpointJobs",
+      prNumber: "12",
+      headSha: HEAD,
+      headPushedAt: "2026-10-27T13:00:00Z",
+      action,
+      github,
+    });
+    assert.equal(result.outcome, "bugbot-already-requested", action);
+    assert.deepEqual(postedBodies(github), [], action);
+    assert.ok(
+      github.calls.some((call) => call.method === "GET" && call.path === `/commits/${HEAD}`),
+      action,
+    );
+  }
+});
+
+test("reopened with no bugbot comment still posts", async () => {
   const firstFallback = fakeGithub({ postStatus: 402, postBody: { message: "quota" } });
   const fresh = await runReviewFallback({
     token: fixtureReviewCredential,
@@ -413,6 +487,33 @@ test("each pull request action dedups an earlier bugbot run", async () => {
   });
   assert.equal(fresh.outcome, "bugbot-triggered");
   assert.deepEqual(postedBodies(firstFallback), [BUGBOT_COMMENT_BODY]);
+});
+
+test("a failed head commit read does not post bugbot", async () => {
+  const github = fakeGithub({
+    postStatus: 402,
+    postBody: { message: "quota" },
+    commitStatus: 404,
+    commitBody: { message: "Not Found" },
+  });
+  const result = await runReviewFallback({
+    token: fixtureReviewCredential,
+    repo: "jorgeasaurus/EndpointJobs",
+    prNumber: "12",
+    headSha: HEAD,
+    pollTimeoutSeconds: 0,
+    headPushedAt: "2026-10-27T12:00:00Z",
+    action: "ready_for_review",
+    github,
+    now: () => 1_000,
+    sleep: async () => {
+      throw new Error("sleep should not run when the deadline has already passed");
+    },
+  });
+  assert.equal(result.exitCode, 1);
+  assert.equal(result.outcome, "failed");
+  assert.deepEqual(postedBodies(github), []);
+  assert.match(result.logs.join("\n"), /GET \/commits\/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa failed/);
 });
 
 test("an earlier bugbot comment does not cover a head pushed later", async () => {
