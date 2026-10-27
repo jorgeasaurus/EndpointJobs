@@ -91,6 +91,38 @@ test("[RESP-01] narrow labeled controls are at least 44px", async ({ page }, inf
   expect(offenders, JSON.stringify(offenders)).toEqual([]);
 });
 
+test("[RESP-01] comparison remove clears the title", async ({ page }, info) => {
+  test.skip(info.project.name !== "mobile", "390px measurement");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/board");
+  await page.waitForLoadState("networkidle");
+  const buttons = page.locator("article.job-card .compare-button");
+  await buttons.nth(0).click();
+  await buttons.nth(1).click();
+  const headings = page.locator(".comparison-job-heading");
+  await expect(headings).toHaveCount(2);
+  const overlaps = await headings.evaluateAll((cells) => cells.map((cell) => {
+    const remove = cell.querySelector(".comparison-remove");
+    const title = cell.querySelector("strong");
+    if (!remove || !title) return { missing: true, title: "" };
+    const button = remove.getBoundingClientRect();
+    const text = title.getBoundingClientRect();
+    return {
+      missing: false,
+      title: title.textContent?.replace(/\s+/g, " ").trim() ?? "",
+      intersects: button.left < text.right && button.right > text.left && button.top < text.bottom && button.bottom > text.top,
+      width: Math.round(button.width),
+      height: Math.round(button.height)
+    };
+  }));
+  expect(overlaps.every((item) => item.missing === false)).toBe(true);
+  for (const overlap of overlaps) {
+    expect(overlap.width).toBeGreaterThanOrEqual(44);
+    expect(overlap.height).toBeGreaterThanOrEqual(44);
+  }
+  expect(overlaps.filter((item) => item.intersects), JSON.stringify(overlaps)).toEqual([]);
+});
+
 test("[JOB-04] unknown job title", async ({ page }) => {
   const response = await page.goto("/jobs/phase2-not-a-job");
   expect(response?.status()).toBe(404);

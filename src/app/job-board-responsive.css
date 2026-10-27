@@ -555,6 +555,17 @@
     min-height: 44px;
   }
 
+  /* The 32px control grows to 44px. The heading's 10px padding would put that
+     box on top of the title, so keep a gap beside the top-right control. */
+  .comparison-remove {
+    width: 44px;
+    height: 44px;
+  }
+
+  .comparison-job-heading {
+    padding-right: 64px;
+  }
+
   .attribution-label {
     order: 2;
     max-width: 100%;
