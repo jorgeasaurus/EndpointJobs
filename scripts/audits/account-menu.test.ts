@@ -30,6 +30,53 @@ test("the closed account menu truncates the email and posts sign-out", () => {
   assert.doesNotMatch(css, /\.auth-menu-panel\s*\{[^}]*right:\s*0/);
 });
 
+test("the keyboard opens the account menu and activates Sign out", { timeout: 60_000 }, async () => {
+  const js = await bundle(fileURLToPath(new URL("./fixtures/account-menu-harness.tsx", import.meta.url)));
+  const css = `${variables}\n${readFileSync(new URL("../../src/app/auth-menu.css", import.meta.url), "utf8")}\n${harnessCss}`;
+  const browser = await chromium.launch({
+    headless: true,
+    executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH ?? "/usr/bin/google-chrome"
+  });
+  try {
+    const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+    let navigated = false;
+    page.on("framenavigated", () => {
+      navigated = true;
+    });
+    await page.setContent(`<!doctype html><html><head><style>${css}</style></head><body data-email="${email}"><div id="root"></div></body></html>`);
+    await page.addScriptTag({ content: js });
+    const trigger = page.getByRole("button", { name: `Account menu for ${email}` });
+    await trigger.waitFor();
+    await trigger.focus();
+    await page.keyboard.press("Enter");
+    await page.waitForFunction(() => document.activeElement?.textContent?.includes("Sign out"));
+    assert.equal(navigated, false, "opening the menu submitted Sign out");
+
+    await page.keyboard.press("Tab");
+    assert.match(await page.evaluate(() => document.activeElement?.textContent ?? ""), /Sign out/);
+    await page.keyboard.press("Shift+Tab");
+    assert.match(await page.evaluate(() => document.activeElement?.textContent ?? ""), /Sign out/);
+    assert.notEqual(await page.evaluate(() => document.activeElement?.textContent?.trim()), "API");
+
+    await page.keyboard.press("Escape");
+    await page.locator(".auth-menu-panel").waitFor({ state: "hidden" });
+    await page.waitForFunction((name) => document.activeElement?.getAttribute("aria-label") === name, `Account menu for ${email}`);
+
+    await page.keyboard.press("Enter");
+    await page.waitForFunction(() => document.activeElement?.textContent?.includes("Sign out"));
+    await page.evaluate(() => {
+      document.querySelector(".auth-menu-panel form")?.addEventListener("submit", (event) => {
+        event.preventDefault();
+        document.documentElement.dataset.signOut = "posted";
+      });
+    });
+    await page.keyboard.press("Enter");
+    await page.waitForFunction(() => document.documentElement.dataset.signOut === "posted");
+  } finally {
+    await browser.close();
+  }
+});
+
 test("the open account menu stays inside 390 and 1280 and dismisses", { timeout: 60_000 }, async () => {
   const js = await bundle(fileURLToPath(new URL("./fixtures/account-menu-harness.tsx", import.meta.url)));
   const css = `${variables}\n${readFileSync(new URL("../../src/app/auth-menu.css", import.meta.url), "utf8")}\n${harnessCss}`;

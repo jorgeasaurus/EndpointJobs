@@ -2,7 +2,7 @@
 
 import { LogIn, X } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 
 import { AccountMenu } from "./account-menu";
 import { AuthProviderButtons } from "./auth-provider-buttons";
@@ -21,6 +21,14 @@ export function AuthMenu() {
     const dialog = dialogRef.current;
     if (dialog && !dialog.open) dialog.showModal();
   }, []);
+
+  useLayoutEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog?.open) return;
+    // showModal focuses the first provider button, then this key remounts it and
+    // drops that focus onto the dialog. Put it back on Continue with Google.
+    dialog.querySelector<HTMLButtonElement>(".auth-provider")?.focus();
+  }, [providerReset]);
 
   useEffect(() => {
     if (!offerSignIn) return;

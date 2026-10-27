@@ -2,7 +2,7 @@
 
 import { UserRound } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useId, useRef, useState } from "react";
+import { useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { accountMenuWidth, placeAccountMenuPanel } from "@/lib/auth/account-menu-placement";
@@ -12,9 +12,10 @@ export function AccountMenu({ email }: { email: string }) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const signOutRef = useRef<HTMLButtonElement>(null);
   const panelId = useId();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open) return;
     const panel = panelRef.current;
     const trigger = triggerRef.current;
@@ -53,6 +54,9 @@ export function AccountMenu({ email }: { email: string }) {
     }
 
     position();
+    // The portal is outside the trigger's tab order, and the panel stays
+    // visibility:hidden until this placement. Focus Sign out once it can take focus.
+    signOutRef.current?.focus();
     let frame = 0;
     function schedule() {
       if (frame) return;
@@ -74,7 +78,7 @@ export function AccountMenu({ email }: { email: string }) {
     };
   }, [open, email]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open) return;
 
     function close() {
@@ -83,9 +87,27 @@ export function AccountMenu({ email }: { email: string }) {
     }
 
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key !== "Escape") return;
-      event.preventDefault();
-      close();
+      if (event.key === "Escape") {
+        event.preventDefault();
+        close();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const panel = panelRef.current;
+      if (!panel) return;
+      const focusable = [...panel.querySelectorAll<HTMLElement>("a[href], button:not([disabled])")];
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!first || !last) {
+        event.preventDefault();
+        return;
+      }
+      const active = document.activeElement;
+      const inside = active instanceof Node && panel.contains(active);
+      if (!inside || (event.shiftKey && active === first) || (!event.shiftKey && active === last)) {
+        event.preventDefault();
+        (event.shiftKey ? last : first).focus();
+      }
     }
 
     function onPointerDown(event: PointerEvent) {
@@ -118,7 +140,7 @@ export function AccountMenu({ email }: { email: string }) {
       <Link className="auth-menu-action" href="/account">Account</Link>
       {/* Native POST reloads the document. A server-action redirect to / keeps this email state. */}
       <form action={SIGN_OUT_PATH} method="post">
-        <button className="auth-menu-action" type="submit">
+        <button ref={signOutRef} className="auth-menu-action" type="submit">
           Sign out
         </button>
       </form>
