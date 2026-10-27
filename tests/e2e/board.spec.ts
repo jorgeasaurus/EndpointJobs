@@ -22,7 +22,7 @@ test("[BOARD-02] coverage rail", async ({ page }, info) => {
     ? page.locator(".search-coverage-mobile .command-status")
     : page.locator(".command-layout > .command-status");
   await expect(rail).toContainText("tracked roles");
-  await expect(rail).toHaveAttribute("aria-label", "Search coverage status").catch(() => undefined);
+  await expect(rail).toHaveAttribute("aria-label", "Search coverage status");
   const labelled = rail.locator(".status-total");
   await expect(labelled).toHaveAttribute("aria-label", `${payload.trackedJobsCount} tracked roles`);
   await expect(rail).toContainText("Current view");

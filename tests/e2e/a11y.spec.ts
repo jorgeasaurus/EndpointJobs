@@ -1,4 +1,13 @@
+import { readFileSync } from "node:fs";
+
 import { expect, test } from "@playwright/test";
+
+import { initialFilterState } from "../../src/components/job-board/filter-model";
+import { getActiveBoardFeed } from "../../src/lib/board-page";
+import { filterJobs } from "../../src/lib/job-filters";
+import type { Job, JobsFeed } from "../../src/types/job";
+
+const feedData = JSON.parse(readFileSync(new URL("../../src/data/jobs.json", import.meta.url), "utf8")) as JobsFeed;
 
 test("[A11Y-02] comparison scroll region", async ({ page }) => {
   await page.goto("/board");
@@ -42,15 +51,73 @@ test("[SEARCH-02] shortcut ignores contenteditable", async ({ page }) => {
 
 test("[MAP-04] coarse pointer sheet", async ({ page }, info) => {
   test.skip(info.project.name !== "mobile", "coarse pointer");
-  await page.goto("/board");
+  const query = singleMappedLocationQuery();
+  await page.goto(`/board?location=${encodeURIComponent(query)}`);
   const section = page.getByRole("region", { name: "Mapped job locations" });
   await section.getByRole("button", { name: "Show map" }).click();
-  await expect(section.locator("canvas")).toBeVisible({ timeout: 20_000 });
-  const marker = section.locator(".maplibregl-marker, .job-map-marker, canvas").first();
-  await marker.click({ position: { x: 40, y: 40 } });
-  const sheet = page.getByRole("button", { name: "Close selected job" });
-  if (await sheet.count()) await expect(sheet).toBeVisible();
+  const canvas = section.locator("canvas");
+  await expect(canvas).toBeVisible({ timeout: 20_000 });
+  await expect.poll(async () => {
+    const text = await section.locator(".job-map-zoom-readout").textContent();
+    return Number(text?.replace("%", "") ?? 0);
+  }).toBeGreaterThanOrEqual(800);
+
+  const box = await canvas.boundingBox();
+  expect(box, "map canvas has no box").toBeTruthy();
+  const center = { x: Math.round(box!.width / 2), y: Math.round(box!.height / 2) };
+  const close = page.getByRole("button", { name: "Close selected job" });
+  const offsets = [
+    [0, 0],
+    [-12, 0],
+    [12, 0],
+    [0, -12],
+    [0, 12],
+    [-20, -20],
+    [20, -20],
+    [-20, 20],
+    [20, 20]
+  ];
+  for (const [offsetX, offsetY] of offsets) {
+    await canvas.tap({
+      position: {
+        x: Math.min(Math.max(center.x + offsetX, 4), Math.round(box!.width - 4)),
+        y: Math.min(Math.max(center.y + offsetY, 4), Math.round(box!.height - 4))
+      }
+    });
+    if (await close.isVisible()) break;
+  }
+  await expect(close).toBeVisible();
+  await close.click();
+  await expect(close).toHaveCount(0);
 });
+
+function singleMappedLocationQuery() {
+  const jobs = getActiveBoardFeed(feedData).jobs;
+  const candidates = new Map<string, string>();
+  const add = (value: string | undefined) => {
+    const query = value?.replace(/\s+/g, " ").trim() ?? "";
+    if (!query.includes(" ")) return;
+    candidates.set(query.toLowerCase(), query);
+    const city = query.split(",")[0]?.trim() ?? "";
+    if (city.includes(" ")) candidates.set(city.toLowerCase(), city);
+  };
+  for (const job of jobs) {
+    if (!job.mapLocation || !job.applyUrl) continue;
+    add(job.mapLocation.label);
+    add(job.location);
+  }
+
+  let best: { query: string; score: number } | undefined;
+  for (const query of candidates.values()) {
+    const matching = filterJobs(jobs, { ...initialFilterState, locationQuery: query });
+    const mapped = matching.filter((job: Job) => job.mapLocation && job.applyUrl);
+    if (mapped.length !== 1) continue;
+    const score = matching.length === 1 ? 100 : 0;
+    if (!best || score > best.score) best = { query, score };
+  }
+  if (!best) throw new Error("no single mapped location for the coarse map sheet");
+  return best.query;
+}
 
 test("[MAP-05] map attribution", async ({ page }) => {
   await page.goto("/board");

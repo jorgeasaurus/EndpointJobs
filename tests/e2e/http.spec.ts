@@ -1,3 +1,5 @@
+import { existsSync, readFileSync } from "node:fs";
+
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(({ }, info) => {
@@ -197,10 +199,31 @@ test("[AUTH-06] cross-site sign-out", async ({ request }) => {
 });
 
 test("[AUTH-08] no sign-in control without Supabase", async ({ page }) => {
+  test.skip(!supabaseKeysAbsent(), "Supabase keys are present, so Sign in is expected");
   await page.goto("/board");
   await expect(page.getByRole("button", { name: "Sign in" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Endpoint Jobs" })).toBeVisible();
 });
+
+function supabaseKeysAbsent() {
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return false;
+  return ![".env.local", ".env"].some(envFileHasSupabaseKeys);
+}
+
+function envFileHasSupabaseKeys(path: string) {
+  if (!existsSync(path)) return false;
+  const values = new Map<string, string>();
+  for (const line of readFileSync(path, "utf8").split("\n")) {
+    const match = line.match(/^\s*(NEXT_PUBLIC_SUPABASE_(?:URL|ANON_KEY))\s*=\s*(.*?)\s*$/);
+    if (!match || match[2].startsWith("#")) continue;
+    let value = match[2];
+    if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    values.set(match[1], value.trim());
+  }
+  return Boolean(values.get("NEXT_PUBLIC_SUPABASE_URL") && values.get("NEXT_PUBLIC_SUPABASE_ANON_KEY"));
+}
 
 test("[FILT-16] unknown tool slug", async ({ request }) => {
   const known = await request.get("/jamf");

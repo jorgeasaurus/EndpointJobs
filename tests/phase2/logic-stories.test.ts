@@ -17,8 +17,8 @@ import { presentSalary } from "@/lib/job-trust";
 import { formatPostedDate, formatUpdatedAt, getFreshnessLabel, isActiveJob, isPostedDateKnown } from "@/lib/jobs";
 import { formatDescriptionAsHtml } from "@/lib/rich-result-schema";
 import { authFetchTimeoutMs, skipsSessionRefresh } from "@/lib/supabase/session-refresh";
-import { assertPrerenderedHomeHtml, prerenderedHomeHtmlPath } from "../../scripts/audits/home-html-size.ts";
-import { contrastRatio } from "../../scripts/audits/contrast.test.ts";
+import { assertPrerenderedHomeHtml, prerenderedHomeHtmlPath } from "../../scripts/audits/home-html-size";
+import { contrastRatio } from "../../scripts/audits/contrast.test";
 import type { Job, JobsFeed } from "@/types/job";
 
 const feed = feedData as JobsFeed;

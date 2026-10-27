@@ -1,4 +1,12 @@
+import { readFileSync } from "node:fs";
+
 import { expect, test } from "@playwright/test";
+
+import { initialFilterState } from "../../src/components/job-board/filter-model";
+import { getActiveSourceFeed, selectLandingPreview } from "../../src/lib/board-page";
+import type { JobsFeed } from "../../src/types/job";
+
+const feedData = JSON.parse(readFileSync(new URL("../../src/data/jobs.json", import.meta.url), "utf8")) as JobsFeed;
 
 test("[HOME-01] landing hero", async ({ page }) => {
   await page.goto("/");
@@ -23,7 +31,7 @@ test("[HOME-02] landing counts", async ({ page }) => {
   await page.goto("/");
   const stats = page.locator(".landing-stats");
   await expect(stats.getByText("Open roles", { exact: true })).toBeVisible();
-  await expect(stats.getByText("Remote or hybrid", { exact: true })).toBeVisible();
+  await expect(stats.getByText("Remote/hybrid", { exact: true })).toBeVisible();
   await expect(stats.getByText("Salary shown", { exact: true })).toBeVisible();
   const format = new Intl.NumberFormat("en-US");
   await expect(stats).toContainText(format.format(payload.total));
@@ -32,36 +40,37 @@ test("[HOME-02] landing counts", async ({ page }) => {
 });
 
 test("[HOME-03] newest roles preview", async ({ page }) => {
-  const board = await page.request.get("/api/board");
-  const payload = await board.json() as {
-    jobs: { id: string; title: string; company: string }[];
-  };
+  const jobs = selectLandingPreview(getActiveSourceFeed(feedData).jobs, initialFilterState);
   await page.goto("/");
-  const preview = page.getByRole("complementary", { name: "Newest open roles" });
+  const preview = page.getByRole("complementary", { name: "Newest roles with salary" });
   await expect(preview).toBeVisible();
   await expect(preview.getByRole("link", { name: "All roles" })).toHaveAttribute("href", "/board");
   const rows = preview.locator("ol a");
   const count = await rows.count();
   expect(count).toBeLessThanOrEqual(4);
-  expect(count).toBe(Math.min(4, payload.jobs.length));
+  expect(count).toBe(jobs.length);
   for (let index = 0; index < count; index += 1) {
     const row = rows.nth(index);
-    await expect(row).toHaveAttribute("href", `/jobs/${payload.jobs[index].id}`);
-    await expect(row).toContainText(payload.jobs[index].title);
-    await expect(row).toContainText(payload.jobs[index].company);
+    await expect(row).toHaveAttribute("href", `/jobs/${jobs[index].id}`);
+    await expect(row).toContainText(jobs[index].title);
+    await expect(row).toContainText(jobs[index].company);
+    await expect(row.locator(".landing-salary")).not.toBeEmpty();
     await expect(row.locator(".landing-workplace")).not.toBeEmpty();
   }
 });
 
 test("[HOME-04] why an account", async ({ page }) => {
   await page.goto("/");
-  const copy = page.locator(".landing-account");
-  await expect(copy).toContainText("An account is optional.");
-  await expect(copy).toContainText("Sign in with Google or GitHub");
-  await expect(copy).toContainText("jobs you save");
-  await expect(copy).toContainText("filters you choose to keep");
-  await expect(copy).toContainText("listings you have opened");
-  await expect(copy.getByRole("link", { name: "Privacy policy" })).toHaveAttribute("href", "/privacy");
+  await expect(page.locator(".landing-account")).toHaveCount(0);
+  await expect(page.getByText("An account is optional.")).toHaveCount(0);
+  const signIn = page.getByRole("button", { name: "Sign in to save jobs, filters, and viewed job history" });
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    await expect(signIn).toBeVisible();
+  } else {
+    const html = await (await page.request.get("/")).text();
+    expect(html).toContain("Sign in to save jobs, filters, and viewed job history");
+  }
+  await expect(page.getByRole("link", { name: "Privacy" })).toHaveAttribute("href", "/privacy");
 });
 
 test("[HOME-06] landing structured data", async ({ page }) => {
