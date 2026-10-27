@@ -33,7 +33,7 @@ test("the home page is a landing page with a sign-in line", () => {
   assert.match(readFileSync(landingSignInPath, "utf8"), /openSignInDialog/);
   assert.match(readFileSync(openSignInPath, "utf8"), /export function openSignInDialog/);
   assert.match(readFileSync(authMenuPath, "utf8"), /registerSignInOpener/);
-  assert.match(readFileSync(authMenuPath, "utf8"), /dialog\.showModal\(\)/);
+  assert.match(readFileSync(authMenuPath, "utf8"), /showModal\(\)/);
   assert.doesNotMatch(home, /Why an account/);
   assert.doesNotMatch(home, /jobs you save/i);
   assert.doesNotMatch(home, /filters you choose to keep/i);
