@@ -31,6 +31,7 @@ Phase 1 filled `status` from the code, tests, migrations, and README. Phase 2 ex
 | https://github.com/jorgeasaurus/EndpointJobs/pull/87 | `SAL-02`, `HOME-06`, `API-05`, `BOARD-04`, `FEED-01`, `JOB-11` |
 | https://github.com/jorgeasaurus/EndpointJobs/pull/88 | `ACCT-01` through `ACCT-07`, `PRIV-01` |
 | https://github.com/jorgeasaurus/EndpointJobs/pull/89 | `HOME-04`, `AUTH-09` |
+| https://github.com/jorgeasaurus/EndpointJobs/pull/90 | `RESP-01`, `JOB-04` |
 
 `HOME-04` and `AUTH-09` point at #89. That pull request replaces the home sign-in sentence with inline Google and GitHub buttons, and keeps the account menu inside the viewport with keyboard focus on the panel, then Account, then Sign out. #88 still adds saved jobs, saved filters, and view history.
 
