@@ -3,10 +3,16 @@ import { filterJobs } from "@/lib/job-filters";
 import { listingLanguage, prepareBoardFeed, dedupeJobs, dedupeWorkplaceJobs, dedupedWorkplaceCounts } from "@/lib/job-trust";
 import { seedPlatformChipFixture } from "@/lib/platform-chip-fixture";
 import type { JobMapRecord } from "@/lib/job-map";
+import { isActiveJob } from "@/lib/jobs";
+import { hasShownSalary } from "@/lib/shown-salary";
 import { getJobWorkplace, withResolvedWorkplace } from "@/lib/workplace";
 import type { Job, JobsFeed } from "@/types/job";
 
+export { hasShownSalary } from "@/lib/shown-salary";
+
 export const boardPageSize = 20;
+
+export const landingPreviewLimit = 4;
 
 export const boardCacheControl = "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400";
 
@@ -76,6 +82,13 @@ export function getActiveBoardFeed(feed: JobsFeed, now = new Date()): JobsFeed {
   };
 }
 
+export function getActiveSourceFeed(feed: JobsFeed, now = new Date()): JobsFeed {
+  return {
+    ...feed,
+    jobs: seedPlatformChipFixture(feed.jobs.filter((job) => isActiveJob(job, now)), now)
+  };
+}
+
 export function queryBoardPage(
   feed: JobsFeed,
   filters: FilterState,
@@ -138,6 +151,24 @@ export function selectVisibleJobs(jobs: readonly Job[], filters: FilterState) {
   };
 }
 
+export function selectLandingPreview(
+  jobs: readonly Job[],
+  filters: FilterState,
+  limit = landingPreviewLimit
+) {
+  const count = limit > 0 ? Math.floor(limit) : landingPreviewLimit;
+  const { visibleJobs } = selectVisibleJobs(jobs, filters);
+  const preview: Job[] = [];
+
+  for (const job of visibleJobs) {
+    if (!hasShownSalary(job)) continue;
+    preview.push(job);
+    if (preview.length === count) break;
+  }
+
+  return preview;
+}
+
 export function toBoardListing(job: Job): BoardListing {
   const resolved = withResolvedWorkplace(job);
   const language = listingLanguage(resolved);
@@ -192,7 +223,7 @@ function measureVisibleJobs(jobs: readonly Job[]): BoardMetrics {
 
     if (job.mapLocation) mappedJobsCount += 1;
     if (workplace === "Remote" || workplace === "Hybrid") remoteJobsCount += 1;
-    if (job.salary) salaryJobsCount += 1;
+    if (hasShownSalary(job)) salaryJobsCount += 1;
   }
 
   return { mappedJobsCount, remoteJobsCount, salaryJobsCount };

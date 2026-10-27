@@ -67,31 +67,47 @@
   }
 
   .topbar {
-    top: 6px;
-    flex-wrap: wrap;
+    top: 0;
+    flex-wrap: nowrap;
+    align-items: center;
     gap: 8px;
-    row-gap: 8px;
-    min-height: 46px;
-    padding: 6px;
+    height: 56px;
+    min-height: 56px;
+    max-height: 56px;
+    padding: 0 8px;
     margin-bottom: 10px;
   }
 
   .brand {
+    flex: 1 1 auto;
     gap: 8px;
+    min-width: 0;
     font-size: 0.95rem;
   }
 
+  .brand > span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .brand-mark {
+    flex: none;
     width: 32px;
     height: 32px;
   }
 
   .topbar-actions {
-    flex: 1 1 100%;
+    flex: none;
     flex-wrap: nowrap;
-    justify-content: flex-start;
+    justify-content: flex-end;
     width: auto;
-    margin-left: 0;
+    margin-left: auto;
+    gap: 4px;
+  }
+
+  .topbar .refresh-pill {
+    display: none;
   }
 
   .topbar .feedback-link {
@@ -100,8 +116,16 @@
 
   .topbar .api-docs-link,
   .topbar .mcp-docs-link,
-  .topbar .support-link {
+  .topbar .support-link,
+  .topbar .auth-entry {
     display: inline-flex;
+    flex: none;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
   }
 
   .api-docs-link span,

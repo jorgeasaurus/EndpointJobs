@@ -6,32 +6,28 @@ import { useEffect, useId, useRef, useState } from "react";
 
 import { buildOAuthRedirectTo } from "@/lib/auth/safe-next-path";
 import { createClient } from "@/lib/supabase/client";
-import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 import { AccountMenu } from "./account-menu";
+import { registerSignInOpener } from "./open-sign-in";
+import { canShowSignInOffer, useSignInSession } from "./sign-in-session";
 
 type Provider = "google" | "github";
 
 export function AuthMenu() {
-  const configured = isSupabaseConfigured();
+  const { configured, email } = useSignInSession();
   const dialogTitleId = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const [email, setEmail] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const offerSignIn = canShowSignInOffer({ configured, email });
 
   useEffect(() => {
-    if (!configured) return;
-    const supabase = createClient();
-    let active = true;
-    void supabase.auth.getClaims().then(({ data }) => {
-      if (!active || !data?.claims?.sub) return;
-      const claimEmail = data.claims.email;
-      setEmail(typeof claimEmail === "string" && claimEmail ? claimEmail : "Signed in");
-    }).catch(() => undefined);
-    return () => {
-      active = false;
-    };
-  }, [configured]);
+    if (!offerSignIn) return;
+    return registerSignInOpener(() => {
+      setError(null);
+      const dialog = dialogRef.current;
+      if (dialog && !dialog.open) dialog.showModal();
+    });
+  }, [offerSignIn]);
 
   async function signIn(provider: Provider) {
     setError(null);
@@ -46,9 +42,7 @@ export function AuthMenu() {
     if (signInError) setError("Sign-in could not start. Try again in a moment.");
   }
 
-  if (!configured) return null;
-
-  if (email) return <AccountMenu email={email} />;
+  if (!offerSignIn) return email ? <AccountMenu email={email} /> : null;
 
   return (
     <>

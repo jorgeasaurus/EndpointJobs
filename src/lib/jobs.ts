@@ -136,6 +136,46 @@ export function formatUpdatedAt(value: string) {
   return updatedAtFormatter.format(date);
 }
 
+export function formatRelativeUpdated(value: string, now = new Date()) {
+  const updated = new Date(value).getTime();
+  if (!Number.isFinite(updated)) return "Updated time unavailable";
+
+  const elapsed = now.getTime() - updated;
+  if (elapsed < 60_000) return "Updated just now";
+
+  const minutes = Math.floor(elapsed / 60_000);
+  if (minutes < 60) return `Updated ${minutes}m ago`;
+
+  const hours = Math.floor(elapsed / 3_600_000);
+  if (hours < 48) return `Updated ${hours}h ago`;
+
+  return `Updated ${Math.floor(elapsed / 86_400_000)}d ago`;
+}
+
+export function formatRelativePosted(
+  job: Pick<Job, "postedAt" | "fetchedAt" | "tags" | "postedAtEvidence">,
+  now = new Date()
+) {
+  if (!isPostedDateKnown(job)) return undefined;
+
+  const posted = new Date(job.postedAt).getTime();
+  if (!Number.isFinite(posted)) return undefined;
+
+  const elapsed = now.getTime() - posted;
+  if (elapsed < 60_000) return "just now";
+
+  const minutes = Math.floor(elapsed / 60_000);
+  if (minutes < 60) return `${Math.max(minutes, 1)}m ago`;
+
+  const hours = Math.floor(elapsed / 3_600_000);
+  if (hours < 24) return `${hours}h ago`;
+
+  const days = Math.floor(elapsed / 86_400_000);
+  if (days < 14) return `${days}d ago`;
+
+  return formatPostedDate(job.postedAt);
+}
+
 export function getSearchText(job: Job) {
   return [
     job.title,

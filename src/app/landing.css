@@ -78,9 +78,13 @@
 
 .landing-jobs-link:focus-visible,
 .landing-preview a:focus-visible,
-.landing-account a:focus-visible {
+.landing-sign-in button:focus-visible {
   outline: 2px solid var(--lime);
   outline-offset: 3px;
+}
+
+.landing-preview li a:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .landing-stats {
@@ -93,7 +97,9 @@
 .landing-stats div {
   display: flex;
   flex-direction: column-reverse;
+  justify-content: flex-end;
   min-width: 0;
+  height: 100%;
   padding-top: 14px;
   border-top: 1px solid var(--glass-border);
 }
@@ -112,7 +118,7 @@
   margin-top: 8px;
   color: var(--white-45);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -128,18 +134,45 @@
 .landing-preview header {
   display: flex;
   gap: 12px;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
 }
 
-.landing-preview header p {
+.landing-preview-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.landing-preview header p,
+.landing-updated {
   margin: 0;
 }
 
+.landing-preview .section-kicker {
+  font-size: 0.75rem;
+}
+
+.landing-updated {
+  display: none;
+  color: var(--white-45);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 .landing-preview header a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 8px;
   color: var(--lime);
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -176,9 +209,11 @@
   border-radius: 8px;
 }
 
-.landing-preview li a:hover {
-  border-color: rgb(190 242 100 / 55%);
-  background: rgb(190 242 100 / 6%);
+@media (hover: hover) and (pointer: fine) {
+  .landing-preview li a:hover {
+    border-color: rgb(190 242 100 / 55%);
+    background: rgb(190 242 100 / 6%);
+  }
 }
 
 .landing-preview strong {
@@ -188,22 +223,51 @@
   line-height: 1.25;
 }
 
-.landing-preview li a > span {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: space-between;
+.landing-company {
   color: var(--white-45);
-  font-size: 0.86rem;
+  font-size: 0.875rem;
+  line-height: 1.35;
+}
+
+.landing-role-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.landing-role-tags {
+  display: inline-flex;
+  flex: none;
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
+}
+
+.landing-salary {
+  color: var(--white);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.landing-posted {
+  color: var(--white-45);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 700;
 }
 
 .landing-workplace {
   flex: none;
   color: var(--lime);
   font-family: var(--mono);
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
@@ -212,23 +276,30 @@
   color: var(--white-60);
 }
 
-.landing-account {
+.landing-sign-in {
   max-width: 68ch;
   margin: 0 0 18px;
-  color: var(--white-45);
-  font-size: 0.95rem;
-  line-height: 1.5;
 }
 
-.landing-account strong {
-  color: var(--white);
-  font-weight: 700;
-}
-
-.landing-account a {
+.landing-sign-in button {
+  display: inline-block;
+  max-width: 100%;
+  padding: 8px 0;
+  border: 0;
+  background: none;
   color: var(--lime);
+  font: inherit;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  text-align: left;
   text-decoration: underline;
+  text-decoration-thickness: 1px;
   text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.landing-sign-in button:focus:not(:focus-visible) {
+  outline: none;
 }
 
 @media (max-width: 980px) {
@@ -242,6 +313,12 @@
 
   .landing-preview li a {
     min-height: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .landing-updated {
+    display: block;
   }
 }
 

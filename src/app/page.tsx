@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { LandingSignIn } from "@/components/auth/landing-sign-in";
 import { initialFilterState } from "@/components/job-board/filter-model";
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
 import { SiteFooter, Topbar } from "@/components/job-board/topbar";
 import feedData from "@/data/jobs.json";
-import { getActiveBoardFeed, queryBoardPage } from "@/lib/board-page";
+import { getActiveSourceFeed, queryBoardPage, selectLandingPreview } from "@/lib/board-page";
+import { formatRelativePosted, formatRelativeUpdated, formatUpdatedAt } from "@/lib/jobs";
+import { formatRolePlace } from "@/lib/role-place";
+import { formatShownSalary } from "@/lib/shown-salary";
 import { getJobWorkplace } from "@/lib/workplace";
 import type { JobsFeed } from "@/types/job";
 
@@ -32,17 +36,22 @@ export const metadata: Metadata = {
 const countFormat = new Intl.NumberFormat("en-US");
 
 export default function Home() {
-  const activeFeed = getActiveBoardFeed(feedData as JobsFeed);
+  const activeFeed = getActiveSourceFeed(feedData as JobsFeed);
   const board = queryBoardPage(activeFeed, initialFilterState, 1);
-  const preview = board.jobs.slice(0, 4).map((job) => ({
+  const preview = selectLandingPreview(activeFeed.jobs, initialFilterState).map((job) => ({
     id: job.id,
     title: job.title,
     company: job.company,
-    workplace: getJobWorkplace(job)
+    place: formatRolePlace(job.location),
+    workplace: getJobWorkplace(job),
+    salary: formatShownSalary(job) ?? "",
+    posted: formatRelativePosted(job),
+    postedAt: job.postedAt,
+    postedTitle: formatUpdatedAt(job.postedAt)
   }));
   const stats = [
     { label: "Open roles", value: board.total },
-    { label: "Remote or hybrid", value: board.metrics.remoteJobsCount },
+    { label: "Remote/hybrid", value: board.metrics.remoteJobsCount },
     { label: "Salary shown", value: board.metrics.salaryJobsCount }
   ];
 
@@ -75,22 +84,42 @@ export default function Home() {
             </dl>
           </div>
 
-          <aside className="landing-preview" aria-label="Newest open roles">
+          <aside className="landing-preview" aria-label="Newest roles with salary">
             <header>
-              <p className="section-kicker">Newest on the board</p>
+              <div className="landing-preview-heading">
+                <p className="section-kicker">Newest with salary</p>
+                <time
+                  className="landing-updated"
+                  dateTime={activeFeed.updatedAt}
+                  title={formatUpdatedAt(activeFeed.updatedAt)}
+                >
+                  {formatRelativeUpdated(activeFeed.updatedAt)}
+                </time>
+              </div>
               <Link href={getBoardPath()}>All roles</Link>
             </header>
             {preview.length === 0 ? (
-              <p className="landing-preview-empty">No open roles yet.</p>
+              <p className="landing-preview-empty">No roles with a posted salary yet.</p>
             ) : (
               <ol>
                 {preview.map((job) => (
                   <li key={job.id}>
                     <Link href={getJobPath(job.id)}>
                       <strong>{job.title}</strong>
-                      <span>
-                        <span>{job.company}</span>
-                        <span className="landing-workplace">{job.workplace}</span>
+                      <span className="landing-company">
+                        {job.company}
+                        {job.place ? <span className="landing-place"> · {job.place}</span> : null}
+                      </span>
+                      <span className="landing-role-facts">
+                        <span className="landing-salary">{job.salary}</span>
+                        <span className="landing-role-tags">
+                          {job.posted ? (
+                            <time className="landing-posted" dateTime={job.postedAt} title={job.postedTitle}>
+                              {job.posted}
+                            </time>
+                          ) : null}
+                          <span className="landing-workplace">{job.workplace}</span>
+                        </span>
                       </span>
                     </Link>
                   </li>
@@ -100,11 +129,9 @@ export default function Home() {
           </aside>
         </section>
 
-        <p className="landing-account">
-          <strong id="landing-account-title">Why an account.</strong> An account is optional.
-          Sign in with Google or GitHub to keep jobs you save, filters you choose to keep, and
-          which listings you have opened. <Link href="/privacy">Privacy policy</Link>
-        </p>
+        <LandingSignIn>
+          Sign in to save jobs, filters, and viewed job history
+        </LandingSignIn>
 
         <SiteFooter updatedAt={activeFeed.updatedAt} />
       </div>
