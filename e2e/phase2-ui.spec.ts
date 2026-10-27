@@ -51,6 +51,7 @@ test("[RESP-01] narrow labeled controls are at least 44px", async ({ page }, inf
   await page.goto("/board?e2e-auth=in");
   await page.locator("summary.advanced-filters-summary").click();
   await expect(page.locator(".hide-viewed-button")).toBeVisible();
+  await expect(page.locator(".saved-only-button")).toBeVisible();
   await expect(page.locator("article.job-card .save-button").first()).toBeVisible();
   const offenders = await page.evaluate(() => {
     const selectors = [
@@ -65,6 +66,7 @@ test("[RESP-01] narrow labeled controls are at least 44px", async ({ page }, inf
       "article.job-card .description-details summary",
       "article.job-card a.apply-link",
       ".hide-viewed-button",
+      ".saved-only-button",
       ".mode-button",
       ".advanced-filters-summary",
       ".workplace-filter-button",

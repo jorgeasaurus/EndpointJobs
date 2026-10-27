@@ -1,6 +1,16 @@
 import type { FilterState } from "./filter-model";
 
-export function getEmptyResultsMessage(filters: FilterState) {
+export function getEmptyResultsMessage(
+  filters: FilterState,
+  options?: { savedOnly?: boolean; savedJobCount?: number }
+) {
+  if (options?.savedOnly) {
+    if (!options.savedJobCount) {
+      return "You have no saved jobs yet. Turn off Saved jobs only and press Save on a role to keep it here.";
+    }
+    return "None of your saved jobs match these filters. Broaden the search or turn off Saved jobs only.";
+  }
+
   const query = filters.query.trim();
   const reasons: string[] = [];
 

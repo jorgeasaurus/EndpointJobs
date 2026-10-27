@@ -28,10 +28,11 @@ export async function upsertPreferences(
   userId: string,
   filters: FilterState,
   hideViewed: boolean,
-  updatedAt: string
+  updatedAt: string,
+  savedOnly = false
 ) {
   return client.from("user_preferences").upsert(
-    preferenceRow(userId, filters, hideViewed, updatedAt),
+    preferenceRow(userId, filters, hideViewed, updatedAt, savedOnly),
     { onConflict: "user_id" }
   );
 }

@@ -93,12 +93,15 @@ export function queryBoardPage(
   feed: JobsFeed,
   filters: FilterState,
   page: number,
-  pageSize = boardPageSize
+  pageSize = boardPageSize,
+  onlyJobIds?: ReadonlySet<string> | null
 ): BoardPage {
   const activeJobs = feed.jobs;
   const { matchedJobs, visibleJobs } = selectVisibleJobs(activeJobs, filters);
+  const matched = restrictToJobIds(matchedJobs, onlyJobIds);
+  const visible = restrictToJobIds(visibleJobs, onlyJobIds);
   const size = pageSize > 0 ? pageSize : boardPageSize;
-  const total = visibleJobs.length;
+  const total = visible.length;
   const totalPages = Math.max(1, Math.ceil(total / size));
   const requested = Number.isFinite(page) ? Math.floor(page) : 1;
   const safePage = total === 0 ? 1 : Math.min(Math.max(requested, 1), totalPages);
@@ -107,21 +110,26 @@ export function queryBoardPage(
   return {
     updatedAt: feed.updatedAt,
     trackedJobsCount: dedupeJobs(activeJobs).length,
-    workplaceCounts: dedupedWorkplaceCounts(matchedJobs),
+    workplaceCounts: dedupedWorkplaceCounts(matched),
     total,
     page: safePage,
     pageSize: size,
     totalPages,
-    metrics: measureVisibleJobs(visibleJobs),
-    jobs: visibleJobs.slice(start, start + size).map(toBoardListing)
+    metrics: measureVisibleJobs(visible),
+    jobs: visible.slice(start, start + size).map(toBoardListing)
   };
 }
 
-export function queryBoardMap(feed: JobsFeed, filters: FilterState): BoardMapJob[] {
+export function queryBoardMap(
+  feed: JobsFeed,
+  filters: FilterState,
+  onlyJobIds?: ReadonlySet<string> | null
+): BoardMapJob[] {
   const { visibleJobs } = selectVisibleJobs(feed.jobs, filters);
+  const listed = restrictToJobIds(visibleJobs, onlyJobIds);
   const jobs: BoardMapJob[] = [];
 
-  for (const job of visibleJobs) {
+  for (const job of listed) {
     if (!job.mapLocation) continue;
 
     jobs.push({
@@ -211,6 +219,14 @@ export function boardListingHasMore(
     || job.matchReasons.length > 0
     || job.platforms.length > 0
     || job.tools.length > 0;
+}
+
+function restrictToJobIds<T extends { id: string }>(
+  jobs: readonly T[],
+  onlyJobIds?: ReadonlySet<string> | null
+) {
+  if (!onlyJobIds) return [...jobs];
+  return jobs.filter((job) => onlyJobIds.has(job.id));
 }
 
 function measureVisibleJobs(jobs: readonly Job[]): BoardMetrics {

@@ -19,3 +19,28 @@ export function devAuthFixture(search: string, enabled: boolean): FixtureSession
   if (mode === "off") return { configured: false, email: null };
   return null;
 }
+
+export type DevAccountFixture = {
+  savedIds: string[];
+  viewedIds: string[];
+  hideViewed: boolean;
+  savedOnly: boolean;
+};
+
+/** Local account stand-in for the dev auth fixture. `savedOnly=1` in a shared URL is ignored. */
+export function devAccountFixture(search: string, enabled: boolean): DevAccountFixture | null {
+  const session = devAuthFixture(search, enabled);
+  if (!session?.userId) return null;
+  const params = new URLSearchParams(search);
+  return {
+    savedIds: splitFixtureIds(params.get("e2e-saved")),
+    viewedIds: splitFixtureIds(params.get("e2e-viewed")),
+    hideViewed: params.get("e2e-hide-viewed") === "1",
+    savedOnly: params.get("e2e-saved-only") === "1"
+  };
+}
+
+function splitFixtureIds(value: string | null) {
+  if (!value) return [];
+  return value.split(",").map((item) => item.trim()).filter(Boolean);
+}

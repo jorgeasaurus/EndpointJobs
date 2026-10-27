@@ -25,7 +25,9 @@ test("board, map, and listing routes share the memoized feed", () => {
   const routes = [
     "src/app/api/board/route.ts",
     "src/app/api/board/map/route.ts",
-    "src/app/api/board/listings/[id]/route.ts"
+    "src/app/api/board/listings/[id]/route.ts",
+    "src/app/api/board/saved/route.ts",
+    "src/app/api/board/saved/map/route.ts"
   ];
 
   for (const route of routes) {
@@ -47,8 +49,8 @@ test("the map fetch uses the same debounced filters as the page", () => {
   const mapHook = results.slice(results.indexOf("export function useBoardMap"));
 
   assert.match(board, /const debouncedFilters = useDebouncedFilters\(filters\)/);
-  assert.match(board, /useBoardPage\(initialPage, debouncedFilters, requestedPage, initialFilterKey\)/);
-  assert.match(board, /useBoardMap\(debouncedFilters, mapExpanded\)/);
+  assert.match(board, /useBoardPage\(initialPage, debouncedFilters, requestedPage, initialFilterKey, savedQuery\)/);
+  assert.match(board, /useBoardMap\(debouncedFilters, mapExpanded, savedQuery\)/);
   assert.match(board, /setPagination\(\{ filterKey: debouncedFilterKey, page: nextPage \}\)/);
   assert.match(results, /export function useDebouncedFilters/);
   assert.match(results, /boardFilterDebounceMs = 200/);

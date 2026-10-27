@@ -1,11 +1,9 @@
 import { Clock3, Layers3 } from "lucide-react";
 
 import type { BoardListing } from "@/lib/board-page";
-import type { FilterState } from "./filter-model";
 
 import { AnimatedNumber } from "./animated-number";
 import { maximumComparedJobs } from "./comparison-selection";
-import { getEmptyResultsMessage } from "./empty-results-message";
 import { JobCard } from "./job-card";
 import { sortOptions, type SortKey } from "./filter-model";
 import { toSortKey } from "./filter-url";
@@ -14,11 +12,14 @@ import { PaginationControls, type PaginationState } from "./pagination-controls"
 export function ResultsPanel({
   clearFilters,
   currentPage,
+  emptyMessage,
   hideViewed,
   onPageChange,
   onSortChange,
   onToggleHideViewed,
   onToggleSaved,
+  onToggleSavedOnly,
+  savedOnly,
   savedIds,
   sort,
   pageEnd,
@@ -26,19 +27,20 @@ export function ResultsPanel({
   totalJobs,
   totalPages,
   query,
-  filters,
   selectedJobIds,
   toggleComparison,
   viewedIds,
   visibleJobs
 }: PaginationState & {
   clearFilters: () => void;
-  filters: FilterState;
+  emptyMessage: string;
   hideViewed?: boolean;
   onPageChange: (page: number) => void;
   onSortChange: (sort: SortKey) => void;
   onToggleHideViewed?: () => void;
   onToggleSaved?: (job: BoardListing) => void;
+  onToggleSavedOnly?: () => void;
+  savedOnly?: boolean;
   savedIds?: ReadonlySet<string>;
   sort: SortKey;
   query: string;
@@ -91,6 +93,17 @@ export function ResultsPanel({
               {hideViewed ? "Showing unseen" : "Hide viewed"}
             </button>
           ) : null}
+          {onToggleSavedOnly ? (
+            <button
+              aria-label="Saved jobs only"
+              aria-pressed={savedOnly ? "true" : "false"}
+              className={`compare-button saved-only-button${savedOnly ? " is-active" : ""}`}
+              type="button"
+              onClick={onToggleSavedOnly}
+            >
+              {savedOnly ? "Showing saved" : "Saved jobs only"}
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -132,7 +145,7 @@ export function ResultsPanel({
         <div className="empty-state">
           <Layers3 size={34} aria-hidden="true" />
           <h3>No matching roles</h3>
-          <p>{getEmptyResultsMessage(filters)}</p>
+          <p>{emptyMessage}</p>
           <button className="clear-button" type="button" onClick={clearFilters}>
             Reset filters
           </button>

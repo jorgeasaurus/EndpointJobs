@@ -7,8 +7,49 @@ import type { FilterState } from "./filter-model";
 import { filterStateToBoardSearchParams } from "./filter-url";
 
 type BoardStatus = "ready" | "loading" | "error";
+type BoardScope = "public" | "saved";
 
 const boardFilterDebounceMs = 200;
+
+export type BoardSavedQuery =
+  | { kind: "off" }
+  | { kind: "session"; token: string }
+  | { kind: "fixture"; ids: readonly string[] };
+
+export function savedBoardQuery(account: {
+  savedIds: ReadonlySet<string>;
+  savedOnly: boolean;
+  savedToken: string;
+  signedIn: boolean;
+  usingFixture: boolean;
+}): BoardSavedQuery {
+  if (!account.signedIn || !account.savedOnly) return { kind: "off" };
+  if (account.usingFixture) return { kind: "fixture", ids: [...account.savedIds] };
+  return { kind: "session", token: account.savedToken };
+}
+
+export function boardResultsRequest(filters: FilterState, page: number, saved: BoardSavedQuery) {
+  const params = filterStateToBoardSearchParams(filters, page);
+  if (saved.kind === "off") return { path: "/api/board", params };
+  params.set("saved", "1");
+  if (saved.kind === "fixture") params.set("e2e-saved", saved.ids.join(","));
+  return { path: "/api/board/saved", params };
+}
+
+export function boardMapRequest(filters: FilterState, saved: BoardSavedQuery) {
+  const request = boardResultsRequest(filters, 1, saved);
+  request.params.delete("page");
+  return {
+    path: saved.kind === "off" ? "/api/board/map" : "/api/board/saved/map",
+    params: request.params
+  };
+}
+
+function savedRequestKey(saved: BoardSavedQuery) {
+  if (saved.kind === "off") return "off";
+  if (saved.kind === "session") return `session:${saved.token}`;
+  return `fixture:${[...saved.ids].sort().join(",")}`;
+}
 
 export function useDebouncedFilters(filters: FilterState) {
   const [debounced, setDebounced] = useState(filters);
@@ -28,24 +69,39 @@ export function useBoardPage(
   initialPage: BoardPage,
   filters: FilterState,
   page: number,
-  initialFilterKey: string
+  initialFilterKey: string,
+  saved: BoardSavedQuery = { kind: "off" }
 ) {
   const filterKey = JSON.stringify(filters);
+  const savedKey = savedRequestKey(saved);
   const [attempt, setAttempt] = useState(0);
-  const [snapshot, setSnapshot] = useState(initialPage);
-  const [status, setStatus] = useState<BoardStatus>("ready");
-  const isInitial = filterKey === initialFilterKey && page === 1 && attempt === 0;
+  const requestKey = `${filterKey}|${page}|${savedKey}|${attempt}`;
+  const [state, setState] = useState<{
+    key: string;
+    page: BoardPage;
+    scope: BoardScope;
+    status: BoardStatus;
+  }>({ key: "", page: initialPage, scope: "public", status: "ready" });
+  const isInitial = filterKey === initialFilterKey && page === 1 && attempt === 0 && saved.kind === "off";
+  const desiredScope: BoardScope = saved.kind === "off" ? "public" : "saved";
+  const matches = state.key === requestKey;
+  // scope stays on the last successful response. A failed change is settled for
+  // the UI (pendingScope false) so the previous jobs and Saved jobs only stay
+  // mounted with the error, without treating that page as the new scope.
+  const scopeMismatch = !isInitial && state.scope !== desiredScope;
+  const scopeChangeFailed = scopeMismatch && matches && state.status === "error";
+  const pendingScope = scopeMismatch && !scopeChangeFailed;
 
   useEffect(() => {
     if (isInitial) return undefined;
 
     const controller = new AbortController();
-    const params = filterStateToBoardSearchParams(filters, page);
+    const request = boardResultsRequest(filters, page, saved);
     const timer = window.setTimeout(() => {
       if (controller.signal.aborted) return;
-      setStatus("loading");
+      setState((current) => ({ ...current, status: "loading" }));
 
-      fetch(`/api/board?${params.toString()}`, { signal: controller.signal })
+      fetch(`${request.path}?${request.params.toString()}`, { signal: controller.signal })
         .then(async (response) => {
           if (!response.ok) throw new Error(`Board query failed (${response.status})`);
           return response.json() as Promise<unknown>;
@@ -53,12 +109,11 @@ export function useBoardPage(
         .then((body) => {
           if (controller.signal.aborted) return;
           if (!isBoardPage(body)) throw new Error("Board query returned an unexpected payload");
-          setSnapshot(body);
-          setStatus("ready");
+          setState({ key: requestKey, page: body, scope: desiredScope, status: "ready" });
         })
         .catch((error: unknown) => {
           if (controller.signal.aborted || isAbortError(error)) return;
-          setStatus("error");
+          setState((current) => ({ ...current, key: requestKey, status: "error" }));
         });
     }, 0);
 
@@ -66,19 +121,22 @@ export function useBoardPage(
       controller.abort();
       window.clearTimeout(timer);
     };
-  }, [attempt, filterKey, filters, isInitial, page]);
+  }, [desiredScope, filters, isInitial, page, requestKey, saved]);
 
   return {
-    page: isInitial ? initialPage : snapshot,
+    page: isInitial ? initialPage : state.page,
+    pendingScope,
+    scope: state.scope,
     retry: () => setAttempt((current) => current + 1),
-    status: isInitial ? "ready" : status
+    status: isInitial ? "ready" : matches ? state.status : "loading"
   };
 }
 
-export function useBoardMap(filters: FilterState, enabled: boolean) {
+export function useBoardMap(filters: FilterState, enabled: boolean, saved: BoardSavedQuery = { kind: "off" }) {
   const filterKey = JSON.stringify(filters);
+  const savedKey = savedRequestKey(saved);
   const [attempt, setAttempt] = useState(0);
-  const requestKey = `${filterKey}:${attempt}`;
+  const requestKey = `${filterKey}:${savedKey}:${attempt}`;
   const [state, setState] = useState<{
     jobs: BoardMapJob[];
     key: string;
@@ -89,10 +147,9 @@ export function useBoardMap(filters: FilterState, enabled: boolean) {
     if (!enabled) return undefined;
 
     const controller = new AbortController();
-    const params = filterStateToBoardSearchParams(filters, 1);
-    params.delete("page");
+    const request = boardMapRequest(filters, saved);
 
-    fetch(`/api/board/map?${params.toString()}`, { signal: controller.signal })
+    fetch(`${request.path}?${request.params.toString()}`, { signal: controller.signal })
       .then(async (response) => {
         if (!response.ok) throw new Error(`Map query failed (${response.status})`);
         return response.json() as Promise<unknown>;
@@ -108,7 +165,7 @@ export function useBoardMap(filters: FilterState, enabled: boolean) {
       });
 
     return () => controller.abort();
-  }, [enabled, filters, requestKey]);
+  }, [enabled, filters, requestKey, saved]);
 
   const current = state?.key === requestKey ? state : null;
 

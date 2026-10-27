@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 
-import { hideViewedJobs } from "@/lib/account/records";
+import { presentBoardResults } from "@/lib/account/records";
 import type { BoardListing, BoardPage } from "@/lib/board-page";
 import type { EndpointTool } from "@/types/job";
 import { withInitialTools, type FilterAction } from "./job-board/filter-model";
@@ -13,9 +13,9 @@ import { CommandPanel, CommandStatusRail, StickyActiveFilters } from "./job-boar
 import { JobMap } from "./job-board/job-map";
 import { JobComparison } from "./job-board/job-comparison";
 import { ParallaxBackground } from "./job-board/parallax-background";
-import { ResultsPanel } from "./job-board/results-panel";
+import { OpenRolesSection } from "./job-board/open-roles";
 import { SiteFooter, Topbar } from "./job-board/topbar";
-import { useBoardMap, useBoardPage, useDebouncedFilters } from "./job-board/use-board-results";
+import { savedBoardQuery, useBoardMap, useBoardPage, useDebouncedFilters } from "./job-board/use-board-results";
 import { useAccountBoard } from "./job-board/use-account-board";
 import { useSearchFocusShortcut } from "./job-board/use-search-focus-shortcut";
 import { useUrlSyncedFilters } from "./job-board/use-url-synced-filters";
@@ -48,11 +48,24 @@ export function JobBoard({
   useSearchFocusShortcut(searchInputRef);
 
   const account = useAccountBoard(filters, dispatchFilters);
+  const savedQuery = useMemo(() => savedBoardQuery({
+    savedIds: account.savedIds,
+    savedOnly: account.savedOnly,
+    savedToken: account.savedToken,
+    signedIn: account.signedIn,
+    usingFixture: account.usingFixture
+  }), [
+    account.savedIds,
+    account.savedOnly,
+    account.savedToken,
+    account.signedIn,
+    account.usingFixture
+  ]);
   const debouncedFilters = useDebouncedFilters(filters);
   const debouncedFilterKey = JSON.stringify(debouncedFilters);
   const requestedPage = pagination.filterKey === debouncedFilterKey ? pagination.page : 1;
-  const board = useBoardPage(initialPage, debouncedFilters, requestedPage, initialFilterKey);
-  const map = useBoardMap(debouncedFilters, mapExpanded);
+  const board = useBoardPage(initialPage, debouncedFilters, requestedPage, initialFilterKey, savedQuery);
+  const map = useBoardMap(debouncedFilters, mapExpanded, savedQuery);
   const snapshot = board.page;
   let seenJobs = seenState.map;
 
@@ -69,11 +82,29 @@ export function JobBoard({
       .filter((job): job is BoardListing => Boolean(job));
   }, [seenJobs, selectedJobIds]);
 
-  const totalPages = snapshot.totalPages;
-  const currentPage = board.status === "loading" ? requestedPage : snapshot.page;
-  const pageStartIndex = (currentPage - 1) * snapshot.pageSize;
-  const pageStart = snapshot.total === 0 ? 0 : pageStartIndex + 1;
-  const pageEnd = Math.min(pageStartIndex + snapshot.pageSize, snapshot.total);
+  const results = presentBoardResults({
+    hideViewed: account.signedIn && account.hideViewed,
+    jobs: snapshot.jobs,
+    loading: board.status === "loading",
+    page: snapshot.page,
+    pageSize: snapshot.pageSize,
+    pendingScope: board.pendingScope,
+    requestedPage,
+    savedIds: account.savedIds,
+    savedOnly: account.signedIn && account.savedOnly && board.scope === "saved",
+    total: snapshot.total,
+    totalPages: snapshot.totalPages,
+    viewedIds: account.viewedIds
+  });
+  const {
+    currentPage,
+    listedJobs,
+    pageEnd,
+    pageStart,
+    totalJobs,
+    totalPages,
+    viewingSaved
+  } = results;
   const activeFilterItems = getActiveFilterItems(filters);
   const activeFilterCount = activeFilterItems.length;
   const activeFilterLabel =
@@ -141,7 +172,7 @@ export function JobBoard({
             filters={filters}
             workplaceCounts={snapshot.workplaceCounts}
             searchInputRef={searchInputRef}
-            visibleJobsCount={snapshot.total}
+            visibleJobsCount={totalJobs}
             mappedJobsCount={snapshot.metrics.mappedJobsCount}
             remoteJobsCount={snapshot.metrics.remoteJobsCount}
             salaryJobsCount={snapshot.metrics.salaryJobsCount}
@@ -180,43 +211,37 @@ export function JobBoard({
           }
         />
 
-        <section
-          aria-busy={board.status === "loading"}
-          className="board-grid"
-          id="open-roles"
-          ref={resultsSectionRef}
-        >
-          {board.status === "loading" ? <p className="sr-only">Loading results</p> : null}
-          {board.status === "error" ? (
-            <p className="board-query-error" role="alert">
-              Results did not refresh.
-              <button type="button" onClick={board.retry}>
-                Try again
-              </button>
-            </p>
-          ) : null}
-          <ResultsPanel
-            clearFilters={clearFilters}
-            currentPage={currentPage}
-            filters={filters}
-            hideViewed={account.signedIn ? account.hideViewed : undefined}
-            onPageChange={changePage}
-            onSortChange={(value) => dispatch({ type: "setSort", value })}
-            onToggleHideViewed={account.signedIn ? account.toggleHideViewed : undefined}
-            onToggleSaved={account.signedIn ? account.toggleSaved : undefined}
-            savedIds={account.savedIds}
-            sort={filters.sort}
-            pageEnd={pageEnd}
-            pageStart={pageStart}
-            totalJobs={snapshot.total}
-            totalPages={totalPages}
-            query={filters.query}
-            selectedJobIds={selectedJobIds}
-            toggleComparison={toggleComparison}
-            viewedIds={account.viewedIds}
-            visibleJobs={hideViewedJobs(snapshot.jobs, account.viewedIds, account.signedIn && account.hideViewed)}
-          />
-        </section>
+        <OpenRolesSection
+          clearFilters={clearFilters}
+          currentPage={currentPage}
+          filters={filters}
+          hideViewed={account.hideViewed}
+          listedJobs={listedJobs}
+          loading={board.status === "loading"}
+          onPageChange={changePage}
+          onRetry={board.retry}
+          onSortChange={(value) => dispatch({ type: "setSort", value })}
+          onToggleHideViewed={account.toggleHideViewed}
+          onToggleSaved={account.toggleSaved}
+          onToggleSavedOnly={() => {
+            setPagination({ filterKey: "", page: 1 });
+            account.toggleSavedOnly();
+          }}
+          pageEnd={pageEnd}
+          pageStart={pageStart}
+          pendingScope={board.pendingScope}
+          queryError={board.status === "error"}
+          resultsRef={resultsSectionRef}
+          savedIds={account.savedIds}
+          savedOnly={account.savedOnly}
+          selectedJobIds={selectedJobIds}
+          signedIn={account.signedIn}
+          toggleComparison={toggleComparison}
+          totalJobs={totalJobs}
+          totalPages={totalPages}
+          viewedIds={account.viewedIds}
+          viewingSaved={viewingSaved}
+        />
 
         <details className="search-coverage-mobile">
           <summary>Coverage stats</summary>
@@ -225,7 +250,7 @@ export function JobBoard({
             mappedJobsCount={snapshot.metrics.mappedJobsCount}
             remoteJobsCount={snapshot.metrics.remoteJobsCount}
             salaryJobsCount={snapshot.metrics.salaryJobsCount}
-            visibleJobsCount={snapshot.total}
+            visibleJobsCount={totalJobs}
           />
         </details>
 
