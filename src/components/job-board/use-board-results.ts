@@ -85,7 +85,12 @@ export function useBoardPage(
   const isInitial = filterKey === initialFilterKey && page === 1 && attempt === 0 && saved.kind === "off";
   const desiredScope: BoardScope = saved.kind === "off" ? "public" : "saved";
   const matches = state.key === requestKey;
-  const pendingScope = !isInitial && state.scope !== desiredScope;
+  // scope stays on the last successful response. A failed change is settled for
+  // the UI (pendingScope false) so the previous jobs and Saved jobs only stay
+  // mounted with the error, without treating that page as the new scope.
+  const scopeMismatch = !isInitial && state.scope !== desiredScope;
+  const scopeChangeFailed = scopeMismatch && matches && state.status === "error";
+  const pendingScope = scopeMismatch && !scopeChangeFailed;
 
   useEffect(() => {
     if (isInitial) return undefined;
@@ -121,6 +126,7 @@ export function useBoardPage(
   return {
     page: isInitial ? initialPage : state.page,
     pendingScope,
+    scope: state.scope,
     retry: () => setAttempt((current) => current + 1),
     status: isInitial ? "ready" : matches ? state.status : "loading"
   };

@@ -91,7 +91,7 @@ export function JobBoard({
     pendingScope: board.pendingScope,
     requestedPage,
     savedIds: account.savedIds,
-    savedOnly: account.signedIn && account.savedOnly,
+    savedOnly: account.signedIn && account.savedOnly && board.scope === "saved",
     total: snapshot.total,
     totalPages: snapshot.totalPages,
     viewedIds: account.viewedIds
