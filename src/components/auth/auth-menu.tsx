@@ -12,7 +12,7 @@ import { AccountMenu } from "./account-menu";
 
 type Provider = "google" | "github";
 
-export function AuthMenu({ variant = "toolbar" }: { variant?: "toolbar" | "landing" }) {
+export function AuthMenu() {
   const configured = isSupabaseConfigured();
   const dialogTitleId = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -53,7 +53,7 @@ export function AuthMenu({ variant = "toolbar" }: { variant?: "toolbar" | "landi
   return (
     <>
       <button
-        className={variant === "landing" ? "landing-account-button" : "feedback-link auth-entry"}
+        className="feedback-link auth-entry"
         type="button"
         aria-haspopup="dialog"
         onClick={() => {
@@ -62,9 +62,7 @@ export function AuthMenu({ variant = "toolbar" }: { variant?: "toolbar" | "landi
         }}
       >
         <LogIn size={15} aria-hidden="true" />
-        <span className="auth-entry-label">
-          {variant === "landing" ? "Sign in or create an account" : "Sign in"}
-        </span>
+        <span className="auth-entry-label">Sign in</span>
       </button>
       <dialog ref={dialogRef} className="auth-dialog" aria-labelledby={dialogTitleId}>
         <form method="dialog" className="auth-dialog-body">

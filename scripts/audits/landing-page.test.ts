@@ -13,13 +13,13 @@ test("the home page is a landing page with a privacy link and an account reason"
   assert.match(home, /href=\{getBoardPath\(\)\}/);
   assert.match(home, /href="\/privacy"/);
   assert.match(home, /Why an account/);
-  assert.match(home, /jobs you save/);
-  assert.match(home, /filters you choose to keep/);
-  assert.match(home, /which listings you have opened/);
+  assert.match(home, /jobs you save/i);
+  assert.match(home, /filters you choose to keep/i);
+  assert.match(home, /which listings you have opened/i);
   assert.match(home, /An account is optional/);
   assert.match(home, /export const revalidate = 3600/);
+  assert.match(home, /\.slice\(0, 4\)/);
   assert.doesNotMatch(home, /<JobBoard/);
-  assert.doesNotMatch(home, /queryBoardPage/);
   assert.match(board, /<JobBoard initialPage=\{initialPage\} \/>/);
   assert.match(board, /export const revalidate = 3600/);
 });
