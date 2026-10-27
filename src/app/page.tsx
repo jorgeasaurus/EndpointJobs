@@ -5,8 +5,10 @@ import { initialFilterState } from "@/components/job-board/filter-model";
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
 import { SiteFooter, Topbar } from "@/components/job-board/topbar";
 import feedData from "@/data/jobs.json";
-import { getActiveBoardFeed, queryBoardPage, selectLandingPreview } from "@/lib/board-page";
-import { presentSalary } from "@/lib/job-trust";
+import { getActiveSourceFeed, queryBoardPage, selectLandingPreview } from "@/lib/board-page";
+import { formatRelativePosted, formatRelativeUpdated, formatUpdatedAt } from "@/lib/jobs";
+import { formatRolePlace } from "@/lib/role-place";
+import { formatShownSalary } from "@/lib/shown-salary";
 import { getJobWorkplace } from "@/lib/workplace";
 import type { JobsFeed } from "@/types/job";
 
@@ -33,18 +35,22 @@ export const metadata: Metadata = {
 const countFormat = new Intl.NumberFormat("en-US");
 
 export default function Home() {
-  const activeFeed = getActiveBoardFeed(feedData as JobsFeed);
+  const activeFeed = getActiveSourceFeed(feedData as JobsFeed);
   const board = queryBoardPage(activeFeed, initialFilterState, 1);
   const preview = selectLandingPreview(activeFeed.jobs, initialFilterState).map((job) => ({
     id: job.id,
     title: job.title,
     company: job.company,
+    place: formatRolePlace(job.location),
     workplace: getJobWorkplace(job),
-    salary: presentSalary(job)?.label ?? ""
+    salary: formatShownSalary(job) ?? "",
+    posted: formatRelativePosted(job),
+    postedAt: job.postedAt,
+    postedTitle: formatUpdatedAt(job.postedAt)
   }));
   const stats = [
     { label: "Open roles", value: board.total },
-    { label: "Remote or hybrid", value: board.metrics.remoteJobsCount },
+    { label: "Remote/hybrid", value: board.metrics.remoteJobsCount },
     { label: "Salary shown", value: board.metrics.salaryJobsCount }
   ];
 
@@ -79,7 +85,16 @@ export default function Home() {
 
           <aside className="landing-preview" aria-label="Newest roles with salary">
             <header>
-              <p className="section-kicker">Newest with salary</p>
+              <div className="landing-preview-heading">
+                <p className="section-kicker">Newest with salary</p>
+                <time
+                  className="landing-updated"
+                  dateTime={activeFeed.updatedAt}
+                  title={formatUpdatedAt(activeFeed.updatedAt)}
+                >
+                  {formatRelativeUpdated(activeFeed.updatedAt)}
+                </time>
+              </div>
               <Link href={getBoardPath()}>All roles</Link>
             </header>
             {preview.length === 0 ? (
@@ -90,10 +105,18 @@ export default function Home() {
                   <li key={job.id}>
                     <Link href={getJobPath(job.id)}>
                       <strong>{job.title}</strong>
-                      <span>
-                        <span>{job.company}</span>
-                        <span className="landing-meta">
-                          <span className="landing-salary">{job.salary}</span>
+                      <span className="landing-company">
+                        {job.company}
+                        {job.place ? <span className="landing-place"> · {job.place}</span> : null}
+                      </span>
+                      <span className="landing-role-facts">
+                        <span className="landing-salary">{job.salary}</span>
+                        <span className="landing-role-tags">
+                          {job.posted ? (
+                            <time className="landing-posted" dateTime={job.postedAt} title={job.postedTitle}>
+                              {job.posted}
+                            </time>
+                          ) : null}
                           <span className="landing-workplace">{job.workplace}</span>
                         </span>
                       </span>

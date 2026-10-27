@@ -3,20 +3,16 @@ import { filterJobs } from "@/lib/job-filters";
 import { listingLanguage, prepareBoardFeed, dedupeJobs, dedupeWorkplaceJobs, dedupedWorkplaceCounts } from "@/lib/job-trust";
 import { seedPlatformChipFixture } from "@/lib/platform-chip-fixture";
 import type { JobMapRecord } from "@/lib/job-map";
+import { isActiveJob } from "@/lib/jobs";
+import { hasShownSalary } from "@/lib/shown-salary";
 import { getJobWorkplace, withResolvedWorkplace } from "@/lib/workplace";
 import type { Job, JobsFeed } from "@/types/job";
+
+export { hasShownSalary } from "@/lib/shown-salary";
 
 export const boardPageSize = 20;
 
 export const landingPreviewLimit = 4;
-
-const placeholderSalaryLabel = /^(?:n\/?a|tbd|tba|todo|xxx|competitive|negotiable|doe|depends on experience|not disclosed|not listed|not shown|not available|unavailable|salary not listed|salary not shown|salary not disclosed|placeholder|to be determined|[-–—_.]+)$/i;
-
-export function hasShownSalary(job: Pick<Job, "salary">) {
-  const label = job.salary?.label.trim() ?? "";
-  if (!label || placeholderSalaryLabel.test(label)) return false;
-  return /[1-9]/.test(label);
-}
 
 export const boardCacheControl = "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400";
 
@@ -83,6 +79,13 @@ export function getActiveBoardFeed(feed: JobsFeed, now = new Date()): JobsFeed {
   return {
     ...preparedFeed,
     jobs: seedPlatformChipFixture(preparedFeed.jobs, now)
+  };
+}
+
+export function getActiveSourceFeed(feed: JobsFeed, now = new Date()): JobsFeed {
+  return {
+    ...feed,
+    jobs: seedPlatformChipFixture(feed.jobs.filter((job) => isActiveJob(job, now)), now)
   };
 }
 

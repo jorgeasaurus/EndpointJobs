@@ -36,7 +36,7 @@ test("the home page is a landing page with a privacy link and an account reason"
   assert.match(home, />All roles</);
   assert.doesNotMatch(home, /Newest on the board/);
   assert.match(home, /label: "Open roles", value: board\.total/);
-  assert.match(home, /label: "Remote or hybrid", value: board\.metrics\.remoteJobsCount/);
+  assert.match(home, /label: "Remote\/hybrid", value: board\.metrics\.remoteJobsCount/);
   assert.doesNotMatch(home, /label: "Remote",/);
   assert.doesNotMatch(home, /trackedJobsCount/);
   assert.doesNotMatch(home, /<JobBoard/);
@@ -311,8 +311,15 @@ test("the landing preview is the newest roles with a shown salary, capped at the
 
 test("the home preview prints each shown salary and leaves the all-roles link alone", () => {
   assert.match(home, /aria-label="Newest roles with salary"/);
-  assert.match(home, /presentSalary\(job\)\?\.label/);
+  assert.match(home, /getActiveSourceFeed\(/);
+  assert.match(home, /formatShownSalary\(job\)/);
+  assert.doesNotMatch(home, /presentSalary/);
   assert.match(home, /className="landing-salary"/);
+  assert.match(home, /className="landing-company"/);
+  assert.match(home, / · /);
+  assert.match(home, /className="landing-posted"/);
+  assert.match(home, /title=\{formatUpdatedAt\(activeFeed\.updatedAt\)\}/);
+  assert.match(home, /formatRelativeUpdated\(activeFeed\.updatedAt\)/);
   assert.match(home, /<Link href=\{getBoardPath\(\)\}>All roles<\/Link>/);
   assert.doesNotMatch(home, /salary=1/);
   assert.match(home, /No roles with a posted salary yet/);
