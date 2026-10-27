@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 
+import { devAuthFixture } from "@/lib/auth/dev-auth-fixture";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
@@ -27,7 +28,16 @@ function publish(next: SignInSession) {
 }
 
 function ensureLoaded() {
-  if (started || !session.configured) return;
+  if (started) return;
+  if (typeof window !== "undefined") {
+    const fixture = devAuthFixture(window.location.search, process.env.NODE_ENV !== "production");
+    if (fixture) {
+      started = true;
+      publish(fixture);
+      return;
+    }
+  }
+  if (!session.configured) return;
   started = true;
   void createClient()
     .auth.getClaims()

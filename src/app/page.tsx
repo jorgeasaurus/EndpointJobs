@@ -129,9 +129,7 @@ export default function Home() {
           </aside>
         </section>
 
-        <LandingSignIn>
-          Sign in to save jobs, filters, and viewed job history
-        </LandingSignIn>
+        <LandingSignIn />
 
         <SiteFooter updatedAt={activeFeed.updatedAt} />
       </div>
