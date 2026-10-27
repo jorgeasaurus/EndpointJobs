@@ -12,7 +12,6 @@ export function AccountMenu({ email }: { email: string }) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const signOutRef = useRef<HTMLButtonElement>(null);
   const panelId = useId();
 
   useLayoutEffect(() => {
@@ -54,9 +53,9 @@ export function AccountMenu({ email }: { email: string }) {
     }
 
     position();
-    // The portal is outside the trigger's tab order, and the panel stays
-    // visibility:hidden until this placement. Focus Sign out once it can take focus.
-    signOutRef.current?.focus();
+    // Focus the panel, not Sign out. A held Enter that opened the menu must not
+    // land on the submit button. Tab from here reaches Sign out.
+    panel.focus();
     let frame = 0;
     function schedule() {
       if (frame) return;
@@ -95,19 +94,17 @@ export function AccountMenu({ email }: { email: string }) {
       if (event.key !== "Tab") return;
       const panel = panelRef.current;
       if (!panel) return;
-      const focusable = [...panel.querySelectorAll<HTMLElement>("a[href], button:not([disabled])")];
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (!first || !last) {
-        event.preventDefault();
-        return;
-      }
+      const cycle = [
+        panel,
+        ...panel.querySelectorAll<HTMLElement>("a[href], button:not([disabled])")
+      ];
       const active = document.activeElement;
-      const inside = active instanceof Node && panel.contains(active);
-      if (!inside || (event.shiftKey && active === first) || (!event.shiftKey && active === last)) {
-        event.preventDefault();
-        (event.shiftKey ? last : first).focus();
-      }
+      const index = active instanceof HTMLElement ? cycle.indexOf(active) : -1;
+      event.preventDefault();
+      const next = event.shiftKey
+        ? cycle[(index <= 0 ? cycle.length : index) - 1]
+        : cycle[index === -1 || index === cycle.length - 1 ? 0 : index + 1];
+      next?.focus();
     }
 
     function onPointerDown(event: PointerEvent) {
@@ -132,6 +129,7 @@ export function AccountMenu({ email }: { email: string }) {
       id={panelId}
       className="auth-menu-panel"
       hidden={!open}
+      tabIndex={-1}
       aria-label="Account"
     >
       <p className="auth-menu-email" title={email}>
@@ -140,7 +138,7 @@ export function AccountMenu({ email }: { email: string }) {
       <Link className="auth-menu-action" href="/account">Account</Link>
       {/* Native POST reloads the document. A server-action redirect to / keeps this email state. */}
       <form action={SIGN_OUT_PATH} method="post">
-        <button ref={signOutRef} className="auth-menu-action" type="submit">
+        <button className="auth-menu-action" type="submit">
           Sign out
         </button>
       </form>
@@ -156,6 +154,9 @@ export function AccountMenu({ email }: { email: string }) {
         aria-label={`Account menu for ${email}`}
         aria-expanded={open}
         aria-controls={panelId}
+        onKeyDown={(event) => {
+          if (event.repeat) event.preventDefault();
+        }}
         onClick={() => setOpen((value) => !value)}
       >
         <UserRound size={15} aria-hidden="true" />

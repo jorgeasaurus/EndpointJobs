@@ -18,6 +18,8 @@ test("the closed account menu truncates the email and posts sign-out", () => {
   const html = renderToStaticMarkup(createElement(AccountMenu, { email }));
   assert.match(html, new RegExp(`title="${email}"`));
   assert.match(html, /aria-expanded="false"/);
+  assert.match(html, /aria-label="Account"/);
+  assert.match(html, /tabindex="-1"/);
   assert.match(html, /method="post"/);
   assert.match(html, /action="\/auth\/sign-out"/);
   assert.match(html, /Sign out/);
@@ -30,7 +32,7 @@ test("the closed account menu truncates the email and posts sign-out", () => {
   assert.doesNotMatch(css, /\.auth-menu-panel\s*\{[^}]*right:\s*0/);
 });
 
-test("the keyboard opens the account menu and activates Sign out", { timeout: 60_000 }, async () => {
+test("opening the account menu with Enter focuses the panel, and Tab then signs out", { timeout: 60_000 }, async () => {
   const js = await bundle(fileURLToPath(new URL("./fixtures/account-menu-harness.tsx", import.meta.url)));
   const css = `${variables}\n${readFileSync(new URL("../../src/app/auth-menu.css", import.meta.url), "utf8")}\n${harnessCss}`;
   const browser = await chromium.launch({
@@ -39,37 +41,64 @@ test("the keyboard opens the account menu and activates Sign out", { timeout: 60
   });
   try {
     const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
-    let navigated = false;
-    page.on("framenavigated", () => {
-      navigated = true;
-    });
     await page.setContent(`<!doctype html><html><head><style>${css}</style></head><body data-email="${email}"><div id="root"></div></body></html>`);
     await page.addScriptTag({ content: js });
+    await page.evaluate(() => {
+      document.addEventListener("submit", (event) => {
+        event.preventDefault();
+        document.documentElement.dataset.signOut = "posted";
+      }, true);
+    });
     const trigger = page.getByRole("button", { name: `Account menu for ${email}` });
     await trigger.waitFor();
     await trigger.focus();
-    await page.keyboard.press("Enter");
-    await page.waitForFunction(() => document.activeElement?.textContent?.includes("Sign out"));
-    assert.equal(navigated, false, "opening the menu submitted Sign out");
+    await page.keyboard.down("Enter");
+    await page.waitForFunction(() => {
+      const active = document.activeElement;
+      return active instanceof HTMLElement && active.classList.contains("auth-menu-panel");
+    });
+    const opened = await page.evaluate(() => {
+      const active = document.activeElement;
+      return {
+        panel: active instanceof HTMLElement && active.classList.contains("auth-menu-panel"),
+        label: active?.getAttribute("aria-label") ?? "",
+        tabIndex: active instanceof HTMLElement ? active.tabIndex : null,
+        signOut: active instanceof HTMLButtonElement && active.classList.contains("auth-menu-action"),
+        posted: document.documentElement.dataset.signOut ?? ""
+      };
+    });
+    assert.equal(opened.panel, true);
+    assert.equal(opened.label, "Account");
+    assert.equal(opened.tabIndex, -1);
+    assert.equal(opened.signOut, false);
+    assert.equal(opened.posted, "");
+
+    const repeated = await page.evaluate(() => {
+      const init = { key: "Enter", code: "Enter", repeat: true, bubbles: true, cancelable: true };
+      document.querySelector(".auth-entry")?.dispatchEvent(new KeyboardEvent("keydown", init));
+      document.activeElement?.dispatchEvent(new KeyboardEvent("keydown", init));
+      const active = document.activeElement;
+      return {
+        posted: document.documentElement.dataset.signOut ?? "",
+        open: document.querySelector(".auth-entry")?.getAttribute("aria-expanded"),
+        panel: active instanceof HTMLElement && active.classList.contains("auth-menu-panel")
+      };
+    });
+    assert.equal(repeated.posted, "", "a repeated Enter submitted Sign out");
+    assert.equal(repeated.open, "true");
+    assert.equal(repeated.panel, true);
+    await page.keyboard.up("Enter");
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.signOut ?? ""), "");
 
     await page.keyboard.press("Tab");
     assert.match(await page.evaluate(() => document.activeElement?.textContent ?? ""), /Sign out/);
     await page.keyboard.press("Shift+Tab");
+    assert.equal(
+      await page.evaluate(() => document.activeElement?.classList.contains("auth-menu-panel") ?? false),
+      true
+    );
+    await page.keyboard.press("Tab");
     assert.match(await page.evaluate(() => document.activeElement?.textContent ?? ""), /Sign out/);
-    assert.notEqual(await page.evaluate(() => document.activeElement?.textContent?.trim()), "API");
-
-    await page.keyboard.press("Escape");
-    await page.locator(".auth-menu-panel").waitFor({ state: "hidden" });
-    await page.waitForFunction((name) => document.activeElement?.getAttribute("aria-label") === name, `Account menu for ${email}`);
-
-    await page.keyboard.press("Enter");
-    await page.waitForFunction(() => document.activeElement?.textContent?.includes("Sign out"));
-    await page.evaluate(() => {
-      document.querySelector(".auth-menu-panel form")?.addEventListener("submit", (event) => {
-        event.preventDefault();
-        document.documentElement.dataset.signOut = "posted";
-      });
-    });
     await page.keyboard.press("Enter");
     await page.waitForFunction(() => document.documentElement.dataset.signOut === "posted");
   } finally {

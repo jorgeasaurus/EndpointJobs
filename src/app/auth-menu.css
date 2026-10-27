@@ -73,6 +73,7 @@
   background: var(--white);
 }
 
+.auth-menu-panel:focus-visible,
 .auth-menu-action:focus-visible,
 .auth-dialog-close:focus-visible,
 .auth-provider:focus-visible,
@@ -81,6 +82,7 @@
   outline-offset: 3px;
 }
 
+.auth-menu-panel:focus:not(:focus-visible),
 .auth-menu-action:focus:not(:focus-visible),
 .auth-dialog-close:focus:not(:focus-visible),
 .auth-provider:focus:not(:focus-visible),
