@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import test from "node:test";
+import * as esbuild from "esbuild";
 import { chromium } from "@playwright/test";
+import { fileURLToPath } from "node:url";
 
 import { closeDialogOnBackdrop } from "../../src/components/auth/dialog-backdrop";
 
@@ -69,6 +73,92 @@ test("keyboard activation of a provider keeps the dialog and its error open", as
     });
     assert.equal(closed.open, false);
     assert.equal(closed.errorVisible, false);
+  } finally {
+    await browser.close();
+  }
+});
+
+test("opening the sign-in dialog focuses Continue with Google after the provider remount", { timeout: 60_000 }, async () => {
+  const result = await esbuild.build({
+    absWorkingDir: fileURLToPath(new URL("../..", import.meta.url)),
+    entryPoints: [fileURLToPath(new URL("./fixtures/sign-in-dialog-harness.tsx", import.meta.url))],
+    bundle: true,
+    write: false,
+    format: "iife",
+    platform: "browser",
+    target: "es2022",
+    jsx: "automatic",
+    plugins: [
+      {
+        name: "dialog-stubs",
+        setup(build) {
+          build.onResolve({ filter: /^next\/link$/ }, () => ({ path: "next-link", namespace: "dialog-stubs" }));
+          build.onResolve({ filter: /sign-in-session$/ }, () => ({ path: "sign-in-session", namespace: "dialog-stubs" }));
+          build.onLoad({ filter: /.*/, namespace: "dialog-stubs" }, (args) => ({
+            loader: "js",
+            resolveDir: fileURLToPath(new URL("../..", import.meta.url)),
+            contents: args.path === "next-link"
+              ? `import { createElement } from "react";
+                export default function Link(props) {
+                  return createElement("a", { href: props.href, onClick: props.onClick }, props.children);
+                }`
+              : `export function canShowSignInOffer(session) {
+                  return Boolean(session.configured && session.email === null);
+                }
+                export function useSignInSession() {
+                  return { configured: true, email: null };
+                }`
+          }));
+        }
+      },
+      {
+        name: "at-alias",
+        setup(build) {
+          build.onResolve({ filter: /^@\// }, (args) => {
+            const base = resolve(fileURLToPath(new URL("../../src", import.meta.url)), args.path.slice(2));
+            for (const candidate of [base, `${base}.tsx`, `${base}.ts`, `${base}.jsx`, `${base}.js`]) {
+              if (existsSync(candidate)) return { path: candidate };
+            }
+            return { path: base };
+          });
+        }
+      }
+    ]
+  });
+  const css = readFileSync(new URL("../../src/app/auth-menu.css", import.meta.url), "utf8");
+  const browser = await chromium.launch({
+    headless: true,
+    executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH ?? "/usr/bin/google-chrome"
+  });
+  try {
+    const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+    await page.setContent(`<!doctype html><html><head><style>:root{--lime:#bef264;--black:#000;--white:#fff;--white-60:#aaa;--danger:#fb7185;--glass:transparent;--glass-border:#333;--shadow:none;--glow-lime:none;--sans:system-ui,sans-serif;--mono:monospace}${css}</style></head><body><div id="root"></div></body></html>`);
+    await page.addScriptTag({ content: result.outputFiles[0]?.text ?? "" });
+    const signIn = page.getByRole("button", { name: "Sign in" });
+    await signIn.waitFor();
+
+    await signIn.focus();
+    await page.keyboard.press("Enter");
+    await page.waitForFunction(() => {
+      const active = document.activeElement;
+      return active instanceof HTMLButtonElement
+        && active.classList.contains("auth-provider")
+        && active.textContent?.includes("Continue with Google")
+        && !active.textContent.includes("GitHub");
+    });
+    await page.keyboard.press("Tab");
+    assert.match(await page.evaluate(() => document.activeElement?.textContent ?? ""), /Continue with GitHub/);
+
+    await page.keyboard.press("Escape");
+    await page.waitForFunction(() => document.querySelector("dialog")?.open === false);
+    await page.keyboard.press("Enter");
+    await page.waitForFunction(() => {
+      const active = document.activeElement;
+      return active instanceof HTMLButtonElement
+        && active.classList.contains("auth-provider")
+        && active.textContent?.includes("Continue with Google")
+        && !active.textContent.includes("GitHub");
+    });
   } finally {
     await browser.close();
   }

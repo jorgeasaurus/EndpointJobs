@@ -63,12 +63,18 @@ test("[HOME-04] why an account", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator(".landing-account")).toHaveCount(0);
   await expect(page.getByText("An account is optional.")).toHaveCount(0);
-  const signIn = page.getByRole("button", { name: "Sign in to save jobs, filters, and viewed job history" });
+  const sentence = "Sign in to save jobs, filters, and viewed job history";
+  await expect(page.getByText(sentence)).toHaveCount(0);
+  const google = page.getByRole("button", { name: "Continue with Google" });
+  const github = page.getByRole("button", { name: "Continue with GitHub" });
   if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    await expect(signIn).toBeVisible();
+    await expect(google).toBeVisible();
+    await expect(github).toBeVisible();
   } else {
+    await expect(google).toHaveCount(0);
+    await expect(github).toHaveCount(0);
     const html = await (await page.request.get("/")).text();
-    expect(html).toContain("Sign in to save jobs, filters, and viewed job history");
+    expect(html).not.toContain(sentence);
   }
   await expect(page.getByRole("link", { name: "Privacy" })).toHaveAttribute("href", "/privacy");
 });

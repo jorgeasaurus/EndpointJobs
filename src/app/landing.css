@@ -77,8 +77,7 @@
 }
 
 .landing-jobs-link:focus-visible,
-.landing-preview a:focus-visible,
-.landing-sign-in button:focus-visible {
+.landing-preview a:focus-visible {
   outline: 2px solid var(--lime);
   outline-offset: 3px;
 }
@@ -277,29 +276,20 @@
 }
 
 .landing-sign-in {
-  max-width: 68ch;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
   margin: 0 0 18px;
 }
 
-.landing-sign-in button {
-  display: inline-block;
-  max-width: 100%;
-  padding: 8px 0;
-  border: 0;
-  background: none;
-  color: var(--lime);
-  font: inherit;
-  font-size: 0.95rem;
-  line-height: 1.45;
-  text-align: left;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
-  cursor: pointer;
+.landing-sign-in .auth-provider {
+  width: auto;
+  flex: 0 1 auto;
 }
 
-.landing-sign-in button:focus:not(:focus-visible) {
-  outline: none;
+.landing-sign-in .auth-dialog-error {
+  flex: 1 0 100%;
 }
 
 @media (max-width: 980px) {

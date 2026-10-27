@@ -25,12 +25,13 @@ const srcRoot = fileURLToPath(new URL("../../src/", import.meta.url));
 const home = readFileSync(homePath, "utf8");
 const board = readFileSync(new URL("../../src/app/board/page.tsx", import.meta.url), "utf8");
 
-test("the home page is a landing page with a sign-in line", () => {
+test("the home page is a landing page with inline provider buttons", () => {
   assert.match(home, /See the jobs/);
   assert.match(home, /href=\{getBoardPath\(\)\}/);
-  assert.match(home, /Sign in to save jobs, filters, and viewed job history/);
-  assert.match(home, /<LandingSignIn>/);
-  assert.match(readFileSync(landingSignInPath, "utf8"), /openSignInDialog/);
+  assert.doesNotMatch(home, /Sign in to save/);
+  assert.match(home, /<LandingSignIn \/>/);
+  assert.doesNotMatch(readFileSync(landingSignInPath, "utf8"), /openSignInDialog/);
+  assert.match(readFileSync(landingSignInPath, "utf8"), /AuthProviderButtons/);
   assert.match(readFileSync(openSignInPath, "utf8"), /export function openSignInDialog/);
   assert.match(readFileSync(authMenuPath, "utf8"), /registerSignInOpener/);
   assert.match(readFileSync(authMenuPath, "utf8"), /showModal\(\)/);
@@ -64,7 +65,7 @@ test("the home page is a landing page with a sign-in line", () => {
   assert.match(board, /export const revalidate = 3600/);
 });
 
-test("the home sign-in line opens the existing sign-in dialog", () => {
+test("the header sign-in control still opens the existing dialog", () => {
   let opened = 0;
   const unregister = registerSignInOpener(() => {
     opened += 1;

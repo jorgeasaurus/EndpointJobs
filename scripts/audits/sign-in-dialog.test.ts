@@ -3,19 +3,28 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 
 const menu = readFileSync(new URL("../../src/components/auth/auth-menu.tsx", import.meta.url), "utf8");
+const buttons = readFileSync(new URL("../../src/components/auth/auth-provider-buttons.tsx", import.meta.url), "utf8");
 const css = readFileSync(new URL("../../src/app/auth-menu.css", import.meta.url), "utf8");
 
 test("the sign-in dialog is a centered site card with the short signed-out copy", () => {
   assert.match(menu, /Sign in to Endpoint Jobs/);
   assert.match(menu, /Save jobs, keep your filters, and hide what you've seen\./);
-  assert.match(menu, /Continue with Google/);
-  assert.match(menu, /Continue with GitHub/);
+  assert.match(menu, /<AuthProviderButtons/);
+  assert.match(buttons, /Continue with Google/);
+  assert.match(buttons, /Continue with GitHub/);
   assert.match(menu, /By continuing you agree to the/);
   assert.match(menu, /href="\/privacy"/);
   assert.match(menu, /aria-label="Close"/);
-  assert.match(menu, /<GoogleMark \/>/);
-  assert.match(menu, /<GitHubMark \/>/);
-  assert.match(menu, /#4285F4/);
+  assert.match(buttons, /<GoogleMark \/>/);
+  assert.match(buttons, /<GitHubMark \/>/);
+  assert.match(buttons, /#4285F4/);
+  assert.match(buttons, /startProviderSignIn/);
+  assert.doesNotMatch(buttons, /signInWithOAuth/);
+  assert.doesNotMatch(menu, /signInWithOAuth/);
+  assert.match(
+    readFileSync(new URL("../../src/lib/auth/start-provider-sign-in.ts", import.meta.url), "utf8"),
+    /signInWithOAuth/
+  );
   assert.match(menu, /closeDialogOnBackdrop/);
   assert.match(menu, /addEventListener\("click", closeDialogOnBackdrop\)/);
   assert.match(menu, /function trapTab/);

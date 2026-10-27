@@ -14,30 +14,29 @@
   position: relative;
 }
 
-.auth-menu > summary {
-  list-style: none;
-}
-
-.auth-menu > summary::-webkit-details-marker {
-  display: none;
-}
-
 .auth-menu-panel {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 30;
+  position: fixed;
+  z-index: 40;
   display: grid;
   gap: 10px;
-  width: min(280px, 70vw);
+  width: min(280px, calc(100vw - 24px));
   padding: 12px;
-  background: rgb(13 17 20 / 96%);
+  color: var(--white);
+  visibility: hidden;
+  background:
+    linear-gradient(160deg, rgb(190 242 100 / 7%), transparent 38%),
+    rgb(13 17 20 / 96%);
   border: 1px solid var(--glass-border);
   border-radius: 8px;
   box-shadow: var(--shadow);
 }
 
+.auth-menu-panel[data-placed="true"] {
+  visibility: visible;
+}
+
 .auth-menu-email {
+  min-width: 0;
   margin: 0;
   overflow: hidden;
   color: var(--white-60);
@@ -54,26 +53,28 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 40px;
-  padding: 0 12px;
-  color: var(--lime);
-  font-family: var(--mono);
-  font-size: 0.74rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  cursor: pointer;
-  background: rgb(255 255 255 / 4%);
-  border: 1px solid rgb(190 242 100 / 22%);
-  border-radius: 8px;
-}
-
-.auth-menu-action:hover,
-.auth-menu-action:focus-visible {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 16px;
   color: var(--black);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  text-decoration: none;
   background: var(--lime);
-  border-color: var(--lime);
+  border: 0;
+  border-radius: 8px;
+  box-shadow: var(--glow-lime);
 }
 
+.auth-menu-action:hover {
+  color: var(--black);
+  background: var(--white);
+}
+
+.auth-menu-panel:focus-visible,
 .auth-menu-action:focus-visible,
 .auth-dialog-close:focus-visible,
 .auth-provider:focus-visible,
@@ -82,6 +83,7 @@
   outline-offset: 3px;
 }
 
+.auth-menu-panel:focus:not(:focus-visible),
 .auth-menu-action:focus:not(:focus-visible),
 .auth-dialog-close:focus:not(:focus-visible),
 .auth-provider:focus:not(:focus-visible),
