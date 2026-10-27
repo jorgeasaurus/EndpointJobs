@@ -1,0 +1,149 @@
+.auth-entry {
+  position: relative;
+  cursor: pointer;
+  font: inherit;
+}
+
+.auth-entry-label {
+  max-width: 18ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.auth-menu {
+  position: relative;
+}
+
+.auth-menu > summary {
+  list-style: none;
+}
+
+.auth-menu > summary::-webkit-details-marker {
+  display: none;
+}
+
+.auth-menu-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  display: grid;
+  gap: 10px;
+  width: min(280px, 70vw);
+  padding: 12px;
+  background: rgb(13 17 20 / 96%);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.auth-menu-email {
+  margin: 0;
+  overflow: hidden;
+  color: var(--white-60);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.auth-menu-action,
+.auth-provider,
+.auth-dialog-close {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 12px;
+  color: var(--lime);
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: rgb(255 255 255 / 4%);
+  border: 1px solid rgb(190 242 100 / 22%);
+  border-radius: 8px;
+}
+
+.auth-menu-action,
+.auth-provider {
+  width: 100%;
+}
+
+.auth-menu-action:hover,
+.auth-provider:hover,
+.auth-dialog-close:hover,
+.auth-menu-action:focus-visible,
+.auth-provider:focus-visible,
+.auth-dialog-close:focus-visible {
+  color: var(--black);
+  background: var(--lime);
+  border-color: var(--lime);
+  outline: none;
+}
+
+.auth-dialog {
+  width: min(420px, calc(100% - 32px));
+  padding: 0;
+  color: var(--white);
+  background: #0d1114;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.auth-dialog::backdrop {
+  background: rgb(0 0 0 / 72%);
+}
+
+.auth-dialog-body {
+  display: grid;
+  gap: 12px;
+  padding: 22px;
+}
+
+.auth-dialog-body h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  letter-spacing: -0.04em;
+}
+
+.auth-dialog-body p,
+.auth-dialog-privacy {
+  margin: 0;
+  color: var(--white-60);
+  line-height: 1.5;
+}
+
+.auth-dialog-privacy a {
+  color: var(--lime);
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.auth-dialog-error {
+  color: var(--danger);
+}
+
+@media (max-width: 760px) {
+  .topbar .feedback-link.auth-entry {
+    display: inline-flex;
+  }
+
+  .auth-entry-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}

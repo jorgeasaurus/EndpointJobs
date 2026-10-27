@@ -59,6 +59,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.6
     },
+    {
+      url: new URL("/privacy", siteUrl).toString(),
+      changeFrequency: "yearly",
+      priority: 0.3
+    },
     ...endpointToolOptions.map((tool) => ({
       url: getEndpointToolUrl(tool),
       lastModified: new Date(feed.updatedAt),

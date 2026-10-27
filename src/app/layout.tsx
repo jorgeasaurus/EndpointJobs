@@ -23,6 +23,7 @@ import "./job-board-map.css";
 import "./job-board-responsive.css";
 import "./job-detail.css";
 import "./job-board-primitives.css";
+import "./auth-menu.css";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],

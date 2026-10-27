@@ -1,5 +1,12 @@
 {
   "ignore": {
-    "files": ["public/maplibre/*.mjs"]
+    "files": [
+      "public/maplibre/*.mjs",
+      ".next/**",
+      "out/**",
+      "dist/**",
+      "build/**",
+      "coverage/**"
+    ]
   }
 }
