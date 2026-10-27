@@ -49,17 +49,21 @@ test("shown salaries use the posting currency and stay in sync with the salary s
 
   assert.equal(formatShownSalary(usd), "$120k\u2013$150k");
   assert.equal(formatShownSalary(euro), "€60k\u2013€75k EUR");
-  assert.equal(formatShownSalary(estimated), "$76k est.");
+  assert.equal(formatShownSalary(estimated), undefined);
+  assert.equal(hasShownSalary(estimated), false);
   assert.equal(formatShownSalary(hourly), "$55\u2013$70/hr");
   assert.equal(formatShownSalary(converted), undefined);
   assert.equal(presentSalary(converted)?.currency, "EUR");
   assert.equal(formatShownSalary(mismatched), undefined);
   assert.equal(formatShownSalary(unlabeledPeriod), undefined);
+  for (const job of jobs) {
+    const shown = formatShownSalary(job);
+    if (shown) assert.equal(shown.includes("est."), false);
+  }
   assert.equal(page.metrics.salaryJobsCount, jobs.filter(hasShownSalary).length);
   assert.deepEqual(selectLandingPreview(jobs, initialFilterState).map((job) => job.id), [
     "usd-range",
     "eur-range",
-    "estimated",
     "hourly"
   ]);
 });

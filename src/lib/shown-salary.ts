@@ -21,7 +21,7 @@ export function hasShownSalary(job: Pick<Job, "location" | "salary">) {
 
 export function formatShownSalary(job: Pick<Job, "location" | "salary">) {
   const salary = job.salary;
-  if (!salary || !salaryCurrencyMatchesLocation(job)) return undefined;
+  if (!salary || salary.currencySource === "default" || !salaryCurrencyMatchesLocation(job)) return undefined;
 
   const label = salary.label.trim();
   if (!label || placeholderSalaryLabel.test(label) || !/[1-9]/.test(label)) return undefined;
@@ -45,9 +45,8 @@ export function formatShownSalary(job: Pick<Job, "location" | "salary">) {
     : `${symbol}${formatSalaryAmount(start)}\u2013${symbol}${formatSalaryAmount(end)}`;
   const suffix = period === "year" ? "" : periodSuffix[period];
   const code = currency === "USD" ? "" : ` ${currency}`;
-  const estimated = salary.currencySource === "default" ? " est." : "";
 
-  return `${range}${suffix}${code}${estimated}`;
+  return `${range}${suffix}${code}`;
 }
 
 function salaryCurrencyMatchesLocation(job: Pick<Job, "location" | "salary">) {
