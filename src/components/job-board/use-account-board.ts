@@ -11,7 +11,7 @@ import {
   upsertPreferences,
   type AccountClient
 } from "@/lib/account/store";
-import { encodePreferences, shouldRestoreSavedFilters } from "@/lib/account/preferences";
+import { encodePreferences, filtersForPreferenceSave, shouldRestoreSavedFilters } from "@/lib/account/preferences";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { useSignInSession } from "@/components/auth/sign-in-session";
@@ -31,7 +31,13 @@ export function useAccountBoard(
   const ready = useRef(false);
   const savedJson = useRef("");
   const filtersRef = useRef(filters);
-  filtersRef.current = filters;
+  const savedFiltersRef = useRef<FilterState | null>(null);
+  const pageFiltersOwned = useRef(true);
+  const pageFiltersJson = useRef("");
+
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
 
   useEffect(() => {
     ready.current = false;
@@ -55,10 +61,20 @@ export function useAccountBoard(
       setSavedIds(new Set(saved));
       const hide = preferences?.hideViewed ?? false;
       setHideViewed(hide);
-      const restore = preferences && shouldRestoreSavedFilters(window.location.pathname, window.location.search);
-      const nextFilters = restore ? preferences.filters : filtersRef.current;
-      if (restore) dispatch({ type: "replace", value: preferences.filters });
-      savedJson.current = JSON.stringify(encodePreferences(nextFilters, hide));
+      const pageFilters = filtersRef.current;
+      const restore = Boolean(
+        preferences && shouldRestoreSavedFilters(window.location.pathname, window.location.search)
+      );
+      savedFiltersRef.current = preferences?.filters ?? null;
+      pageFiltersOwned.current = !preferences || restore;
+      pageFiltersJson.current = JSON.stringify(pageFilters);
+      const filtersToStore = filtersForPreferenceSave({
+        pageFilters,
+        savedFilters: savedFiltersRef.current,
+        pageFiltersOwned: pageFiltersOwned.current
+      });
+      if (restore && preferences) dispatch({ type: "replace", value: preferences.filters });
+      savedJson.current = JSON.stringify(encodePreferences(filtersToStore, hide));
       ready.current = true;
     })();
 
@@ -69,12 +85,21 @@ export function useAccountBoard(
 
   useEffect(() => {
     if (!userId || !ready.current) return undefined;
-    const payload = encodePreferences(filters, hideViewed);
+    if (!pageFiltersOwned.current && JSON.stringify(filters) !== pageFiltersJson.current) {
+      pageFiltersOwned.current = true;
+      savedFiltersRef.current = filters;
+    }
+    const filtersToStore = filtersForPreferenceSave({
+      pageFilters: filters,
+      savedFilters: savedFiltersRef.current,
+      pageFiltersOwned: pageFiltersOwned.current
+    });
+    const payload = encodePreferences(filtersToStore, hideViewed);
     const json = JSON.stringify(payload);
     if (json === savedJson.current) return undefined;
     const timer = window.setTimeout(() => {
       savedJson.current = json;
-      void upsertPreferences(browserAccountClient(), userId, filters, hideViewed, new Date().toISOString());
+      void upsertPreferences(browserAccountClient(), userId, filtersToStore, hideViewed, new Date().toISOString());
     }, saveDelayMs);
     return () => window.clearTimeout(timer);
   }, [filters, hideViewed, userId]);

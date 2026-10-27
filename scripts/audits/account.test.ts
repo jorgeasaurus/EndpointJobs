@@ -6,6 +6,7 @@ import { initialFilterState } from "../../src/components/job-board/filter-model"
 import {
   decodePreferences,
   encodePreferences,
+  filtersForPreferenceSave,
   preferenceRow,
   shouldRestoreSavedFilters
 } from "../../src/lib/account/preferences";
@@ -37,6 +38,46 @@ test("saved board filters restore only on a clean board URL", () => {
   assert.equal(shouldRestoreSavedFilters("/intune", ""), false);
   assert.equal(decodePreferences(null), null);
   assert.equal(decodePreferences([]), null);
+});
+
+test("hide viewed on a shared board keeps the saved search", () => {
+  const saved = { ...initialFilterState, query: "Intune" };
+  const shared = { ...initialFilterState, query: "Jamf" };
+  const kept = filtersForPreferenceSave({
+    pageFilters: shared,
+    savedFilters: saved,
+    pageFiltersOwned: false
+  });
+  assert.equal(kept.query, "Intune");
+  assert.equal(encodePreferences(kept, true).q, "Intune");
+  assert.equal(encodePreferences(kept, true).hideViewed, true);
+
+  const edited = filtersForPreferenceSave({
+    pageFilters: shared,
+    savedFilters: saved,
+    pageFiltersOwned: true
+  });
+  assert.equal(edited.query, "Jamf");
+  assert.equal(
+    filtersForPreferenceSave({
+      pageFilters: shared,
+      savedFilters: null,
+      pageFiltersOwned: false
+    }).query,
+    "Jamf"
+  );
+});
+
+test("deleting an account signs out before the next page load", () => {
+  const route = readFileSync(new URL("../../src/app/api/account/delete/route.ts", import.meta.url), "utf8");
+  const actions = readFileSync(new URL("../../src/app/account/account-actions.tsx", import.meta.url), "utf8");
+  const hook = readFileSync(new URL("../../src/components/job-board/use-account-board.ts", import.meta.url), "utf8");
+  assert.match(route, /signOut\(\{\s*scope:\s*"local"\s*\}\)/);
+  assert.match(route, /authCookiesToClear/);
+  assert.match(actions, /signOut\(\{\s*scope:\s*"local"\s*\}\)/);
+  assert.ok(actions.indexOf("signOut") < actions.indexOf('window.location.assign("/")'));
+  assert.equal(hook.split("filtersRef.current = filters;").length, 2);
+  assert.match(hook, /useEffect\(\(\) => \{\n\s+filtersRef\.current = filters;/);
 });
 
 test("preference rows keep schema version 1", () => {

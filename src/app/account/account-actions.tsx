@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 
 import { deleteAccountConfirmation, deletionConfirmed } from "@/lib/account/records";
 import { clearViewHistory } from "@/components/job-board/use-account-board";
+import { createClient } from "@/lib/supabase/client";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 export function ExportAccountButton() {
   const [error, setError] = useState<string | null>(null);
@@ -76,6 +78,13 @@ export function DeleteAccountForm() {
     if (!response.ok) {
       setError("Account could not be deleted.");
       return;
+    }
+    try {
+      if (isSupabaseConfigured()) {
+        await createClient().auth.signOut({ scope: "local" });
+      }
+    } catch {
+      // The delete response already expired the auth cookies.
     }
     window.location.assign("/");
   }

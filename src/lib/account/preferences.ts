@@ -31,6 +31,15 @@ export function decodePreferences(value: unknown): SavedPreferences | null {
   };
 }
 
+export function filtersForPreferenceSave(input: {
+  pageFilters: FilterState;
+  savedFilters: FilterState | null;
+  pageFiltersOwned: boolean;
+}) {
+  if (input.pageFiltersOwned || !input.savedFilters) return input.pageFilters;
+  return input.savedFilters;
+}
+
 export function shouldRestoreSavedFilters(pathname: string, search: string) {
   const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
   if (filterSearchParamKeys.some((key) => params.has(key))) return false;
