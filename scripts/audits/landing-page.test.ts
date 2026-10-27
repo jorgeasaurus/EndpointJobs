@@ -153,6 +153,28 @@ test("jsx prop checks read member tags, arrows, and spreads from the AST", () =>
   }
 });
 
+test("an attribute value that mentions the prop counts, and a string literal does not", () => {
+  const root = mkdtempSync(resolve(tmpdir(), "landing-value-"));
+  try {
+    writeFileSync(resolve(root, "card.tsx"), "\"use client\";\nexport function Card() { return null; }\n");
+    const source = [
+      "import { Card } from \"./card\";",
+      "<Card data={board} />",
+      "<Card items={board.jobs} />",
+      "<Card feed={{ ...board }} />",
+      "<Card title=\"board\" />"
+    ].join("\n");
+    const result = clientComponentsReceiving(source, resolve(root, "page.tsx"), "board");
+
+    assert.equal(result.local, 1);
+    assert.equal(result.resolved, 1);
+    assert.equal(result.unresolved, "");
+    assert.equal(result.offenders, "Card,Card,Card");
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("the remote metric includes hybrid roles on the same jobs as the open-role total", () => {
   const page = queryBoardPage({
     updatedAt: "2026-10-26T00:00:00.000Z",
@@ -358,9 +380,16 @@ function tagRoot(tagName: ts.JsxTagNameExpression) {
 function jsxPassesProp(attributes: ts.JsxAttributes, prop: string) {
   for (const property of attributes.properties) {
     if (ts.isJsxSpreadAttribute(property)) return true;
-    if (ts.isJsxAttribute(property) && jsxAttributeName(property.name) === prop) return true;
+    if (!ts.isJsxAttribute(property)) continue;
+    if (jsxAttributeName(property.name) === prop) return true;
+    if (property.initializer && nodeMentionsIdentifier(property.initializer, prop)) return true;
   }
   return false;
+}
+
+function nodeMentionsIdentifier(node: ts.Node, prop: string): boolean {
+  if (ts.isIdentifier(node) && node.text === prop) return true;
+  return ts.forEachChild(node, (child) => nodeMentionsIdentifier(child, prop) || undefined) === true;
 }
 
 function jsxAttributeName(name: ts.JsxAttributeName) {
