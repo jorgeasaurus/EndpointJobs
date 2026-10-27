@@ -131,11 +131,22 @@ Describe 'Get-EndpointJob' {
 
         It 'includes the HTTP status on structured API errors' {
             Mock Invoke-RestMethod {
-                $exception = [System.Net.Http.HttpRequestException]::new(
-                    'Not found',
-                    $null,
-                    [System.Net.HttpStatusCode]::NotFound
-                )
+                # Windows PowerShell 5.1 does not have the .NET HttpRequestException
+                # constructor that takes an HTTP status. A small exception with
+                # StatusCode exercises the same branch on 5.1 and PowerShell 7.
+                if (-not ('EndpointJobs.Tests.StatusException' -as [type])) {
+                    Add-Type -TypeDefinition @'
+namespace EndpointJobs.Tests {
+    public class StatusException : System.Exception {
+        public int StatusCode { get; private set; }
+        public StatusException(int statusCode) : base("Not found") {
+            StatusCode = statusCode;
+        }
+    }
+}
+'@
+                }
+                $exception = [EndpointJobs.Tests.StatusException]::new(404)
                 $record = [System.Management.Automation.ErrorRecord]::new($exception, 'HttpError', 'InvalidOperation', $Uri)
                 $record.ErrorDetails = [System.Management.Automation.ErrorDetails]::new('{"error":{"code":"JOB_NOT_FOUND","message":"Job not found."}}')
                 throw $record
