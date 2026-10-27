@@ -22,10 +22,10 @@ test("[JOB-11] back to the job list", async ({ page }) => {
   await page.goto("/board");
   const href = await page.locator("a.job-title-link").first().getAttribute("href");
   await page.goto(href!);
-  await expect(page.getByRole("link", { name: "All endpoint jobs" })).toHaveAttribute("href", "/#open-roles");
-  await expect(page.getByRole("link", { name: "Browse all roles" })).toHaveAttribute("href", "/#open-roles");
+  await expect(page.getByRole("link", { name: "All endpoint jobs" })).toHaveAttribute("href", "/board#open-roles");
+  await expect(page.getByRole("link", { name: "Browse all roles" })).toHaveAttribute("href", "/board#open-roles");
   await page.goto("/api-docs");
-  await expect(page.getByRole("link", { name: "Browse jobs" })).toHaveAttribute("href", "/#open-roles");
+  await expect(page.getByRole("link", { name: "Browse jobs" })).toHaveAttribute("href", "/board#open-roles");
   await page.goto("/");
   await expect(page.locator("#open-roles")).toHaveCount(0);
   await page.goto("/board");
@@ -123,9 +123,19 @@ test("[SEO-05] analytics script marker", async ({ page }) => {
   await expect(page.getByText("That measurement is not attached to an account here.")).toBeVisible();
 });
 
-test("[ACCT-04] no account route", async ({ page }) => {
+test("[ACCT-04] signed-out account page", async ({ page }) => {
   const response = await page.request.get("/account");
-  expect(response.status()).toBe(404);
+  expect(response.status()).toBe(200);
+  const html = (await response.text()).toLowerCase();
+  expect(html).toContain("noindex");
+  await page.goto("/account");
+  await expect(page.getByRole("heading", { level: 1, name: "Account" })).toBeVisible();
+  await expect(page.getByText("Sign in from the header to save jobs, keep filters, and manage this account.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Export my data" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Clear view history" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Delete account" })).toHaveCount(0);
+  await page.goto("/privacy");
+  await expect(page.getByRole("link", { name: "account page" })).toHaveAttribute("href", "/account");
   await page.goto("/board");
   await expect(page.getByRole("link", { name: /^Account$/ })).toHaveCount(0);
 });

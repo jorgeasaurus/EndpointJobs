@@ -53,6 +53,7 @@ test("[MAP-04] coarse pointer sheet", async ({ page }, info) => {
   test.skip(info.project.name !== "mobile", "coarse pointer");
   const query = singleMappedLocationQuery();
   await page.goto(`/board?location=${encodeURIComponent(query)}`);
+  await page.waitForLoadState("networkidle");
   const section = page.getByRole("region", { name: "Mapped job locations" });
   await section.getByRole("button", { name: "Show map" }).click();
   const canvas = section.locator("canvas");

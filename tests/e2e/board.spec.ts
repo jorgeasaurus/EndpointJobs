@@ -3,6 +3,9 @@ import { expect, test, type Page } from "@playwright/test";
 async function openBoard(page: Page) {
   await page.goto("/board");
   await expect(page.getByRole("heading", { level: 1, name: "Endpoint Jobs" })).toBeVisible();
+  // Dev hydration can still be applying the App Router URL after the heading
+  // is visible. A select in that window is overwritten back to /board.
+  await page.waitForLoadState("networkidle");
 }
 
 async function openAdvanced(page: Page) {
@@ -415,20 +418,76 @@ test("[JOB-09] compare roles", async ({ page }) => {
   await expect(page).not.toHaveURL(/compare/);
 });
 
-test("[RESP-01] narrow hit areas", async ({ page }, info) => {
+test("[RESP-01] comparison remove clears the title", async ({ page }, info) => {
   test.skip(info.project.name !== "mobile", "390px measurement");
   await page.setViewportSize({ width: 390, height: 844 });
   await openBoard(page);
+  const buttons = page.locator("article.job-card .compare-button");
+  await buttons.nth(0).click();
+  await buttons.nth(1).click();
+  const headings = page.locator(".comparison-job-heading");
+  await expect(headings).toHaveCount(2);
+  const overlaps = await headings.evaluateAll((cells) => cells.map((cell) => {
+    const remove = cell.querySelector(".comparison-remove");
+    const title = cell.querySelector("strong");
+    if (!remove || !title) return { missing: true, title: "" };
+    const button = remove.getBoundingClientRect();
+    const text = title.getBoundingClientRect();
+    return {
+      missing: false,
+      title: title.textContent?.replace(/\s+/g, " ").trim() ?? "",
+      intersects: button.left < text.right && button.right > text.left && button.top < text.bottom && button.bottom > text.top,
+      width: Math.round(button.width),
+      height: Math.round(button.height)
+    };
+  }));
+  expect(overlaps.every((item) => item.missing === false)).toBe(true);
+  for (const overlap of overlaps) {
+    expect(overlap.width).toBeGreaterThanOrEqual(44);
+    expect(overlap.height).toBeGreaterThanOrEqual(44);
+  }
+  expect(overlaps.filter((item) => item.intersects), JSON.stringify(overlaps)).toEqual([]);
+});
+
+test("[RESP-01] narrow hit areas", async ({ page }, info) => {
+  test.skip(info.project.name !== "mobile", "390px measurement");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/board?e2e-auth=in");
+  await expect(page.getByRole("heading", { level: 1, name: "Endpoint Jobs" })).toBeVisible();
+  await page.locator("summary.advanced-filters-summary").click();
+  await expect(page.locator("details.advanced-filters")).toHaveAttribute("open", "");
+  await expect(page.locator("#role-family")).toBeVisible();
+  await expect(page.locator("#freshness")).toBeVisible();
+  await expect(page.locator("#location-query")).toBeVisible();
+  await expect(page.locator(".quick-filters .facet-button").first()).toBeVisible();
+  await expect(page.locator(".advanced-filters .facet-button").first()).toBeVisible();
+  await expect(page.locator(".pagination-button").first()).toBeVisible();
+  await expect(page.locator("article.job-card .compare-button").first()).toBeVisible();
+  await expect(page.locator("article.job-card .save-button").first()).toBeVisible();
+  await expect(page.locator("article.job-card .description-details summary").first()).toBeVisible();
+  await expect(page.locator("article.job-card a.apply-link").first()).toBeVisible();
+  await expect(page.locator(".hide-viewed-button")).toBeVisible();
   const offenders = await page.evaluate(() => {
     const selectors = [
-      ".refresh-pill",
+      "#role-family",
+      "#freshness",
+      "#location-query",
+      ".quick-filters .facet-button",
+      ".advanced-filters .facet-button",
+      ".pagination-button",
+      "article.job-card .compare-button",
+      "article.job-card .save-button",
+      "article.job-card .description-details summary",
+      "article.job-card a.apply-link",
+      ".hide-viewed-button",
       ".mode-button",
       ".advanced-filters-summary",
       ".workplace-filter-button",
       "#job-search-input",
       ".topbar .api-docs-link",
       ".topbar .mcp-docs-link",
-      ".topbar .support-link"
+      ".topbar .support-link",
+      ".site-footer .footer-link"
     ];
     return selectors.flatMap((selector) => [...document.querySelectorAll(selector)].map((element) => {
       const box = element.getBoundingClientRect();

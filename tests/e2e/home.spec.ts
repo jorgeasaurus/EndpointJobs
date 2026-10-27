@@ -85,6 +85,7 @@ test("[HOME-06] landing structured data", async ({ page }) => {
   const homeTypes = jsonLdTypes(homeHtml);
   expect(homeTypes).toContain("WebSite");
   expect(homeTypes).toContain("Organization");
+  expect(homeTypes).toContain("WebApplication");
   expect(homeTypes).toContain("SoftwareApplication");
   expect(homeTypes).toContain("BreadcrumbList");
   expect(homeTypes).not.toContain("ItemList");
@@ -100,10 +101,25 @@ test("[HOME-06] landing structured data", async ({ page }) => {
 function jsonLdTypes(html: string) {
   const types: string[] = [];
   for (const match of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
-    const json = JSON.parse(match[1]) as { "@graph"?: { "@type"?: string }[] };
-    for (const node of json["@graph"] ?? []) {
-      if (node["@type"]) types.push(node["@type"]);
-    }
+    const value = JSON.parse(match[1].replaceAll("\\u003c", "<"));
+    collectTypes(value, types);
   }
   return types;
+}
+
+function collectTypes(value: unknown, types: string[]) {
+  if (!value || typeof value !== "object") return;
+  if (Array.isArray(value)) {
+    for (const item of value) collectTypes(item, types);
+    return;
+  }
+  const record = value as Record<string, unknown>;
+  const type = record["@type"];
+  if (typeof type === "string") types.push(type);
+  if (Array.isArray(type)) {
+    for (const item of type) if (typeof item === "string") types.push(item);
+  }
+  for (const [key, child] of Object.entries(record)) {
+    if (key !== "@type") collectTypes(child, types);
+  }
 }

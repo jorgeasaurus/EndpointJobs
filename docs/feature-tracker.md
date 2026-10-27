@@ -2,7 +2,7 @@
 
 `docs/feature-tracker.csv` is the canonical tracker for the Endpoint Jobs quality pass. It is plain CSV and opens in Excel or Google Sheets. Do not add a second tracker.
 
-Phase 1 filled `status` from the code, tests, migrations, and README. Phase 2 exercised every story on 2026-10-27. The unsigned run used a local production build of main at `31697a8`. The signed-in run used production `ebce720` (v0.1.28) with the approved test user. `status` was not changed by those runs.
+Phase 1 filled `status` from the code, tests, migrations, and README. Phase 2 exercised every story on 2026-10-27. The unsigned run used a local production build of main at `31697a8`. The signed-in run used production `ebce720` (v0.1.28) with the approved test user. Phase 4 retested production on 2026-10-27 and updated `status`, `test_result`, `errors_found`, and `notes`. `expected_behavior` now matches the code after those fixes.
 
 ## Totals
 
@@ -10,20 +10,17 @@ Phase 1 filled `status` from the code, tests, migrations, and README. Phase 2 ex
 
 | Status | Count |
 | --- | --- |
-| Implemented | 91 |
-| Partial | 2 (`HOME-04`, `PRIV-01`) |
-| Missing | 7 (`ACCT-01` through `ACCT-07`) |
-| Broken | 1 (`JOB-11`) |
+| Implemented | 101 |
 
 | Test result | Count |
 | --- | --- |
-| Pass | 83 |
-| Fail | 16 |
-| Blocked | 2 (`AUTH-03`, `AUTH-08`) |
+| Pass | 96 |
+| Fail | 2 (`RESP-01`, `JOB-04`) |
+| Blocked | 3 (`AUTH-02`, `AUTH-03`, `AUTH-08`) |
 
 `Pass` means the observed behavior matched `expected_behavior`, including a documented Missing or Broken story. `Fail` means the run differed from `expected_behavior`. `Blocked` means the check could not be completed in that environment.
 
-`AUTH-03` and the `AUTH-02` success path are Blocked on a real OAuth login. `AUTH-02` itself is Pass: a bad code does not sign the user out. `AUTH-08` is Blocked on a keyless build, because production has the Supabase public keys and renders Sign in. RLS for `ACCT-08` passed: 75 of 75 checks on `profiles`, `user_preferences`, `saved_jobs`, `job_views`, and `record_job_view`.
+`AUTH-02` and `AUTH-03` are Blocked on a real OAuth login. A bad callback code does not sign the user out, and the success path still needs a provider round trip. `AUTH-08` is Blocked on a keyless build, because production has the Supabase public keys and renders Sign in. RLS for `ACCT-08` passed: 75 of 75 checks on `profiles`, `user_preferences`, `saved_jobs`, `job_views`, and `record_job_view`.
 
 ## Fix pull requests
 
@@ -31,9 +28,10 @@ Phase 1 filled `status` from the code, tests, migrations, and README. Phase 2 ex
 
 | Pull request | Stories |
 | --- | --- |
-| https://github.com/jorgeasaurus/EndpointJobs/pull/87 | `RESP-01`, `SAL-02`, `HOME-06`, `API-05`, `BOARD-04`, `FEED-01`, `JOB-11` |
+| https://github.com/jorgeasaurus/EndpointJobs/pull/87 | `SAL-02`, `HOME-06`, `API-05`, `BOARD-04`, `FEED-01`, `JOB-11` |
 | https://github.com/jorgeasaurus/EndpointJobs/pull/88 | `ACCT-01` through `ACCT-07`, `PRIV-01` |
 | https://github.com/jorgeasaurus/EndpointJobs/pull/89 | `HOME-04`, `AUTH-09` |
+| https://github.com/jorgeasaurus/EndpointJobs/pull/90 | `RESP-01`, `JOB-04` |
 
 `HOME-04` and `AUTH-09` point at #89. That pull request replaces the home sign-in sentence with inline Google and GitHub buttons, and keeps the account menu inside the viewport with keyboard focus on the panel, then Account, then Sign out. #88 still adds saved jobs, saved filters, and view history.
 

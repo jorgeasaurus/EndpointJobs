@@ -127,12 +127,19 @@ test("[MCP-03] mcp http access", async ({ request }) => {
   expect(get.headers()["cache-control"]).toContain("no-store");
 });
 
-test("[JOB-04] missing job", async ({ request }) => {
+test("[JOB-04] missing job", async ({ request, page }) => {
   const missing = await request.get("/jobs/phase2-not-a-job");
   expect(missing.status()).toBe(404);
   const html = await missing.text();
   expect(html).toContain("Job not found");
   expect(html.toLowerCase()).toContain("noindex");
+  const titles = [...html.matchAll(/<title[^>]*>([^<]*)<\/title>/gi)].map((match) => match[1]);
+  expect(titles, titles.join(" | ")).toContain("Job not found | Endpoint Jobs");
+  expect(titles.join("\n")).not.toContain("404:");
+
+  const response = await page.goto("/jobs/phase2-not-a-job");
+  expect(response?.status()).toBe(404);
+  await expect(page).toHaveTitle("Job not found | Endpoint Jobs");
 });
 
 test("[PAGE-02] directory bounds", async ({ request }) => {
