@@ -10,12 +10,13 @@ import { queryBoardPage } from "../../src/lib/board-page";
 import { boardHomeRedirectKeys, filterSearchParamKeys } from "../../src/lib/board-search-params";
 import { legacyHomeBoardRedirect } from "../../src/lib/legacy-board-url";
 import { getJobWorkplace } from "../../src/lib/workplace";
+import { assertPrerenderedHomeHtml, prerenderedHomeHtmlPath } from "./home-html-size";
 import { makeJob } from "./shared";
 
 const homePath = fileURLToPath(new URL("../../src/app/page.tsx", import.meta.url));
+const srcRoot = fileURLToPath(new URL("../../src/", import.meta.url));
 const home = readFileSync(homePath, "utf8");
 const board = readFileSync(new URL("../../src/app/board/page.tsx", import.meta.url), "utf8");
-const homeHtmlPath = fileURLToPath(new URL("../../.next/server/app/index.html", import.meta.url));
 
 test("the home page is a landing page with a privacy link and an account reason", () => {
   assert.match(home, /See the jobs/);
@@ -34,7 +35,9 @@ test("the home page is a landing page with a privacy link and an account reason"
   assert.doesNotMatch(home, /trackedJobsCount/);
   assert.doesNotMatch(home, /<JobBoard/);
   assert.doesNotMatch(home, /board\.jobs\b(?!\.slice)/);
-  assert.equal(clientComponentsReceiving(home, homePath, "board"), "");
+  const clientProps = clientComponentsReceiving(home, homePath, "board");
+  assert.ok(clientProps.resolved > 0, "home page imports were not resolved");
+  assert.equal(clientProps.offenders, "");
   assert.match(board, /<JobBoard initialPage=\{initialPage\} \/>/);
   assert.match(board, /export const revalidate = 3600/);
 });
@@ -80,12 +83,13 @@ test("the remote metric includes hybrid roles on the same jobs as the open-role 
   assert.ok(page.metrics.salaryJobsCount <= page.total);
 });
 
-test("prerendered home HTML stays under 100 KB", () => {
-  assert.equal(existsSync(homeHtmlPath), true, "next build must prerender / before this audit");
-  const html = readFileSync(homeHtmlPath);
-  assert.ok(html.byteLength < 100_000, `prerendered / is ${html.byteLength} bytes`);
-  assert.match(html.toString("utf8"), /Remote or hybrid/);
-});
+test(
+  "prerendered home HTML stays under 100 KB",
+  { skip: existsSync(prerenderedHomeHtmlPath) ? false : "run next build, then npm run audit:html-size" },
+  () => {
+    assertPrerenderedHomeHtml(readFileSync(prerenderedHomeHtmlPath));
+  }
+);
 
 test("landing JSON-LD describes the site without embedding listings", () => {
   const serialized = serializeJsonLd(getLandingJsonLd());
@@ -136,11 +140,13 @@ test("a new board search key redirects because the home redirect reads one key s
 
 function clientComponentsReceiving(source: string, filePath: string, prop: string) {
   const offenders: string[] = [];
+  let resolved = 0;
 
   for (const match of source.matchAll(/^import\s+(?!type\b)([\s\S]*?)\s+from\s+"([^"]+)";$/gm)) {
     const specifier = match[2];
     const modulePath = resolveLocalModule(specifier, filePath);
     if (!modulePath) continue;
+    resolved += 1;
     const moduleSource = readFileSync(modulePath, "utf8");
     if (!/^["']use client["'];?/m.test(moduleSource)) continue;
 
@@ -151,7 +157,7 @@ function clientComponentsReceiving(source: string, filePath: string, prop: strin
     }
   }
 
-  return offenders.join(",");
+  return { offenders: offenders.join(","), resolved };
 }
 
 function importedNames(clause: string) {
@@ -174,7 +180,7 @@ function importedNames(clause: string) {
 
 function resolveLocalModule(specifier: string, fromFile: string) {
   const base = specifier.startsWith("@/")
-    ? resolve(process.cwd(), "src", specifier.slice(2))
+    ? resolve(srcRoot, specifier.slice(2))
     : specifier.startsWith(".")
       ? resolve(dirname(fromFile), specifier)
       : null;
