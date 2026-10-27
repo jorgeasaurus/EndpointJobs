@@ -36,10 +36,30 @@ test("the home page is a landing page with a privacy link and an account reason"
   assert.doesNotMatch(home, /<JobBoard/);
   assert.doesNotMatch(home, /board\.jobs\b(?!\.slice)/);
   const clientProps = clientComponentsReceiving(home, homePath, "board");
-  assert.ok(clientProps.resolved > 0, "home page imports were not resolved");
+  assert.equal(
+    clientProps.resolved,
+    clientProps.local,
+    `unresolved local imports: ${clientProps.unresolved}`
+  );
+  assert.ok(clientProps.local > 0, "home page imports were not resolved");
   assert.equal(clientProps.offenders, "");
   assert.match(board, /<JobBoard initialPage=\{initialPage\} \/>/);
   assert.match(board, /export const revalidate = 3600/);
+});
+
+test("an unresolved local import fails the client-prop guard", () => {
+  const source = [
+    'import { Widget } from "@/components/does-not-exist";',
+    'import Link from "next/link";',
+    'import { getJobWorkplace } from "@/lib/workplace";',
+    'import helper from "./moved-module.mjs";'
+  ].join("\n");
+  const result = clientComponentsReceiving(source, homePath, "board");
+
+  assert.equal(result.local, 3);
+  assert.equal(result.resolved, 1);
+  assert.equal(result.unresolved, "@/components/does-not-exist,./moved-module.mjs");
+  assert.equal(result.offenders, "");
 });
 
 test("the remote metric includes hybrid roles on the same jobs as the open-role total", () => {
@@ -140,12 +160,20 @@ test("a new board search key redirects because the home redirect reads one key s
 
 function clientComponentsReceiving(source: string, filePath: string, prop: string) {
   const offenders: string[] = [];
+  const unresolved: string[] = [];
+  let local = 0;
   let resolved = 0;
 
   for (const match of source.matchAll(/^import\s+(?!type\b)([\s\S]*?)\s+from\s+"([^"]+)";$/gm)) {
     const specifier = match[2];
+    if (!specifier.startsWith("@/") && !specifier.startsWith(".")) continue;
+
+    local += 1;
     const modulePath = resolveLocalModule(specifier, filePath);
-    if (!modulePath) continue;
+    if (!modulePath) {
+      unresolved.push(specifier);
+      continue;
+    }
     resolved += 1;
     const moduleSource = readFileSync(modulePath, "utf8");
     if (!/^["']use client["'];?/m.test(moduleSource)) continue;
@@ -157,7 +185,7 @@ function clientComponentsReceiving(source: string, filePath: string, prop: strin
     }
   }
 
-  return { offenders: offenders.join(","), resolved };
+  return { offenders: offenders.join(","), unresolved: unresolved.join(","), resolved, local };
 }
 
 function importedNames(clause: string) {
