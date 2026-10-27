@@ -290,7 +290,7 @@
   }
 
   .mini-field {
-    min-height: 38px;
+    min-height: 44px;
     padding: 0 10px;
   }
 
@@ -303,6 +303,17 @@
   .mini-field select,
   .field select {
     font-size: 0.92rem;
+  }
+
+  .mini-field select,
+  .location-search-box,
+  .location-search-box input {
+    min-height: 44px;
+  }
+
+  .mini-field select,
+  .location-search-box input {
+    height: 44px;
   }
 
   .mode-button {
@@ -343,7 +354,8 @@
 
   .facet-button {
     flex: 1 1 104px;
-    min-height: 34px;
+    min-width: 44px;
+    min-height: 44px;
     padding: 0 10px;
     font-size: 0.82rem;
   }
@@ -382,6 +394,11 @@
   .footer-link {
     flex: 1 1 140px;
     justify-content: center;
+  }
+
+  .site-footer .feedback-link {
+    min-width: 44px;
+    min-height: 44px;
   }
 
   .results-heading {
@@ -424,10 +441,10 @@
   }
 
   .pagination-button {
-    width: 38px;
-    min-width: 38px;
-    height: 38px;
-    min-height: 38px;
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    min-height: 44px;
     font-size: 0.72rem;
   }
 
@@ -487,8 +504,9 @@
     border-radius: 14px;
   }
 
-  .description-details summary {
-    min-height: 40px;
+  .description-details summary,
+  .description-details .match-recommendation-more summary {
+    min-height: 44px;
     padding: 0 12px;
     font-size: max(0.75rem, 12px);
   }
@@ -525,6 +543,16 @@
   .apply-link {
     order: 1;
     width: 100%;
+    min-height: 44px;
+  }
+
+  .compare-button,
+  .clear-button,
+  .search-clear-button,
+  .active-filter-chip,
+  .comparison-remove {
+    min-width: 44px;
+    min-height: 44px;
   }
 
   .attribution-label {

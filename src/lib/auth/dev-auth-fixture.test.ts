@@ -12,15 +12,18 @@ test("the dev auth fixture only invents a session when the caller enables it", (
   assert.deepEqual(devAuthFixture("?e2e-auth=off", true), { configured: false, email: null });
   assert.deepEqual(devAuthFixture("e2e-auth=in", true), {
     configured: true,
-    email: "jorgesuarez@gmail.com"
+    email: "jorgesuarez@gmail.com",
+    userId: "e2e-user"
   });
   assert.deepEqual(devAuthFixture("?e2e-auth=in&e2e-email=person@example.com", true), {
     configured: true,
-    email: "person@example.com"
+    email: "person@example.com",
+    userId: "e2e-user"
   });
   assert.deepEqual(devAuthFixture("?e2e-auth=in&e2e-email=%20%20", true), {
     configured: true,
-    email: "jorgesuarez@gmail.com"
+    email: "jorgesuarez@gmail.com",
+    userId: "e2e-user"
   });
 
   const source = readFileSync(new URL("../../components/auth/sign-in-session.ts", import.meta.url), "utf8");

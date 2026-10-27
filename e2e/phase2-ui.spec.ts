@@ -48,9 +48,23 @@ test("[FEED-01] top bar feedback stays reachable", async ({ page }) => {
 test("[RESP-01] narrow labeled controls are at least 44px", async ({ page }, info) => {
   test.skip(info.project.name !== "mobile", "390px measurement");
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/board");
+  await page.goto("/board?e2e-auth=in");
+  await page.locator("summary.advanced-filters-summary").click();
+  await expect(page.locator(".hide-viewed-button")).toBeVisible();
+  await expect(page.locator("article.job-card .save-button").first()).toBeVisible();
   const offenders = await page.evaluate(() => {
     const selectors = [
+      "#role-family",
+      "#freshness",
+      "#location-query",
+      ".quick-filters .facet-button",
+      ".advanced-filters .facet-button",
+      ".pagination-button",
+      "article.job-card .compare-button",
+      "article.job-card .save-button",
+      "article.job-card .description-details summary",
+      "article.job-card a.apply-link",
+      ".hide-viewed-button",
       ".mode-button",
       ".advanced-filters-summary",
       ".workplace-filter-button",
@@ -58,7 +72,8 @@ test("[RESP-01] narrow labeled controls are at least 44px", async ({ page }, inf
       ".topbar .api-docs-link",
       ".topbar .mcp-docs-link",
       ".topbar .topbar-feedback-link",
-      ".topbar .support-link"
+      ".topbar .support-link",
+      ".site-footer .footer-link"
     ];
     return selectors.flatMap((selector) => [...document.querySelectorAll(selector)].map((element) => {
       const box = element.getBoundingClientRect();
@@ -74,6 +89,19 @@ test("[RESP-01] narrow labeled controls are at least 44px", async ({ page }, inf
     })).filter((item) => !item.hidden && (item.width < 44 || item.height < 44));
   });
   expect(offenders, JSON.stringify(offenders)).toEqual([]);
+});
+
+test("[JOB-04] unknown job title", async ({ page }) => {
+  const response = await page.goto("/jobs/phase2-not-a-job");
+  expect(response?.status()).toBe(404);
+  await expect(page).toHaveTitle("Job not found | Endpoint Jobs");
+  await expect(page.getByRole("heading", { level: 1, name: "Job not found" })).toBeVisible();
+  await expect(page.getByText("404: This page could not be found.")).toHaveCount(0);
+  const content = await page.content();
+  expect(content.toLowerCase()).toContain("noindex");
+  const titles = [...content.matchAll(/<title[^>]*>([^<]*)<\/title>/gi)].map((match) => match[1]);
+  expect(titles).toContain("Job not found | Endpoint Jobs");
+  expect(titles.join("\n")).not.toContain("404:");
 });
 
 function jsonLdTypes(html: string) {

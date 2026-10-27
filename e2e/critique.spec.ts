@@ -3,14 +3,30 @@ import { mkdirSync, writeFileSync } from "node:fs";
 
 async function firstDescribedJob(page: Page) {
   await page.goto("/board");
-  const card = page.locator("article.job-card").filter({
-    has: page.locator(".description-body p, .description-body ul:not(.tool-chips) li")
-  }).first();
-  await expect(card).toBeVisible();
-  const href = await card.locator("a.job-title-link").getAttribute("href");
-  const title = (await card.locator("a.job-title-link").innerText()).replace(/\s+/g, " ").trim();
-  expect(href).toBeTruthy();
-  return { href: href!, title };
+  await page.waitForLoadState("networkidle");
+  const cards = page.locator("article.job-card");
+  const count = await cards.count();
+  for (let index = 0; index < count; index += 1) {
+    const card = cards.nth(index);
+    const summary = card.locator(".description-details > summary");
+    if (await summary.count() === 0) continue;
+    await summary.click();
+    const body = card.locator(".description-body p, .description-body ul:not(.tool-chips) li");
+    let text = "";
+    try {
+      await expect.poll(async () => {
+        text = (await body.first().innerText().catch(() => "")).replace(/\s+/g, " ").trim();
+        return text;
+      }, { timeout: 8_000 }).not.toMatch(/^$|Loading description|Description did not load/);
+    } catch {
+      continue;
+    }
+    const href = await card.locator("a.job-title-link").getAttribute("href");
+    const title = (await card.locator("a.job-title-link").innerText()).replace(/\s+/g, " ").trim();
+    expect(href).toBeTruthy();
+    return { href: href!, title };
+  }
+  throw new Error("no job card loaded a description");
 }
 
 test("server HTML includes the job before client paint", async ({ page, request }) => {
