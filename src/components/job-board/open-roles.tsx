@@ -5,6 +5,64 @@ import { getEmptyResultsMessage } from "./empty-results-message";
 import type { FilterState, SortKey } from "./filter-model";
 import { ResultsPanel } from "./results-panel";
 
+function BoardQueryNotice({
+  busy,
+  onRetry,
+  queryError
+}: {
+  busy: boolean;
+  onRetry: () => void;
+  queryError: boolean;
+}) {
+  return (
+    <>
+      {busy ? <p className="sr-only">Loading results</p> : null}
+      {queryError ? (
+        <p className="board-query-error" role="alert">
+          Results did not refresh.
+          <button type="button" onClick={onRetry}>
+            Try again
+          </button>
+        </p>
+      ) : null}
+    </>
+  );
+}
+
+function emptyMessageForView(
+  filters: FilterState,
+  viewingSaved: boolean,
+  savedJobCount: number
+) {
+  if (!viewingSaved) return getEmptyResultsMessage(filters);
+  return getEmptyResultsMessage(filters, { savedOnly: true, savedJobCount });
+}
+
+function signedInControls({
+  hideViewed,
+  onToggleHideViewed,
+  onToggleSaved,
+  onToggleSavedOnly,
+  savedOnly,
+  signedIn
+}: {
+  hideViewed: boolean;
+  onToggleHideViewed: () => void;
+  onToggleSaved: (job: BoardListing) => void;
+  onToggleSavedOnly: () => void;
+  savedOnly: boolean;
+  signedIn: boolean;
+}) {
+  if (!signedIn) return {};
+  return {
+    hideViewed,
+    onToggleHideViewed,
+    onToggleSaved,
+    onToggleSavedOnly,
+    savedOnly
+  };
+}
+
 export function OpenRolesSection({
   clearFilters,
   currentPage,
@@ -69,34 +127,18 @@ export function OpenRolesSection({
       id="open-roles"
       ref={resultsRef}
     >
-      {busy ? <p className="sr-only">Loading results</p> : null}
-      {queryError ? (
-        <p className="board-query-error" role="alert">
-          Results did not refresh.
-          <button type="button" onClick={onRetry}>
-            Try again
-          </button>
-        </p>
-      ) : null}
+      <BoardQueryNotice busy={busy} onRetry={onRetry} queryError={queryError} />
       {pendingScope ? null : (
         <ResultsPanel
           clearFilters={clearFilters}
           currentPage={currentPage}
-          emptyMessage={getEmptyResultsMessage(filters, viewingSaved ? {
-            savedOnly: true,
-            savedJobCount: savedIds.size
-          } : undefined)}
-          hideViewed={signedIn ? hideViewed : undefined}
+          emptyMessage={emptyMessageForView(filters, viewingSaved, savedIds.size)}
           onPageChange={onPageChange}
           onSortChange={onSortChange}
-          onToggleHideViewed={signedIn ? onToggleHideViewed : undefined}
-          onToggleSaved={signedIn ? onToggleSaved : undefined}
-          onToggleSavedOnly={signedIn ? onToggleSavedOnly : undefined}
           pageEnd={pageEnd}
           pageStart={pageStart}
           query={filters.query}
           savedIds={savedIds}
-          savedOnly={signedIn ? savedOnly : undefined}
           selectedJobIds={selectedJobIds}
           sort={filters.sort}
           toggleComparison={toggleComparison}
@@ -104,6 +146,14 @@ export function OpenRolesSection({
           totalPages={totalPages}
           viewedIds={viewedIds}
           visibleJobs={listedJobs}
+          {...signedInControls({
+            hideViewed,
+            onToggleHideViewed,
+            onToggleSaved,
+            onToggleSavedOnly,
+            savedOnly,
+            signedIn
+          })}
         />
       )}
     </section>
