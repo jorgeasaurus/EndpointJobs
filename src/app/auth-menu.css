@@ -62,6 +62,7 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   cursor: pointer;
+  text-decoration: none;
   background: var(--lime);
   border: 0;
   border-radius: 8px;

@@ -23,6 +23,8 @@ test("the closed account menu truncates the email and posts sign-out", () => {
   assert.match(html, /method="post"/);
   assert.match(html, /action="\/auth\/sign-out"/);
   assert.match(html, /Sign out/);
+  assert.match(html, /href="\/account"/);
+  assert.match(html, />Account</);
 
   const css = readFileSync(new URL("../../src/app/auth-menu.css", import.meta.url), "utf8");
   assert.match(css, /\.auth-menu-email\s*\{[^}]*min-width:\s*0/);
@@ -91,13 +93,18 @@ test("opening the account menu with Enter focuses the panel, and Tab then signs 
     assert.equal(await page.evaluate(() => document.documentElement.dataset.signOut ?? ""), "");
 
     await page.keyboard.press("Tab");
+    assert.equal(await page.evaluate(() => ({
+      text: document.activeElement?.textContent?.trim() ?? "",
+      href: document.activeElement?.getAttribute("href") ?? ""
+    })).then((value) => `${value.text} ${value.href}`), "Account /account");
+    await page.keyboard.press("Tab");
     assert.match(await page.evaluate(() => document.activeElement?.textContent ?? ""), /Sign out/);
-    await page.keyboard.press("Shift+Tab");
+    await page.keyboard.press("Tab");
     assert.equal(
       await page.evaluate(() => document.activeElement?.classList.contains("auth-menu-panel") ?? false),
       true
     );
-    await page.keyboard.press("Tab");
+    await page.keyboard.press("Shift+Tab");
     assert.match(await page.evaluate(() => document.activeElement?.textContent ?? ""), /Sign out/);
     await page.keyboard.press("Enter");
     await page.waitForFunction(() => document.documentElement.dataset.signOut === "posted");
@@ -208,6 +215,23 @@ async function bundle(entry: string) {
     target: "es2022",
     jsx: "automatic",
     plugins: [
+        {
+        name: "next-link",
+        setup(build) {
+          build.onResolve({ filter: /^next\/link$/ }, () => ({
+            path: "next-link",
+            namespace: "next-link"
+          }));
+          build.onLoad({ filter: /.*/, namespace: "next-link" }, () => ({
+            loader: "js",
+            resolveDir: repoRoot,
+            contents: `import { createElement } from "react";
+              export default function Link(props) {
+                return createElement("a", { href: props.href, className: props.className }, props.children);
+              }`
+          }));
+        }
+      },
       {
         name: "at-alias",
         setup(build) {

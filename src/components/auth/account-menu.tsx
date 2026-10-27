@@ -54,7 +54,7 @@ export function AccountMenu({ email }: { email: string }) {
 
     position();
     // Focus the panel, not Sign out. A held Enter that opened the menu must not
-    // land on the submit button. Tab from here reaches Sign out.
+    // land on the submit button. Tab moves to Account, then Sign out.
     panel.focus();
     let frame = 0;
     function schedule() {

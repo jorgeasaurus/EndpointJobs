@@ -32,9 +32,10 @@ Phase 1 filled `status` from the code, tests, migrations, and README. Phase 2 ex
 | Pull request | Stories |
 | --- | --- |
 | https://github.com/jorgeasaurus/EndpointJobs/pull/87 | `RESP-01`, `SAL-02`, `HOME-06`, `API-05`, `BOARD-04`, `FEED-01`, `JOB-11` |
-| https://github.com/jorgeasaurus/EndpointJobs/pull/88 | `ACCT-01` through `ACCT-07`, `HOME-04`, `PRIV-01` |
+| https://github.com/jorgeasaurus/EndpointJobs/pull/88 | `ACCT-01` through `ACCT-07`, `PRIV-01` |
+| https://github.com/jorgeasaurus/EndpointJobs/pull/89 | `HOME-04`, `AUTH-09` |
 
-`HOME-04` points at #88 because that pull request adds saved jobs, saved filters, and view history. The home sign-in line itself is not part of #88. `AUTH-09` (menu position at 390px, Escape and outside-click close) and that home line are owned by a separate pull request titled “Fix mobile account menu and show inline sign-in on home”. That pull request was not open when `fix_pr` was filled, so `AUTH-09` stays empty.
+`HOME-04` and `AUTH-09` point at #89. That pull request replaces the home sign-in sentence with inline Google and GitHub buttons, and keeps the account menu inside the viewport with keyboard focus on the panel, then Account, then Sign out. #88 still adds saved jobs, saved filters, and view history.
 
 ## Columns
 

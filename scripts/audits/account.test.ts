@@ -163,8 +163,8 @@ test("the account page and privacy policy link to each other", () => {
   assert.match(account, /Clear view history/);
   assert.match(account, /Delete account/);
   assert.match(menu, /href="\/account"/);
-  assert.equal(menu.includes("Escape"), false);
-  assert.equal(menu.includes("pointerdown"), false);
+  assert.match(menu, /Escape/);
+  assert.match(menu, /pointerdown/);
 });
 
 function fakeClient(calls: unknown[], seed: { preferences: unknown; saved: unknown[] }): AccountClient {
