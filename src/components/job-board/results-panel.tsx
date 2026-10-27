@@ -14,8 +14,12 @@ import { PaginationControls, type PaginationState } from "./pagination-controls"
 export function ResultsPanel({
   clearFilters,
   currentPage,
+  hideViewed,
   onPageChange,
   onSortChange,
+  onToggleHideViewed,
+  onToggleSaved,
+  savedIds,
   sort,
   pageEnd,
   pageStart,
@@ -25,16 +29,22 @@ export function ResultsPanel({
   filters,
   selectedJobIds,
   toggleComparison,
+  viewedIds,
   visibleJobs
 }: PaginationState & {
   clearFilters: () => void;
   filters: FilterState;
+  hideViewed?: boolean;
   onPageChange: (page: number) => void;
   onSortChange: (sort: SortKey) => void;
+  onToggleHideViewed?: () => void;
+  onToggleSaved?: (job: BoardListing) => void;
+  savedIds?: ReadonlySet<string>;
   sort: SortKey;
   query: string;
   selectedJobIds: Set<string>;
   toggleComparison: (job: BoardListing) => void;
+  viewedIds?: ReadonlySet<string>;
   visibleJobs: readonly BoardListing[];
 }) {
   return (
@@ -71,6 +81,16 @@ export function ResultsPanel({
             <Clock3 size={16} aria-hidden="true" />
             Daily refresh
           </span>
+          {onToggleHideViewed ? (
+            <button
+              aria-pressed={hideViewed ? "true" : "false"}
+              className="compare-button hide-viewed-button"
+              type="button"
+              onClick={onToggleHideViewed}
+            >
+              {hideViewed ? "Showing unseen" : "Hide viewed"}
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -89,9 +109,12 @@ export function ResultsPanel({
               <JobCard
                 compareDisabled={selectedJobIds.size >= maximumComparedJobs && !selectedJobIds.has(job.id)}
                 isCompared={selectedJobIds.has(job.id)}
+                isSaved={savedIds?.has(job.id) ?? false}
+                isViewed={viewedIds?.has(job.id) ?? false}
                 key={job.id}
                 job={job}
                 onToggleComparison={toggleComparison}
+                onToggleSaved={onToggleSaved}
                 query={query}
               />
             ))}

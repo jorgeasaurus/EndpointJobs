@@ -16,6 +16,7 @@ import { listingLanguage, presentSalary } from "@/lib/job-trust";
 import { seedPlatformChipFixture } from "@/lib/platform-chip-fixture";
 import type { Job, JobsFeed } from "@/types/job";
 
+import { JobAccountActions } from "@/components/account/job-account-actions";
 import { DescriptionContent } from "@/components/job-board/description-content";
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
 import { JobContextCards } from "@/components/job-board/job-context-cards";
@@ -157,6 +158,7 @@ export default async function JobPage({ params }: JobPageProps) {
               >
                 Apply for this role
               </a>
+              <JobAccountActions jobId={job.id} />
               <Link className="job-detail-back" href="/#open-roles">
                 Browse all roles
               </Link>

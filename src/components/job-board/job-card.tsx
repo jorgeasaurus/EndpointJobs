@@ -32,14 +32,20 @@ import { VisaSponsorship } from "./visa-sponsorship";
 export function JobCard({
   compareDisabled,
   isCompared,
+  isSaved = false,
+  isViewed = false,
   job,
   onToggleComparison,
+  onToggleSaved,
   query
 }: {
   compareDisabled: boolean;
   isCompared: boolean;
+  isSaved?: boolean;
+  isViewed?: boolean;
   job: BoardCardJob;
   onToggleComparison: (job: BoardCardJob) => void;
+  onToggleSaved?: (job: BoardCardJob) => void;
   query: string;
 }) {
   const listingDescription = useListingDescription(job);
@@ -59,6 +65,7 @@ export function JobCard({
       <div className="job-card-top">
         <span className="job-card-pills">
           <span className="source-pill">{job.source}</span>
+          {isViewed ? <span className="viewed-pill">Viewed</span> : null}
           {language ? <span className="language-pill">{language}</span> : null}
         </span>
         {isPostedDateKnown(job) ? (
@@ -123,38 +130,75 @@ export function JobCard({
         <span>{job.employmentType}</span>
       </div>
 
-      <div className="job-actions">
-        <span className="attribution-label" title={job.attributionLabel}>
-          {job.attributionLabel}
-        </span>
-        <button
-          aria-pressed={isCompared ? "true" : "false"}
-          className={`compare-button${isCompared ? " is-active" : ""}`}
-          disabled={compareDisabled}
-          type="button"
-          onClick={() => onToggleComparison(job)}
-        >
-          <GitCompareArrows size={16} aria-hidden="true" />
-          {isCompared ? "Selected" : "Compare"}
-        </button>
-        {job.applyUrl ? (
-          <a
-            className="apply-link"
-            href={job.applyUrl}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Apply
-            <ExternalLink size={16} aria-hidden="true" />
-          </a>
-        ) : (
-          <span className="apply-link is-disabled">
-            Seed listing
-            <BriefcaseBusiness size={16} aria-hidden="true" />
-          </span>
-        )}
-      </div>
+      <JobCardActions
+        compareDisabled={compareDisabled}
+        isCompared={isCompared}
+        isSaved={isSaved}
+        job={job}
+        onToggleComparison={onToggleComparison}
+        onToggleSaved={onToggleSaved}
+      />
     </article>
+  );
+}
+
+function JobCardActions({
+  compareDisabled,
+  isCompared,
+  isSaved,
+  job,
+  onToggleComparison,
+  onToggleSaved
+}: {
+  compareDisabled: boolean;
+  isCompared: boolean;
+  isSaved: boolean;
+  job: BoardCardJob;
+  onToggleComparison: (job: BoardCardJob) => void;
+  onToggleSaved?: (job: BoardCardJob) => void;
+}) {
+  return (
+    <div className="job-actions">
+      <span className="attribution-label" title={job.attributionLabel}>
+        {job.attributionLabel}
+      </span>
+      <button
+        aria-pressed={isCompared ? "true" : "false"}
+        className={`compare-button${isCompared ? " is-active" : ""}`}
+        disabled={compareDisabled}
+        type="button"
+        onClick={() => onToggleComparison(job)}
+      >
+        <GitCompareArrows size={16} aria-hidden="true" />
+        {isCompared ? "Selected" : "Compare"}
+      </button>
+      {onToggleSaved ? (
+        <button
+          aria-pressed={isSaved ? "true" : "false"}
+          className={`compare-button save-button${isSaved ? " is-active" : ""}`}
+          type="button"
+          onClick={() => onToggleSaved(job)}
+        >
+          {isSaved ? "Saved" : "Save"}
+        </button>
+      ) : null}
+      {job.applyUrl ? (
+        <a
+          className="apply-link"
+          href={job.applyUrl}
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Apply
+          <ExternalLink size={16} aria-hidden="true" />
+        </a>
+      ) : (
+        <span className="apply-link is-disabled">
+          Seed listing
+          <BriefcaseBusiness size={16} aria-hidden="true" />
+        </span>
+      )}
+    </div>
   );
 }
 
