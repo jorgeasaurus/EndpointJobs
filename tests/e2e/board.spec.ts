@@ -467,6 +467,7 @@ test("[RESP-01] narrow hit areas", async ({ page }, info) => {
   await expect(page.locator("article.job-card .description-details summary").first()).toBeVisible();
   await expect(page.locator("article.job-card a.apply-link").first()).toBeVisible();
   await expect(page.locator(".hide-viewed-button")).toBeVisible();
+  await expect(page.locator(".saved-only-button")).toBeVisible();
   const offenders = await page.evaluate(() => {
     const selectors = [
       "#role-family",
@@ -480,6 +481,7 @@ test("[RESP-01] narrow hit areas", async ({ page }, info) => {
       "article.job-card .description-details summary",
       "article.job-card a.apply-link",
       ".hide-viewed-button",
+      ".saved-only-button",
       ".mode-button",
       ".advanced-filters-summary",
       ".workplace-filter-button",

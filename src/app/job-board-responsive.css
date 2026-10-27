@@ -547,6 +547,8 @@
   }
 
   .compare-button,
+  .saved-only-button,
+  .hide-viewed-button,
   .clear-button,
   .search-clear-button,
   .active-filter-chip,
