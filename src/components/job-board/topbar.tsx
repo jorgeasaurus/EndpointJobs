@@ -102,11 +102,11 @@ export function SiteFooter({ updatedAt }: { updatedAt: string }) {
           >
             <SquareTerminal size={15} aria-hidden="true" /><span>PowerShell</span>
           </a>
-          {/* Disable speculative prefetch to prevent stale page-one metadata during query pagination. */}
-          <Link className="feedback-link footer-link" href={getBoardPath()}>
+          <Link className="feedback-link footer-link" href={getBoardPath()} prefetch={false}>
             <Search size={15} aria-hidden="true" />
             <span>Job board</span>
           </Link>
+          {/* Disable speculative prefetch to prevent stale page-one metadata during query pagination. */}
           <Link className="feedback-link footer-link" href={getJobsDirectoryPath()} prefetch={false}>
             <Rows3 size={15} aria-hidden="true" />
             <span>All jobs</span>

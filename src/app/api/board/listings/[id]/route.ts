@@ -1,6 +1,5 @@
-import feedData from "@/data/jobs.json";
-import { boardCacheControl, findBoardJob, getActiveBoardFeed } from "@/lib/board-page";
-import type { JobsFeed } from "@/types/job";
+import { getMemoizedActiveBoardFeed } from "@/lib/active-board-feed";
+import { boardCacheControl, findBoardJob } from "@/lib/board-page";
 
 export const revalidate = 3600;
 
@@ -9,7 +8,7 @@ export async function GET(
   context: { params: Promise<{ id: string }> }
 ) {
   const { id } = await context.params;
-  const job = findBoardJob(getActiveBoardFeed(feedData as JobsFeed), id);
+  const job = findBoardJob(getMemoizedActiveBoardFeed(), id);
 
   if (!job) {
     return Response.json(

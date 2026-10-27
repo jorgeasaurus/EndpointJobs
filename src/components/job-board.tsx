@@ -14,7 +14,7 @@ import { JobComparison } from "./job-board/job-comparison";
 import { ParallaxBackground } from "./job-board/parallax-background";
 import { ResultsPanel } from "./job-board/results-panel";
 import { SiteFooter, Topbar } from "./job-board/topbar";
-import { useBoardMap, useBoardPage } from "./job-board/use-board-results";
+import { useBoardMap, useBoardPage, useDebouncedFilters } from "./job-board/use-board-results";
 import { useSearchFocusShortcut } from "./job-board/use-search-focus-shortcut";
 import { useUrlSyncedFilters } from "./job-board/use-url-synced-filters";
 
@@ -46,9 +46,11 @@ export function JobBoard({
 
   useSearchFocusShortcut(searchInputRef);
 
-  const requestedPage = pagination.filterKey === filterKey ? pagination.page : 1;
-  const board = useBoardPage(initialPage, filters, requestedPage, initialFilterKey);
-  const map = useBoardMap(filters, mapExpanded);
+  const debouncedFilters = useDebouncedFilters(filters);
+  const debouncedFilterKey = JSON.stringify(debouncedFilters);
+  const requestedPage = pagination.filterKey === debouncedFilterKey ? pagination.page : 1;
+  const board = useBoardPage(initialPage, debouncedFilters, requestedPage, initialFilterKey);
+  const map = useBoardMap(debouncedFilters, mapExpanded);
   const snapshot = board.page;
   let seenJobs = seenState.map;
 

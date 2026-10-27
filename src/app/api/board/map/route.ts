@@ -1,14 +1,13 @@
 import { filterStateFromSearchParams } from "@/components/job-board/filter-url";
-import feedData from "@/data/jobs.json";
-import { boardCacheControl, getActiveBoardFeed, queryBoardMap } from "@/lib/board-page";
-import type { JobsFeed } from "@/types/job";
+import { getMemoizedActiveBoardFeed } from "@/lib/active-board-feed";
+import { boardCacheControl, queryBoardMap } from "@/lib/board-page";
 
 export const revalidate = 3600;
 
 export function GET(request: Request) {
   const parameters = new URL(request.url).searchParams;
   const jobs = queryBoardMap(
-    getActiveBoardFeed(feedData as JobsFeed),
+    getMemoizedActiveBoardFeed(),
     filterStateFromSearchParams(parameters)
   );
 

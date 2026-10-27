@@ -38,31 +38,34 @@ const jobCardMarkup = renderToStaticMarkup(
   createElement(JobCard, {
     compareDisabled: false,
     isCompared: false,
-    job: makeJob({
-      id: "card-job",
-      title: "Intune Endpoint Engineer",
-      company: "Card Company",
-      location: "Seattle, WA",
-      workplace: "Hybrid",
-      postedAt: daysAgo(2),
-      source: "Audit Source",
-      attributionLabel: "Audit Attribution",
-      summary: "Manage Intune endpoint policy.",
-      description: `Manage Intune endpoint policy.\n\n${"Long endpoint operations details. ".repeat(40)}`,
-      salary: { min: 120000, max: 150000, currency: "USD", label: "$120k-$150k" },
-      tags: ["Windows", "Intune"],
-      matchReasons: [
-        "Intune + Autopilot",
-        "Endpoint engineering",
-        "Windows platform",
-        "Device management"
-      ],
-      tools: ["Intune", "Autopilot"],
-      platforms: ["Windows"],
-      roleFamily: "Endpoint Engineering",
-      seniority: "Senior",
-      employmentType: "Full-time"
-    }),
+    job: {
+      ...makeJob({
+        id: "card-job",
+        title: "Intune Endpoint Engineer",
+        company: "Card Company",
+        location: "Seattle, WA",
+        workplace: "Hybrid",
+        postedAt: daysAgo(2),
+        source: "Audit Source",
+        attributionLabel: "Audit Attribution",
+        summary: "Manage Intune endpoint policy.",
+        description: `Manage Intune endpoint policy.\n\n${"Long endpoint operations details. ".repeat(40)}`,
+        salary: { min: 120000, max: 150000, currency: "USD", label: "$120k-$150k" },
+        tags: ["Windows", "Intune"],
+        matchReasons: [
+          "Intune + Autopilot",
+          "Endpoint engineering",
+          "Windows platform",
+          "Device management"
+        ],
+        tools: ["Intune", "Autopilot"],
+        platforms: ["Windows"],
+        roleFamily: "Endpoint Engineering",
+        seniority: "Senior",
+        employmentType: "Full-time"
+      }),
+      hasDescription: true
+    },
     onToggleComparison: () => undefined,
     query: "Intune"
   })

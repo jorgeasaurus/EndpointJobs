@@ -10,13 +10,16 @@ import feedData from "../../src/data/jobs.json";
 import { filterJobs } from "../../src/lib/job-filters";
 import { dedupeJobs, dedupeWorkplaceJobs } from "../../src/lib/job-trust";
 import {
+  boardListingHasMore,
   boardListingOmittedFields,
   boardPageSize,
   getActiveBoardFeed,
   queryBoardMap,
-  queryBoardPage
+  queryBoardPage,
+  toBoardListing
 } from "../../src/lib/board-page";
 import type { JobsFeed } from "../../src/types/job";
+import { makeJob } from "./shared";
 
 const feed = getActiveBoardFeed(feedData as JobsFeed);
 
@@ -100,6 +103,27 @@ test("map payload keeps coordinates and omits listing prose", () => {
     assert.equal("summary" in job, false);
     assert.equal("sourceUrl" in job, false);
   }
+});
+
+test("listings record a description flag without sending the description", () => {
+  const empty = toBoardListing(makeJob({
+    description: "  ",
+    matchReasons: [],
+    platforms: [],
+    tools: []
+  }));
+  assert.equal(empty.hasDescription, false);
+  assert.equal(Object.hasOwn(empty, "description"), false);
+  assert.equal(boardListingHasMore(empty, 0), false);
+
+  const described = toBoardListing(makeJob({ description: "Own the endpoint fleet." }));
+  assert.equal(described.hasDescription, true);
+  assert.equal(Object.hasOwn(described, "description"), false);
+  assert.equal(boardListingHasMore(described, 0), true);
+
+  const chipsOnly = toBoardListing(makeJob({ description: "" }));
+  assert.equal(chipsOnly.hasDescription, false);
+  assert.equal(boardListingHasMore(chipsOnly, 0), true);
 });
 
 test("board queries keep a single selected tool and the requested page", () => {

@@ -66,28 +66,34 @@ export async function auditJobComparisonData(run: RunAudit) {
 }
 
 const comparisonJobs = [
-  makeJob({
-    id: "comparison-one",
-    title: "Endpoint Engineer",
-    company: "Example One",
-    location: "Seattle, WA",
-    workplace: "Hybrid",
-    salary: { currency: "USD", label: "$120k-$150k" },
-    tools: ["Intune"],
-    platforms: ["Windows"],
-    seniority: "Senior"
-  }),
-  makeJob({
-    id: "comparison-two",
-    title: "Client Platform Engineer",
-    company: "Example Two",
-    location: "Remote",
-    workplace: "Remote",
-    postedAt: daysAgo(3),
-    tools: ["Jamf"],
-    platforms: ["macOS"],
-    seniority: "Mid"
-  })
+  {
+    ...makeJob({
+      id: "comparison-one",
+      title: "Endpoint Engineer",
+      company: "Example One",
+      location: "Seattle, WA",
+      workplace: "Hybrid",
+      salary: { currency: "USD", label: "$120k-$150k" },
+      tools: ["Intune"],
+      platforms: ["Windows"],
+      seniority: "Senior"
+    }),
+    hasDescription: false
+  },
+  {
+    ...makeJob({
+      id: "comparison-two",
+      title: "Client Platform Engineer",
+      company: "Example Two",
+      location: "Remote",
+      workplace: "Remote",
+      postedAt: daysAgo(3),
+      tools: ["Jamf"],
+      platforms: ["macOS"],
+      seniority: "Mid"
+    }),
+    hasDescription: false
+  }
 ];
 
 function assertIncludes(value: string, expected: string) {

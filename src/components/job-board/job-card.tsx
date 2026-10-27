@@ -20,7 +20,7 @@ import {
   isPostedDateKnown
 } from "@/lib/jobs";
 import { getJobWorkplace } from "@/lib/workplace";
-import type { BoardListing } from "@/lib/board-page";
+import { boardListingHasMore, type BoardListing } from "@/lib/board-page";
 import { listingLanguage, presentSalary } from "@/lib/job-trust";
 import { getCurrencySymbol } from "@/lib/currency";
 
@@ -52,7 +52,7 @@ export function JobCard({
     ? listingLanguage({ ...job, description: listingDescription.description })
     : job.language;
   const postedLabel = getJobPostedDateLabel(job);
-  const hasMore = cardHasExpandableDetails(job, listingDescription.hasFetchedDescription, descriptionBlocks.length);
+  const hasMore = boardListingHasMore(job, descriptionBlocks.length);
 
   return (
     <article className="job-card" id={`job-${job.id}`}>
@@ -167,18 +167,6 @@ type BoardCardJob = BoardListing & { description?: string };
 
 type ListingDescription = ReturnType<typeof useListingDescription>;
 
-function cardHasExpandableDetails(
-  job: BoardCardJob,
-  hasFetchedDescription: boolean,
-  descriptionBlockCount: number
-) {
-  return !hasFetchedDescription
-    || descriptionBlockCount > 0
-    || job.matchReasons.length > 0
-    || job.platforms.length > 0
-    || job.tools.length > 0;
-}
-
 function JobCardDetails({
   blocks,
   job,
@@ -225,7 +213,7 @@ function useListingDescription(job: BoardCardJob) {
   const description = fetchedDescription === undefined ? job.description : fetchedDescription ?? undefined;
 
   function loadDescription() {
-    if (job.description || fetchedDescription !== undefined || descriptionStatus === "loading") return;
+    if (!job.hasDescription || job.description || fetchedDescription !== undefined || descriptionStatus === "loading") return;
 
     setDescriptionStatus("loading");
     fetch(`/api/board/listings/${encodeURIComponent(job.id)}`)
@@ -245,7 +233,6 @@ function useListingDescription(job: BoardCardJob) {
   return {
     description,
     descriptionStatus,
-    hasFetchedDescription: fetchedDescription !== undefined || Boolean(job.description),
     loadDescription
   };
 }

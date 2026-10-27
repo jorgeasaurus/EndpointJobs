@@ -8,6 +8,22 @@ import { filterStateToBoardSearchParams } from "./filter-url";
 
 type BoardStatus = "ready" | "loading" | "error";
 
+const boardFilterDebounceMs = 200;
+
+export function useDebouncedFilters(filters: FilterState) {
+  const [debounced, setDebounced] = useState(filters);
+  const previousFilters = useRef(filters);
+
+  useEffect(() => {
+    const delay = shouldDebounceFilters(previousFilters.current, filters) ? boardFilterDebounceMs : 0;
+    previousFilters.current = filters;
+    const timer = window.setTimeout(() => setDebounced(filters), delay);
+    return () => window.clearTimeout(timer);
+  }, [filters]);
+
+  return debounced;
+}
+
 export function useBoardPage(
   initialPage: BoardPage,
   filters: FilterState,
@@ -18,19 +34,16 @@ export function useBoardPage(
   const [attempt, setAttempt] = useState(0);
   const [snapshot, setSnapshot] = useState(initialPage);
   const [status, setStatus] = useState<BoardStatus>("ready");
-  const previousFilters = useRef(filters);
   const isInitial = filterKey === initialFilterKey && page === 1 && attempt === 0;
 
   useEffect(() => {
     if (isInitial) return undefined;
 
     const controller = new AbortController();
-    const delay = shouldDebounceFilters(previousFilters.current, filters) ? 200 : 0;
-    previousFilters.current = filters;
+    const params = filterStateToBoardSearchParams(filters, page);
     const timer = window.setTimeout(() => {
       if (controller.signal.aborted) return;
       setStatus("loading");
-      const params = filterStateToBoardSearchParams(filters, page);
 
       fetch(`/api/board?${params.toString()}`, { signal: controller.signal })
         .then(async (response) => {
@@ -47,7 +60,7 @@ export function useBoardPage(
           if (controller.signal.aborted || isAbortError(error)) return;
           setStatus("error");
         });
-    }, delay);
+    }, 0);
 
     return () => {
       controller.abort();

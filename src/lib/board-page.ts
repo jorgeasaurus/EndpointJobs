@@ -43,6 +43,7 @@ export type BoardListing = Pick<
   | "visaSponsorship"
   | "workplace"
 > & {
+  hasDescription: boolean;
   language?: string;
 };
 
@@ -67,7 +68,7 @@ export type BoardPage = {
 export type BoardMapJob = JobMapRecord;
 
 export function getActiveBoardFeed(feed: JobsFeed, now = new Date()): JobsFeed {
-  const preparedFeed = prepareBoardFeed(feed);
+  const preparedFeed = prepareBoardFeed(feed, now);
 
   return {
     ...preparedFeed,
@@ -157,7 +158,8 @@ export function toBoardListing(job: Job): BoardListing {
     platforms: resolved.platforms,
     roleFamily: resolved.roleFamily,
     seniority: resolved.seniority,
-    employmentType: resolved.employmentType
+    employmentType: resolved.employmentType,
+    hasDescription: Boolean(resolved.description?.trim())
   };
 
   if (resolved.visaSponsorship) listing.visaSponsorship = resolved.visaSponsorship;
@@ -167,6 +169,17 @@ export function toBoardListing(job: Job): BoardListing {
   if (language) listing.language = language;
 
   return listing;
+}
+
+export function boardListingHasMore(
+  job: Pick<BoardListing, "hasDescription" | "matchReasons" | "platforms" | "tools">,
+  descriptionBlockCount: number
+) {
+  return job.hasDescription
+    || descriptionBlockCount > 0
+    || job.matchReasons.length > 0
+    || job.platforms.length > 0
+    || job.tools.length > 0;
 }
 
 function measureVisibleJobs(jobs: readonly Job[]): BoardMetrics {
