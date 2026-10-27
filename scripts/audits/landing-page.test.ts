@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { preProcessFile } from "typescript";
 
 import { initialFilterState } from "../../src/components/job-board/filter-model";
 import { getLandingJsonLd, serializeJsonLd } from "../../src/app/structured-data";
@@ -42,6 +44,7 @@ test("the home page is a landing page with a privacy link and an account reason"
     `unresolved local imports: ${clientProps.unresolved}`
   );
   assert.ok(clientProps.local > 0, "home page imports were not resolved");
+  assert.equal(clientProps.dynamic, "");
   assert.equal(clientProps.offenders, "");
   assert.match(board, /<JobBoard initialPage=\{initialPage\} \/>/);
   assert.match(board, /export const revalidate = 3600/);
@@ -52,14 +55,45 @@ test("an unresolved local import fails the client-prop guard", () => {
     'import { Widget } from "@/components/does-not-exist";',
     'import Link from "next/link";',
     'import { getJobWorkplace } from "@/lib/workplace";',
-    'import helper from "./moved-module.mjs";'
+    "import helper from './moved-module.mjs'",
+    'export { Other } from "@/components/also-missing"',
+    'const View = dynamic(() => import("@/components/dynamic-missing"))'
   ].join("\n");
   const result = clientComponentsReceiving(source, homePath, "board");
 
-  assert.equal(result.local, 3);
+  assert.equal(result.local, 5);
   assert.equal(result.resolved, 1);
-  assert.equal(result.unresolved, "@/components/does-not-exist,./moved-module.mjs");
+  assert.equal(
+    result.unresolved,
+    "@/components/does-not-exist,./moved-module.mjs,@/components/also-missing,@/components/dynamic-missing"
+  );
+  assert.equal(result.dynamic, "@/components/dynamic-missing");
   assert.equal(result.offenders, "");
+});
+
+test("a directory import reads index.ts instead of throwing", () => {
+  const root = mkdtempSync(resolve(tmpdir(), "landing-barrel-"));
+  try {
+    const barrel = resolve(root, "barrel");
+    const empty = resolve(root, "empty");
+    mkdirSync(barrel);
+    mkdirSync(empty);
+    writeFileSync(resolve(barrel, "index.ts"), "\"use client\";\nexport function Barrel() { return null; }\n");
+    const source = [
+      "import { Barrel } from \"./barrel\";",
+      "import { Empty } from \"./empty\";",
+      "<Barrel board={board} />"
+    ].join("\n");
+    const result = clientComponentsReceiving(source, resolve(root, "page.tsx"), "board");
+
+    assert.equal(result.local, 2);
+    assert.equal(result.resolved, 1);
+    assert.equal(result.unresolved, "./empty");
+    assert.equal(result.dynamic, "");
+    assert.equal(result.offenders, "Barrel");
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });
 
 test("the remote metric includes hybrid roles on the same jobs as the open-role total", () => {
@@ -161,11 +195,14 @@ test("a new board search key redirects because the home redirect reads one key s
 function clientComponentsReceiving(source: string, filePath: string, prop: string) {
   const offenders: string[] = [];
   const unresolved: string[] = [];
+  const dynamic: string[] = [];
   let local = 0;
   let resolved = 0;
 
-  for (const match of source.matchAll(/^import\s+(?!type\b)([\s\S]*?)\s+from\s+"([^"]+)";$/gm)) {
-    const specifier = match[2];
+  for (const ref of preProcessFile(source).importedFiles) {
+    const specifier = ref.fileName;
+    const imported = classifyImport(source, ref.pos);
+    if (imported.kind === "dynamic") dynamic.push(specifier);
     if (!specifier.startsWith("@/") && !specifier.startsWith(".")) continue;
 
     local += 1;
@@ -175,17 +212,43 @@ function clientComponentsReceiving(source: string, filePath: string, prop: strin
       continue;
     }
     resolved += 1;
+    if (imported.kind === "type") continue;
+
     const moduleSource = readFileSync(modulePath, "utf8");
     if (!/^["']use client["'];?/m.test(moduleSource)) continue;
+    if (imported.kind === "dynamic") {
+      offenders.push(specifier);
+      continue;
+    }
 
-    for (const name of importedNames(match[1])) {
+    for (const name of imported.names) {
       for (const tag of source.matchAll(new RegExp(`<${name}(\\s[^>]*)?>`, "g"))) {
         if (new RegExp(`\\b${prop}\\b`).test(tag[0])) offenders.push(name);
       }
     }
   }
 
-  return { offenders: offenders.join(","), unresolved: unresolved.join(","), resolved, local };
+  return {
+    offenders: offenders.join(","),
+    unresolved: unresolved.join(","),
+    dynamic: dynamic.join(","),
+    resolved,
+    local
+  };
+}
+
+function classifyImport(source: string, pos: number) {
+  const before = source.slice(0, pos);
+  if (/import\s*\(\s*$/.test(before)) return { kind: "dynamic" as const, names: [] as string[] };
+
+  const keywordAt = Math.max(before.lastIndexOf("import"), before.lastIndexOf("export"));
+  if (keywordAt < 0) return { kind: "value" as const, names: [] as string[] };
+
+  let body = before.slice(keywordAt).replace(/^(?:import|export)\s*/, "");
+  if (/^type\b/.test(body)) return { kind: "type" as const, names: [] as string[] };
+  body = body.replace(/\s*from\s*$/, "").trim();
+  if (!body || body === "*") return { kind: "value" as const, names: [] as string[] };
+  return { kind: "value" as const, names: importedNames(body) };
 }
 
 function importedNames(clause: string) {
@@ -202,7 +265,8 @@ function importedNames(clause: string) {
   }
 
   const binding = clause.replace(/\{[\s\S]*\}/, "").replace(/,/g, "").trim();
-  if (binding) names.push(binding);
+  const alias = binding.split(/\s+as\s+/).pop()?.trim();
+  if (alias && alias !== "*") names.push(alias);
   return names;
 }
 
@@ -214,8 +278,16 @@ function resolveLocalModule(specifier: string, fromFile: string) {
       : null;
   if (!base) return null;
 
-  for (const candidate of [base, `${base}.tsx`, `${base}.ts`, `${base}.jsx`, `${base}.js`]) {
-    if (existsSync(candidate)) return candidate;
+  for (const candidate of [
+    base,
+    `${base}.tsx`,
+    `${base}.ts`,
+    `${base}.jsx`,
+    `${base}.js`,
+    resolve(base, "index.tsx"),
+    resolve(base, "index.ts")
+  ]) {
+    if (existsSync(candidate) && statSync(candidate).isFile()) return candidate;
   }
 
   return null;
