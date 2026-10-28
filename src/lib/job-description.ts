@@ -73,15 +73,12 @@ export function repairJobDescription(value: string) {
     .replace(/^\n+|\n+$/g, "");
 }
 
-export function isDescriptionHeading(value: string) {
+export function isDescriptionHeading(value: string, following = "") {
   const line = value.trim();
-  if (!line || bulletPattern.test(line) || /^[-*•]$/.test(line)) return false;
-  if (/[.!?]$/.test(line) || /[;]/.test(line) || /\.\s/.test(line)) return false;
-  const words = line.split(/\s+/).filter(Boolean);
-  if (words.length === 0 || words.length > 8 || line.length > 72) return false;
-  if (!/^[A-Z0-9("]/.test(line)) return false;
-  if (line.includes(",") && words.length > 4) return false;
-  return true;
+  if (!isHeadingShape(line)) return false;
+  const next = stripBullet(following).trim();
+  if (!next || /^[-*•]$/.test(next)) return false;
+  return next.length > line.length;
 }
 
 export function toDescriptionBlocks(value: string): DescriptionBlock[] {
@@ -95,42 +92,47 @@ export function toDescriptionBlocks(value: string): DescriptionBlock[] {
     bullets = [];
   }
 
-  for (const section of value.split(/\n{2,}/)) {
-    const lines = section.split("\n").map((line) => line.trim()).filter(Boolean);
+  const sections = value.split(/\n{2,}/).map((section) => section.split("\n").map((line) => line.trim()).filter(Boolean));
+
+  for (let index = 0; index < sections.length; index += 1) {
+    const lines = sections[index] ?? [];
+    if (lines.length === 0) continue;
     if (lines.length === 1 && /^[-*•]$/.test(lines[0] ?? "")) {
       pendingMarker = true;
       continue;
     }
 
+    const following = followingSectionLine(sections, index);
+
     if (pendingMarker) {
       pendingMarker = false;
       const only = lines.length === 1 ? lines[0] ?? "" : "";
-      if (only && !isDescriptionHeading(only) && !bulletPattern.test(only)) {
+      if (only && !isDescriptionHeading(only, following) && !bulletPattern.test(only)) {
         bullets.push(`- ${only}`);
         continue;
       }
     }
 
-    if (lines.length > 0 && lines.every((line) => bulletPattern.test(line))) {
+    if (lines.every((line) => bulletPattern.test(line))) {
       bullets.push(...lines);
       continue;
     }
 
-    if (lines.length === 1 && isDescriptionHeading(lines[0] ?? "")) {
+    if (lines.length === 1 && isDescriptionHeading(lines[0] ?? "", following)) {
       flushBullets();
       blocks.push({ type: "heading", text: headingText(lines[0] ?? "") });
       continue;
     }
 
     flushBullets();
-    blocks.push(...partitionSection(lines));
+    blocks.push(...partitionSection(lines, following));
   }
 
   flushBullets();
   return blocks.filter((block) => block.type === "list" ? block.items.length > 0 : block.text.length > 0);
 }
 
-function partitionSection(lines: string[]): DescriptionBlock[] {
+function partitionSection(lines: string[], afterSection: string): DescriptionBlock[] {
   const blocks: DescriptionBlock[] = [];
   let items: string[] = [];
 
@@ -148,7 +150,8 @@ function partitionSection(lines: string[]): DescriptionBlock[] {
 
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index] ?? "";
-    if (isDescriptionHeading(line)) {
+    const following = lines[index + 1] ?? afterSection;
+    if (isDescriptionHeading(line, following)) {
       flushItems();
       blocks.push({ type: "heading", text: headingText(line) });
       continue;
@@ -161,12 +164,39 @@ function partitionSection(lines: string[]): DescriptionBlock[] {
   return blocks.filter((block) => block.type === "list" ? block.items.length > 0 : block.text.length > 0);
 }
 
+function isHeadingShape(line: string) {
+  if (!line || bulletPattern.test(line) || /^[-*•]$/.test(line)) return false;
+  if (/[.!?]$/.test(line) || /[;]/.test(line) || /\.\s/.test(line)) return false;
+  const words = line.split(/\s+/).filter(Boolean);
+  if (words.length === 0 || words.length > 8 || line.length > 72) return false;
+  if (!/^[A-Z0-9("]/.test(line)) return false;
+  const label = line.replace(/:$/, "");
+  if (line.includes(",")) return false;
+  if (/^(?:Must|Should|Please)\s+[a-z]/.test(line)) return false;
+  if (/^\d+\+?\s+years?\b/i.test(line)) return false;
+  if (/^(?:full|part)[ -]time$/i.test(label)) return false;
+  if (/^(?:remote|hybrid|on-?site)(?:\s*[-–—]\s+\S.*|\s+(?:role|position|work(?:\s+arrangement)?))?$/i.test(label)) return false;
+  if (line.endsWith(":")) return true;
+  return words.length < 5 || words.slice(1).some((word) => /[A-Z]/.test(word));
+}
+
+function followingSectionLine(sections: string[][], index: number) {
+  for (let next = index + 1; next < sections.length; next += 1) {
+    for (const line of sections[next] ?? []) {
+      if (!line || /^[-*•]$/.test(line)) continue;
+      return line;
+    }
+  }
+  return "";
+}
+
 function trailingSectionHeading(items: string[]) {
   if (items.length < 2) return undefined;
   const last = stripBullet(items[items.length - 1] ?? "");
   const previous = stripBullet(items[items.length - 2] ?? "");
   const words = last.split(/\s+/).filter(Boolean);
   if (words.length === 0 || words.length > 4 || last.length > 24 || /[,:.]/.test(last)) return undefined;
+  if (!isHeadingShape(last)) return undefined;
   if (previous.length < last.length + 20) return undefined;
   return last;
 }

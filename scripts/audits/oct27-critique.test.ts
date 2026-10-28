@@ -56,8 +56,15 @@ test("source headings render as text headings and list items stay marked", () =>
     " Scripting: strong PowerShell skills."
   ].join("\n"));
 
-  assert.equal(isDescriptionHeading("Key responsibilities"), true);
-  assert.equal(isDescriptionHeading("Endpoint management (Microsoft Intune)"), true);
+  assert.equal(isDescriptionHeading("Key responsibilities", "Endpoint management (Microsoft Intune)"), true);
+  assert.equal(isDescriptionHeading("Endpoint management (Microsoft Intune)", "- Design, build and maintain Intune configuration profiles."), true);
+  assert.equal(isDescriptionHeading("Requirements", "Design, build and maintain Intune configuration profiles for the fleet."), true);
+  assert.equal(isDescriptionHeading("Key responsibilities"), false);
+  assert.equal(isDescriptionHeading("Requirements"), false);
+  assert.equal(isDescriptionHeading("Seattle, WA", "Manage endpoints across the enterprise fleet with Intune and Autopilot."), false);
+  assert.equal(isDescriptionHeading("Remote", "Manage endpoints across the enterprise fleet with Intune and Autopilot."), false);
+  assert.equal(isDescriptionHeading("Full time", "Compensation Details for this endpoint role."), false);
+  assert.equal(isDescriptionHeading("Must have PowerShell experience", "Design, build and maintain Intune configuration profiles for the Windows fleet."), false);
   assert.equal(isDescriptionHeading("This is a full-time remote position that can be located anywhere in the U.S"), false);
   assert.deepEqual(blocks[0], { type: "heading", text: "Key responsibilities" });
   assert.deepEqual(blocks[1], { type: "heading", text: "Endpoint management (Microsoft Intune)" });
@@ -70,6 +77,36 @@ test("source headings render as text headings and list items stay marked", () =>
   }
   assert.deepEqual(blocks.at(-2), { type: "heading", text: "Qualifications" });
   assert.equal(blocks.at(-1)?.type, "list");
+
+  const fragments = toDescriptionBlocks(repairJobDescription([
+    "<p>Requirements</p>",
+    "<p>Seattle, WA</p>",
+    "<p>Must have PowerShell experience</p>",
+    "<p>Provides guidance to other technical staff</p>",
+    "<p>Key responsibilities</p>",
+    "<ul><li>Design, build and maintain Intune configuration profiles.</li></ul>"
+  ].join("")));
+  assert.deepEqual(
+    fragments.flatMap((block) => block.type === "heading" ? [block.text] : []),
+    ["Key responsibilities"]
+  );
+  const fragmentText = fragments.flatMap((block) => block.type === "list" ? block.items : [block.text]).join("\n");
+  assert.match(fragmentText, /Requirements/);
+  assert.match(fragmentText, /Seattle, WA/);
+  assert.match(fragmentText, /Must have PowerShell experience/);
+  assert.match(fragmentText, /Provides guidance to other technical staff/);
+  const fragmentHtml = renderToStaticMarkup(createElement(DescriptionContent, { blocks: fragments }));
+  assert.equal(fragmentHtml.match(/<h3/g)?.length, 1);
+  assert.match(fragmentHtml, /<p>Seattle, WA<\/p>/);
+  assert.match(fragmentHtml, /<p>Must have PowerShell experience<\/p>/);
+  assert.match(fragmentHtml, /<p>Requirements<\/p>/);
+
+  const trailingLocation = toDescriptionBlocks([
+    "Oversee backup and recovery systems for the enterprise fleet.",
+    "Remote"
+  ].join("\n"));
+  assert.equal(trailingLocation.some((block) => block.type === "heading"), false);
+  assert.match(trailingLocation.map((block) => block.type === "list" ? block.items.join("\n") : block.text).join("\n"), /Remote/);
 
   const html = renderToStaticMarkup(createElement(DescriptionContent, { blocks }));
   assert.match(html, /<h3 class="description-heading">Key responsibilities<\/h3>/);
