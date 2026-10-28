@@ -90,6 +90,13 @@ export function getJobPostedDateLabel(job: Pick<Job, "postedAt" | "fetchedAt" | 
   return formatPostedDate(job.postedAt);
 }
 
+export function getCardPostedLabel(
+  job: Pick<Job, "postedAt" | "fetchedAt" | "tags" | "postedAtEvidence">,
+  now = new Date()
+) {
+  return formatRelativePosted(job, now) ?? "Date unknown";
+}
+
 export function getFreshnessLabel(value: string) {
   const age = getPostedAgeDays(value);
 
@@ -199,7 +206,7 @@ export function getSalarySortValue(job: Job) {
 
 export function getExpandedDescriptionParagraphs(job: Pick<Job, "summary" | "description">) {
   return getJobDescriptionBlocks(job).flatMap((block) =>
-    block.type === "paragraph" ? [block.text] : block.items
+    block.type === "list" ? block.items : [block.text]
   );
 }
 

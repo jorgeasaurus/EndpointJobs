@@ -79,15 +79,15 @@
   }
 
   .brand {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     gap: 8px;
-    min-width: 0;
+    min-width: max-content;
     font-size: 0.95rem;
   }
 
   .brand > span:last-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow: visible;
+    text-overflow: clip;
     white-space: nowrap;
   }
 
@@ -114,26 +114,79 @@
     display: none;
   }
 
-  .topbar .api-docs-link,
-  .topbar .mcp-docs-link,
-  .topbar .topbar-feedback-link,
-  .topbar .support-link,
   .topbar .auth-entry {
     display: inline-flex;
     flex: none;
+    justify-content: center;
+    width: auto;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 10px;
+  }
+
+  .topbar .auth-menu .auth-entry {
+    width: 44px;
+    padding: 0;
+  }
+
+  .topbar-overflow {
+    display: block;
+    position: relative;
+    flex: none;
+  }
+
+  .topbar-overflow-button {
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
     width: 44px;
     height: 44px;
     min-width: 44px;
     min-height: 44px;
     padding: 0;
+    color: var(--lime);
+    background: rgb(255 255 255 / 4%);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
   }
 
-  .api-docs-link span,
-  .mcp-docs-link span,
-  .topbar-feedback-link span,
-  .support-link span {
+  .topbar-overflow-button:focus-visible {
+    outline: 2px solid var(--lime);
+    outline-offset: 3px;
+  }
+
+  .topbar-overflow-panel {
     display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    z-index: 30;
+    min-width: 220px;
+    padding: 8px;
+    background: rgb(13 17 20 / 98%);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+  }
+
+  .topbar-overflow-panel.is-open {
+    display: grid;
+    gap: 4px;
+  }
+
+  .topbar-overflow-panel.is-open .feedback-link {
+    display: inline-flex;
+    justify-content: flex-start;
+    width: 100%;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 12px;
+  }
+
+  .topbar-overflow-panel.is-open .feedback-link span {
+    display: inline;
   }
 
   .refresh-pill,
@@ -586,9 +639,9 @@
   }
 
   .brand > span:last-child {
-    max-width: 138px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    max-width: none;
+    overflow: visible;
+    text-overflow: clip;
     white-space: nowrap;
   }
 

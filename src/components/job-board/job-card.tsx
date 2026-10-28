@@ -13,11 +13,11 @@ import {
   MapPin
 } from "lucide-react";
 
+import { cardSourceLabels, dedupeJobLead, isBoilerplateListingText } from "@/lib/listing-copy";
 import {
-  getJobDescriptionBlocks,
-  getJobFreshnessLabel,
-  getJobPostedDateLabel,
-  isPostedDateKnown
+  formatPostedDate,
+  getCardPostedLabel,
+  getJobDescriptionBlocks
 } from "@/lib/jobs";
 import { getJobWorkplace } from "@/lib/workplace";
 import { boardListingHasMore, type BoardListing } from "@/lib/board-page";
@@ -49,32 +49,24 @@ export function JobCard({
   query: string;
 }) {
   const listingDescription = useListingDescription(job);
-  const descriptionBlocks = getJobDescriptionBlocks({
-    summary: job.summary,
-    description: listingDescription.description
-  });
+  const presentation = presentJobCard(job, listingDescription.description);
   const salary = presentSalary(job);
-  const language = listingDescription.description
-    ? listingLanguage({ ...job, description: listingDescription.description })
-    : job.language;
-  const postedLabel = getJobPostedDateLabel(job);
-  const hasMore = boardListingHasMore(job, descriptionBlocks.length);
 
   return (
     <article className="job-card" id={`job-${job.id}`}>
       <div className="job-card-top">
         <span className="job-card-pills">
-          <span className="source-pill">{job.source}</span>
+          {presentation.sourceLabels.badge ? <span className="source-pill">{presentation.sourceLabels.badge}</span> : null}
           {isViewed ? <span className="viewed-pill">Viewed</span> : null}
-          {language ? <span className="language-pill">{language}</span> : null}
+          {presentation.language ? <span className="language-pill">{presentation.language}</span> : null}
         </span>
-        {isPostedDateKnown(job) ? (
-          <time className="posted-pill" dateTime={job.postedAt}>
+        {presentation.postedKnown ? (
+          <time className="posted-pill" dateTime={job.postedAt} title={formatPostedDate(job.postedAt)}>
             <Clock3 size={15} aria-hidden="true" />
-            {postedLabel}
+            {presentation.postedLabel}
           </time>
         ) : (
-          <span className="posted-pill">{postedLabel}</span>
+          <span className="posted-pill">{presentation.postedLabel}</span>
         )}
       </div>
 
@@ -105,13 +97,15 @@ export function JobCard({
         </div>
       ) : null}
 
-      <p className="summary">
-        <HighlightedText query={query} text={job.summary} />
-      </p>
+      {presentation.displaySummary ? (
+        <p className="summary">
+          <HighlightedText query={query} text={presentation.displaySummary} />
+        </p>
+      ) : null}
 
-      {hasMore ? (
+      {presentation.hasMore ? (
         <JobCardDetails
-          blocks={descriptionBlocks}
+          blocks={presentation.descriptionBlocks}
           job={job}
           listingDescription={listingDescription}
         />
@@ -124,7 +118,6 @@ export function JobCard({
           <MapPin size={15} aria-hidden="true" />
           {job.location}
         </span>
-        <span>{getJobFreshnessLabel(job)}</span>
         <span>{job.roleFamily}</span>
         <span>{job.seniority}</span>
         <span>{job.employmentType}</span>
@@ -132,11 +125,13 @@ export function JobCard({
 
       <JobCardActions
         compareDisabled={compareDisabled}
+        detailLabel={presentation.sourceLabels.detail}
         isCompared={isCompared}
         isSaved={isSaved}
         job={job}
         onToggleComparison={onToggleComparison}
         onToggleSaved={onToggleSaved}
+        previewOnly={presentation.previewOnly}
       />
     </article>
   );
@@ -144,24 +139,30 @@ export function JobCard({
 
 function JobCardActions({
   compareDisabled,
+  detailLabel,
   isCompared,
   isSaved,
   job,
   onToggleComparison,
-  onToggleSaved
+  onToggleSaved,
+  previewOnly
 }: {
   compareDisabled: boolean;
+  detailLabel?: string;
   isCompared: boolean;
   isSaved: boolean;
   job: BoardCardJob;
   onToggleComparison: (job: BoardCardJob) => void;
   onToggleSaved?: (job: BoardCardJob) => void;
+  previewOnly: boolean;
 }) {
   return (
     <div className="job-actions">
-      <span className="attribution-label" title={job.attributionLabel}>
-        {job.attributionLabel}
-      </span>
+      {detailLabel ? (
+        <span className="attribution-label" title={detailLabel}>
+          {detailLabel}
+        </span>
+      ) : null}
       <button
         aria-pressed={isCompared ? "true" : "false"}
         className={`compare-button${isCompared ? " is-active" : ""}`}
@@ -181,6 +182,9 @@ function JobCardActions({
         >
           {isSaved ? "Saved" : "Save"}
         </button>
+      ) : null}
+      {previewOnly ? (
+        <span className="description-on-source">Description on {job.source}</span>
       ) : null}
       {job.applyUrl ? (
         <a
@@ -208,6 +212,38 @@ type HighlightPart = {
 };
 
 type BoardCardJob = BoardListing & { description?: string };
+
+function presentJobCard(job: BoardCardJob, loadedDescription: string | undefined) {
+  const summaryIsBoilerplate = isBoilerplateListingText(job.summary);
+  const loadedIsBoilerplate = Boolean(loadedDescription && isBoilerplateListingText(loadedDescription));
+  const descriptionBlocks = loadedIsBoilerplate
+    ? []
+    : getJobDescriptionBlocks({
+      summary: summaryIsBoilerplate ? "" : job.summary,
+      description: loadedDescription
+    });
+  const hasRealDescription = Boolean(
+    (loadedDescription && !loadedIsBoilerplate)
+    || (job.hasDescription && loadedDescription === undefined)
+  );
+  const previewOnly = summaryIsBoilerplate && !hasRealDescription;
+  const postedLabel = getCardPostedLabel(job);
+
+  return {
+    descriptionBlocks,
+    displaySummary: summaryIsBoilerplate
+      ? ""
+      : dedupeJobLead(job.summary, loadedDescription && !loadedIsBoilerplate ? loadedDescription : ""),
+    hasMore: !previewOnly && (hasRealDescription || boardListingHasMore(job, descriptionBlocks.length)),
+    language: loadedDescription && !loadedIsBoilerplate
+      ? listingLanguage({ ...job, description: loadedDescription })
+      : job.language,
+    postedKnown: postedLabel !== "Date unknown",
+    postedLabel,
+    previewOnly,
+    sourceLabels: cardSourceLabels(job.source, job.attributionLabel)
+  };
+}
 
 type ListingDescription = ReturnType<typeof useListingDescription>;
 

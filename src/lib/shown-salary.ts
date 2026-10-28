@@ -19,6 +19,13 @@ export function hasShownSalary(job: Pick<Job, "location" | "salary">) {
   return formatShownSalary(job) !== undefined;
 }
 
+/** A disclosed amount, including a salary whose currency was only assumed. */
+export function hasListedSalary(job: Pick<Job, "salary">) {
+  const salary = job.salary;
+  if (!salary) return false;
+  return Math.max(salary.max ?? 0, salary.min ?? 0) > 0;
+}
+
 export function formatShownSalary(job: Pick<Job, "location" | "salary">) {
   const salary = job.salary;
   if (!salary || salary.currencySource === "default" || !salaryCurrencyMatchesLocation(job)) return undefined;

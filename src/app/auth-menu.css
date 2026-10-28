@@ -213,7 +213,7 @@
     display: inline-flex;
   }
 
-  .auth-entry-label {
+  .auth-menu .auth-entry-label {
     position: absolute;
     width: 1px;
     height: 1px;

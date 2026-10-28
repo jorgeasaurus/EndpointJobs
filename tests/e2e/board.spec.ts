@@ -28,7 +28,7 @@ test("[BOARD-02] coverage rail", async ({ page }, info) => {
   await expect(rail).toHaveAttribute("aria-label", "Search coverage status");
   const labelled = rail.locator(".status-total");
   await expect(labelled).toHaveAttribute("aria-label", `${payload.trackedJobsCount} tracked roles`);
-  await expect(rail).toContainText("Current view");
+  await expect(rail).not.toContainText("Current view");
   await expect(rail).toContainText("Mapped");
   await expect(rail).toContainText("Remote / hybrid");
   await expect(rail).toContainText("Salary shown");
@@ -338,8 +338,8 @@ test("[MAP-02] mapped jobs heading", async ({ page }) => {
   await openBoard(page);
   const section = page.getByRole("region", { name: "Mapped job locations" });
   await section.getByRole("button", { name: "Show map" }).click();
-  await expect(section).toContainText(/mapped jobs/);
-  await expect(section).toContainText(/\d+ of \d+/);
+  await expect(section.getByRole("heading", { level: 2 })).toHaveText("Locations");
+  await expect(section).not.toContainText(/\d+ of \d+/);
 });
 
 test("[MAP-03] zoom controls", async ({ page }) => {

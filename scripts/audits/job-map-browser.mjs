@@ -157,9 +157,9 @@ async function openLocationMap(page, scenario, withQuery) {
   await expect.poll(() => readMapZoomPercent(page), { timeout: 10000 }).toBeGreaterThanOrEqual(800);
 }
 
-async function expectMapCounts(page, scenario) {
-  await expect(page.locator(".job-map-heading h2")).toHaveText(`${scenario.mappedCount} mapped jobs`);
-  await expect(page.locator(".map-count-pill")).toContainText(`${scenario.mappedCount} of ${scenario.totalCount}`);
+async function expectMapCounts(page) {
+  await expect(page.locator(".job-map-heading h2")).toHaveText("Locations");
+  await expect(page.locator(".map-count-pill")).toHaveCount(0);
 }
 
 async function typeSpacedLocationQuery(page, query) {

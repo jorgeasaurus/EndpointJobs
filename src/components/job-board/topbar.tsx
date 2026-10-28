@@ -17,6 +17,8 @@ import { AuthMenu } from "@/components/auth/auth-menu";
 import { formatUpdatedAt } from "@/lib/jobs";
 import { appVersion, getApiDocsPath, getBoardPath, getJobsDirectoryPath, getMcpDocsPath } from "@/app/site-metadata";
 
+import { TopbarOverflow } from "./topbar-overflow";
+
 export function Topbar({ updatedAt }: { updatedAt: string }) {
   return (
     <header className="topbar">
@@ -33,48 +35,50 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
           <RefreshCw size={15} aria-hidden="true" />
           {formatUpdatedAt(updatedAt)}
         </span>
-        <Link
-          aria-label="Open API documentation"
-          className="feedback-link api-docs-link"
-          href={getApiDocsPath()}
-          prefetch={false}
-          title="Open API documentation"
-        >
-          <FileJson size={15} aria-hidden="true" />
-          <span>API docs</span>
-        </Link>
-        <Link
-          aria-label="MCP guide"
-          className="feedback-link mcp-docs-link"
-          href={getMcpDocsPath()}
-          prefetch={false}
-          title="Open MCP setup guide"
-        >
-          <SquareTerminal size={15} aria-hidden="true" />
-          <span>MCP guide</span>
-        </Link>
-        <a
-          aria-label="Open feedback form on GitHub"
-          className="feedback-link topbar-feedback-link"
-          href="https://github.com/jorgeasaurus/EndpointJobs/issues/new?template=report-or-request.yml"
-          rel="noopener noreferrer"
-          target="_blank"
-          title="Report an issue or request a feature"
-        >
-          <MessageSquarePlus size={15} aria-hidden="true" />
-          <span>Feedback</span>
-        </a>
-        <a
-          aria-label="Support the board on Buy Me a Coffee"
-          className="feedback-link support-link"
-          href="https://buymeacoffee.com/jorgeasaurus"
-          rel="noopener noreferrer"
-          target="_blank"
-          title="Support the board"
-        >
-          <Coffee size={15} aria-hidden="true" />
-          <span>Support the board</span>
-        </a>
+        <TopbarOverflow>
+          <Link
+            aria-label="Open API documentation"
+            className="feedback-link api-docs-link"
+            href={getApiDocsPath()}
+            prefetch={false}
+            title="Open API documentation"
+          >
+            <FileJson size={15} aria-hidden="true" />
+            <span>API docs</span>
+          </Link>
+          <Link
+            aria-label="MCP guide"
+            className="feedback-link mcp-docs-link"
+            href={getMcpDocsPath()}
+            prefetch={false}
+            title="Open MCP setup guide"
+          >
+            <SquareTerminal size={15} aria-hidden="true" />
+            <span>MCP guide</span>
+          </Link>
+          <a
+            aria-label="Open feedback form on GitHub"
+            className="feedback-link topbar-feedback-link"
+            href="https://github.com/jorgeasaurus/EndpointJobs/issues/new?template=report-or-request.yml"
+            rel="noopener noreferrer"
+            target="_blank"
+            title="Report an issue or request a feature"
+          >
+            <MessageSquarePlus size={15} aria-hidden="true" />
+            <span>Feedback</span>
+          </a>
+          <a
+            aria-label="Support the board on Buy Me a Coffee"
+            className="feedback-link support-link"
+            href="https://buymeacoffee.com/jorgeasaurus"
+            rel="noopener noreferrer"
+            target="_blank"
+            title="Support the board"
+          >
+            <Coffee size={15} aria-hidden="true" />
+            <span>Support the board</span>
+          </a>
+        </TopbarOverflow>
       </div>
     </header>
   );

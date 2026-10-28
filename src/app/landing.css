@@ -313,12 +313,38 @@
 }
 
 @media (max-width: 560px) {
+  .landing-copy {
+    padding: 22px 16px;
+  }
+
   .landing-stats {
-    gap: 12px;
+    gap: 14px 16px;
+  }
+
+  .landing-stats dt {
+    font-size: 0.68rem;
+    letter-spacing: 0.02em;
+    line-height: 1.35;
+    overflow-wrap: break-word;
   }
 
   .landing-stats dd {
     font-size: 1.45rem;
+  }
+
+  .landing-preview {
+    padding: 14px;
+  }
+
+  .landing-preview header a {
+    flex: none;
+    white-space: nowrap;
+    letter-spacing: 0;
+  }
+
+  .landing-preview-heading {
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .landing-jobs-link {

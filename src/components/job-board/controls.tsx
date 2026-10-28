@@ -195,39 +195,32 @@ export function CommandStatusRail({
   const mappedPercent = getPercentage(mappedJobsCount, visibleJobsCount);
   const remotePercent = getPercentage(remoteJobsCount, visibleJobsCount);
   const salaryPercent = getPercentage(salaryJobsCount, visibleJobsCount);
+  const catalogDiffers = activeJobsCount !== visibleJobsCount;
 
   return (
     <aside className="command-status" aria-label="Search coverage status">
-      <div className="status-total" aria-label={activeJobsCount + " tracked roles"}>
-        <span className="section-kicker">Open roles</span>
-        <AnimatedNumber
-          className="slot-number slot-number--hero"
-          value={activeJobsCount}
-        />
-        <small>tracked roles</small>
+      <div
+        className={catalogDiffers ? "status-total" : "status-total sr-only"}
+        aria-label={activeJobsCount + " tracked roles"}
+      >
+        {catalogDiffers ? (
+          <>
+            <span className="section-kicker">Open roles</span>
+            <AnimatedNumber
+              className="slot-number slot-number--hero"
+              value={activeJobsCount}
+            />
+            <small>on the board</small>
+          </>
+        ) : (
+          <span>{activeJobsCount} tracked roles</span>
+        )}
       </div>
 
       <div className="status-card">
-        <div className="status-card-heading">
-          <span>Current view</span>
-          <strong>{visibleJobsCount}</strong>
-        </div>
         <StatusMeter label="Mapped" value={mappedJobsCount} percent={mappedPercent} />
         <StatusMeter label="Remote / hybrid" value={remoteJobsCount} percent={remotePercent} />
         <StatusMeter label="Salary shown" value={salaryJobsCount} percent={salaryPercent} />
-      </div>
-
-      <div className="status-grid" aria-label="Visible job summary">
-        <span>
-          <MapPin size={17} aria-hidden="true" />
-          <strong>{mappedJobsCount}</strong>
-          mapped
-        </span>
-        <span>
-          <DollarSign size={17} aria-hidden="true" />
-          <strong>{salaryJobsCount}</strong>
-          salary
-        </span>
       </div>
     </aside>
   );

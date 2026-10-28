@@ -9,6 +9,7 @@ import ts from "typescript";
 import { initialFilterState } from "../../src/components/job-board/filter-model";
 import { getLandingJsonLd, serializeJsonLd } from "../../src/app/structured-data";
 import { hasShownSalary, queryBoardPage, selectLandingPreview } from "../../src/lib/board-page";
+import { hasListedSalary } from "../../src/lib/shown-salary";
 import { boardHomeRedirectKeys, filterSearchParamKeys } from "../../src/lib/board-search-params";
 import { legacyHomeBoardRedirect } from "../../src/lib/legacy-board-url";
 import { getJobWorkplace } from "../../src/lib/workplace";
@@ -317,7 +318,8 @@ test("the landing preview is the newest roles with a shown salary, capped at the
   const preview = selectLandingPreview(jobs, initialFilterState);
   const shownIds = ["paid-new", "paid-mid", "paid-older", "paid-fourth", "paid-fifth", "unknown-date-paid"];
 
-  assert.equal(page.metrics.salaryJobsCount, shownIds.length);
+  assert.equal(page.metrics.salaryJobsCount, jobs.filter(hasListedSalary).length);
+  assert.ok(page.metrics.salaryJobsCount > shownIds.length);
   assert.deepEqual(preview.map((job) => job.id), shownIds.slice(0, 4));
   assert.equal(preview.length, 4);
   for (const job of preview) {
@@ -328,7 +330,7 @@ test("the landing preview is the newest roles with a shown salary, capped at the
   const shortPage = queryBoardPage({ ...feed, jobs: shortFeed }, initialFilterState, 1);
   const shortPreview = selectLandingPreview(shortFeed, initialFilterState);
 
-  assert.equal(shortPage.metrics.salaryJobsCount, 1);
+  assert.equal(shortPage.metrics.salaryJobsCount, shortFeed.filter(hasListedSalary).length);
   assert.deepEqual(shortPreview.map((job) => job.id), ["paid-new"]);
 });
 

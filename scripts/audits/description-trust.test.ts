@@ -38,7 +38,7 @@ test("job descriptions keep paragraphs and lists and drop placeholder text", () 
     ].join("\n")
   });
   const blocks = getJobDescriptionBlocks(job);
-  const text = blocks.flatMap((block) => block.type === "paragraph" ? [block.text] : block.items).join("\n");
+  const text = blocks.flatMap((block) => block.type === "list" ? block.items : [block.text]).join("\n");
   const lists = blocks.filter((block) => block.type === "list");
 
   assert.ok(lists.length >= 2, "expected responsibility and qualification lists");
