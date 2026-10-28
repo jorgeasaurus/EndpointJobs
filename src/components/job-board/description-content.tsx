@@ -13,11 +13,19 @@ export function DescriptionContent({ blocks }: { blocks: readonly DescriptionBlo
     if (block.type === "list") {
       const itemKeys = new Map<string, number>();
       return (
-        <ul key={occurrenceKey(blockKeys, `list:${block.items.join("\u0001")}`)}>
+        <ul className="description-list" key={occurrenceKey(blockKeys, `list:${block.items.join("\u0001")}`)}>
           {block.items.map((item) => (
             <li key={occurrenceKey(itemKeys, item)}>{item}</li>
           ))}
         </ul>
+      );
+    }
+
+    if (block.type === "heading") {
+      return (
+        <h3 className="description-heading" key={occurrenceKey(blockKeys, `h:${block.text}`)}>
+          {block.text}
+        </h3>
       );
     }
 

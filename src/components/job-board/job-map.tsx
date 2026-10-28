@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import dynamic from "next/dynamic";
 
-import { ChevronDown, MapPin } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 import { buildJobMapPoints, type JobMapPoint, type JobMapRecord } from "@/lib/job-map";
 
@@ -22,11 +22,9 @@ export function JobMap({
   id,
   isLoading = false,
   jobs,
-  knownMappedCount,
   loadFailed = false,
   onExpandedChange,
-  onRetry,
-  totalJobCount
+  onRetry
 }: {
   expanded: boolean;
   id?: string;
@@ -39,8 +37,6 @@ export function JobMap({
   totalJobCount?: number;
 }) {
   const points = useMemo(() => buildJobMapPoints(jobs), [jobs]);
-  const mappedJobCount = knownMappedCount ?? points.length;
-  const totalJobs = totalJobCount ?? jobs.length;
 
   function handleToggleMap() {
     onExpandedChange(!expanded);
@@ -59,13 +55,9 @@ export function JobMap({
       <div className="job-map-heading">
         <div className="job-map-heading-copy">
           <span className="section-kicker">Job geography</span>
-          <h2>{mappedJobCount} mapped jobs</h2>
+          <h2>Locations</h2>
         </div>
         <div className="job-map-heading-actions">
-          <span className="map-count-pill">
-            <MapPin size={15} aria-hidden="true" />
-            {mappedJobCount} of {totalJobs}
-          </span>
           <button
             aria-controls="job-map-canvas"
             aria-expanded={expanded}

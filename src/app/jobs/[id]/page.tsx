@@ -12,6 +12,7 @@ import {
   isPostedDateKnown
 } from "@/lib/jobs";
 import { getJobWorkplace } from "@/lib/workplace";
+import { dedupeJobLead } from "@/lib/listing-copy";
 import { listingLanguage, presentSalary } from "@/lib/job-trust";
 import { seedPlatformChipFixture } from "@/lib/platform-chip-fixture";
 import type { Job, JobsFeed } from "@/types/job";
@@ -116,6 +117,10 @@ export default async function JobPage({ params }: JobPageProps) {
 
   const applicationUrl = job.applyUrl ?? job.sourceUrl;
   const descriptionBlocks = getJobDescriptionBlocks(job);
+  const descriptionText = descriptionBlocks
+    .map((block) => block.type === "list" ? block.items.join(" ") : block.text)
+    .join("\n");
+  const lead = dedupeJobLead(job.summary, descriptionText);
   const salary = presentSalary(job);
   const language = listingLanguage(job);
   const postedDateKnown = isPostedDateKnown(job);
@@ -147,7 +152,7 @@ export default async function JobPage({ params }: JobPageProps) {
 
             <h1>{job.title}</h1>
             <p className="job-detail-company">{job.company}</p>
-            <p className="job-detail-summary">{job.summary}</p>
+            {lead ? <p className="job-detail-summary">{lead}</p> : null}
 
             <div className="job-detail-actions">
               <a

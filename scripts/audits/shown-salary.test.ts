@@ -6,7 +6,7 @@ import { queryBoardPage, selectLandingPreview } from "../../src/lib/board-page";
 import { formatRelativePosted, formatRelativeUpdated } from "../../src/lib/jobs";
 import { formatRolePlace } from "../../src/lib/role-place";
 import { presentSalary } from "../../src/lib/job-trust";
-import { formatShownSalary, hasShownSalary } from "../../src/lib/shown-salary";
+import { formatShownSalary, hasListedSalary, hasShownSalary } from "../../src/lib/shown-salary";
 import { makeJob } from "./shared";
 
 test("shown salaries use the posting currency and stay in sync with the salary stat", () => {
@@ -60,7 +60,8 @@ test("shown salaries use the posting currency and stay in sync with the salary s
     const shown = formatShownSalary(job);
     if (shown) assert.equal(shown.includes("est."), false);
   }
-  assert.equal(page.metrics.salaryJobsCount, jobs.filter(hasShownSalary).length);
+  assert.equal(page.metrics.salaryJobsCount, jobs.filter(hasListedSalary).length);
+  assert.ok(page.metrics.salaryJobsCount > jobs.filter(hasShownSalary).length);
   assert.deepEqual(selectLandingPreview(jobs, initialFilterState).map((job) => job.id), [
     "usd-range",
     "eur-range",

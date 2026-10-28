@@ -4,7 +4,7 @@ import { listingLanguage, prepareBoardFeed, dedupeJobs, dedupeWorkplaceJobs, ded
 import { seedPlatformChipFixture } from "@/lib/platform-chip-fixture";
 import type { JobMapRecord } from "@/lib/job-map";
 import { isActiveJob } from "@/lib/jobs";
-import { hasShownSalary } from "@/lib/shown-salary";
+import { hasListedSalary, hasShownSalary } from "@/lib/shown-salary";
 import { getJobWorkplace, withResolvedWorkplace } from "@/lib/workplace";
 import type { Job, JobsFeed } from "@/types/job";
 
@@ -239,7 +239,7 @@ function measureVisibleJobs(jobs: readonly Job[]): BoardMetrics {
 
     if (job.mapLocation) mappedJobsCount += 1;
     if (workplace === "Remote" || workplace === "Hybrid") remoteJobsCount += 1;
-    if (hasShownSalary(job)) salaryJobsCount += 1;
+    if (hasListedSalary(job)) salaryJobsCount += 1;
   }
 
   return { mappedJobsCount, remoteJobsCount, salaryJobsCount };

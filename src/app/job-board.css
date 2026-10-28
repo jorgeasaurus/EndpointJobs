@@ -83,6 +83,15 @@
   margin-left: auto;
 }
 
+.topbar-overflow,
+.topbar-overflow-panel {
+  display: contents;
+}
+
+.topbar-overflow-button {
+  display: none;
+}
+
 .refresh-pill,
 .feedback-link,
 .feed-note {
@@ -1072,9 +1081,36 @@ h1 {
 }
 
 /* Chip rows keep this list inset. .tool-chips { padding: 0 } is less specific. */
-.description-body ul {
-  margin: 0;
-  padding-left: 1.2rem;
+.description-body ul,
+ul.description-list {
+  margin: 8px 0 0;
+  padding-left: 1.25rem;
+}
+
+h3.description-heading {
+  margin: 16px 0 0;
+  color: var(--white);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+ul.description-list {
+  list-style: disc;
+}
+
+ul.description-list li {
+  display: list-item;
+  list-style: disc outside;
+}
+
+.description-on-source {
+  color: var(--white-60);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-align: center;
 }
 
 .description-body li:not(.tool-chip) + li:not(.tool-chip) {

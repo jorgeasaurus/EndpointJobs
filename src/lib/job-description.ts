@@ -1,5 +1,6 @@
 export type DescriptionBlock =
   | { type: "paragraph"; text: string }
+  | { type: "heading"; text: string }
   | { type: "list"; items: string[] };
 
 const protectedTerms = [
@@ -72,9 +73,21 @@ export function repairJobDescription(value: string) {
     .replace(/^\n+|\n+$/g, "");
 }
 
+export function isDescriptionHeading(value: string) {
+  const line = value.trim();
+  if (!line || bulletPattern.test(line) || /^[-*•]$/.test(line)) return false;
+  if (/[.!?]$/.test(line) || /[;]/.test(line) || /\.\s/.test(line)) return false;
+  const words = line.split(/\s+/).filter(Boolean);
+  if (words.length === 0 || words.length > 8 || line.length > 72) return false;
+  if (!/^[A-Z0-9("]/.test(line)) return false;
+  if (line.includes(",") && words.length > 4) return false;
+  return true;
+}
+
 export function toDescriptionBlocks(value: string): DescriptionBlock[] {
   const blocks: DescriptionBlock[] = [];
   let bullets: string[] = [];
+  let pendingMarker = false;
 
   function flushBullets() {
     if (bullets.length === 0) return;
@@ -84,8 +97,28 @@ export function toDescriptionBlocks(value: string): DescriptionBlock[] {
 
   for (const section of value.split(/\n{2,}/)) {
     const lines = section.split("\n").map((line) => line.trim()).filter(Boolean);
+    if (lines.length === 1 && /^[-*•]$/.test(lines[0] ?? "")) {
+      pendingMarker = true;
+      continue;
+    }
+
+    if (pendingMarker) {
+      pendingMarker = false;
+      const only = lines.length === 1 ? lines[0] ?? "" : "";
+      if (only && !isDescriptionHeading(only) && !bulletPattern.test(only)) {
+        bullets.push(`- ${only}`);
+        continue;
+      }
+    }
+
     if (lines.length > 0 && lines.every((line) => bulletPattern.test(line))) {
       bullets.push(...lines);
+      continue;
+    }
+
+    if (lines.length === 1 && isDescriptionHeading(lines[0] ?? "")) {
+      flushBullets();
+      blocks.push({ type: "heading", text: headingText(lines[0] ?? "") });
       continue;
     }
 
@@ -109,27 +142,15 @@ function partitionSection(lines: string[]): DescriptionBlock[] {
     } else if (body.length === 1) {
       blocks.push({ type: "paragraph", text: stripBullet(body[0] ?? "") });
     }
-    if (trailingHeading) blocks.push({ type: "paragraph", text: trailingHeading });
+    if (trailingHeading) blocks.push({ type: "heading", text: headingText(trailingHeading) });
     items = [];
   }
 
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index] ?? "";
-    const next = lines[index + 1];
-    const marked = bulletPattern.test(line);
-    const words = line.split(/\s+/).length;
-    const heading = !marked
-      && words <= 5
-      && line.length <= 28
-      && !/[,:;]$/.test(line)
-      && !line.includes(",")
-      && Boolean(next)
-      && (next?.length ?? 0) > line.length
-      && /^[A-Z0-9]/.test(next ?? "");
-
-    if (heading) {
+    if (isDescriptionHeading(line)) {
       flushItems();
-      blocks.push({ type: "paragraph", text: line });
+      blocks.push({ type: "heading", text: headingText(line) });
       continue;
     }
 
@@ -148,6 +169,10 @@ function trailingSectionHeading(items: string[]) {
   if (words.length === 0 || words.length > 4 || last.length > 24 || /[,:.]/.test(last)) return undefined;
   if (previous.length < last.length + 20) return undefined;
   return last;
+}
+
+function headingText(value: string) {
+  return value.trim().replace(/:$/, "").trim();
 }
 
 function stripBullet(value: string) {
