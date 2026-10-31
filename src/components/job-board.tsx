@@ -9,7 +9,8 @@ import { withInitialTools, type FilterAction } from "./job-board/filter-model";
 
 import { getActiveFilterItems } from "./job-board/active-filters";
 import { updateComparisonSelection } from "./job-board/comparison-selection";
-import { CommandPanel, CommandStatusRail, StickyActiveFilters } from "./job-board/controls";
+import { CommandPanel, StickyActiveFilters } from "./job-board/controls";
+import { CommandStatusRail } from "./job-board/status-rail";
 import { JobMap } from "./job-board/job-map";
 import { JobComparison } from "./job-board/job-comparison";
 import { ParallaxBackground } from "./job-board/parallax-background";
@@ -173,9 +174,7 @@ export function JobBoard({
             workplaceCounts={snapshot.workplaceCounts}
             searchInputRef={searchInputRef}
             visibleJobsCount={totalJobs}
-            mappedJobsCount={snapshot.metrics.mappedJobsCount}
-            remoteJobsCount={snapshot.metrics.remoteJobsCount}
-            salaryJobsCount={snapshot.metrics.salaryJobsCount}
+            metrics={snapshot.metrics}
           />
         </section>
 
@@ -247,9 +246,9 @@ export function JobBoard({
           <summary>Coverage stats</summary>
           <CommandStatusRail
             activeJobsCount={snapshot.trackedJobsCount}
-            mappedJobsCount={snapshot.metrics.mappedJobsCount}
-            remoteJobsCount={snapshot.metrics.remoteJobsCount}
-            salaryJobsCount={snapshot.metrics.salaryJobsCount}
+            filters={filters}
+            metrics={snapshot.metrics}
+            onFilter={dispatch}
             visibleJobsCount={totalJobs}
           />
         </details>

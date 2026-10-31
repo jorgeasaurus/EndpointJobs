@@ -271,6 +271,11 @@
     padding-bottom: 10px;
   }
 
+  a.status-meter {
+    min-height: 44px;
+    align-content: center;
+  }
+
   .status-grid span {
     min-height: 72px;
   }
