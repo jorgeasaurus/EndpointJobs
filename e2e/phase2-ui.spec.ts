@@ -37,12 +37,13 @@ test("[BOARD-04] daily refresh stays visible", async ({ page }) => {
   await expect(region.getByText("Daily refresh")).toBeVisible();
 });
 
-test("[FEED-01] top bar feedback stays reachable", async ({ page }) => {
+test("[FEED-01] footer feedback stays reachable", async ({ page }) => {
   await page.goto("/board");
-  const top = page.getByRole("link", { name: "Open feedback form on GitHub" });
-  await expect(top).toBeVisible();
-  await expect(top).toHaveAttribute("href", /report-or-request\.yml/);
-  await expect(top).toHaveAttribute("target", "_blank");
+  const feedback = page.getByRole("navigation", { name: "Project links" }).getByRole("link", { name: "Report an issue or request a feature on GitHub" });
+  await expect(feedback).toBeVisible();
+  await expect(feedback).toHaveAttribute("href", /report-or-request\.yml/);
+  await expect(feedback).toHaveAttribute("target", "_blank");
+  await expect(page.locator("header").getByRole("link", { name: "Open feedback form on GitHub" })).toHaveCount(0);
 });
 
 test("[RESP-01] narrow labeled controls are at least 44px", async ({ page }, info) => {
@@ -71,10 +72,10 @@ test("[RESP-01] narrow labeled controls are at least 44px", async ({ page }, inf
       ".advanced-filters-summary",
       ".workplace-filter-button",
       "#job-search-input",
-      ".topbar .api-docs-link",
+      ".topbar .roadmap-link",
       ".topbar .mcp-docs-link",
-      ".topbar .topbar-feedback-link",
-      ".topbar .support-link",
+      ".site-footer .api-docs-link",
+      ".site-footer .support-link",
       ".site-footer .footer-link"
     ];
     return selectors.flatMap((selector) => [...document.querySelectorAll(selector)].map((element) => {

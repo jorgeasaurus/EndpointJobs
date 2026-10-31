@@ -486,9 +486,10 @@ test("[RESP-01] narrow hit areas", async ({ page }, info) => {
       ".advanced-filters-summary",
       ".workplace-filter-button",
       "#job-search-input",
-      ".topbar .api-docs-link",
+      ".topbar .roadmap-link",
       ".topbar .mcp-docs-link",
-      ".topbar .support-link",
+      ".site-footer .api-docs-link",
+      ".site-footer .support-link",
       ".site-footer .footer-link"
     ];
     return selectors.flatMap((selector) => [...document.querySelectorAll(selector)].map((element) => {
@@ -530,19 +531,19 @@ test("[NAV-01] brand and footer", async ({ page }) => {
 
 test("[FEED-01] feedback links", async ({ page }) => {
   await openBoard(page);
-  const footer = page.getByRole("link", { name: "Report an issue or request a feature on GitHub" });
+  const footer = page.getByRole("navigation", { name: "Project links" }).getByRole("link", { name: "Report an issue or request a feature on GitHub" });
   await expect(footer).toBeVisible();
   await expect(footer).toHaveAttribute("href", /report-or-request\.yml/);
   await expect(footer).toHaveAttribute("target", "_blank");
   await expect(footer).toHaveAttribute("rel", /noopener/);
-  const top = page.getByRole("link", { name: "Open feedback form on GitHub" });
-  await expect(top).toBeVisible();
-  await expect(top).toHaveAttribute("href", /report-or-request\.yml/);
+  await expect(page.locator("header").getByRole("link", { name: "Open feedback form on GitHub" })).toHaveCount(0);
+  await expect(page.locator("header").getByRole("link", { name: "Learning roadmap" })).toBeVisible();
+  await expect(page.locator("header").getByRole("link", { name: "MCP guide" })).toBeVisible();
 });
 
 test("[FEED-02] support and project links", async ({ page }) => {
   await openBoard(page);
-  const support = page.getByRole("link", { name: "Support the board on Buy Me a Coffee" });
+  const support = page.getByRole("navigation", { name: "Project links" }).getByRole("link", { name: "Support the board on Buy Me a Coffee" });
   await expect(support).toBeVisible();
   await expect(support).toHaveAttribute("href", "https://buymeacoffee.com/jorgeasaurus");
   await expect(support).toHaveAttribute("rel", /noopener/);

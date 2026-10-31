@@ -1,0 +1,240 @@
+.roadmap {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+  margin-bottom: 18px;
+}
+
+.roadmap-intro,
+.roadmap-track,
+.roadmap-level {
+  min-width: 0;
+  background:
+    linear-gradient(125deg, rgb(190 242 100 / 8%), transparent 42%),
+    rgb(13 17 20 / 88%);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.roadmap-intro,
+.roadmap-track {
+  padding: clamp(22px, 4vw, 48px);
+}
+
+.roadmap-level {
+  padding: 18px;
+  background: rgb(255 255 255 / 3%);
+  box-shadow: none;
+}
+
+.roadmap-track,
+.roadmap-level {
+  scroll-margin-top: 84px;
+}
+
+.roadmap h1 {
+  max-width: 14ch;
+  margin: 8px 0 0;
+  font-size: clamp(2.25rem, 6vw, 4.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.roadmap h2,
+.roadmap h3 {
+  margin: 0;
+  letter-spacing: -0.03em;
+}
+
+.roadmap h2 {
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+}
+
+.roadmap h3 {
+  font-size: 1.25rem;
+}
+
+.roadmap-kicker,
+.roadmap-meter-label,
+.roadmap-source-publisher {
+  color: var(--lime);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.roadmap-lead,
+.roadmap-track p,
+.roadmap-level p,
+.roadmap-skills p {
+  max-width: 68ch;
+  margin: 8px 0 0;
+  color: var(--white-60);
+  line-height: 1.6;
+}
+
+.roadmap-jumps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.roadmap-jumps a,
+.roadmap-sources a {
+  color: var(--lime);
+}
+
+.roadmap-jumps a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  background: rgb(255 255 255 / 4%);
+  border: 1px solid rgb(190 242 100 / 22%);
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.roadmap-jumps a:hover {
+  color: var(--black);
+  background: var(--lime);
+}
+
+.roadmap-jumps a:focus-visible,
+.roadmap-sources a:focus-visible,
+.roadmap-skill-label input:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+}
+
+.roadmap-track {
+  display: grid;
+  gap: 16px;
+}
+
+.roadmap-track-head,
+.roadmap-level-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.roadmap-meter {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 10px;
+  width: min(100%, 240px);
+}
+
+.roadmap-meter-count {
+  color: var(--white-60);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+}
+
+.roadmap-meter-track {
+  grid-column: 1 / -1;
+  height: 8px;
+  overflow: hidden;
+  background: rgb(255 255 255 / 8%);
+  border-radius: 999px;
+}
+
+.roadmap-meter-fill {
+  display: block;
+  height: 100%;
+  background: var(--lime);
+}
+
+.roadmap-skills {
+  display: grid;
+  gap: 14px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.roadmap-skills > li {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--glass-border);
+}
+
+.roadmap-skill-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 44px;
+  color: var(--white);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.roadmap-skill-label input {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  margin: 0;
+  accent-color: var(--lime);
+}
+
+.roadmap-training {
+  margin-top: 14px;
+}
+
+.roadmap-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.roadmap-sources a {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  background: rgb(255 255 255 / 4%);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.roadmap-sources a:hover {
+  border-color: rgb(190 242 100 / 42%);
+}
+
+@media (max-width: 760px) {
+  .roadmap-intro,
+  .roadmap-track {
+    padding: 16px;
+  }
+
+  .roadmap-track-head,
+  .roadmap-level-head {
+    display: grid;
+    align-items: start;
+  }
+
+  .roadmap-meter {
+    width: 100%;
+  }
+}

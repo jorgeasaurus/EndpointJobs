@@ -10,6 +10,7 @@ import {
   getApiDocsPath,
   getBoardPath,
   getMcpDocsPath,
+  getRoadmapPath,
   getEndpointToolUrl,
   getJobUrl,
   getJobsDirectoryPath,
@@ -70,6 +71,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: new URL("/privacy", siteUrl).toString(),
       changeFrequency: "yearly",
       priority: 0.3
+    },
+    {
+      url: new URL(getRoadmapPath(), siteUrl).toString(),
+      changeFrequency: "monthly",
+      priority: 0.5
     },
     ...endpointToolOptions.map((tool) => ({
       url: getEndpointToolUrl(tool),

@@ -46,7 +46,7 @@ test("[PAGE-02] directory page", async ({ page }) => {
 
 test("[API-03] api docs page", async ({ page }) => {
   await page.goto("/board");
-  await page.getByRole("link", { name: "Open API documentation" }).click();
+  await page.getByRole("navigation", { name: "Project links" }).getByRole("link", { name: "Open API documentation" }).click();
   await expect(page).toHaveURL(/\/api-docs$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Query endpoint roles");
   await expect(page.getByText("GET /api/jobs", { exact: true })).toBeVisible();
