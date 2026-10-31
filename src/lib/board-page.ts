@@ -1,11 +1,12 @@
 import type { FilterState } from "@/components/job-board/filter-model";
+import { measureBoardStats, type BoardStats } from "@/lib/board-stats";
 import { filterJobs } from "@/lib/job-filters";
 import { listingLanguage, prepareBoardFeed, dedupeJobs, dedupeWorkplaceJobs, dedupedWorkplaceCounts } from "@/lib/job-trust";
 import { seedPlatformChipFixture } from "@/lib/platform-chip-fixture";
 import type { JobMapRecord } from "@/lib/job-map";
 import { isActiveJob } from "@/lib/jobs";
-import { hasListedSalary, hasShownSalary } from "@/lib/shown-salary";
-import { getJobWorkplace, withResolvedWorkplace } from "@/lib/workplace";
+import { hasShownSalary } from "@/lib/shown-salary";
+import { withResolvedWorkplace } from "@/lib/workplace";
 import type { Job, JobsFeed } from "@/types/job";
 
 export { hasShownSalary } from "@/lib/shown-salary";
@@ -53,11 +54,7 @@ export type BoardListing = Pick<
   language?: string;
 };
 
-export type BoardMetrics = {
-  mappedJobsCount: number;
-  remoteJobsCount: number;
-  salaryJobsCount: number;
-};
+export type BoardMetrics = BoardStats;
 
 export type BoardPage = {
   jobs: BoardListing[];
@@ -230,17 +227,5 @@ function restrictToJobIds<T extends { id: string }>(
 }
 
 function measureVisibleJobs(jobs: readonly Job[]): BoardMetrics {
-  let mappedJobsCount = 0;
-  let remoteJobsCount = 0;
-  let salaryJobsCount = 0;
-
-  for (const job of jobs) {
-    const workplace = getJobWorkplace(job);
-
-    if (job.mapLocation) mappedJobsCount += 1;
-    if (workplace === "Remote" || workplace === "Hybrid") remoteJobsCount += 1;
-    if (hasListedSalary(job)) salaryJobsCount += 1;
-  }
-
-  return { mappedJobsCount, remoteJobsCount, salaryJobsCount };
+  return measureBoardStats(jobs);
 }

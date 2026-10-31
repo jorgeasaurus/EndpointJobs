@@ -281,6 +281,53 @@
   border-radius: inherit;
 }
 
+.status-meter div > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-meter div > strong {
+  flex: none;
+}
+
+.status-section {
+  display: grid;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--glass-border);
+}
+
+.status-section-title {
+  margin: 0;
+  color: var(--lime);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+a.status-meter {
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+a.status-meter:hover {
+  background: rgb(255 255 255 / 4%);
+}
+
+a.status-meter:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+}
+
+a.status-meter:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .status-grid {
   align-items: stretch;
 }

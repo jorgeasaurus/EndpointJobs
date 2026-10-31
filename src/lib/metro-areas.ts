@@ -178,26 +178,46 @@ function buildLocationHaystack(job: Job) {
   return `${job.location} ${job.mapLocation?.label ?? ""} ${getJobWorkplace(job)}`;
 }
 
-export const metroAreaMatcher = {
-  matches(job: Job, value: MetroAreaFilter) {
-    const matcher = metroMatchers.get(value);
-    if (!matcher) return false;
-    if (value === "San Jose, CA" && hasAccentedSanJoseWithoutCaliforniaContext(job)) {
-      return false;
-    }
-
-    const haystack = ` ${foldTokens(buildLocationHaystack(job))} `;
-    const containsKeyword = (keyword: string) => Boolean(keyword) && haystack.includes(` ${keyword} `);
-    return !matcher.excludes.some(containsKeyword) && matcher.keywords.some(containsKeyword);
-  }
+type PreparedMetroLocation = {
+  foldedHaystack: string;
+  accentedSanJoseWithoutCalifornia: boolean;
 };
 
-function hasAccentedSanJoseWithoutCaliforniaContext(job: Job) {
-  const unfoldedHaystack = ` ${normalizeTokens(buildLocationHaystack(job))} `;
-  if (!unfoldedHaystack.includes(" san josé ")) {
-    return false;
+function prepareMetroLocation(job: Job): PreparedMetroLocation {
+  const raw = buildLocationHaystack(job);
+  const foldedHaystack = ` ${foldTokens(raw)} `;
+  const unfoldedHaystack = ` ${normalizeTokens(raw)} `;
+
+  return {
+    foldedHaystack,
+    accentedSanJoseWithoutCalifornia: unfoldedHaystack.includes(" san josé ")
+      && !foldedHaystack.includes(" ca ")
+      && !foldedHaystack.includes(" california ")
+  };
+}
+
+function matchesPreparedMetro(prepared: PreparedMetroLocation, value: MetroAreaFilter) {
+  const matcher = metroMatchers.get(value);
+  if (!matcher) return false;
+  if (value === "San Jose, CA" && prepared.accentedSanJoseWithoutCalifornia) return false;
+
+  const containsKeyword = (keyword: string) => Boolean(keyword) && prepared.foldedHaystack.includes(` ${keyword} `);
+  return !matcher.excludes.some(containsKeyword) && matcher.keywords.some(containsKeyword);
+}
+
+export function matchingMetroAreas(job: Job) {
+  const prepared = prepareMetroLocation(job);
+  const matches: MetroAreaFilter[] = [];
+
+  for (const metroArea of metroAreaOptions) {
+    if (matchesPreparedMetro(prepared, metroArea)) matches.push(metroArea);
   }
 
-  const foldedHaystack = ` ${foldTokens(buildLocationHaystack(job))} `;
-  return !foldedHaystack.includes(" ca ") && !foldedHaystack.includes(" california ");
+  return matches;
 }
+
+export const metroAreaMatcher = {
+  matches(job: Job, value: MetroAreaFilter) {
+    return matchesPreparedMetro(prepareMetroLocation(job), value);
+  }
+};

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { getEndpointToolPath } from "@/app/site-metadata";
+import type { BoardMetrics } from "@/lib/board-page";
 import {
   platformOptions,
   roleFamilyOptions,
@@ -26,6 +27,7 @@ import type { EndpointTool, Platform } from "@/types/job";
 import { AnimatedNumber } from "./animated-number";
 import type { ActiveFilterItem } from "./active-filters";
 import { JobSearch } from "./job-search";
+import { CommandStatusRail } from "./status-rail";
 import { ToggleButton } from "./toggle-button";
 import { LocationFilters, LocationRequestLink, WorkplaceFilters } from "./location-filters";
 import {
@@ -61,9 +63,7 @@ export function CommandPanel({
   clearFilters,
   dispatch,
   filters,
-  mappedJobsCount,
-  remoteJobsCount,
-  salaryJobsCount,
+  metrics,
   searchInputRef,
   visibleJobsCount,
   workplaceCounts
@@ -74,9 +74,7 @@ export function CommandPanel({
   clearFilters: () => void;
   dispatch: FilterDispatch;
   filters: FilterState;
-  mappedJobsCount: number;
-  remoteJobsCount: number;
-  salaryJobsCount: number;
+  metrics: BoardMetrics;
   searchInputRef: RefObject<HTMLInputElement | null>;
   visibleJobsCount: number;
   workplaceCounts: Record<WorkplaceFilter, number>;
@@ -145,9 +143,9 @@ export function CommandPanel({
 
         <CommandStatusRail
           activeJobsCount={activeJobsCount}
-          mappedJobsCount={mappedJobsCount}
-          remoteJobsCount={remoteJobsCount}
-          salaryJobsCount={salaryJobsCount}
+          filters={filters}
+          metrics={metrics}
+          onFilter={dispatch}
           visibleJobsCount={visibleJobsCount}
         />
       </div>
@@ -177,83 +175,6 @@ export function StickyActiveFilters({
       />
     </section>
   );
-}
-
-export function CommandStatusRail({
-  activeJobsCount,
-  mappedJobsCount,
-  remoteJobsCount,
-  salaryJobsCount,
-  visibleJobsCount
-}: {
-  activeJobsCount: number;
-  mappedJobsCount: number;
-  remoteJobsCount: number;
-  salaryJobsCount: number;
-  visibleJobsCount: number;
-}) {
-  const mappedPercent = getPercentage(mappedJobsCount, visibleJobsCount);
-  const remotePercent = getPercentage(remoteJobsCount, visibleJobsCount);
-  const salaryPercent = getPercentage(salaryJobsCount, visibleJobsCount);
-  const catalogDiffers = activeJobsCount !== visibleJobsCount;
-
-  return (
-    <aside className="command-status" aria-label="Search coverage status">
-      <div
-        className={catalogDiffers ? "status-total" : "status-total sr-only"}
-        aria-label={activeJobsCount + " tracked roles"}
-      >
-        {catalogDiffers ? (
-          <>
-            <span className="section-kicker">Open roles</span>
-            <AnimatedNumber
-              className="slot-number slot-number--hero"
-              value={activeJobsCount}
-            />
-            <small>on the board</small>
-          </>
-        ) : (
-          <span>{activeJobsCount} tracked roles</span>
-        )}
-      </div>
-
-      <div className="status-card">
-        <StatusMeter label="Mapped" value={mappedJobsCount} percent={mappedPercent} />
-        <StatusMeter label="Remote / hybrid" value={remoteJobsCount} percent={remotePercent} />
-        <StatusMeter label="Salary shown" value={salaryJobsCount} percent={salaryPercent} />
-      </div>
-    </aside>
-  );
-}
-
-function StatusMeter({
-  label,
-  percent,
-  value
-}: {
-  label: string;
-  percent: number;
-  value: number;
-}) {
-  return (
-    <div className="status-meter">
-      <div>
-        <span>{label}</span>
-        <strong>{value}</strong>
-      </div>
-      <span className="status-meter-track" aria-hidden="true">
-        <span style={{ width: `${percent}%` }} />
-      </span>
-    </div>
-  );
-}
-
-function getPercentage(value: number, total: number) {
-  if (total <= 0) {
-    return 0;
-  }
-
-  return Math.round((value / total) * 100);
 }
 
 function SearchStrip({
