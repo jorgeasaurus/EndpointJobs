@@ -2,29 +2,26 @@
 
 `docs/feature-tracker.csv` is the canonical tracker for the Endpoint Jobs quality pass. It is plain CSV and opens in Excel or Google Sheets. Do not add a second tracker.
 
-Phase 1 filled `status` from the code, tests, migrations, and README. Phase 2 exercised every story on 2026-10-27. The unsigned run used a local production build of main at `31697a8`. The signed-in run used production `ebce720` (v0.1.28) with the approved test user. Phase 4 retested production on 2026-10-27 and updated `status`, `test_result`, `errors_found`, and `notes`. `expected_behavior` now matches the code after those fixes.
+Phase 1 filled the inventory from the code, tests, migrations, and README. Later passes recorded what they saw. The 2026-10-31 pass retested current main, including the learning roadmap and the stats breakdowns, on a local dev server. `status` for this pass is `pass`, `fail`, `fixed`, `retest-pass`, `untested`, or `untested-needs-signed-in`.
 
 ## Totals
 
-101 stories.
+108 stories.
 
 | Status | Count |
 | --- | --- |
-| Implemented | 101 |
+| pass | 95 |
+| retest-pass | 1 (`STAT-01`) |
+| untested | 2 (`FRESH-05`, `API-05`) |
+| untested-needs-signed-in | 10 (`AUTH-02`, `AUTH-03`, `ACCT-01` through `ACCT-08`) |
 
-| Test result | Count |
-| --- | --- |
-| Pass | 96 |
-| Fail | 2 (`RESP-01`, `JOB-04`) |
-| Blocked | 3 (`AUTH-02`, `AUTH-03`, `AUTH-08`) |
+`FRESH-05` was not dispatched. `API-05` was not executed because PowerShell is not installed in this environment. The account and OAuth stories in the last row need a real signed-in session, which this pass did not create. `PERF-01` passed: the prerendered home document is 46,897 bytes and contains `Remote/hybrid`.
 
-`Pass` means the observed behavior matched `expected_behavior`, including a documented Missing or Broken story. `Fail` means the run differed from `expected_behavior`. `Blocked` means the check could not be completed in that environment.
-
-`AUTH-02` and `AUTH-03` are Blocked on a real OAuth login. A bad callback code does not sign the user out, and the success path still needs a provider round trip. `AUTH-08` is Blocked on a keyless build, because production has the Supabase public keys and renders Sign in. RLS for `ACCT-08` passed: 75 of 75 checks on `profiles`, `user_preferences`, `saved_jobs`, `job_views`, and `record_job_view`.
+`pass` and `retest-pass` mean this pass matched `expected_behavior`. `untested` and `untested-needs-signed-in` mean it did not, and `notes` says why. `fix_pr` still points at older pull requests.
 
 ## Fix pull requests
 
-`status` and `test_result` stay as recorded on 2026-10-27. `fix_pr` points at the pull request that addresses the failure.
+These pull requests are the earlier fixes. This pass did not merge them again.
 
 | Pull request | Stories |
 | --- | --- |
@@ -46,16 +43,19 @@ Phase 1 filled `status` from the code, tests, migrations, and README. Phase 2 ex
 | `expected_behavior` | Concrete acceptance criteria taken from the code. Multiple criteria are separated with ` \| `. |
 | `source_files` | Files that implement or define the behavior, separated with `; `. |
 | `existing_tests` | Tests or audit scripts that already exercise the behavior. Empty when none do. |
-| `status` | `Implemented`, `Partial`, `Missing`, or `Broken`. |
+| `status` | `pass`, `fail`, `fixed`, `retest-pass`, `untested`, or `untested-needs-signed-in`. |
 | `last_tested` | Date the story was last exercised. |
-| `test_result` | `Pass`, `Fail`, or `Blocked`. |
-| `errors_found` | Failures seen while testing. Empty when the run passed or was blocked with the reason in `notes`. |
+| `test_result` | `Pass` when this pass confirmed the story. Empty when it was not run. |
+| `errors_found` | Failures seen while testing. Empty when the run passed or was left untested with the reason in `notes`. |
 | `fix_pr` | Pull request that fixes a failure, when there is one. |
 | `notes` | Limits, owner reports, and where a related story carries the rest of the behavior. |
+| `fix_commit` | Commit that fixes a failure found in this pass, when there is one. |
 
 ## Status values
 
-- **Implemented** — the product does what the acceptance criteria say.
-- **Partial** — some of the behavior is present, and the rest is not.
-- **Missing** — the story describes a behavior the product does not provide. A table or a sentence in the privacy policy is not enough to mark it implemented.
-- **Broken** — the product attempts the behavior, and the result does not match the destination or rule the code is aiming at.
+- **pass** — this pass confirmed the acceptance criteria.
+- **fail** — this pass saw a result that does not match the acceptance criteria.
+- **fixed** — a failure from this pass has a fix that is not retested yet.
+- **retest-pass** — a failure from this pass was fixed and confirmed again.
+- **untested** — this pass did not run the story. The reason is in `notes`.
+- **untested-needs-signed-in** — the story needs a real signed-in session. This pass did not create one and did not use production credentials.

@@ -1,6 +1,9 @@
+"use client";
+
+import { ChevronDown } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
-import type { MouseEvent } from "react";
+import { useId, useState, useSyncExternalStore, type MouseEvent } from "react";
 
 import { boardStatPercent } from "@/lib/board-stat-percent";
 import type { BoardMetrics } from "@/lib/board-page";
@@ -8,6 +11,7 @@ import { getEndpointToolLabel, seniorityOptions } from "@/lib/job-taxonomy";
 
 import { AnimatedNumber } from "./animated-number";
 import type { FilterAction, FilterDispatch, FilterState } from "./filter-model";
+import { filterUrlStoreEvent } from "./use-url-synced-filters";
 import {
   boardStatAccessibleName,
   boardStatFilterAction,
@@ -29,22 +33,25 @@ type StatusMeterModel = {
 
 export function CommandStatusRail({
   activeJobsCount,
+  breakdownsOpen = false,
   filters,
   metrics,
   onFilter,
   visibleJobsCount
 }: {
   activeJobsCount: number;
+  breakdownsOpen?: boolean;
   filters: FilterState;
   metrics: BoardMetrics;
   onFilter: FilterDispatch;
   visibleJobsCount: number;
 }) {
+  const currentSearch = useCurrentSearch();
   const catalogDiffers = activeJobsCount !== visibleJobsCount;
   const coverage = [
     staticMeter("mapped", "Mapped", metrics.mappedJobsCount, visibleJobsCount),
     staticMeter("remote", "Remote / hybrid", metrics.remoteJobsCount, visibleJobsCount),
-    linkedMeter(filters, { type: "salary" }, "salary", "Salary shown", metrics.salaryJobsCount, visibleJobsCount)
+    linkedMeter(filters, { type: "salary" }, "salary", "Salary shown", metrics.salaryJobsCount, visibleJobsCount, currentSearch)
   ];
   const leadership = linkedMeter(
     filters,
@@ -52,7 +59,8 @@ export function CommandStatusRail({
     "leadership",
     "Leadership",
     metrics.leadershipJobsCount,
-    visibleJobsCount
+    visibleJobsCount,
+    currentSearch
   );
   const seniority = seniorityOptions.flatMap((level) => {
     const value = metrics.seniorityCounts[level];
@@ -63,7 +71,8 @@ export function CommandStatusRail({
       `seniority-${level}`,
       level,
       value,
-      visibleJobsCount
+      visibleJobsCount,
+      currentSearch
     )];
   });
   const locations = metrics.topLocations.map((location) => linkedMeter(
@@ -72,7 +81,8 @@ export function CommandStatusRail({
     `location-${location.metroArea}`,
     location.metroArea,
     location.count,
-    visibleJobsCount
+    visibleJobsCount,
+    currentSearch
   ));
   const tools = metrics.toolCounts.map((tool) => linkedMeter(
     filters,
@@ -80,7 +90,8 @@ export function CommandStatusRail({
     `tool-${tool.tool}`,
     getEndpointToolLabel(tool.tool),
     tool.count,
-    visibleJobsCount
+    visibleJobsCount,
+    currentSearch
   ));
 
   return (
@@ -107,34 +118,75 @@ export function CommandStatusRail({
         {coverage.map((meter) => (
           <StatusMeter key={meter.key} meter={meter} onFilter={onFilter} />
         ))}
-        <div className="status-section">
-          <StatusMeter meter={leadership} onFilter={onFilter} />
-        </div>
-        <StatusSection meters={seniority} title="Seniority" onFilter={onFilter} />
-        <StatusSection meters={locations} title="Locations" onFilter={onFilter} />
-        <StatusSection meters={tools} title="Tools" onFilter={onFilter} />
+        <StatusSection
+          defaultOpen={breakdownsOpen}
+          meters={[leadership]}
+          onFilter={onFilter}
+          title="Leadership"
+        />
+        <StatusSection
+          defaultOpen={breakdownsOpen}
+          meters={seniority}
+          onFilter={onFilter}
+          title="Seniority"
+        />
+        <StatusSection
+          defaultOpen={breakdownsOpen}
+          meters={locations}
+          onFilter={onFilter}
+          title="Top metros"
+        />
+        <StatusSection
+          defaultOpen={breakdownsOpen}
+          meters={tools}
+          onFilter={onFilter}
+          title="Jobs per tool"
+        />
       </div>
     </aside>
   );
 }
 
 function StatusSection({
+  defaultOpen = false,
   meters,
   onFilter,
   title
 }: {
+  defaultOpen?: boolean;
   meters: StatusMeterModel[];
   onFilter: FilterDispatch;
   title: string;
 }) {
+  const [open, setOpen] = useState(defaultOpen);
+  const panelId = useId();
+
   if (meters.length === 0) return null;
 
   return (
     <section className="status-section">
-      <h2 className="status-section-title">{title}</h2>
-      {meters.map((meter) => (
-        <StatusMeter key={meter.key} meter={meter} onFilter={onFilter} />
-      ))}
+      <h2 className="status-section-title">
+        <button
+          type="button"
+          className="status-section-toggle"
+          aria-controls={panelId}
+          aria-expanded={open}
+          onClick={() => setOpen((current) => !current)}
+        >
+          <span>{title}</span>
+          <span className="sr-only"> breakdown</span>
+          <ChevronDown
+            aria-hidden="true"
+            className={open ? "status-section-chevron is-open" : "status-section-chevron"}
+            size={16}
+          />
+        </button>
+      </h2>
+      <div className="status-section-panel" hidden={!open} id={panelId}>
+        {meters.map((meter) => (
+          <StatusMeter key={meter.key} meter={meter} onFilter={onFilter} />
+        ))}
+      </div>
     </section>
   );
 }
@@ -198,7 +250,8 @@ function linkedMeter(
   key: string,
   label: string,
   value: number,
-  total: number
+  total: number,
+  currentSearch: string
 ): StatusMeterModel {
   const active = isBoardStatActive(filters, stat);
 
@@ -207,10 +260,27 @@ function linkedMeter(
     label,
     value,
     percent: boardStatPercent(value, total),
-    href: boardStatFilterHref(filters, stat),
+    href: boardStatFilterHref(filters, stat, currentSearch),
     action: boardStatFilterAction(filters, stat),
     active,
     accessibleName: boardStatAccessibleName(label, value, total, active)
+  };
+}
+
+function useCurrentSearch() {
+  return useSyncExternalStore(subscribeToLocationSearch, readLocationSearch, () => "");
+}
+
+function readLocationSearch() {
+  return window.location.search.replace(/^\?/, "");
+}
+
+function subscribeToLocationSearch(onStoreChange: () => void) {
+  window.addEventListener("popstate", onStoreChange);
+  window.addEventListener(filterUrlStoreEvent, onStoreChange);
+  return () => {
+    window.removeEventListener("popstate", onStoreChange);
+    window.removeEventListener(filterUrlStoreEvent, onStoreChange);
   };
 }
 

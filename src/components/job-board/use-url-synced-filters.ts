@@ -12,7 +12,7 @@ import {
   mergeFilterStateIntoSearchParams
 } from "./filter-url";
 
-const filterUrlStoreEvent = "endpointjobs:filters-changed";
+export const filterUrlStoreEvent = "endpointjobs:filters-changed";
 let cachedLocation = "";
 let cachedFilters: FilterState = initialFilterState;
 
