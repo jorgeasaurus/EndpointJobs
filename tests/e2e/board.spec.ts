@@ -529,7 +529,7 @@ test("[NAV-01] brand and footer", async ({ page }) => {
   await expect(page.locator(".footer-meta")).toContainText(/v0\.\d+\.\d+/);
 });
 
-test("[FEED-01] feedback links", async ({ page }) => {
+test("[FEED-01] feedback links", async ({ page }, info) => {
   await openBoard(page);
   const footer = page.getByRole("navigation", { name: "Project links" }).getByRole("link", { name: "Report an issue or request a feature on GitHub" });
   await expect(footer).toBeVisible();
@@ -537,6 +537,12 @@ test("[FEED-01] feedback links", async ({ page }) => {
   await expect(footer).toHaveAttribute("target", "_blank");
   await expect(footer).toHaveAttribute("rel", /noopener/);
   await expect(page.locator("header").getByRole("link", { name: "Open feedback form on GitHub" })).toHaveCount(0);
+  if (info.project.name === "mobile") {
+    const more = page.getByRole("button", { name: "More links" });
+    await expect(more).toHaveAttribute("aria-expanded", "false");
+    await more.click();
+    await expect(more).toHaveAttribute("aria-expanded", "true");
+  }
   await expect(page.locator("header").getByRole("link", { name: "Learning roadmap" })).toBeVisible();
   await expect(page.locator("header").getByRole("link", { name: "MCP guide" })).toBeVisible();
 });

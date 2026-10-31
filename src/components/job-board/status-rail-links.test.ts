@@ -156,29 +156,56 @@ test("status rail links the filterable figures and leaves the others static", ()
   assert.match(html, /href="\/intune"/);
   assert.match(html, /href="\/workspace-one"/);
   assert.match(html, /aria-label="Filter by Kandji\/Iru, 1 of 4 jobs"/);
-  assert.match(html, />Seniority</);
-  assert.match(html, />Locations</);
-  assert.match(html, />Tools</);
+  assertBreakdownsCollapsed(html);
+  assert.ok(html.indexOf("Filter by Salary shown") < html.indexOf("status-section"));
 
   const active = renderRail({ ...initialFilterState, seniority: "Senior", salaryOnly: true });
   assert.match(active, /aria-current="true"/);
   assert.match(active, /aria-label="Remove Senior filter, 1 of 4 jobs"/);
   assert.match(active, /aria-label="Remove Salary shown filter, 1 of 4 jobs"/);
   assert.match(active, /href="\/board\?salary=1&amp;seniority=Mid"/);
+  assertBreakdownsCollapsed(active);
+
+  const open = renderRail(initialFilterState, true);
+  for (const label of ["Leadership", "Seniority", "Top metros", "Jobs per tool"]) {
+    const button = open.match(
+      new RegExp(`<button\\b([^>]*)>\\s*<span>${label}</span><span class="sr-only"> breakdown</span>`)
+    );
+    assert.ok(button, label);
+    assert.match(button[1], /aria-expanded="true"/);
+  }
+  assert.equal(open.includes("status-section-panel\" hidden"), false);
 });
 
-test("clickable stat rows expose a visible focus style", () => {
+test("clickable stat rows and breakdown toggles expose a visible focus style", () => {
   const css = readFileSync(new URL("../../app/job-board.css", import.meta.url), "utf8");
   assert.match(css, /a\.status-meter:focus-visible\s*\{[^}]*outline:\s*2px solid var\(--lime\)/);
+  assert.match(css, /\.status-section-toggle\s*\{[^}]*min-height:\s*44px/);
+  assert.match(css, /\.status-section-toggle:focus-visible\s*\{[^}]*outline:\s*2px solid var\(--lime\)/);
+  assert.match(css, /\.status-section-panel:not\(\[hidden\]\)\s*\{[^}]*display:\s*grid/);
 });
 
-function renderRail(filters: FilterState) {
+function assertBreakdownsCollapsed(html: string) {
+  for (const label of ["Leadership", "Seniority", "Top metros", "Jobs per tool"]) {
+    const button = html.match(
+      new RegExp(`<button\\b([^>]*)>\\s*<span>${label}</span><span class="sr-only"> breakdown</span>`)
+    );
+    assert.ok(button, label);
+    assert.match(button[1], /type="button"/);
+    assert.match(button[1], /aria-expanded="false"/);
+    assert.match(button[1], /aria-controls="[^"]+"/);
+  }
+  assert.equal(html.match(/class="status-section-panel" hidden=""/g)?.length, 4);
+}
+
+function renderRail(filters: FilterState, breakdownsOpen = false) {
   return renderToStaticMarkup(
     createElement(
       AppRouterContext.Provider,
       { value: router },
       createElement(CommandStatusRail, {
         activeJobsCount: 4,
+        breakdownsOpen,
         filters,
         metrics,
         onFilter() {},
