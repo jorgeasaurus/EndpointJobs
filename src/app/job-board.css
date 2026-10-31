@@ -1289,6 +1289,19 @@ ul.description-list li {
   gap: 10px;
 }
 
+.footer-groups,
+.footer-link-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.footer-groups {
+  gap: 12px 28px;
+}
+
 .footer-link {
   min-height: 36px;
   color: var(--white-60);

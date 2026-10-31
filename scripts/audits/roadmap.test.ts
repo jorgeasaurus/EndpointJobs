@@ -191,14 +191,26 @@ test("roadmap page renders skills, source links, and progress", () => {
 
   const page = readFileSync(new URL("../../src/app/roadmap/page.tsx", import.meta.url), "utf8");
   const topbar = readFileSync(new URL("../../src/components/job-board/topbar.tsx", import.meta.url), "utf8");
+  const header = topbar.slice(topbar.indexOf("export function Topbar"), topbar.indexOf("export function SiteFooter"));
+  const footer = topbar.slice(topbar.indexOf("export function SiteFooter"));
   assert.match(page, /roadmapPageTitle/);
   assert.match(page, /roadmapPageDescription/);
   assert.match(page, /socialTitle/);
   assert.match(page, /openGraph/);
   assert.match(page, /canonical/);
   assert.match(page, /ogImage/);
-  assert.match(topbar, /getRoadmapPath\(\)/);
-  assert.match(topbar, /Learning roadmap/);
+  assert.match(header, /Learning roadmap/);
+  assert.match(header, /getMcpDocsPath\(\)/);
+  assert.match(header, /getRoadmapPath\(\)/);
+  assert.doesNotMatch(header, /getApiDocsPath\(\)/);
+  assert.doesNotMatch(header, /buymeacoffee/);
+  assert.doesNotMatch(header, /report-or-request/);
+  assert.match(footer, /getApiDocsPath\(\)/);
+  assert.match(footer, /buymeacoffee/);
+  assert.match(footer, /report-or-request/);
+  assert.equal(footer.split("getRoadmapPath()").length - 1, 1);
+  assert.match(footer, /aria-label="Browse"/);
+  assert.match(footer, /aria-label="Project"/);
   assert.equal(getRoadmapPath(), "/roadmap");
   assert.ok(sitemap().some((entry) => entry.url === new URL("/roadmap", siteUrl).toString()));
 });

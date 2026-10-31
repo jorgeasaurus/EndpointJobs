@@ -439,9 +439,15 @@
   }
 
   .footer-meta,
-  .footer-links {
+  .footer-links,
+  .footer-groups,
+  .footer-link-group {
     justify-content: space-between;
     width: 100%;
+  }
+
+  .topbar-overflow-panel {
+    max-width: calc(100vw - 16px);
   }
 
   .footer-link {

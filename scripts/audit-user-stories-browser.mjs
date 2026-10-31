@@ -302,10 +302,9 @@ await run("FEAT-030", "Apply links open externally with safe rel", async () => {
 
 await run("FEAT-031", "Topbar and footer project links are visible", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
-  const topbarFeedback = page.getByRole("link", { name: "Open feedback form on GitHub" });
-  await expect(topbarFeedback).toBeVisible();
-  await expect(topbarFeedback).toHaveAttribute("target", "_blank");
-  await expect(topbarFeedback).toHaveAttribute("rel", /noopener noreferrer/);
+  await expect(page.locator("header").getByRole("link", { name: "Learning roadmap" })).toBeVisible();
+  await expect(page.locator("header").getByRole("link", { name: "MCP guide", exact: true })).toBeVisible();
+  await expect(page.locator("header").getByRole("link", { name: "Open feedback form on GitHub" })).toHaveCount(0);
   const powerShellDocs = page.getByRole("link", {
     name: "Open PowerShell module documentation on GitHub"
   });
@@ -316,16 +315,17 @@ await run("FEAT-031", "Topbar and footer project links are visible", async () =>
   );
   await expect(powerShellDocs).toHaveAttribute("target", "_blank");
   await expect(powerShellDocs).toHaveAttribute("rel", /noopener noreferrer/);
-  const supportLink = page.locator("header").getByRole("link", { name: "Support the board on Buy Me a Coffee" });
+  const supportLink = page.locator("footer").getByRole("link", { name: "Support the board on Buy Me a Coffee" });
   await expect(supportLink).toBeVisible();
   await expect(supportLink).toHaveAttribute("href", "https://buymeacoffee.com/jorgeasaurus");
   await expect(supportLink).toHaveAttribute("target", "_blank");
   await expect(supportLink).toHaveAttribute("rel", /noopener noreferrer/);
+  await expect(page.locator("header").getByRole("link", { name: "Support the board on Buy Me a Coffee" })).toHaveCount(0);
   await page.locator("footer").scrollIntoViewIfNeeded();
   await expect(page.getByText("Made by Jorgeasaurus")).toBeVisible();
   await expect(page.getByRole("link", { name: /Report an issue/i })).toHaveAttribute("href", new RegExp("github\\.com/jorgeasaurus/EndpointJobs/issues/new"));
   await expect(page.getByRole("link", { name: /Open the Endpoint Jobs GitHub repository/i })).toHaveAttribute("href", "https://github.com/jorgeasaurus/EndpointJobs");
-  await expect(page.locator("footer").getByRole("link", { name: "Support the board on Buy Me a Coffee" })).toHaveCount(0);
+  await expect(page.locator("footer").getByRole("link", { name: "Open API documentation" })).toHaveAttribute("href", "/api-docs");
   await page.close();
 });
 
