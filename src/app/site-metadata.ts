@@ -71,6 +71,10 @@ export function getMcpDocsPath(): Route {
   return "/mcp";
 }
 
+export function getRoadmapPath(): Route {
+  return "/roadmap";
+}
+
 export function getOpenApiPath(): Route {
   return "/openapi.json" as Route;
 }

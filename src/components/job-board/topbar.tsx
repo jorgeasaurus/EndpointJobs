@@ -7,6 +7,7 @@ import {
   Rows3,
   Search,
   RefreshCw,
+  Route,
   Shield,
   SquareTerminal
 } from "lucide-react";
@@ -15,7 +16,14 @@ import Link from "next/link";
 import { AppreciateButton } from "@/components/appreciate-button";
 import { AuthMenu } from "@/components/auth/auth-menu";
 import { formatUpdatedAt } from "@/lib/jobs";
-import { appVersion, getApiDocsPath, getBoardPath, getJobsDirectoryPath, getMcpDocsPath } from "@/app/site-metadata";
+import {
+  appVersion,
+  getApiDocsPath,
+  getBoardPath,
+  getJobsDirectoryPath,
+  getMcpDocsPath,
+  getRoadmapPath
+} from "@/app/site-metadata";
 
 import { TopbarOverflow } from "./topbar-overflow";
 
@@ -55,6 +63,16 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
           >
             <SquareTerminal size={15} aria-hidden="true" />
             <span>MCP guide</span>
+          </Link>
+          <Link
+            aria-label="Learning roadmap"
+            className="feedback-link roadmap-link"
+            href={getRoadmapPath()}
+            prefetch={false}
+            title="Endpoint engineering learning roadmap"
+          >
+            <Route size={15} aria-hidden="true" />
+            <span>Roadmap</span>
           </Link>
           <a
             aria-label="Open feedback form on GitHub"
@@ -126,6 +144,10 @@ export function SiteFooter({ updatedAt }: { updatedAt: string }) {
             <MessageSquarePlus size={15} aria-hidden="true" />
             <span>Report / request</span>
           </a>
+          <Link className="feedback-link footer-link" href={getRoadmapPath()} prefetch={false}>
+            <Route size={15} aria-hidden="true" />
+            <span>Roadmap</span>
+          </Link>
           <Link className="feedback-link footer-link" href="/privacy">
             <Shield size={15} aria-hidden="true" />
             <span>Privacy</span>
