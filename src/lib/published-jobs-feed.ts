@@ -1,8 +1,15 @@
-import { request as httpRequest } from "node:http";
+import { request as httpRequest, type IncomingMessage } from "node:http";
 import { request as httpsRequest } from "node:https";
 
 import bundledFeedData from "@/data/jobs.json";
-import { jobsFeedMemoryTtlMs, jobsFeedReadUrl } from "@/lib/jobs-feed-config";
+import {
+  jobsFeedCacheTag,
+  jobsFeedMemoryTtlMs,
+  jobsFeedRetryBackoffMs,
+  jobsFeedReadUrl,
+  jobsFeedSnapshotUrl,
+  jobsFeedVersionUrl
+} from "@/lib/jobs-feed-config";
 import type { JobsFeed } from "@/types/job";
 
 const bundledFeed = bundledFeedData as JobsFeed;
@@ -11,38 +18,130 @@ const maximumFeedBytes = 20_000_000;
 type RemoteFeed = { etag: string; feed: JobsFeed };
 type FeedResponse = { body: string; etag: string | null; status: number };
 type FeedTransport = (url: string, headers: Record<string, string>) => Promise<FeedResponse>;
+type CachedFeed = {
+  etag: string;
+  feed: JobsFeed;
+  freshUntil: number;
+  remote: JobsFeed;
+  version: string;
+};
 
-let memory: { etag: string; feed: JobsFeed; freshUntil: number } | undefined;
-let transport: FeedTransport = requestFeed;
-
-export function resetPublishedJobsFeedForTests(nextTransport?: FeedTransport) {
-  memory = undefined;
-  transport = nextTransport ?? requestFeed;
-}
-
-type FeedEnv = {
+export type FeedEnv = {
   BLOB_READ_WRITE_TOKEN?: string;
   JOBS_FEED_MEMORY_MS?: string;
   JOBS_FEED_URL?: string;
 };
+
+type RevalidateFeedOptions = { attempts?: number; delayMs?: number };
+
+let memory: CachedFeed | undefined;
+let retryNotBefore = 0;
+let blockedVersion: string | undefined;
+let transport: FeedTransport = requestFeed;
+let nowFn: () => number = () => Date.now();
+let sharedVersionReader: (() => Promise<string | undefined>) | undefined;
+
+export function resetPublishedJobsFeedForTests(
+  nextTransport?: FeedTransport,
+  options?: { now?: () => number; sharedVersion?: () => Promise<string | undefined> }
+) {
+  memory = undefined;
+  retryNotBefore = 0;
+  blockedVersion = undefined;
+  transport = nextTransport ?? requestFeed;
+  nowFn = options?.now ?? (() => Date.now());
+  sharedVersionReader = options?.sharedVersion;
+}
 
 /** Bundled snapshot, or the blob feed when publish credentials are configured. */
 export async function getPublishedJobsFeed(env: FeedEnv = currentFeedEnv()): Promise<JobsFeed> {
   const url = jobsFeedReadUrl(env);
   if (!url) return bundledFeed;
 
-  const now = Date.now();
-  if (memory && now < memory.freshUntil) return memory.feed;
+  const now = nowFn();
+  const sharedVersion = await currentSharedVersion(url);
+  const versionChanged = sharedVersion !== undefined
+    && sharedVersion !== memory?.version
+    && sharedVersion !== blockedVersion;
+
+  if (!versionChanged && memory && now < memory.freshUntil) return memory.feed;
+  if (!versionChanged && now < retryNotBefore) return fallbackFeed();
 
   try {
-    const loaded = await readRemoteFeed(url, memory?.etag);
-    if (!loaded) return memory?.feed ?? bundledFeed;
-    memory = { ...loaded, freshUntil: now + memoryTtlMs(env) };
-    return loaded.feed;
+    const readUrl = sharedVersion ? jobsFeedSnapshotUrl(url, sharedVersion) : url;
+    const loaded = await readRemoteFeed(readUrl, sharedVersion ? undefined : memory?.etag);
+    if (!loaded) {
+      noteFailure(now, sharedVersion);
+      return fallbackFeed();
+    }
+
+    const selected = selectPublishedFeed(loaded.feed);
+    memory = {
+      etag: loaded.etag,
+      feed: selected,
+      freshUntil: now + memoryTtlMs(env),
+      remote: loaded.feed,
+      version: loaded.feed.updatedAt
+    };
+    retryNotBefore = 0;
+    blockedVersion = undefined;
+    return selected;
   } catch (error) {
     console.error("Published jobs feed could not be read. Using the last good snapshot.", error);
-    return memory?.feed ?? bundledFeed;
+    noteFailure(now, sharedVersion);
+    return fallbackFeed();
   }
+}
+
+/**
+ * Read the published snapshot, then run `revalidate`.
+ * Pages stay cached when the expected snapshot is not readable yet.
+ */
+export async function revalidatePublishedFeed(
+  expectedUpdatedAt: string | undefined,
+  revalidate: () => void,
+  env: FeedEnv = currentFeedEnv(),
+  options: RevalidateFeedOptions = {}
+): Promise<{ revalidated: boolean; updatedAt?: string }> {
+  const preserved = memory;
+  memory = undefined;
+  retryNotBefore = 0;
+  blockedVersion = undefined;
+
+  const url = jobsFeedReadUrl(env);
+  if (!url) {
+    const ready = !expectedUpdatedAt || isSnapshotCurrent(bundledFeed.updatedAt, expectedUpdatedAt);
+    if (!ready) {
+      memory = preserved;
+      return { revalidated: false, updatedAt: bundledFeed.updatedAt };
+    }
+    revalidate();
+    return { revalidated: true, updatedAt: bundledFeed.updatedAt };
+  }
+
+  const attempts = options.attempts ?? 4;
+  const delayMs = options.delayMs ?? 200;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const loaded = await readReadySnapshot(url, expectedUpdatedAt);
+    if (loaded) {
+      const selected = selectPublishedFeed(loaded.feed);
+      memory = {
+        etag: loaded.etag,
+        feed: selected,
+        freshUntil: nowFn() + memoryTtlMs(env),
+        remote: loaded.feed,
+        version: loaded.feed.updatedAt
+      };
+      revalidate();
+      return { revalidated: true, updatedAt: selected.updatedAt };
+    }
+    if (attempt < attempts - 1 && delayMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+
+  memory = preserved;
+  return { revalidated: false, updatedAt: preserved?.feed.updatedAt };
 }
 
 export function parsePublishedJobsFeed(body: string): JobsFeed | undefined {
@@ -58,12 +157,91 @@ export function parsePublishedJobsFeed(body: string): JobsFeed | undefined {
   return feed;
 }
 
+export function cachedPublishedJobsFeedUpdatedAt() {
+  return memory?.feed.updatedAt;
+}
+
+/** Resolve a feed body, and reject when the socket aborts or errors mid-body. */
+export function collectFeedResponse(
+  response: IncomingMessage,
+  destroyRequest: (error?: Error) => void
+): Promise<FeedResponse> {
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const finishResolve = (value: FeedResponse) => {
+      if (settled) return;
+      settled = true;
+      resolve(value);
+    };
+    const finishReject = (error: unknown) => {
+      if (settled) return;
+      settled = true;
+      const reason = error instanceof Error ? error : new Error("Jobs feed response failed");
+      reject(reason);
+    };
+
+    const chunks: Buffer[] = [];
+    let received = 0;
+    response.on("data", (chunk: Buffer | string) => {
+      if (settled) return;
+      const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      received += buffer.length;
+      if (received > maximumFeedBytes) {
+        const error = new Error("Jobs feed is larger than 20MB");
+        destroyRequest(error);
+        finishReject(error);
+        return;
+      }
+      chunks.push(buffer);
+    });
+    response.on("error", (error: Error) => {
+      destroyRequest(error);
+      finishReject(error);
+    });
+    response.on("aborted", () => {
+      const error = new Error("Jobs feed response aborted");
+      destroyRequest(error);
+      finishReject(error);
+    });
+    response.on("end", () => {
+      if (response.aborted || response.complete === false) {
+        finishReject(new Error("Jobs feed response aborted"));
+        return;
+      }
+      const header = response.headers.etag;
+      finishResolve({
+        status: response.statusCode ?? 0,
+        body: Buffer.concat(chunks).toString("utf8"),
+        etag: typeof header === "string" ? header : null
+      });
+    });
+  });
+}
+
+async function readReadySnapshot(url: string, expectedUpdatedAt: string | undefined): Promise<RemoteFeed | null> {
+  try {
+    if (expectedUpdatedAt && jobsFeedVersionUrl(url)) {
+      const version = await readSnapshotVersionDirect(url);
+      if (!version || !isSnapshotCurrent(version, expectedUpdatedAt)) return null;
+    }
+
+    const readUrl = expectedUpdatedAt ? jobsFeedSnapshotUrl(url, expectedUpdatedAt) : url;
+    const loaded = await readRemoteFeed(readUrl, undefined);
+    if (!loaded) return null;
+    if (expectedUpdatedAt && !isSnapshotCurrent(loaded.feed.updatedAt, expectedUpdatedAt)) return null;
+    return loaded;
+  } catch (error) {
+    console.error("Published jobs snapshot was not readable for revalidation.", error);
+    return null;
+  }
+}
+
 async function readRemoteFeed(url: string, etag: string | undefined): Promise<RemoteFeed | null> {
   const headers: Record<string, string> = { "accept-encoding": "identity" };
   if (etag) headers["if-none-match"] = etag;
 
   const response = await transport(url, headers);
-  if (response.status === 304 && memory) return { etag: memory.etag, feed: memory.feed };
+  if (response.status === 304 && memory) return { etag: memory.etag, feed: memory.remote };
   if (response.status === 404) return null;
   if (response.status !== 200) {
     throw new Error(`Jobs feed request failed with status ${response.status}`);
@@ -72,6 +250,53 @@ async function readRemoteFeed(url: string, etag: string | undefined): Promise<Re
   const feed = parsePublishedJobsFeed(response.body);
   if (!feed) throw new Error("Jobs feed payload is not a jobs snapshot");
   return { etag: response.etag ?? feed.updatedAt, feed };
+}
+
+async function currentSharedVersion(feedUrl: string): Promise<string | undefined> {
+  try {
+    if (sharedVersionReader) return await sharedVersionReader();
+    if (!process.env.NEXT_RUNTIME) return undefined;
+    return await readTaggedSnapshotVersion(feedUrl);
+  } catch (error) {
+    console.error("Jobs feed version could not be read. Using the last cached snapshot.", error);
+    return undefined;
+  }
+}
+
+// Tagged with jobs-feed so revalidateTag drops the version on every instance.
+// A new version bypasses the process-local feed even when its TTL has not expired.
+async function readTaggedSnapshotVersion(feedUrl: string): Promise<string | undefined> {
+  const versionUrl = jobsFeedVersionUrl(feedUrl);
+  if (!versionUrl) return undefined;
+  const { unstable_cache } = await import("next/cache");
+  const readVersion = unstable_cache(
+    async () => (await readSnapshotVersionDirect(feedUrl)) ?? "",
+    ["jobs-feed-version", versionUrl],
+    { revalidate: 60, tags: [jobsFeedCacheTag] }
+  );
+  const version = await readVersion();
+  return version || undefined;
+}
+
+async function readSnapshotVersionDirect(feedUrl: string): Promise<string | undefined> {
+  const versionUrl = jobsFeedVersionUrl(feedUrl);
+  if (!versionUrl) return undefined;
+  const probe = new URL(versionUrl);
+  probe.searchParams.set("t", String(nowFn()));
+  try {
+    const response = await transport(probe.toString(), {
+      accept: "text/plain",
+      "accept-encoding": "identity",
+      "cache-control": "no-cache"
+    });
+    if (response.status !== 200) return undefined;
+    const version = response.body.trim();
+    if (!Number.isFinite(Date.parse(version))) return undefined;
+    return version;
+  } catch (error) {
+    console.error("Published jobs feed version could not be read.", error);
+    return undefined;
+  }
 }
 
 function currentFeedEnv(): FeedEnv {
@@ -88,32 +313,38 @@ function memoryTtlMs(env: FeedEnv) {
   return jobsFeedMemoryTtlMs;
 }
 
+function noteFailure(now: number, sharedVersion: string | undefined) {
+  retryNotBefore = now + jobsFeedRetryBackoffMs;
+  if (sharedVersion) blockedVersion = sharedVersion;
+}
+
+function fallbackFeed() {
+  return memory ? selectPublishedFeed(memory.feed) : bundledFeed;
+}
+
+function selectPublishedFeed(remote: JobsFeed) {
+  return snapshotTime(bundledFeed.updatedAt) > snapshotTime(remote.updatedAt) ? bundledFeed : remote;
+}
+
+function isSnapshotCurrent(actual: string, expected: string) {
+  return snapshotTime(actual) >= snapshotTime(expected);
+}
+
+function snapshotTime(value: string) {
+  const time = Date.parse(value);
+  return Number.isFinite(time) ? time : Number.NEGATIVE_INFINITY;
+}
+
 function requestFeed(url: string, headers: Record<string, string>): Promise<FeedResponse> {
   return new Promise((resolve, reject) => {
     const target = new URL(url);
     const request = (target.protocol === "http:" ? httpRequest : httpsRequest)(
       target,
       { headers, method: "GET" },
-      (response) => {
-        const chunks: Buffer[] = [];
-        let received = 0;
-        response.on("data", (chunk: Buffer | string) => {
-          const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
-          received += buffer.length;
-          if (received > maximumFeedBytes) {
-            request.destroy(new Error("Jobs feed is larger than 20MB"));
-            return;
-          }
-          chunks.push(buffer);
-        });
-        response.on("end", () => {
-          const header = response.headers.etag;
-          resolve({
-            status: response.statusCode ?? 0,
-            body: Buffer.concat(chunks).toString("utf8"),
-            etag: typeof header === "string" ? header : null
-          });
-        });
+      (response: IncomingMessage) => {
+        collectFeedResponse(response, (error) => {
+          request.destroy(error);
+        }).then(resolve, reject);
       }
     );
     request.setTimeout(15_000, () => {

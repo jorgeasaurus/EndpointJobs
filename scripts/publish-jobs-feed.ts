@@ -3,7 +3,14 @@ import { readFile } from "node:fs/promises";
 
 import { put } from "@vercel/blob";
 
-import { defaultJobsFeedRevalidateUrl, jobsFeedPathname } from "../src/lib/jobs-feed-config";
+import {
+  defaultJobsFeedRevalidateUrl,
+  jobsFeedPathname,
+  jobsFeedSnapshotUrl,
+  jobsFeedVersionPathname,
+  jobsFeedVersionUrl
+} from "../src/lib/jobs-feed-config";
+import { parsePublishedJobsFeed } from "../src/lib/published-jobs-feed";
 
 const outputPath = "src/data/jobs.json";
 let published = false;
@@ -24,6 +31,7 @@ async function publishFeed() {
   }
 
   const body = await readFile(outputPath);
+  const updatedAt = readUpdatedAt(body);
   let url: string;
   try {
     const blob = await put(jobsFeedPathname, body, {
@@ -44,6 +52,7 @@ async function publishFeed() {
 
   console.log(`Published jobs feed to ${url}`);
   setOutput("published", "true");
+  if (updatedAt) await publishSnapshotVersion(token, url, updatedAt);
 
   const secret = process.env.REVALIDATE_SECRET?.trim();
   if (!secret) {
@@ -55,7 +64,11 @@ async function publishFeed() {
   try {
     const response = await fetch(revalidateUrl, {
       method: "POST",
-      headers: { authorization: `Bearer ${secret}` }
+      headers: {
+        authorization: `Bearer ${secret}`,
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({ updatedAt })
     });
     if (!response.ok) {
       const text = await response.text();
@@ -66,6 +79,65 @@ async function publishFeed() {
   } catch (error) {
     console.error(`Revalidate request to ${revalidateUrl} failed.`, error);
   }
+}
+
+function readUpdatedAt(body: Buffer) {
+  try {
+    const parsed = JSON.parse(body.toString("utf8")) as { updatedAt?: unknown };
+    if (typeof parsed.updatedAt !== "string") return undefined;
+    const updatedAt = parsed.updatedAt.trim();
+    return updatedAt || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+async function publishSnapshotVersion(token: string, feedUrl: string, updatedAt: string) {
+  const versionUrl = jobsFeedVersionUrl(feedUrl);
+  if (versionUrl) {
+    try {
+      await put(jobsFeedVersionPathname, updatedAt, {
+        access: "public",
+        addRandomSuffix: false,
+        allowOverwrite: true,
+        cacheControlMaxAge: 60,
+        contentType: "text/plain",
+        token
+      });
+      const versionReady = await waitForBody(jobsFeedSnapshotUrl(versionUrl, updatedAt), (body) => (
+        Date.parse(body.trim()) >= Date.parse(updatedAt)
+      ));
+      if (!versionReady) {
+        console.error(`Published jobs feed version ${updatedAt} was not readable at ${versionUrl}`);
+      }
+    } catch (error) {
+      console.error("Jobs feed version pointer was not updated. Revalidation will wait on the feed snapshot.", error);
+    }
+  }
+
+  const feedReady = await waitForBody(jobsFeedSnapshotUrl(feedUrl, updatedAt), (body) => {
+    const feed = parsePublishedJobsFeed(body);
+    return Boolean(feed && Date.parse(feed.updatedAt) >= Date.parse(updatedAt));
+  });
+  if (!feedReady) {
+    console.error(`Published jobs feed ${updatedAt} was not readable at ${feedUrl}`);
+  }
+}
+
+async function waitForBody(url: string, accept: (body: string) => boolean) {
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        cache: "no-store",
+        headers: { "cache-control": "no-cache" }
+      });
+      if (response.ok && accept(await response.text())) return true;
+    } catch (error) {
+      console.error(error);
+    }
+    if (attempt < 9) await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+  return false;
 }
 
 try {

@@ -28,9 +28,18 @@ jobs:
       - name: Install dependencies
         run: npm ci --ignore-scripts
 
+      # Blob-only publishes do not commit jobs.json. Load the last published
+      # snapshot so SerpAPI retention sees listings from the previous run.
+      - name: Load last published snapshot
+        run: npm run jobs:load-retention
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          JOB_PREVIOUS_FEED_PATH: ${{ runner.temp }}/published-jobs.json
+
       - name: Refresh endpoint jobs
         run: npm run jobs:refresh
         env:
+          JOB_PREVIOUS_FEED_PATH: ${{ runner.temp }}/published-jobs.json
           JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,oraclehcm,jibe,activate,smartrecruiters,recruitee,schooljobs,curated,techmaprss,adzuna,theirstack,serpapi,rapidapi,rapidapilinkedin,aidevboard,himalayas,fourdayweek
           JOB_WORKABLE_ACCOUNTS: ${{ vars.JOB_WORKABLE_ACCOUNTS }}
           JOB_TECHMAP_RSS_FEEDS: ${{ secrets.JOB_TECHMAP_RSS_FEEDS }}

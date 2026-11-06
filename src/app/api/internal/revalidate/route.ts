@@ -1,11 +1,11 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 
-import { jobsFeedRevalidateSeconds } from "@/lib/jobs-feed-config";
+import { jobsFeedCacheTag, jobsFeedRevalidateSeconds } from "@/lib/jobs-feed-config";
+import { revalidatePublishedFeed } from "@/lib/published-jobs-feed";
 import { isRevalidateAuthorized } from "@/lib/revalidate-auth";
 
 export const dynamic = "force-dynamic";
 
-const jobsFeedTag = "jobs-feed";
 const noStore = { "Cache-Control": "no-store", "Vercel-CDN-Cache-Control": "no-store" };
 
 export async function POST(request: Request) {
@@ -13,15 +13,38 @@ export async function POST(request: Request) {
     return Response.json({ error: "unauthorized" }, { status: 401, headers: noStore });
   }
 
-  revalidateTag(jobsFeedTag, { expire: 0 });
-  for (const path of ["/", "/board", "/jobs", "/sitemap.xml", "/api/jobs", "/api/board", "/api/board/map"]) {
-    revalidatePath(path);
+  const expectedUpdatedAt = await readExpectedUpdatedAt(request);
+  const result = await revalidatePublishedFeed(expectedUpdatedAt, () => {
+    revalidateTag(jobsFeedCacheTag, { expire: 0 });
+    for (const path of ["/", "/board", "/jobs", "/sitemap.xml", "/api/jobs", "/api/board", "/api/board/map"]) {
+      revalidatePath(path);
+    }
+    revalidatePath("/jobs/[id]", "page");
+    revalidatePath("/[tool]", "page");
+  });
+
+  if (!result.revalidated) {
+    return Response.json(
+      { revalidated: false, error: "snapshot-not-ready", updatedAt: result.updatedAt },
+      { status: 503, headers: noStore }
+    );
   }
-  revalidatePath("/jobs/[id]", "page");
-  revalidatePath("/[tool]", "page");
 
   return Response.json(
-    { revalidated: true, revalidateSeconds: jobsFeedRevalidateSeconds },
+    { revalidated: true, revalidateSeconds: jobsFeedRevalidateSeconds, updatedAt: result.updatedAt },
     { headers: noStore }
   );
+}
+
+async function readExpectedUpdatedAt(request: Request) {
+  const text = await request.text();
+  if (!text.trim()) return undefined;
+  try {
+    const parsed = JSON.parse(text) as { updatedAt?: unknown };
+    if (typeof parsed.updatedAt !== "string") return undefined;
+    const updatedAt = parsed.updatedAt.trim();
+    return updatedAt || undefined;
+  } catch {
+    return undefined;
+  }
 }
