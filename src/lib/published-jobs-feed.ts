@@ -38,6 +38,7 @@ type RevalidateFeedOptions = { attempts?: number; delayMs?: number };
 let memory: CachedFeed | undefined;
 let retryNotBefore = 0;
 let blockedVersion: string | undefined;
+let inflight: { key: string; promise: Promise<JobsFeed> } | undefined;
 let transport: FeedTransport = requestFeed;
 let nowFn: () => number = () => Date.now();
 let sharedVersionReader: (() => Promise<string | undefined>) | undefined;
@@ -49,6 +50,7 @@ export function resetPublishedJobsFeedForTests(
   memory = undefined;
   retryNotBefore = 0;
   blockedVersion = undefined;
+  inflight = undefined;
   transport = nextTransport ?? requestFeed;
   nowFn = options?.now ?? (() => Date.now());
   sharedVersionReader = options?.sharedVersion;
@@ -68,6 +70,25 @@ export async function getPublishedJobsFeed(env: FeedEnv = currentFeedEnv()): Pro
   if (!versionChanged && memory && now < memory.freshUntil) return memory.feed;
   if (!versionChanged && now < retryNotBefore) return fallbackFeed();
 
+  const flightKey = `${url}\0${sharedVersion ?? ""}\0${versionAdvanced ? "next" : "same"}`;
+  if (inflight?.key === flightKey) return inflight.promise;
+
+  const promise = refreshPublishedFeed(url, env, now, sharedVersion, versionAdvanced);
+  inflight = { key: flightKey, promise };
+  try {
+    return await promise;
+  } finally {
+    if (inflight?.promise === promise) inflight = undefined;
+  }
+}
+
+async function refreshPublishedFeed(
+  url: string,
+  env: FeedEnv,
+  now: number,
+  sharedVersion: string | undefined,
+  versionAdvanced: boolean
+) {
   try {
     const readUrl = sharedVersion ? jobsFeedSnapshotUrl(url, sharedVersion) : url;
     const loaded = await readRemoteFeed(readUrl, versionAdvanced ? undefined : memory?.etag);
@@ -75,18 +96,7 @@ export async function getPublishedJobsFeed(env: FeedEnv = currentFeedEnv()): Pro
       noteFailure(now, sharedVersion);
       return fallbackFeed();
     }
-
-    const selected = selectPublishedFeed(loaded.feed);
-    memory = {
-      etag: loaded.etag,
-      feed: selected,
-      freshUntil: now + memoryTtlMs(env),
-      remote: loaded.feed,
-      version: loaded.feed.updatedAt
-    };
-    retryNotBefore = 0;
-    blockedVersion = undefined;
-    return selected;
+    return rememberFeed(loaded, now, env);
   } catch (error) {
     console.error("Published jobs feed could not be read. Using the last good snapshot.", error);
     noteFailure(now, sharedVersion);
@@ -125,14 +135,7 @@ export async function revalidatePublishedFeed(
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     const loaded = await readReadySnapshot(url, expectedUpdatedAt);
     if (loaded) {
-      const selected = selectPublishedFeed(loaded.feed);
-      memory = {
-        etag: loaded.etag,
-        feed: selected,
-        freshUntil: nowFn() + memoryTtlMs(env),
-        remote: loaded.feed,
-        version: loaded.feed.updatedAt
-      };
+      const selected = rememberFeed(loaded, nowFn(), env);
       revalidate();
       return { revalidated: true, updatedAt: selected.updatedAt };
     }
@@ -226,8 +229,9 @@ export function collectFeedResponse(
 
 async function readReadySnapshot(url: string, expectedUpdatedAt: string | undefined): Promise<RemoteFeed | null> {
   try {
-    // The feed body is the readiness check. The tagged version republishes that
-    // timestamp, so other instances bypass a warm snapshot when the pointer lags.
+    // The feed body is the readiness check. revalidateTag then refills the shared
+    // version from the newer of the pointer and this timestamp, including custom
+    // feed URLs, so warm instances bypass their in-memory snapshot.
     const readUrl = expectedUpdatedAt ? jobsFeedSnapshotUrl(url, expectedUpdatedAt) : url;
     const loaded = await readRemoteFeed(readUrl, undefined);
     if (!loaded) return null;
@@ -334,6 +338,25 @@ function memoryTtlMs(env: FeedEnv) {
   const configured = Number(env.JOBS_FEED_MEMORY_MS);
   if (Number.isFinite(configured) && configured >= 0) return configured;
   return jobsFeedMemoryTtlMs;
+}
+
+function rememberFeed(loaded: RemoteFeed, now: number, env: FeedEnv) {
+  if (memory && snapshotTime(loaded.feed.updatedAt) < snapshotTime(memory.version)) {
+    memory = { ...memory, freshUntil: now + memoryTtlMs(env) };
+    return memory.feed;
+  }
+
+  const selected = selectPublishedFeed(loaded.feed);
+  memory = {
+    etag: loaded.etag,
+    feed: selected,
+    freshUntil: now + memoryTtlMs(env),
+    remote: loaded.feed,
+    version: loaded.feed.updatedAt
+  };
+  retryNotBefore = 0;
+  blockedVersion = undefined;
+  return selected;
 }
 
 function noteFailure(now: number, sharedVersion: string | undefined) {

@@ -20,6 +20,19 @@ import { isRevalidateAuthorized } from "../../src/lib/revalidate-auth";
 import type { JobsFeed } from "../../src/types/job";
 
 const bundled = feedData as JobsFeed;
+const hour = 60 * 60 * 1000;
+
+function atOffset(deltaMs: number) {
+  return new Date(Date.parse(bundled.updatedAt) + deltaMs).toISOString();
+}
+
+function feedBody(updatedAt: string, url = "https://feeds.example/jobs.json") {
+  return JSON.stringify({
+    updatedAt,
+    source: { name: "Blob", url },
+    jobs: []
+  });
+}
 
 test("jobs feed URL prefers JOBS_FEED_URL and otherwise uses the blob store id", () => {
   assert.equal(jobsFeedReadUrl({}), undefined);
@@ -62,11 +75,7 @@ test("the published feed parses once and reuses that object until the TTL expire
     return {
       status: 200,
       etag: "\"feed-1\"",
-      body: JSON.stringify({
-        updatedAt: "2026-11-06T00:00:00.000Z",
-        source: { name: "Blob", url: "https://feeds.example/jobs.json" },
-        jobs: []
-      })
+      body: feedBody(atOffset(hour))
     };
   });
   try {
@@ -74,7 +83,7 @@ test("the published feed parses once and reuses that object until the TTL expire
     const first = await getPublishedJobsFeed(env);
     const second = await getPublishedJobsFeed(env);
     assert.equal(first, second);
-    assert.equal(first.updatedAt, "2026-11-06T00:00:00.000Z");
+    assert.equal(first.updatedAt, atOffset(hour));
     assert.equal(requests, 1);
     assert.equal(parsePublishedJobsFeed("{"), undefined);
     assert.equal(parsePublishedJobsFeed("{}"), undefined);
@@ -84,11 +93,7 @@ test("the published feed parses once and reuses that object until the TTL expire
 });
 
 test("an unchanged published feed reuses the parsed object on 304", async () => {
-  const body = JSON.stringify({
-    updatedAt: "2026-11-06T00:00:00.000Z",
-    source: { name: "Blob", url: "https://feeds.example/jobs.json" },
-    jobs: []
-  });
+  const body = feedBody(atOffset(hour));
   let requests = 0;
   resetPublishedJobsFeedForTests(async (_url, headers) => {
     requests += 1;
@@ -175,7 +180,7 @@ test("a newer bundled snapshot wins until the remote snapshot catches up", async
 
 test("a shared snapshot version bypasses a fresh process cache", async () => {
   const feedUrl = "https://store123.public.blob.vercel-storage.com/jobs/feed.json";
-  let version = "2026-11-06T00:00:00.000Z";
+  let version = atOffset(hour);
   let requests = 0;
   resetPublishedJobsFeedForTests(async (url) => {
     requests += 1;
@@ -184,11 +189,7 @@ test("a shared snapshot version bypasses a fresh process cache", async () => {
     return {
       status: 200,
       etag: `"${version}"`,
-      body: JSON.stringify({
-        updatedAt: version,
-        source: { name: "Blob", url: feedUrl },
-        jobs: []
-      })
+      body: feedBody(version, feedUrl)
     };
   }, {
     now: () => 5_000,
@@ -197,11 +198,11 @@ test("a shared snapshot version bypasses a fresh process cache", async () => {
   const env = { JOBS_FEED_URL: feedUrl, JOBS_FEED_MEMORY_MS: "60000" };
   try {
     const first = await getPublishedJobsFeed(env);
-    version = "2026-11-06T04:00:00.000Z";
+    version = atOffset(hour * 2);
     const second = await getPublishedJobsFeed(env);
     const third = await getPublishedJobsFeed(env);
-    assert.equal(first.updatedAt, "2026-11-06T00:00:00.000Z");
-    assert.equal(second.updatedAt, "2026-11-06T04:00:00.000Z");
+    assert.equal(first.updatedAt, atOffset(hour));
+    assert.equal(second.updatedAt, atOffset(hour * 2));
     assert.equal(third, second);
     assert.equal(requests, 2);
   } finally {
@@ -211,8 +212,8 @@ test("a shared snapshot version bypasses a fresh process cache", async () => {
 
 test("revalidation waits until the published snapshot is readable", async () => {
   const feedUrl = "https://store123.public.blob.vercel-storage.com/jobs/feed.json";
-  const previous = "2026-11-05T20:00:00.000Z";
-  const expected = "2026-11-06T00:00:00.000Z";
+  const previous = atOffset(hour);
+  const expected = atOffset(hour * 2);
   let updatedAt = previous;
   let requests = 0;
   resetPublishedJobsFeedForTests(async (url) => {
@@ -221,11 +222,7 @@ test("revalidation waits until the published snapshot is readable", async () => 
     return {
       status: 200,
       etag: `"${updatedAt}"`,
-      body: JSON.stringify({
-        updatedAt,
-        source: { name: "Blob", url: feedUrl },
-        jobs: []
-      })
+      body: feedBody(updatedAt, feedUrl)
     };
   }, { now: () => 5_000 });
   const env = { JOBS_FEED_URL: feedUrl, JOBS_FEED_MEMORY_MS: "60000" };
@@ -260,24 +257,16 @@ test("revalidation waits until the published snapshot is readable", async () => 
   }
 });
 
-test("a current feed revalidates when the version pointer is missing or older", async () => {
+test("a current feed revalidates when the version pointer is missing, older, or absent", async () => {
   const feedUrl = "https://store123.public.blob.vercel-storage.com/jobs/feed.json";
-  const previous = "2026-11-05T00:00:00.000Z";
-  const expected = "2026-11-06T00:00:00.000Z";
+  const previous = atOffset(hour);
+  const expected = atOffset(hour * 2);
   let versionStatus = 404;
   let version = previous;
   let feedUpdatedAt = expected;
   resetPublishedJobsFeedForTests(async (url) => {
     if (url.includes("/jobs/version")) return { status: versionStatus, etag: null, body: version };
-    return {
-      status: 200,
-      etag: "feed",
-      body: JSON.stringify({
-        updatedAt: feedUpdatedAt,
-        source: { name: "Blob", url: feedUrl },
-        jobs: []
-      })
-    };
+    return { status: 200, etag: "feed", body: feedBody(feedUpdatedAt, feedUrl) };
   }, { now: () => 5_000 });
   const env = { JOBS_FEED_URL: feedUrl, JOBS_FEED_MEMORY_MS: "60000" };
   try {
@@ -291,12 +280,16 @@ test("a current feed revalidates when the version pointer is missing or older", 
       events.push("revalidate");
     }, env, { attempts: 1, delayMs: 0 });
     assert.equal(stalePointer.revalidated, true);
+    const customFeed = await revalidatePublishedFeed(expected, () => {
+      events.push("revalidate");
+    }, { JOBS_FEED_URL: "https://cdn.example/feed.json" }, { attempts: 1, delayMs: 0 });
+    assert.equal(customFeed.revalidated, true);
     feedUpdatedAt = previous;
     const staleFeed = await revalidatePublishedFeed(expected, () => {
       events.push("revalidate");
     }, env, { attempts: 1, delayMs: 0 });
     assert.equal(staleFeed.revalidated, false);
-    assert.deepEqual(events, ["revalidate", "revalidate"]);
+    assert.equal(events.length, 3);
   } finally {
     resetPublishedJobsFeedForTests();
   }
@@ -304,21 +297,13 @@ test("a current feed revalidates when the version pointer is missing or older", 
 
 test("an older version pointer keeps the fresh feed cache and an unchanged pointer reuses the etag", async () => {
   const feedUrl = "https://store123.public.blob.vercel-storage.com/jobs/feed.json";
-  let pointer = "2026-11-06T04:00:00.000Z";
+  let pointer = atOffset(hour * 2);
   let feedUpdatedAt = pointer;
   let requests = 0;
   resetPublishedJobsFeedForTests(async (_url, headers) => {
     requests += 1;
     if (requests === 1) assert.equal(headers["if-none-match"], undefined);
-    return {
-      status: 200,
-      etag: `"${feedUpdatedAt}"`,
-      body: JSON.stringify({
-        updatedAt: feedUpdatedAt,
-        source: { name: "Blob", url: feedUrl },
-        jobs: []
-      })
-    };
+    return { status: 200, etag: `"${feedUpdatedAt}"`, body: feedBody(feedUpdatedAt, feedUrl) };
   }, {
     now: () => 5_000,
     sharedVersion: async () => pointer
@@ -327,8 +312,8 @@ test("an older version pointer keeps the fresh feed cache and an unchanged point
   try {
     const first = await getPublishedJobsFeed(env);
     const afterFirst = requests;
-    pointer = "2026-11-06T00:00:00.000Z";
-    feedUpdatedAt = "2026-11-06T05:00:00.000Z";
+    pointer = atOffset(hour);
+    feedUpdatedAt = atOffset(hour * 3);
     const second = await getPublishedJobsFeed(env);
     assert.equal(second, first);
     assert.equal(requests, afterFirst);
@@ -339,12 +324,8 @@ test("an older version pointer keeps the fresh feed cache and an unchanged point
 
 test("an unchanged shared version sends If-None-Match after the memory TTL", async () => {
   const feedUrl = "https://store123.public.blob.vercel-storage.com/jobs/feed.json";
-  const version = "2026-11-06T00:00:00.000Z";
-  const body = JSON.stringify({
-    updatedAt: version,
-    source: { name: "Blob", url: feedUrl },
-    jobs: []
-  });
+  const version = atOffset(hour);
+  const body = feedBody(version, feedUrl);
   let requests = 0;
   resetPublishedJobsFeedForTests(async (_url, headers) => {
     requests += 1;
@@ -369,6 +350,66 @@ test("an unchanged shared version sends If-None-Match after the memory TTL", asy
   }
 });
 
+test("a stale feed read does not replace a newer cached snapshot", async () => {
+  const newer = atOffset(hour * 2);
+  const older = atOffset(hour);
+  let updatedAt = newer;
+  resetPublishedJobsFeedForTests(async () => ({
+    status: 200,
+    etag: updatedAt,
+    body: feedBody(updatedAt)
+  }), { now: () => 5_000 });
+  const env = { JOBS_FEED_URL: "https://cdn.example/feed.json", JOBS_FEED_MEMORY_MS: "0" };
+  try {
+    const first = await getPublishedJobsFeed(env);
+    updatedAt = older;
+    const second = await getPublishedJobsFeed(env);
+    assert.equal(first.updatedAt, newer);
+    assert.equal(second.updatedAt, newer);
+    assert.equal(second, first);
+  } finally {
+    resetPublishedJobsFeedForTests();
+  }
+});
+
+test("concurrent readers share one feed request until the snapshot version changes", async () => {
+  const feedUrl = "https://cdn.example/feed.json";
+  let version = atOffset(hour);
+  let releaseFirst: (() => void) | undefined;
+  const firstGate = new Promise<void>((resolve) => {
+    releaseFirst = resolve;
+  });
+  let requests = 0;
+  resetPublishedJobsFeedForTests(async () => {
+    requests += 1;
+    const snapshot = version;
+    await firstGate;
+    return { status: 200, etag: snapshot, body: feedBody(snapshot, feedUrl) };
+  }, {
+    now: () => 5_000,
+    sharedVersion: async () => version
+  });
+  const env = { JOBS_FEED_URL: feedUrl, JOBS_FEED_MEMORY_MS: "0" };
+  try {
+    const first = getPublishedJobsFeed(env);
+    const second = getPublishedJobsFeed(env);
+    for (let attempt = 0; attempt < 20 && requests < 1; attempt += 1) await Promise.resolve();
+    assert.equal(requests, 1);
+    version = atOffset(hour * 2);
+    const third = getPublishedJobsFeed(env);
+    for (let attempt = 0; attempt < 20 && requests < 2; attempt += 1) await Promise.resolve();
+    assert.equal(requests, 2);
+    releaseFirst?.();
+    const [firstFeed, secondFeed, thirdFeed] = await Promise.all([first, second, third]);
+    assert.equal(firstFeed, secondFeed);
+    assert.equal(firstFeed.updatedAt, atOffset(hour));
+    assert.equal(thirdFeed.updatedAt, atOffset(hour * 2));
+  } finally {
+    releaseFirst?.();
+    resetPublishedJobsFeedForTests();
+  }
+});
+
 test("the tagged version cache uses the daily route lifetime", () => {
   const profile = jobsFeedVersionCacheProfile();
   assert.equal(profile.revalidate, jobsFeedRevalidateSeconds);
@@ -377,8 +418,8 @@ test("the tagged version cache uses the daily route lifetime", () => {
 });
 
 test("a lagging version pointer still publishes the newer feed timestamp", async () => {
-  const previous = "2026-11-05T00:00:00.000Z";
-  const expected = "2026-11-06T00:00:00.000Z";
+  const previous = atOffset(-hour);
+  const expected = atOffset(hour);
   assert.equal(selectSharedSnapshotVersion(undefined, expected), expected);
   assert.equal(selectSharedSnapshotVersion(previous, undefined), previous);
   assert.equal(selectSharedSnapshotVersion(undefined, undefined), undefined);
@@ -387,8 +428,8 @@ test("a lagging version pointer still publishes the newer feed timestamp", async
   assert.equal(selectSharedSnapshotVersion(expected, expected), expected);
 
   const feedUrl = "https://store123.public.blob.vercel-storage.com/jobs/feed.json";
-  const cached = "2026-11-06T00:00:00.000Z";
-  const published = "2026-11-06T04:00:00.000Z";
+  const cached = atOffset(hour);
+  const published = atOffset(hour * 2);
   let shared = cached;
   let requests = 0;
   resetPublishedJobsFeedForTests(async (url) => {
@@ -486,7 +527,7 @@ test("a dropped feed connection falls back instead of waiting for the inactivity
 });
 
 test("a complete feed response is readable over HTTP", async () => {
-  const updatedAt = "2026-12-01T00:00:00.000Z";
+  const updatedAt = atOffset(hour);
   const server = createServer((_request, response) => {
     const body = JSON.stringify({
       updatedAt,
