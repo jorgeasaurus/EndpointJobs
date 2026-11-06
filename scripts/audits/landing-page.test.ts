@@ -42,7 +42,7 @@ test("the home page is a landing page with inline provider buttons", () => {
   assert.doesNotMatch(home, /which listings you have opened/i);
   assert.doesNotMatch(home, /An account is optional/);
   assert.doesNotMatch(home, /href="\/privacy"/);
-  assert.match(home, /export const revalidate = 3600/);
+  assert.match(home, /export const revalidate = 86400/);
   assert.match(home, /selectLandingPreview\(activeFeed\.jobs, initialFilterState\)/);
   assert.match(home, /Newest with salary/);
   assert.match(home, />All roles</);
@@ -63,7 +63,7 @@ test("the home page is a landing page with inline provider buttons", () => {
   assert.equal(clientProps.dynamic, "");
   assert.equal(clientProps.offenders, "");
   assert.match(board, /<JobBoard initialPage=\{initialPage\} \/>/);
-  assert.match(board, /export const revalidate = 3600/);
+  assert.match(board, /export const revalidate = 86400/);
 });
 
 test("the header sign-in control still opens the existing dialog", () => {

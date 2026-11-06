@@ -99,7 +99,28 @@ jobs:
       - name: Drop posting URL collisions
         run: npm run audit:posting-urls
 
+      - name: Check for listing changes
+        id: diff
+        run: |
+          if git diff --quiet -- src/data/jobs.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Uploads src/data/jobs.json to Vercel Blob and revalidates production.
+      # published=false keeps the git commit fallback when Blob is not configured.
+      - name: Publish listings
+        id: publish
+        if: steps.diff.outputs.changed == 'true'
+        run: npm run jobs:publish
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
+          REVALIDATE_URL: ${{ vars.REVALIDATE_URL }}
+
       - name: Commit updated listings
+        if: steps.diff.outputs.changed == 'true' && steps.publish.outputs.published == 'false'
         run: |
           if git diff --quiet -- src/data/jobs.json; then
             echo "No listing changes"

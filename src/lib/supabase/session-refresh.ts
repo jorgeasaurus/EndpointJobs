@@ -32,6 +32,7 @@ export function skipsSessionRefresh(pathname: string): boolean {
   if (pathname === "/api/jobs" || pathname.startsWith("/api/jobs/")) return true;
   if (pathname === "/api/board" || pathname.startsWith("/api/board/")) return true;
   if (pathname === "/api/mcp" || pathname.startsWith("/api/mcp/")) return true;
+  if (pathname === "/api/internal/revalidate") return true;
   if (pathname === "/mcp" || pathname.startsWith("/mcp/")) return true;
   if (pathname.startsWith("/_next/static") || pathname.startsWith("/_next/image")) return true;
   if (pathname === "/favicon.ico") return true;

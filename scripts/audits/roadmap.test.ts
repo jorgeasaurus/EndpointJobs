@@ -155,7 +155,7 @@ test("stored progress ignores unknown ids and survives bad JSON", () => {
   assert.equal(toggleSkillId(toggled, "jamf.admin.policies", known).has("jamf.admin.policies"), true);
 });
 
-test("roadmap page renders skills, source links, and progress", () => {
+test("roadmap page renders skills, source links, and progress", async () => {
   const initial = renderToStaticMarkup(createElement(RoadmapExperience));
   assert.match(initial, /<h1>Learning roadmap<\/h1>/);
   assert.match(initial, /Microsoft Intune/);
@@ -212,5 +212,5 @@ test("roadmap page renders skills, source links, and progress", () => {
   assert.match(footer, /aria-label="Browse"/);
   assert.match(footer, /aria-label="Project"/);
   assert.equal(getRoadmapPath(), "/roadmap");
-  assert.ok(sitemap().some((entry) => entry.url === new URL("/roadmap", siteUrl).toString()));
+  assert.ok((await sitemap()).some((entry) => entry.url === new URL("/roadmap", siteUrl).toString()));
 });

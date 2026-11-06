@@ -70,6 +70,27 @@ export function isExcludedJobSourceUrl(
   return getExcludedJobSourceUrlSet(additionalSourceUrls).has(normalizedSourceUrl);
 }
 
+let defaultExcludedUrls: ReadonlySet<string> | undefined;
+let additionalExcludedUrls: { source: Iterable<string>; urls: ReadonlySet<string> } | undefined;
+
+/** Built once per process. Each listing check only normalizes its own URL. */
+export function getExcludedJobSourceUrlSet(additionalSourceUrls: Iterable<string> = []) {
+  if (isEmptyIterable(additionalSourceUrls)) {
+    defaultExcludedUrls ??= buildExcludedUrlSet(defaultExcludedJobSourceUrls);
+    return defaultExcludedUrls;
+  }
+
+  if (additionalExcludedUrls?.source === additionalSourceUrls) return additionalExcludedUrls.urls;
+
+  const urls = new Set(defaultExcludedUrls ?? (defaultExcludedUrls = buildExcludedUrlSet(defaultExcludedJobSourceUrls)));
+  for (const value of additionalSourceUrls) {
+    const normalized = normalizeJobSourceUrl(value);
+    if (normalized) urls.add(normalized);
+  }
+  additionalExcludedUrls = { source: additionalSourceUrls, urls };
+  return urls;
+}
+
 export function normalizeJobSourceUrl(value: string | undefined) {
   if (!value) {
     return undefined;
@@ -88,12 +109,17 @@ export function normalizeJobSourceUrl(value: string | undefined) {
   }
 }
 
-function getExcludedJobSourceUrlSet(additionalSourceUrls: Iterable<string>) {
+function buildExcludedUrlSet(values: Iterable<string>) {
   return new Set(
-    [...defaultExcludedJobSourceUrls, ...additionalSourceUrls]
-      .map(normalizeJobSourceUrl)
-      .filter((value): value is string => Boolean(value))
+    [...values].map(normalizeJobSourceUrl).filter((value): value is string => Boolean(value))
   );
+}
+
+function isEmptyIterable(values: Iterable<string>) {
+  if (Array.isArray(values)) return values.length === 0;
+  if (values instanceof Set) return values.size === 0;
+  for (const _value of values) return false;
+  return true;
 }
 
 function isOlderThanDays(value: string, days: number | undefined, now: Date) {

@@ -20,7 +20,7 @@ export async function auditFeedIntegrity({ feed, run, sources }: AuditContext) {
   await run("FEAT-036", "Static JSON feed builds without runtime fetching", () => {
     assertTruthy(feed.updatedAt, "feed missing updatedAt");
     feed.jobs.slice(0, 10).forEach(assertValidJobShape);
-    assertIncludes(sources.page, "feedData as JobsFeed");
+    assertIncludes(sources.page, "getPublishedJobsFeed()");
     assertNotIncludes(sources.page, "fetch(");
   });
 
@@ -67,10 +67,10 @@ export async function auditFeedIntegrity({ feed, run, sources }: AuditContext) {
     assertEqual(isActiveJob(oldPostedJob, fixedAuditNow), false);
     assertEqual(isActiveJob(freshJob, fixedAuditNow), true);
     assertIncludes(sources.jobExclusions, "maxPostedAgeDays: 30", "Adzuna posted-age cap");
-    assertIncludes(sources.jobBoardPage, "getActiveBoardFeed(feedData as JobsFeed)", "board page active feed filter");
-    assertIncludes(sources.boardPage, "prepareBoardFeed(feed)", "board feed drops inactive jobs");
+    assertIncludes(sources.jobBoardPage, "getActiveBoardFeed(await getPublishedJobsFeed())", "board page active feed filter");
+    assertIncludes(sources.boardPage, "prepareBoardFeed(feed, now)", "board feed drops inactive jobs");
     for (const route of ["page", "jobBoardPage", "toolPage", "jobPage", "sitemap"] as const) {
-      assertIncludes(sources[route], "export const revalidate = 3600", `${route} hourly expiry refresh interval`);
+      assertIncludes(sources[route], "export const revalidate = 86400", `${route} daily feed revalidate backstop`);
     }
     assertIncludes(sources.workday, "completedQueries", "Workday skips isolated query failures");
     assertIncludes(sources.jobBoardPage, "activeFeed", "board page active feed projection");

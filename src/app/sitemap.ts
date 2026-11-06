@@ -1,10 +1,9 @@
 import type { MetadataRoute } from "next";
 
-import feedData from "@/data/jobs.json";
 import { getCanonicalSeoJobs } from "@/lib/job-seo";
 import { endpointToolOptions } from "@/lib/job-taxonomy";
 import { isActiveJob } from "@/lib/jobs";
-import type { JobsFeed } from "@/types/job";
+import { getPublishedJobsFeed } from "@/lib/published-jobs-feed";
 
 import {
   getApiDocsPath,
@@ -19,11 +18,11 @@ import {
   siteUrl
 } from "./site-metadata";
 
-// Refresh directory pagination and job URLs as listings expire between feed builds.
-export const revalidate = 3600;
+// Daily backstop. The refresh workflow revalidates this route after publishing the feed.
+export const revalidate = 86400;
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const feed = feedData as JobsFeed;
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const feed = await getPublishedJobsFeed();
 
   const activeJobs = feed.jobs.filter((job) => isActiveJob(job));
   const jobPages = getCanonicalSeoJobs(activeJobs).map((job) => ({

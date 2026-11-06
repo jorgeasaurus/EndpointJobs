@@ -8,7 +8,7 @@ export async function auditJobsApiBrowser({ baseUrl, browser, desktopViewport, n
     );
     expect(collection.status()).toBe(200);
     expect(collection.headers()["access-control-allow-origin"]).toBe("*");
-    expect(collection.headers()["cache-control"]).toContain("s-maxage=300");
+    expect(collection.headers()["cache-control"]).toContain("s-maxage=3600");
     const body = await collection.json();
     expect(body.data).toHaveLength(2);
     expect(body.meta.page).toBe(1);

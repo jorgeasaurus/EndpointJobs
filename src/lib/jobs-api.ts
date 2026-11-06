@@ -15,11 +15,15 @@ for (const [key, definition] of queryDefinitions) {
   }
 }
 
+export const jobsApiCacheControl = "public, s-maxage=3600, stale-while-revalidate=86400";
+
 export const jobsApiHeaders = {
   "Access-Control-Allow-Headers": "Content-Type",
   "Access-Control-Allow-Methods": "GET, OPTIONS",
   "Access-Control-Allow-Origin": "*",
-  "Cache-Control": "public, s-maxage=300, stale-while-revalidate=3600"
+  "Cache-Control": jobsApiCacheControl,
+  // Vercel applies this even when the framework replaces Cache-Control on a dynamic route.
+  "Vercel-CDN-Cache-Control": jobsApiCacheControl
 } as const;
 
 export type JobsApiError = {
@@ -93,7 +97,12 @@ export function findActiveJob(feed: JobsFeed, id: string, now = new Date()) {
 }
 
 export function getJobsApiHeaders(cacheable = true) {
-  return { ...jobsApiHeaders, "Cache-Control": cacheable ? jobsApiHeaders["Cache-Control"] : "no-store" };
+  if (cacheable) return jobsApiHeaders;
+  return {
+    ...jobsApiHeaders,
+    "Cache-Control": "no-store",
+    "Vercel-CDN-Cache-Control": "no-store"
+  };
 }
 
 function parseQuery(searchParams: URLSearchParams):

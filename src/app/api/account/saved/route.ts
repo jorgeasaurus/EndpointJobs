@@ -1,10 +1,7 @@
-import feedData from "@/data/jobs.json";
 import { savedJobSnapshot } from "@/lib/account/records";
 import { requireAccountUser } from "@/lib/account/require-user";
 import { findActiveJob } from "@/lib/jobs-api";
-import type { JobsFeed } from "@/types/job";
-
-const feed = feedData as JobsFeed;
+import { getPublishedJobsFeed } from "@/lib/published-jobs-feed";
 
 export async function POST(request: Request) {
   const session = await requireAccountUser();
@@ -12,7 +9,7 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => null) as { jobId?: unknown } | null;
   const jobId = typeof body?.jobId === "string" ? body.jobId : "";
-  const job = findActiveJob(feed, jobId);
+  const job = findActiveJob(await getPublishedJobsFeed(), jobId);
   if (!job) return Response.json({ error: "Job not found" }, { status: 404 });
 
   const { error } = await session.supabase.from("saved_jobs").upsert({

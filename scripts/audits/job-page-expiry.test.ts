@@ -24,7 +24,7 @@ test("active duplicate stops redirecting when its canonical job expires", async 
     context.mock.timers.setTime(fixedAuditNow.getTime() + 2 * 86_400_000);
     const after = await generateMetadata(props);
     assert.match(String(after.alternates?.canonical), /expiry-duplicate$/);
-    assert.deepEqual(generateStaticParams(), [{ id: duplicate.id }]);
+    assert.deepEqual(await generateStaticParams(), [{ id: duplicate.id }]);
     assert.ok(await JobPage(props));
   } finally {
     jobs.splice(0, jobs.length, ...originalJobs);

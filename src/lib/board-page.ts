@@ -17,6 +17,11 @@ export const landingPreviewLimit = 4;
 
 export const boardCacheControl = "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400";
 
+export const boardCacheHeaders = {
+  "Cache-Control": boardCacheControl,
+  "Vercel-CDN-Cache-Control": boardCacheControl
+} as const;
+
 export const boardListingOmittedFields = [
   "description",
   "expiresAt",

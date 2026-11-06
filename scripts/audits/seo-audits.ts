@@ -446,7 +446,7 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     );
   });
 
-  await run("FEAT-053", "Sitemap and robots point at the canonical site", () => {
+  await run("FEAT-053", "Sitemap and robots point at the canonical site", async () => {
     assertIncludes(sources.sitemap, "feed.updatedAt");
     assertIncludes(sources.sitemap, "siteUrl");
     assertIncludes(sources.sitemap, "images");
@@ -457,7 +457,7 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     assertIncludes(sources.sitemap, "getEndpointToolUrl(tool)", "endpoint tool page URLs");
     assertNotIncludes(sources.sitemap, "job.fetchedAt", "fetch time as false last-modified");
 
-    const sitemapUrls = sitemap().map((entry) => entry.url);
+    const sitemapUrls = (await sitemap()).map((entry) => entry.url);
     for (const tool of endpointToolOptions) {
       assertTruthy(
         sitemapUrls.includes(getEndpointToolUrl(tool)),

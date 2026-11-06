@@ -226,4 +226,4 @@ Returns `{ "data": Job, "meta": { "updatedAt": "..." } }`. Inactive, expired, ex
 
 ## Caching and CORS
 
-Successful responses use `Cache-Control: public, s-maxage=300, stale-while-revalidate=3600`. Errors use `no-store`. Cross-origin `GET` requests are allowed with `Access-Control-Allow-Origin: *`.
+Successful responses use `Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400` and the same policy on `Vercel-CDN-Cache-Control`, so the shared CDN keeps a copy for one hour and may serve it stale for a day while it refreshes. The feed is updated once per day. Errors use `Cache-Control: no-store` and `Vercel-CDN-Cache-Control: no-store`. Cross-origin `GET` and `OPTIONS` requests are allowed with `Access-Control-Allow-Origin: *`.

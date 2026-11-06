@@ -47,7 +47,8 @@ test("[API-01] job collection", async ({ request }) => {
   const ok = await request.get("/api/jobs");
   expect(ok.status()).toBe(200);
   expect(ok.headers()["access-control-allow-origin"]).toBe("*");
-  expect(ok.headers()["cache-control"]).toBe("public, s-maxage=300, stale-while-revalidate=3600");
+  expect(ok.headers()["cache-control"]).toBe("public, s-maxage=3600, stale-while-revalidate=86400");
+  expect(ok.headers()["vercel-cdn-cache-control"]).toBe("public, s-maxage=3600, stale-while-revalidate=86400");
   const body = await ok.json();
   expect(body.meta.page).toBe(1);
   expect(body.meta.limit).toBe(20);
@@ -77,7 +78,7 @@ test("[API-02] one job", async ({ request }) => {
   const id = collection.data[0].id as string;
   const ok = await request.get(`/api/jobs/${encodeURIComponent(id)}`);
   expect(ok.status()).toBe(200);
-  expect(ok.headers()["cache-control"]).toContain("s-maxage=300");
+  expect(ok.headers()["cache-control"]).toContain("s-maxage=3600");
   const detail = await ok.json();
   expect(detail.data.id).toBe(id);
   expect(typeof detail.meta.updatedAt).toBe("string");

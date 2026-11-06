@@ -48,11 +48,11 @@ GitHub Action or local command
 -> provider adapters in scripts/job-refresh/providers
 -> endpoint relevance filtering, normalization, dedupe, salary extraction
 -> src/data/jobs.json
--> Next.js static build
--> Vercel deployment
+-> Vercel Blob (jobs/feed.json) when BLOB_READ_WRITE_TOKEN is set
+-> on-demand revalidation of the board, directory, sitemap, and API
 ```
 
-The refresh script keeps the site cheap to host: there is no database, queue, or runtime job API dependency for visitors. It writes normalized jobs into `src/data/jobs.json`, and the page imports that JSON at build time.
+The refresh script keeps the site cheap to host: there is no database or queue. It writes normalized jobs into `src/data/jobs.json`. When the blob token is set, the daily workflow uploads that file and does not commit it, so production does not redeploy. The running app reads the blob and falls back to the committed file until the store is connected. Listing pages revalidate when the upload finishes, with a 24-hour backstop if the revalidate call does not land.
 
 Broader aggregator scanning includes Endpoint/UEM/security vendors and enterprise employers such as Kandji, Fleet, NinjaOne, Addigy, Mosyle, CrowdStrike, SentinelOne, Palo Alto Networks, 1Password, Bitwarden, BeyondTrust, Apple, Microsoft, Adobe, Salesforce, ServiceNow, Block, Capital One, Bloomberg, and Netflix. Search defaults also include client platform, client infrastructure, employee experience, digital workplace, corporate engineering, enterprise engineering, device trust, zero-touch, IT systems engineer, and tech operations language.
 
@@ -127,11 +127,18 @@ Ready pull requests request a GitHub Copilot review. If Copilot does not review 
 
 `.github/workflows/refresh-jobs.yml` runs daily at `11:17 UTC` and can also be run manually with `workflow_dispatch`.
 
-It installs dependencies, runs `npm run jobs:refresh`, verifies `npm run build`, commits `src/data/jobs.json` when listings change, and pushes back to `main`.
+It installs dependencies, runs `npm run jobs:refresh`, verifies `npm run build`, and drops posting URL collisions. If `BLOB_READ_WRITE_TOKEN` is set, it uploads `src/data/jobs.json` to Vercel Blob at `jobs/feed.json` and asks production to revalidate. It commits `src/data/jobs.json` and pushes to `main` only when that upload is not configured or the upload fails.
 
 ## Vercel
 
 1. Import the GitHub repo in Vercel.
 2. Framework preset: Next.js.
 3. Build command: `npm run build`.
-4. Keep Git integration enabled so feed commits redeploy automatically.
+4. Create a Blob store and connect it to this project. Vercel injects `BLOB_READ_WRITE_TOKEN` for the connected environments.
+5. Copy that same token into the GitHub Actions secret `BLOB_READ_WRITE_TOKEN` (Settings → Secrets and variables → Actions). Do not prefix it with `NEXT_PUBLIC_`.
+6. Set `REVALIDATE_SECRET` to a long random string in both places: the Vercel project environment variables for Production, and GitHub Actions secrets.
+7. Optional: set the GitHub Actions variable `REVALIDATE_URL` when production is not `https://endpointjobs.dev/api/internal/revalidate`.
+8. Redeploy once after saving the Vercel environment variables so the runtime can read them. Later listing refreshes upload the blob and revalidate; they do not create a deployment.
+9. Keep Git integration enabled for application code. A refresh that only changes listings does not push to `main` once the blob token is present.
+
+`JOBS_FEED_URL` is an optional public URL for the same file. Leave it empty when `BLOB_READ_WRITE_TOKEN` is set. The server then reads `https://<store-id>.public.blob.vercel-storage.com/jobs/feed.json`. The uploaded object is public because the listings are public; the blob CDN cache is 60 seconds. The app reuses a parsed copy in memory for 60 seconds, and `/api/jobs` tells Vercel's CDN to reuse successful responses for one hour.

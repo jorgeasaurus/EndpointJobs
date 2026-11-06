@@ -15,6 +15,6 @@ export const config = {
      * Skip session refresh for static assets, the public jobs API, and MCP.
      * Keep this list aligned with skipsSessionRefresh().
      */
-    "/((?!_next/static|_next/image|favicon.ico|api/jobs(?:/|$)|api/board(?:/|$)|api/mcp(?:/|$)|mcp(?:/|$)|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|mjs|json|webmanifest|woff2?)$).*)"
+    "/((?!_next/static|_next/image|favicon.ico|api/jobs(?:/|$)|api/board(?:/|$)|api/mcp(?:/|$)|api/internal(?:/|$)|mcp(?:/|$)|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml|mjs|json|webmanifest|woff2?)$).*)"
   ]
 };
