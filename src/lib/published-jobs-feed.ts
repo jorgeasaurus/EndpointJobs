@@ -226,8 +226,8 @@ export function collectFeedResponse(
 
 async function readReadySnapshot(url: string, expectedUpdatedAt: string | undefined): Promise<RemoteFeed | null> {
   try {
-    // The feed body is the readiness check. A missing or older version pointer
-    // must not keep pages on the previous ISR snapshot after feed.json is current.
+    // The feed body is the readiness check. The tagged version republishes that
+    // timestamp, so other instances bypass a warm snapshot when the pointer lags.
     const readUrl = expectedUpdatedAt ? jobsFeedSnapshotUrl(url, expectedUpdatedAt) : url;
     const loaded = await readRemoteFeed(readUrl, undefined);
     if (!loaded) return null;
@@ -267,19 +267,38 @@ async function currentSharedVersion(feedUrl: string): Promise<string | undefined
 }
 
 // Tagged with jobs-feed so revalidateTag drops the version on every instance.
-// A new version bypasses the process-local feed even when its TTL has not expired.
+// The value is the newer of the pointer and the feed body, including custom
+// feed URLs that have no pointer. A newer value bypasses process-local memory.
 async function readTaggedSnapshotVersion(feedUrl: string): Promise<string | undefined> {
-  const versionUrl = jobsFeedVersionUrl(feedUrl);
-  if (!versionUrl) return undefined;
   const { unstable_cache } = await import("next/cache");
-  const cacheProfile = jobsFeedVersionCacheProfile();
   const readVersion = unstable_cache(
-    async () => (await readSnapshotVersionDirect(feedUrl)) ?? "",
-    ["jobs-feed-version", versionUrl],
-    cacheProfile
+    async () => {
+      const pointer = jobsFeedVersionUrl(feedUrl) ? await readSnapshotVersionDirect(feedUrl) : undefined;
+      const feedUpdatedAt = await readFeedUpdatedAtDirect(feedUrl);
+      return selectSharedSnapshotVersion(pointer, feedUpdatedAt) ?? "";
+    },
+    ["jobs-feed-version", feedUrl],
+    jobsFeedVersionCacheProfile()
   );
   const version = await readVersion();
   return version || undefined;
+}
+
+/** Prefer the feed timestamp when the version pointer is missing or older. */
+export function selectSharedSnapshotVersion(pointer: string | undefined, feedUpdatedAt: string | undefined) {
+  if (!pointer) return feedUpdatedAt;
+  if (!feedUpdatedAt) return pointer;
+  return snapshotTime(feedUpdatedAt) >= snapshotTime(pointer) ? feedUpdatedAt : pointer;
+}
+
+async function readFeedUpdatedAtDirect(feedUrl: string): Promise<string | undefined> {
+  try {
+    const loaded = await readRemoteFeed(jobsFeedSnapshotUrl(feedUrl, `validated-${nowFn()}`), undefined);
+    return loaded?.feed.updatedAt;
+  } catch (error) {
+    console.error("Published jobs feed timestamp could not be read.", error);
+    return undefined;
+  }
 }
 
 async function readSnapshotVersionDirect(feedUrl: string): Promise<string | undefined> {

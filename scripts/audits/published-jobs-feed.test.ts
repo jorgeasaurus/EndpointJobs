@@ -12,6 +12,7 @@ import {
   getPublishedJobsFeed,
   jobsFeedVersionCacheProfile,
   parsePublishedJobsFeed,
+  selectSharedSnapshotVersion,
   resetPublishedJobsFeedForTests,
   revalidatePublishedFeed
 } from "../../src/lib/published-jobs-feed";
@@ -373,6 +374,52 @@ test("the tagged version cache uses the daily route lifetime", () => {
   assert.equal(profile.revalidate, jobsFeedRevalidateSeconds);
   assert.equal(profile.revalidate, 86_400);
   assert.deepEqual([...profile.tags], ["jobs-feed"]);
+});
+
+test("a lagging version pointer still publishes the newer feed timestamp", async () => {
+  const previous = "2026-11-05T00:00:00.000Z";
+  const expected = "2026-11-06T00:00:00.000Z";
+  assert.equal(selectSharedSnapshotVersion(undefined, expected), expected);
+  assert.equal(selectSharedSnapshotVersion(previous, undefined), previous);
+  assert.equal(selectSharedSnapshotVersion(undefined, undefined), undefined);
+  assert.equal(selectSharedSnapshotVersion(previous, expected), expected);
+  assert.equal(selectSharedSnapshotVersion(expected, previous), expected);
+  assert.equal(selectSharedSnapshotVersion(expected, expected), expected);
+
+  const feedUrl = "https://store123.public.blob.vercel-storage.com/jobs/feed.json";
+  const cached = "2026-11-06T00:00:00.000Z";
+  const published = "2026-11-06T04:00:00.000Z";
+  let shared = cached;
+  let requests = 0;
+  resetPublishedJobsFeedForTests(async (url) => {
+    requests += 1;
+    const snapshot = new URL(url).searchParams.get("v");
+    return {
+      status: 200,
+      etag: `"${snapshot}"`,
+      body: JSON.stringify({
+        updatedAt: snapshot,
+        source: { name: "Blob", url: feedUrl },
+        jobs: []
+      })
+    };
+  }, {
+    now: () => 5_000,
+    sharedVersion: async () => shared
+  });
+  const env = { JOBS_FEED_URL: feedUrl, JOBS_FEED_MEMORY_MS: "60000" };
+  try {
+    const first = await getPublishedJobsFeed(env);
+    const afterFirst = requests;
+    shared = selectSharedSnapshotVersion(cached, published) ?? published;
+    const second = await getPublishedJobsFeed(env);
+    assert.equal(first.updatedAt, cached);
+    assert.equal(second.updatedAt, published);
+    assert.equal(requests, afterFirst + 1);
+    assert.notEqual(second, first);
+  } finally {
+    resetPublishedJobsFeedForTests();
+  }
 });
 
 test("an aborted feed body rejects instead of hanging", async () => {
