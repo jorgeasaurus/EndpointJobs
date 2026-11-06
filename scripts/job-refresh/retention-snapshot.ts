@@ -1,4 +1,4 @@
-import { access, mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 
 import { jobsFeedReadUrl } from "../../src/lib/jobs-feed-config";
@@ -21,17 +21,23 @@ type RetentionEnv = {
 
 type SnapshotRead = (url: string) => Promise<{ status: number; body: string }>;
 
-/** Prefer the last published snapshot when the workflow downloaded one. */
+/**
+ * Use the downloaded blob when it is current, and the committed file when that
+ * commit is newer. A failed blob upload can leave an older public object behind.
+ */
 export async function resolveRetentionFeedPath(outputPath: string, env: RetentionEnv = process.env) {
   const override = env.JOB_PREVIOUS_FEED_PATH?.trim();
   if (!override) return outputPath;
-  try {
-    await access(override);
-    return override;
-  } catch (error) {
-    if (isNodeError(error) && error.code === "ENOENT") return outputPath;
-    throw error;
+
+  const downloadedAt = await readSnapshotUpdatedAt(override);
+  if (downloadedAt === undefined) return outputPath;
+
+  const committedAt = await readSnapshotUpdatedAt(outputPath);
+  if (committedAt !== undefined && committedAt > downloadedAt) {
+    console.log("Committed jobs feed is newer than the published blob. SerpAPI retention will use the committed snapshot.");
+    return outputPath;
   }
+  return override;
 }
 
 export async function readPreviousFeedJobs(path: string): Promise<Job[]> {
@@ -125,6 +131,18 @@ async function readPublishedSnapshot(url: string) {
     signal: AbortSignal.timeout(15_000)
   });
   return { status: response.status, body: await response.text() };
+}
+
+async function readSnapshotUpdatedAt(path: string) {
+  try {
+    const parsed = parsePublishedJobsFeed(await readFile(path, "utf8"));
+    if (!parsed) return undefined;
+    const time = Date.parse(parsed.updatedAt);
+    return Number.isFinite(time) ? time : undefined;
+  } catch (error) {
+    if (isNodeError(error) && error.code === "ENOENT") return undefined;
+    return undefined;
+  }
 }
 
 function isJobsFeed(value: unknown): value is JobsFeed {

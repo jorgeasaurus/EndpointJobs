@@ -74,11 +74,42 @@ test("refresh workflow loads the published snapshot before SerpAPI retention", (
   assert.ok(loadAt > 0 && refreshAt > loadAt);
   assert.match(workflow, /JOB_PREVIOUS_FEED_PATH: \$\{\{ runner\.temp \}\}\/published-jobs\.json/);
   assert.match(refresh, /resolveRetentionFeedPath\(outputPath\)/);
+  assert.doesNotMatch(workflow, /BLOB_READ_WRITE_TOKEN: \$\{\{ secrets\.BLOB_READ_WRITE_TOKEN \}\}/);
+  assert.match(
+    workflow,
+    /BLOB_READ_WRITE_TOKEN: \$\{\{ github\.ref == 'refs\/heads\/main' && secrets\.BLOB_READ_WRITE_TOKEN \|\| '' \}\}/
+  );
 });
 
-function feedBody(id: string) {
+test("retention keeps a newer committed snapshot over an older blob download", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "retention-newer-commit-"));
+  const committed = join(directory, "jobs.json");
+  const published = join(directory, "published.json");
+  await writeFile(committed, feedBody("committed-job", "2026-11-06T12:00:00.000Z"), "utf8");
+  await writeFile(published, feedBody("blob-job", "2026-11-05T12:00:00.000Z"), "utf8");
+  try {
+    assert.equal(
+      await resolveRetentionFeedPath(committed, { JOB_PREVIOUS_FEED_PATH: published }),
+      committed
+    );
+    const jobs = await readPreviousFeedJobs(
+      await resolveRetentionFeedPath(committed, { JOB_PREVIOUS_FEED_PATH: published })
+    );
+    assert.deepEqual(jobs.map((job) => job.id), ["committed-job"]);
+
+    await writeFile(published, feedBody("blob-job", "2026-11-07T12:00:00.000Z"), "utf8");
+    assert.equal(
+      await resolveRetentionFeedPath(committed, { JOB_PREVIOUS_FEED_PATH: published }),
+      published
+    );
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+function feedBody(id: string, updatedAt = "2026-11-06T00:00:00.000Z") {
   return JSON.stringify({
-    updatedAt: "2026-11-06T00:00:00.000Z",
+    updatedAt,
     source: { name: "Previous feed", url: "https://example.com/feed" },
     jobs: [makeJob(id)]
   });

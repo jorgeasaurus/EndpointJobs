@@ -33,7 +33,7 @@ jobs:
       - name: Load last published snapshot
         run: npm run jobs:load-retention
         env:
-          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          BLOB_READ_WRITE_TOKEN: ${{ github.ref == 'refs/heads/main' && secrets.BLOB_READ_WRITE_TOKEN || '' }}
           JOB_PREVIOUS_FEED_PATH: ${{ runner.temp }}/published-jobs.json
 
       - name: Refresh endpoint jobs
@@ -124,7 +124,7 @@ jobs:
         if: steps.diff.outputs.changed == 'true'
         run: npm run jobs:publish
         env:
-          BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+          BLOB_READ_WRITE_TOKEN: ${{ github.ref == 'refs/heads/main' && secrets.BLOB_READ_WRITE_TOKEN || '' }}
           REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
           REVALIDATE_URL: ${{ vars.REVALIDATE_URL }}
 

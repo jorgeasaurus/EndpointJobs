@@ -7,6 +7,7 @@ import {
   jobsFeedMemoryTtlMs,
   jobsFeedRetryBackoffMs,
   jobsFeedReadUrl,
+  jobsFeedRevalidateSeconds,
   jobsFeedSnapshotUrl,
   jobsFeedVersionUrl
 } from "@/lib/jobs-feed-config";
@@ -60,16 +61,16 @@ export async function getPublishedJobsFeed(env: FeedEnv = currentFeedEnv()): Pro
 
   const now = nowFn();
   const sharedVersion = await currentSharedVersion(url);
-  const versionChanged = sharedVersion !== undefined
-    && sharedVersion !== memory?.version
-    && sharedVersion !== blockedVersion;
+  const versionAdvanced = sharedVersion !== undefined
+    && snapshotTime(sharedVersion) > snapshotTime(memory?.version ?? "");
+  const versionChanged = versionAdvanced && sharedVersion !== blockedVersion;
 
   if (!versionChanged && memory && now < memory.freshUntil) return memory.feed;
   if (!versionChanged && now < retryNotBefore) return fallbackFeed();
 
   try {
     const readUrl = sharedVersion ? jobsFeedSnapshotUrl(url, sharedVersion) : url;
-    const loaded = await readRemoteFeed(readUrl, sharedVersion ? undefined : memory?.etag);
+    const loaded = await readRemoteFeed(readUrl, versionAdvanced ? undefined : memory?.etag);
     if (!loaded) {
       noteFailure(now, sharedVersion);
       return fallbackFeed();
@@ -161,6 +162,11 @@ export function cachedPublishedJobsFeedUpdatedAt() {
   return memory?.feed.updatedAt;
 }
 
+/** Daily lifetime so this tagged read does not shorten route ISR below 86400. */
+export function jobsFeedVersionCacheProfile() {
+  return { revalidate: jobsFeedRevalidateSeconds, tags: [jobsFeedCacheTag] };
+}
+
 /** Resolve a feed body, and reject when the socket aborts or errors mid-body. */
 export function collectFeedResponse(
   response: IncomingMessage,
@@ -220,11 +226,8 @@ export function collectFeedResponse(
 
 async function readReadySnapshot(url: string, expectedUpdatedAt: string | undefined): Promise<RemoteFeed | null> {
   try {
-    if (expectedUpdatedAt && jobsFeedVersionUrl(url)) {
-      const version = await readSnapshotVersionDirect(url);
-      if (!version || !isSnapshotCurrent(version, expectedUpdatedAt)) return null;
-    }
-
+    // The feed body is the readiness check. A missing or older version pointer
+    // must not keep pages on the previous ISR snapshot after feed.json is current.
     const readUrl = expectedUpdatedAt ? jobsFeedSnapshotUrl(url, expectedUpdatedAt) : url;
     const loaded = await readRemoteFeed(readUrl, undefined);
     if (!loaded) return null;
@@ -269,10 +272,11 @@ async function readTaggedSnapshotVersion(feedUrl: string): Promise<string | unde
   const versionUrl = jobsFeedVersionUrl(feedUrl);
   if (!versionUrl) return undefined;
   const { unstable_cache } = await import("next/cache");
+  const cacheProfile = jobsFeedVersionCacheProfile();
   const readVersion = unstable_cache(
     async () => (await readSnapshotVersionDirect(feedUrl)) ?? "",
     ["jobs-feed-version", versionUrl],
-    { revalidate: 60, tags: [jobsFeedCacheTag] }
+    cacheProfile
   );
   const version = await readVersion();
   return version || undefined;

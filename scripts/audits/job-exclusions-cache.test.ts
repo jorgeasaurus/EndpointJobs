@@ -23,6 +23,17 @@ test("the default exclusion set is reused and extra URLs stay excluded", () => {
   assert.equal(isExcludedJobSourceUrl("https://example.com/closed-role?utm_source=test", extra), true);
   assert.equal(isExcludedJobSourceUrl("https://www.adzuna.com/details/5763079616"), true);
   assert.equal(isExcludedJobSourceUrl("https://example.com/still-open"), false);
+  assert.equal(getExcludedJobSourceUrlSet(new Set()), first);
+});
+
+test("exclusion checks do not consume a single-use iterator before reading it", () => {
+  function* extras() {
+    yield "https://example.com/iterator-only";
+  }
+
+  const iterator = extras();
+  assert.equal(isExcludedJobSourceUrl("https://example.com/iterator-only", iterator), true);
+  assert.equal(isExcludedJobSourceUrl("https://example.com/set-only", new Set(["https://example.com/set-only"]).values()), true);
 });
 
 test("querying the published feed stays cheap after the exclusion set is cached", () => {

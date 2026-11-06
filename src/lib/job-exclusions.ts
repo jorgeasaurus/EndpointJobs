@@ -118,8 +118,9 @@ function buildExcludedUrlSet(values: Iterable<string>) {
 function isEmptyIterable(values: Iterable<string>) {
   if (Array.isArray(values)) return values.length === 0;
   if (values instanceof Set) return values.size === 0;
-  for (const _value of values) return false;
-  return true;
+  // Generators and Set.values() can be read only once. Treat them as nonempty
+  // so the exclusion loop still sees every item.
+  return false;
 }
 
 function isOlderThanDays(value: string, days: number | undefined, now: Date) {

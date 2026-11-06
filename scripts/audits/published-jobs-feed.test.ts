@@ -5,11 +5,12 @@ import type { AddressInfo } from "node:net";
 import { describe, test } from "node:test";
 
 import feedData from "../../src/data/jobs.json";
-import { jobsFeedReadUrl, jobsFeedRetryBackoffMs, jobsFeedSnapshotUrl, jobsFeedVersionUrl } from "../../src/lib/jobs-feed-config";
+import { jobsFeedReadUrl, jobsFeedRetryBackoffMs, jobsFeedRevalidateSeconds, jobsFeedSnapshotUrl, jobsFeedVersionUrl } from "../../src/lib/jobs-feed-config";
 import {
   cachedPublishedJobsFeedUpdatedAt,
   collectFeedResponse,
   getPublishedJobsFeed,
+  jobsFeedVersionCacheProfile,
   parsePublishedJobsFeed,
   resetPublishedJobsFeedForTests,
   revalidatePublishedFeed
@@ -258,14 +259,15 @@ test("revalidation waits until the published snapshot is readable", async () => 
   }
 });
 
-test("revalidation does not run when only the version pointer or only the feed is current", async () => {
+test("a current feed revalidates when the version pointer is missing or older", async () => {
   const feedUrl = "https://store123.public.blob.vercel-storage.com/jobs/feed.json";
   const previous = "2026-11-05T00:00:00.000Z";
   const expected = "2026-11-06T00:00:00.000Z";
+  let versionStatus = 404;
   let version = previous;
   let feedUpdatedAt = expected;
   resetPublishedJobsFeedForTests(async (url) => {
-    if (url.includes("/jobs/version")) return { status: 200, etag: null, body: version };
+    if (url.includes("/jobs/version")) return { status: versionStatus, etag: null, body: version };
     return {
       status: 200,
       etag: "feed",
@@ -279,20 +281,98 @@ test("revalidation does not run when only the version pointer or only the feed i
   const env = { JOBS_FEED_URL: feedUrl, JOBS_FEED_MEMORY_MS: "60000" };
   try {
     const events: string[] = [];
+    const missingPointer = await revalidatePublishedFeed(expected, () => {
+      events.push("revalidate");
+    }, env, { attempts: 1, delayMs: 0 });
+    assert.equal(missingPointer.revalidated, true);
+    versionStatus = 200;
     const stalePointer = await revalidatePublishedFeed(expected, () => {
       events.push("revalidate");
     }, env, { attempts: 1, delayMs: 0 });
-    assert.equal(stalePointer.revalidated, false);
-    version = expected;
+    assert.equal(stalePointer.revalidated, true);
     feedUpdatedAt = previous;
     const staleFeed = await revalidatePublishedFeed(expected, () => {
       events.push("revalidate");
     }, env, { attempts: 1, delayMs: 0 });
     assert.equal(staleFeed.revalidated, false);
-    assert.equal(events.length, 0);
+    assert.deepEqual(events, ["revalidate", "revalidate"]);
   } finally {
     resetPublishedJobsFeedForTests();
   }
+});
+
+test("an older version pointer keeps the fresh feed cache and an unchanged pointer reuses the etag", async () => {
+  const feedUrl = "https://store123.public.blob.vercel-storage.com/jobs/feed.json";
+  let pointer = "2026-11-06T04:00:00.000Z";
+  let feedUpdatedAt = pointer;
+  let requests = 0;
+  resetPublishedJobsFeedForTests(async (_url, headers) => {
+    requests += 1;
+    if (requests === 1) assert.equal(headers["if-none-match"], undefined);
+    return {
+      status: 200,
+      etag: `"${feedUpdatedAt}"`,
+      body: JSON.stringify({
+        updatedAt: feedUpdatedAt,
+        source: { name: "Blob", url: feedUrl },
+        jobs: []
+      })
+    };
+  }, {
+    now: () => 5_000,
+    sharedVersion: async () => pointer
+  });
+  const env = { JOBS_FEED_URL: feedUrl, JOBS_FEED_MEMORY_MS: "60000" };
+  try {
+    const first = await getPublishedJobsFeed(env);
+    const afterFirst = requests;
+    pointer = "2026-11-06T00:00:00.000Z";
+    feedUpdatedAt = "2026-11-06T05:00:00.000Z";
+    const second = await getPublishedJobsFeed(env);
+    assert.equal(second, first);
+    assert.equal(requests, afterFirst);
+  } finally {
+    resetPublishedJobsFeedForTests();
+  }
+});
+
+test("an unchanged shared version sends If-None-Match after the memory TTL", async () => {
+  const feedUrl = "https://store123.public.blob.vercel-storage.com/jobs/feed.json";
+  const version = "2026-11-06T00:00:00.000Z";
+  const body = JSON.stringify({
+    updatedAt: version,
+    source: { name: "Blob", url: feedUrl },
+    jobs: []
+  });
+  let requests = 0;
+  resetPublishedJobsFeedForTests(async (_url, headers) => {
+    requests += 1;
+    if (requests === 1) {
+      assert.equal(headers["if-none-match"], undefined);
+      return { status: 200, etag: "\"feed-1\"", body };
+    }
+    assert.equal(headers["if-none-match"], "\"feed-1\"");
+    return { status: 304, etag: "\"feed-1\"", body: "" };
+  }, {
+    now: () => 5_000,
+    sharedVersion: async () => version
+  });
+  try {
+    const env = { JOBS_FEED_URL: feedUrl, JOBS_FEED_MEMORY_MS: "0" };
+    const first = await getPublishedJobsFeed(env);
+    const second = await getPublishedJobsFeed(env);
+    assert.equal(second, first);
+    assert.equal(requests, 2);
+  } finally {
+    resetPublishedJobsFeedForTests();
+  }
+});
+
+test("the tagged version cache uses the daily route lifetime", () => {
+  const profile = jobsFeedVersionCacheProfile();
+  assert.equal(profile.revalidate, jobsFeedRevalidateSeconds);
+  assert.equal(profile.revalidate, 86_400);
+  assert.deepEqual([...profile.tags], ["jobs-feed"]);
 });
 
 test("an aborted feed body rejects instead of hanging", async () => {
