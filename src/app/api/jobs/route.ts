@@ -1,11 +1,8 @@
-import feedData from "@/data/jobs.json";
 import { getJobsApiHeaders, jobsApiHeaders, queryJobs } from "@/lib/jobs-api";
-import type { JobsFeed } from "@/types/job";
+import { getPublishedJobsFeed } from "@/lib/published-jobs-feed";
 
-const feed = feedData as JobsFeed;
-
-export function GET(request: Request) {
-  const result = queryJobs(feed, new URL(request.url).searchParams);
+export async function GET(request: Request) {
+  const result = queryJobs(await getPublishedJobsFeed(), new URL(request.url).searchParams);
   return Response.json(result.body, {
     status: result.ok ? 200 : result.status,
     headers: getJobsApiHeaders(result.ok)

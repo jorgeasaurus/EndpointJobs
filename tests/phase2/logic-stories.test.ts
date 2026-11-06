@@ -195,7 +195,7 @@ test("[AUTH-05] safe next paths and local allow list", () => {
 test("[AUTH-07] session refresh skips public routes", () => {
   assert.equal(authFetchTimeoutMs("https://example.supabase.co/auth/v1/token"), 8000);
   assert.equal(authFetchTimeoutMs("https://example.supabase.co/auth/v1/user"), 2000);
-  for (const path of ["/api/jobs", "/api/jobs/abc", "/api/board", "/api/board/map", "/api/mcp", "/mcp", "/favicon.ico", "/og-image.png"]) {
+  for (const path of ["/api/jobs", "/api/jobs/abc", "/api/board", "/api/board/map", "/api/mcp", "/api/internal/revalidate", "/mcp", "/favicon.ico", "/og-image.png"]) {
     assert.equal(skipsSessionRefresh(path), true, path);
   }
   assert.equal(skipsSessionRefresh("/board"), false);

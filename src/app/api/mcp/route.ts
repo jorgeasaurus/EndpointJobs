@@ -1,14 +1,13 @@
 import { createMcpHandler } from "mcp-handler";
-import feedData from "@/data/jobs.json";
 import { registerJobsMcpTools } from "@/lib/jobs-mcp";
 import { getMcpAllowedOrigins, withMcpHttp } from "@/lib/mcp-http";
-import type { JobsFeed } from "@/types/job";
+import { getPublishedJobsFeed } from "@/lib/published-jobs-feed";
 import { version } from "../../../../package.json";
 
 export const runtime = "nodejs";
 
 const mcpHandler = createMcpHandler(
-  (server) => registerJobsMcpTools(server, feedData as JobsFeed),
+  (server) => registerJobsMcpTools(server, getPublishedJobsFeed),
   {
     serverInfo: { name: "endpointjobs", version },
     maxSubscriptions: 0,

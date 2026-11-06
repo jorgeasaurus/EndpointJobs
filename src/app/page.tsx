@@ -5,19 +5,19 @@ import { LandingSignIn } from "@/components/auth/landing-sign-in";
 import { initialFilterState } from "@/components/job-board/filter-model";
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
 import { SiteFooter, Topbar } from "@/components/job-board/topbar";
-import feedData from "@/data/jobs.json";
 import { getActiveSourceFeed, queryBoardPage, selectLandingPreview } from "@/lib/board-page";
 import { formatRelativePosted, formatRelativeUpdated, formatUpdatedAt } from "@/lib/jobs";
+import { getPublishedJobsFeed } from "@/lib/published-jobs-feed";
 import { formatRolePlace } from "@/lib/role-place";
 import { formatShownSalary } from "@/lib/shown-salary";
 import { getJobWorkplace } from "@/lib/workplace";
-import type { JobsFeed } from "@/types/job";
 
 import { getBoardPath, getJobPath } from "./site-metadata";
 import { getLandingJsonLd, serializeJsonLd } from "./structured-data";
 import "./landing.css";
 
-export const revalidate = 3600;
+// Daily backstop. The refresh workflow revalidates this route after publishing the feed.
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   robots: {
@@ -35,8 +35,8 @@ export const metadata: Metadata = {
 
 const countFormat = new Intl.NumberFormat("en-US");
 
-export default function Home() {
-  const activeFeed = getActiveSourceFeed(feedData as JobsFeed);
+export default async function Home() {
+  const activeFeed = getActiveSourceFeed(await getPublishedJobsFeed());
   const board = queryBoardPage(activeFeed, initialFilterState, 1);
   const preview = selectLandingPreview(activeFeed.jobs, initialFilterState).map((job) => ({
     id: job.id,

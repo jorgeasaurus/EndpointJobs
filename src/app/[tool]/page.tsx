@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 
 import { JobBoard } from "@/components/job-board";
 import { withInitialTools } from "@/components/job-board/filter-model";
-import feedData from "@/data/jobs.json";
 import { getActiveBoardFeed, queryBoardPage } from "@/lib/board-page";
 import { getEndpointToolSeo } from "@/lib/job-seo";
 import {
@@ -11,7 +10,7 @@ import {
   getEndpointToolBySlug,
   getEndpointToolSlug
 } from "@/lib/job-taxonomy";
-import type { JobsFeed } from "@/types/job";
+import { getPublishedJobsFeed } from "@/lib/published-jobs-feed";
 
 import {
   getEndpointToolUrl,
@@ -24,9 +23,8 @@ type ToolPageProps = {
   params: Promise<{ tool: string }>;
 };
 
-const feed = feedData as JobsFeed;
-
-export const revalidate = 3600;
+// Daily backstop. The refresh workflow revalidates this route after publishing the feed.
+export const revalidate = 86400;
 
 // Static app segments (`/board`, `/jobs`, `/privacy`, `/api`, `/api-docs`) are
 // more specific than this `[tool]` param, so those routes keep winning. Only
@@ -94,7 +92,7 @@ export default async function EndpointToolPage({ params }: ToolPageProps) {
     notFound();
   }
 
-  const activeFeed = getActiveBoardFeed(feed);
+  const activeFeed = getActiveBoardFeed(await getPublishedJobsFeed());
   const initialPage = queryBoardPage(activeFeed, withInitialTools([tool]), 1);
 
   return <JobBoard initialPage={initialPage} initialSelectedTools={[tool]} />;

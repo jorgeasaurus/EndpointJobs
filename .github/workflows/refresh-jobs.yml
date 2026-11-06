@@ -28,9 +28,18 @@ jobs:
       - name: Install dependencies
         run: npm ci --ignore-scripts
 
+      # Blob-only publishes do not commit jobs.json. Load the last published
+      # snapshot so SerpAPI retention sees listings from the previous run.
+      - name: Load last published snapshot
+        run: npm run jobs:load-retention
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ github.ref == 'refs/heads/main' && secrets.BLOB_READ_WRITE_TOKEN || '' }}
+          JOB_PREVIOUS_FEED_PATH: ${{ runner.temp }}/published-jobs.json
+
       - name: Refresh endpoint jobs
         run: npm run jobs:refresh
         env:
+          JOB_PREVIOUS_FEED_PATH: ${{ runner.temp }}/published-jobs.json
           JOB_PROVIDERS: remotive,arbeitnow,jobicy,remoteok,greenhouse,lever,muse,ashby,workable,amazon,workday,oraclehcm,jibe,activate,smartrecruiters,recruitee,schooljobs,curated,techmaprss,adzuna,theirstack,serpapi,rapidapi,rapidapilinkedin,aidevboard,himalayas,fourdayweek
           JOB_WORKABLE_ACCOUNTS: ${{ vars.JOB_WORKABLE_ACCOUNTS }}
           JOB_TECHMAP_RSS_FEEDS: ${{ secrets.JOB_TECHMAP_RSS_FEEDS }}
@@ -99,7 +108,28 @@ jobs:
       - name: Drop posting URL collisions
         run: npm run audit:posting-urls
 
+      - name: Check for listing changes
+        id: diff
+        run: |
+          if git diff --quiet -- src/data/jobs.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Uploads src/data/jobs.json to Vercel Blob and revalidates production.
+      # published=false keeps the git commit fallback when Blob is not configured.
+      - name: Publish listings
+        id: publish
+        if: steps.diff.outputs.changed == 'true'
+        run: npm run jobs:publish
+        env:
+          BLOB_READ_WRITE_TOKEN: ${{ github.ref == 'refs/heads/main' && secrets.BLOB_READ_WRITE_TOKEN || '' }}
+          REVALIDATE_SECRET: ${{ secrets.REVALIDATE_SECRET }}
+          REVALIDATE_URL: ${{ vars.REVALIDATE_URL }}
+
       - name: Commit updated listings
+        if: steps.diff.outputs.changed == 'true' && steps.publish.outputs.published == 'false'
         run: |
           if git diff --quiet -- src/data/jobs.json; then
             echo "No listing changes"

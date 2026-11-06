@@ -460,7 +460,7 @@
         "description": "Shared cache policy.",
         "schema": {
           "type": "string",
-          "example": "public, s-maxage=300, stale-while-revalidate=3600"
+          "example": "public, s-maxage=3600, stale-while-revalidate=86400"
         }
       },
       "NoStore": {

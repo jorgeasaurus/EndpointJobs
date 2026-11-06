@@ -17,7 +17,7 @@ for (const count of [0, 1, 50, 51, 100, 101]) {
       makeJob({ id: `sitemap-${index}`, company: `Company ${index}` })
     ));
     try {
-      const directoryUrls = sitemap().map((entry) => entry.url)
+      const directoryUrls = (await sitemap()).map((entry) => entry.url)
         .filter((url) => new URL(url).pathname === "/jobs");
       const expectedPages = Math.max(1, Math.ceil(count / 50));
       assert.equal(directoryUrls.length, expectedPages);
@@ -36,7 +36,7 @@ for (const count of [0, 1, 50, 51, 100, 101]) {
   });
 }
 
-test("sitemap pagination excludes duplicates and shrinks when canonical listings expire", (context) => {
+test("sitemap pagination excludes duplicates and shrinks when canonical listings expire", async (context) => {
   const originalJobs = [...jobs];
   const description = "Manage Windows endpoints and automate their deployment. ".repeat(40);
   const staleAfter = new Date(fixedAuditNow.getTime() + 86_400_000).toISOString();
@@ -49,14 +49,14 @@ test("sitemap pagination excludes duplicates and shrinks when canonical listings
   const expired = makeJob({ id: "expired", staleAfter: new Date(fixedAuditNow.getTime() - 1).toISOString() });
   jobs.splice(0, jobs.length, ...stable, direct, duplicate, expiring, expired);
   try {
-    const before = sitemap().map((entry) => entry.url);
+    const before = (await sitemap()).map((entry) => entry.url);
     assert.ok(before.includes("https://endpointjobs.dev/jobs?page=2"));
     assert.ok(before.includes("https://endpointjobs.dev/jobs/direct"));
     assert.ok(!before.includes("https://endpointjobs.dev/jobs/duplicate"));
     assert.ok(!before.includes("https://endpointjobs.dev/jobs/expired"));
 
     context.mock.timers.setTime(fixedAuditNow.getTime() + 2 * 86_400_000);
-    const after = sitemap().map((entry) => entry.url);
+    const after = (await sitemap()).map((entry) => entry.url);
     assert.ok(after.includes("https://endpointjobs.dev/jobs"));
     assert.ok(!after.includes("https://endpointjobs.dev/jobs?page=2"));
     assert.ok(!after.includes("https://endpointjobs.dev/jobs/expiring"));

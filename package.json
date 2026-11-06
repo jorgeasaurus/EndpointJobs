@@ -1,6 +1,6 @@
 {
   "name": "endpoint-jobs",
-  "version": "0.1.36",
+  "version": "0.1.38",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,6 +15,8 @@
     "test:rls": "tsx --test scripts/audits/rls-user-isolation.test.ts",
     "audit:signed-out": "node scripts/audits/signed-out-board-browser.mjs",
     "jobs:refresh": "tsx scripts/refresh-jobs.ts",
+    "jobs:publish": "tsx scripts/publish-jobs-feed.ts",
+    "jobs:load-retention": "tsx scripts/load-retention-snapshot.ts",
     "jobs:classify-sponsorship": "tsx scripts/backfill-sponsorship.ts",
     "docs:api": "tsx scripts/generate-openapi.ts",
     "doctor": "react-doctor",
@@ -36,6 +38,7 @@
     "@supabase/supabase-js": "^2.118.0",
     "@typesafe-ai/sdk": "^0.6.0",
     "@vercel/analytics": "^2.0.1",
+    "@vercel/blob": "^2.8.2",
     "fast-xml-parser": "^5.8.0",
     "lucide-react": "^0.468.0",
     "maplibre-gl": "^6.9.0",

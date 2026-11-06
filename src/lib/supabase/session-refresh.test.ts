@@ -18,6 +18,7 @@ test("session refresh skips the jobs API, MCP, and static assets", () => {
     "/api/board/map",
     "/api/board/listings/example",
     "/api/mcp",
+    "/api/internal/revalidate",
     "/mcp",
     "/mcp/guide",
     "/_next/static/chunks/app.js",
@@ -42,6 +43,7 @@ test("proxy matcher excludes the jobs API, MCP, and static files", () => {
   assert.match(source, /api\/jobs/);
   assert.match(source, /api\/board/);
   assert.match(source, /api\/mcp/);
+  assert.match(source, /api\/internal/);
   assert.match(source, /mcp/);
   assert.match(source, /_next\/static/);
   assert.match(source, /export async function proxy/);

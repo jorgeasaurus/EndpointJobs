@@ -23,7 +23,7 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
   await run("FEAT-001", "Static job board loads from active feed data", () => {
     assertTruthy(feed.jobs.length > 0, "feed has no jobs");
     assertTruthy(feed.jobs.some((job) => isActiveJob(job)), "feed has no active jobs");
-    assertIncludes(sources.page, "import feedData from \"@/data/jobs.json\"");
+    assertIncludes(sources.page, "getPublishedJobsFeed()");
     assertIncludes(sources.page, "See the jobs");
     assertIncludes(sources.jobBoardPage, "<JobBoard initialPage={initialPage} />");
     assertNotIncludes(sources.page, "<JobBoard");

@@ -2,6 +2,7 @@ import { filterStateFromSearchParams } from "@/components/job-board/filter-url";
 import { savedIdsForRequest } from "@/app/api/board/saved/saved-ids";
 import { getMemoizedActiveBoardFeed } from "@/lib/active-board-feed";
 import { queryBoardMap } from "@/lib/board-page";
+import { getPublishedJobsFeed } from "@/lib/published-jobs-feed";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +16,7 @@ export async function GET(request: Request) {
   }
 
   const jobs = queryBoardMap(
-    getMemoizedActiveBoardFeed(),
+    getMemoizedActiveBoardFeed(new Date(), await getPublishedJobsFeed()),
     filterStateFromSearchParams(parameters),
     saved.ids
   );

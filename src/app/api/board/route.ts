@@ -1,18 +1,19 @@
 import { filterStateFromSearchParams } from "@/components/job-board/filter-url";
 import { getMemoizedActiveBoardFeed } from "@/lib/active-board-feed";
-import { boardCacheControl, queryBoardPage } from "@/lib/board-page";
+import { boardCacheHeaders, queryBoardPage } from "@/lib/board-page";
+import { getPublishedJobsFeed } from "@/lib/published-jobs-feed";
 
 export const revalidate = 3600;
 
-export function GET(request: Request) {
+export async function GET(request: Request) {
   const parameters = new URL(request.url).searchParams;
   const body = queryBoardPage(
-    getMemoizedActiveBoardFeed(),
+    getMemoizedActiveBoardFeed(new Date(), await getPublishedJobsFeed()),
     filterStateFromSearchParams(parameters),
     readPage(parameters.get("page"))
   );
 
-  return Response.json(body, { headers: { "Cache-Control": boardCacheControl } });
+  return Response.json(body, { headers: boardCacheHeaders });
 }
 
 function readPage(value: string | null) {

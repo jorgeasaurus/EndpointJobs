@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 
 import { JobBoard } from "@/components/job-board";
 import { initialFilterState } from "@/components/job-board/filter-model";
-import feedData from "@/data/jobs.json";
 import { getActiveBoardFeed, queryBoardPage } from "@/lib/board-page";
-import type { JobsFeed } from "@/types/job";
+import { getPublishedJobsFeed } from "@/lib/published-jobs-feed";
 
 import { getBoardPath, siteUrl } from "../site-metadata";
 import { getHomeJsonLd, serializeJsonLd } from "../structured-data";
 
-export const revalidate = 3600;
+// Daily backstop. The refresh workflow revalidates this route after publishing the feed.
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "Job board",
@@ -27,8 +27,8 @@ export const metadata: Metadata = {
   }
 };
 
-export default function BoardPage() {
-  const activeFeed = getActiveBoardFeed(feedData as JobsFeed);
+export default async function BoardPage() {
+  const activeFeed = getActiveBoardFeed(await getPublishedJobsFeed());
   const initialPage = queryBoardPage(activeFeed, initialFilterState, 1);
 
   return (

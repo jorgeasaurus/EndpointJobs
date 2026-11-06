@@ -4,10 +4,9 @@ import { notFound } from "next/navigation";
 
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
 import { SiteFooter, Topbar } from "@/components/job-board/topbar";
-import feedData from "@/data/jobs.json";
 import { getCanonicalSeoIndex } from "@/lib/job-seo";
 import { formatPostedDate, isActiveJob } from "@/lib/jobs";
-import type { JobsFeed } from "@/types/job";
+import { getPublishedJobsFeed } from "@/lib/published-jobs-feed";
 
 import {
   getJobPath,
@@ -20,9 +19,11 @@ type DirectoryPageProps = {
   searchParams: Promise<{ page?: string | string[] }>;
 };
 
-const feed = feedData as JobsFeed;
+// Daily backstop. The refresh workflow revalidates this route after publishing the feed.
+export const revalidate = 86400;
 
-function resolveDirectoryPage(value: string | string[] | undefined) {
+async function resolveDirectoryPage(value: string | string[] | undefined) {
+  const feed = await getPublishedJobsFeed();
   const page = parsePage(value);
   const now = new Date();
   const unexpiredJobs = feed.jobs.filter((job) => isActiveJob(job, now));
@@ -32,11 +33,11 @@ function resolveDirectoryPage(value: string | string[] | undefined) {
 
   // Page 1 remains valid when the directory is empty.
   if (page > Math.max(totalPages, 1)) notFound();
-  return { page, activeJobs, totalPages };
+  return { page, activeJobs, totalPages, updatedAt: feed.updatedAt };
 }
 
 export async function generateMetadata({ searchParams }: DirectoryPageProps): Promise<Metadata> {
-  const { page } = resolveDirectoryPage((await searchParams).page);
+  const { page } = await resolveDirectoryPage((await searchParams).page);
   const title = page > 1 ? `Endpoint Jobs Directory — Page ${page}` : "Endpoint Jobs Directory";
   const canonical = page > 1 ? `${siteUrl}/jobs?page=${page}` : `${siteUrl}/jobs`;
 
@@ -49,7 +50,7 @@ export async function generateMetadata({ searchParams }: DirectoryPageProps): Pr
 }
 
 export default async function JobsDirectory({ searchParams }: DirectoryPageProps) {
-  const { page, activeJobs, totalPages } = resolveDirectoryPage((await searchParams).page);
+  const { page, activeJobs, totalPages, updatedAt } = await resolveDirectoryPage((await searchParams).page);
 
   const pageJobs = activeJobs.slice((page - 1) * jobsPerPage, page * jobsPerPage);
 
@@ -58,7 +59,7 @@ export default async function JobsDirectory({ searchParams }: DirectoryPageProps
       <ParallaxBackground />
 
       <div className="site-content">
-        <Topbar updatedAt={feed.updatedAt} />
+        <Topbar updatedAt={updatedAt} />
 
         <section className="job-directory">
           <header className="job-directory-header">
@@ -98,7 +99,7 @@ export default async function JobsDirectory({ searchParams }: DirectoryPageProps
           </nav>
         </section>
 
-        <SiteFooter updatedAt={feed.updatedAt} />
+        <SiteFooter updatedAt={updatedAt} />
       </div>
     </main>
   );

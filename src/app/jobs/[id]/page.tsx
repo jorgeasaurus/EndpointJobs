@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 
-import feedData from "@/data/jobs.json";
 import { getCanonicalSeoIndex } from "@/lib/job-seo";
 import {
   getJobDescriptionBlocks,
@@ -15,6 +14,7 @@ import { getJobWorkplace } from "@/lib/workplace";
 import { dedupeJobLead } from "@/lib/listing-copy";
 import { listingLanguage, presentSalary } from "@/lib/job-trust";
 import { seedPlatformChipFixture } from "@/lib/platform-chip-fixture";
+import { getPublishedJobsFeed } from "@/lib/published-jobs-feed";
 import type { Job, JobsFeed } from "@/types/job";
 
 import { JobAccountActions } from "@/components/account/job-account-actions";
@@ -36,17 +36,15 @@ type JobPageProps = {
   params: Promise<{ id: string }>;
 };
 
-// Refresh expiry-dependent content, metadata, and canonical selection between feed builds.
-export const revalidate = 3600;
+// Daily backstop. The refresh workflow revalidates this route after publishing the feed.
+export const revalidate = 86400;
 
-const feed = feedData as JobsFeed;
-
-function getActiveJobs(now = new Date()) {
+function getActiveJobs(feed: JobsFeed, now = new Date()) {
   return seedPlatformChipFixture(feed.jobs.filter((job) => isActiveJob(job, now)), now);
 }
 
-export function generateStaticParams() {
-  const canonicalJobIndex = getCanonicalSeoIndex(getActiveJobs());
+export async function generateStaticParams() {
+  const canonicalJobIndex = getCanonicalSeoIndex(getActiveJobs(await getPublishedJobsFeed()));
   return [...new Set(canonicalJobIndex.values())].map((id) => ({ id }));
 }
 
@@ -54,8 +52,8 @@ type ResolvedJobPage =
   | { kind: "found"; job: Job; canonicalJobId: string }
   | { kind: "not-found" };
 
-function resolveJobPageState(id: string): ResolvedJobPage {
-  const activeJobs = getActiveJobs();
+function resolveJobPageState(feed: JobsFeed, id: string): ResolvedJobPage {
+  const activeJobs = getActiveJobs(feed);
   const job = activeJobs.find((candidate) => candidate.id === id);
   if (!job) return { kind: "not-found" };
 
@@ -64,8 +62,8 @@ function resolveJobPageState(id: string): ResolvedJobPage {
 }
 
 export async function generateMetadata({ params }: JobPageProps): Promise<Metadata> {
-  const { id } = await params;
-  const resolved = resolveJobPageState(id);
+  const [{ id }, feed] = await Promise.all([params, getPublishedJobsFeed()]);
+  const resolved = resolveJobPageState(feed, id);
 
   if (resolved.kind === "not-found") {
     return {
@@ -102,8 +100,8 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
 }
 
 export default async function JobPage({ params }: JobPageProps) {
-  const { id } = await params;
-  const resolved = resolveJobPageState(id);
+  const [{ id }, feed] = await Promise.all([params, getPublishedJobsFeed()]);
+  const resolved = resolveJobPageState(feed, id);
 
   if (resolved.kind === "not-found") {
     notFound();

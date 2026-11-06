@@ -1,4 +1,3 @@
-import feedData from "@/data/jobs.json";
 import {
   createJobsApiError,
   createJobResponse,
@@ -6,15 +5,13 @@ import {
   getJobsApiHeaders,
   jobsApiHeaders
 } from "@/lib/jobs-api";
-import type { JobsFeed } from "@/types/job";
-
-const feed = feedData as JobsFeed;
+import { getPublishedJobsFeed } from "@/lib/published-jobs-feed";
 
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
+  const [{ id }, feed] = await Promise.all([params, getPublishedJobsFeed()]);
   const job = findActiveJob(feed, id);
 
   if (!job) {
