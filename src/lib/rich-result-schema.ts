@@ -367,6 +367,7 @@ export function jobPostingAddress(location: string, addressCountry: string): Pos
 }
 
 function splitTrailingCountry(part: string, addressCountry: string) {
+  if (!isPlainPlaceToken(part)) return [part];
   const folded = foldTokens(part);
   for (const name of countryNames) {
     if (folded === name || !folded.endsWith(` ${name}`)) continue;
@@ -380,7 +381,12 @@ function splitTrailingCountry(part: string, addressCountry: string) {
   return [part];
 }
 
+function isPlainPlaceToken(part: string) {
+  return /^[\p{L}\p{M}\s.'’-]+$/u.test(part.trim());
+}
+
 function isAddressCountryName(part: string, addressCountry: string) {
+  if (!isPlainPlaceToken(part)) return false;
   if (addressCountry === "US" && isUnitedStatesToken(part)) return true;
   const folded = foldTokens(part);
   return countryNamesByCode[addressCountry]?.has(folded) === true || folded === addressCountry.toLowerCase();
@@ -396,6 +402,7 @@ function isDistrictOfColumbia(part: string) {
 }
 
 function isExplicitRegion(part: string, addressCountry: string) {
+  if (!isPlainPlaceToken(part)) return false;
   const folded = foldTokens(part);
   if (!folded) return false;
   if (addressCountry === "US") {

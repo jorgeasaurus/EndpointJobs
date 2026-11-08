@@ -123,6 +123,17 @@ test("a ZIP or other suffix on DC stays in the original locality", () => {
   }
 });
 
+test("punctuation stuck to a state or country keeps the original text", () => {
+  for (const location of ["Austin, TN!!", "Austin, TX, United States!!!", "Washington, DC!!", "CA United States!!!"]) {
+    assert.deepEqual(address(location, "US"), {
+      "@type": "PostalAddress",
+      addressLocality: location,
+      addressCountry: "US"
+    }, location);
+    assert.equal("addressRegion" in address(location, "US"), false, location);
+  }
+});
+
 test("a postal or malformed suffix after a state stays the original text", () => {
   for (const location of [
     "Memphis, TN, US 20001",
