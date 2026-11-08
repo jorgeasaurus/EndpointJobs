@@ -226,9 +226,38 @@ type PostalAddress = {
   addressRegion?: string;
 };
 
+// A token that is both a city and a state or canton. Alone, it stays a locality.
+const ambiguousCityRegions = new Set([
+  "new york",
+  "washington",
+  "zurich",
+  "bern",
+  "berne",
+  "luzern",
+  "lucerne",
+  "zug",
+  "fribourg",
+  "freiburg",
+  "solothurn",
+  "schaffhausen",
+  "st gallen",
+  "sankt gallen",
+  "geneve",
+  "geneva",
+  "neuchatel"
+]);
+
 export function jobPostingAddress(location: string, addressCountry: string): PostalAddress {
   const trimmed = location.trim().replace(/\s+/g, " ");
-  const rawParts = trimmed.split(",").map((part) => part.trim()).filter(Boolean);
+  const commaParts = trimmed.split(",").map((part) => part.trim());
+  if (commaParts.some((part) => part.length === 0)) {
+    return {
+      "@type": "PostalAddress",
+      addressLocality: trimmed,
+      addressCountry
+    };
+  }
+  const rawParts = commaParts;
   const parts = rawParts.flatMap((part, index) => (
     index === rawParts.length - 1 ? splitTrailingCountry(part, addressCountry) : [part]
   ));
@@ -250,6 +279,14 @@ export function jobPostingAddress(location: string, addressCountry: string): Pos
     return {
       "@type": "PostalAddress",
       addressLocality: trimmed,
+      addressCountry
+    };
+  }
+
+  if (places.length === 0 && regions.length === 1 && ambiguousCityRegions.has(foldTokens(regions[0]))) {
+    return {
+      "@type": "PostalAddress",
+      addressLocality: regions[0],
       addressCountry
     };
   }

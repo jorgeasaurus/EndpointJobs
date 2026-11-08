@@ -73,6 +73,47 @@ test("city and country-only text do not gain an invented region or locality", ()
   });
 });
 
+test("empty comma parts stay the original text", () => {
+  assert.deepEqual(address("Austin,, TX", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "Austin,, TX",
+    addressCountry: "US"
+  });
+  assert.deepEqual(address("Austin, TX,", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "Austin, TX,",
+    addressCountry: "US"
+  });
+});
+
+test("a shared city and region name stays a locality", () => {
+  assert.deepEqual(address("Zürich, Switzerland", "CH"), {
+    "@type": "PostalAddress",
+    addressLocality: "Zürich",
+    addressCountry: "CH"
+  });
+  assert.deepEqual(address("Bern, Switzerland", "CH"), {
+    "@type": "PostalAddress",
+    addressLocality: "Bern",
+    addressCountry: "CH"
+  });
+  assert.deepEqual(address("New York, United States", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "New York",
+    addressCountry: "US"
+  });
+  assert.deepEqual(address("California", "US"), {
+    "@type": "PostalAddress",
+    addressRegion: "California",
+    addressCountry: "US"
+  });
+  assert.deepEqual(address("Vaud", "CH"), {
+    "@type": "PostalAddress",
+    addressRegion: "Vaud",
+    addressCountry: "CH"
+  });
+});
+
 test("ambiguous extra commas do not become a region", () => {
   assert.deepEqual(address("Austin, Downtown, TX", "US"), {
     "@type": "PostalAddress",
