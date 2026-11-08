@@ -342,6 +342,14 @@ export function jobPostingAddress(location: string, addressCountry: string): Pos
     }
   }
 
+  if (places.length === 1 && regions.length === 1 && !isPlainPlaceToken(places[0])) {
+    return {
+      "@type": "PostalAddress",
+      addressLocality: trimmed,
+      addressCountry
+    };
+  }
+
   if (places.length > 1 || regions.length > 1) {
     return {
       "@type": "PostalAddress",
