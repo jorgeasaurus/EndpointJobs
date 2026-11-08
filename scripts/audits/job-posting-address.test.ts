@@ -92,10 +92,35 @@ test("dotted country and district abbreviations stay explicit", () => {
     addressRegion: "D.C.",
     addressCountry: "US"
   });
+  assert.deepEqual(address("Washington, DC", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "Washington",
+    addressRegion: "DC",
+    addressCountry: "US"
+  });
   assert.deepEqual(address("U.S.", "US"), {
     "@type": "PostalAddress",
     addressCountry: "US"
   });
+});
+
+test("a ZIP or other suffix on DC stays in the original locality", () => {
+  for (const location of [
+    "Washington, DC 20001",
+    "Washington, D.C. 20001",
+    "Washington, DC 20001-1234",
+    "Washington, D.C. 20",
+    "Washington, DC ABC",
+    "DC 20001"
+  ]) {
+    assert.deepEqual(address(location, "US"), {
+      "@type": "PostalAddress",
+      addressLocality: location,
+      addressCountry: "US"
+    }, location);
+    assert.equal("postalCode" in address(location, "US"), false, location);
+    assert.equal("addressRegion" in address(location, "US"), false, location);
+  }
 });
 
 test("empty comma parts stay the original text", () => {

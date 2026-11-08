@@ -353,7 +353,7 @@ function isUnitedStatesToken(part: string) {
 }
 
 function isDistrictOfColumbia(part: string) {
-  return part.replace(/[^A-Za-z]/g, "").toLowerCase() === "dc";
+  return /^d\.?c\.?$/i.test(part.replace(/\s+/g, ""));
 }
 
 function isExplicitRegion(part: string, addressCountry: string) {
