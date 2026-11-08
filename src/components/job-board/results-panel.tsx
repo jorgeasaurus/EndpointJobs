@@ -1,4 +1,4 @@
-import { Clock3, Layers3 } from "lucide-react";
+import { Layers3 } from "lucide-react";
 
 import type { BoardListing } from "@/lib/board-page";
 
@@ -54,14 +54,14 @@ export function ResultsPanel({
       <div className="results-heading">
         <div>
           <span className="section-kicker">Open roles</span>
-          <h2>
+          <h1>
             <span className="sr-only">{totalJobs} </span>
             <AnimatedNumber
               className="slot-number slot-number--heading"
               value={totalJobs}
             />{" "}
             endpoint opportunities
-          </h2>
+          </h1>
         </div>
         <div className="results-heading-controls">
           <label className="field results-sort">
@@ -79,10 +79,6 @@ export function ResultsPanel({
               ))}
             </select>
           </label>
-          <span className="feed-note">
-            <Clock3 size={16} aria-hidden="true" />
-            Daily refresh
-          </span>
           {onToggleHideViewed ? (
             <button
               aria-pressed={hideViewed ? "true" : "false"}

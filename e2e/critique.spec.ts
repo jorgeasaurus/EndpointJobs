@@ -45,7 +45,7 @@ test("server HTML includes the job before client paint", async ({ page, request 
 test("home desktop keeps counts with their labels and shortens cards", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
   await page.goto("/board");
-  await expect(page.getByRole("heading", { name: "Endpoint Jobs" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /endpoint opportunities/i })).toBeVisible();
 
   const remote = page.getByRole("button", { name: /Remote/ }).first();
   const box = await remote.boundingBox();

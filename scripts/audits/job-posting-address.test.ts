@@ -1,0 +1,139 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+import { getJobJsonLd, serializeJsonLd } from "../../src/app/structured-data";
+import { isRichResultEligible, jobPostingAddress } from "../../src/lib/rich-result-schema";
+import type { Job } from "../../src/types/job";
+import { makeJob } from "./shared";
+
+function address(location: string, addressCountry: string) {
+  return jobPostingAddress(location, addressCountry);
+}
+
+function posting(job: Job) {
+  const graph = getJobJsonLd(job)["@graph"];
+  return graph.find((node) => node["@type"] === "JobPosting");
+}
+
+test("explicit US states and Swiss cantons become addressRegion", () => {
+  assert.deepEqual(address("Memphis, TN", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "Memphis",
+    addressRegion: "TN",
+    addressCountry: "US"
+  });
+  assert.deepEqual(address("Costa Mesa, California, United States", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "Costa Mesa",
+    addressRegion: "California",
+    addressCountry: "US"
+  });
+  assert.deepEqual(address("Eysins, Vaud, Switzerland", "CH"), {
+    "@type": "PostalAddress",
+    addressLocality: "Eysins",
+    addressRegion: "Vaud",
+    addressCountry: "CH"
+  });
+  assert.deepEqual(address("San Mateo, CA United States", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "San Mateo",
+    addressRegion: "CA",
+    addressCountry: "US"
+  });
+  assert.deepEqual(address("Brazil, IN", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "Brazil",
+    addressRegion: "IN",
+    addressCountry: "US"
+  });
+});
+
+test("city and country-only text do not gain an invented region or locality", () => {
+  assert.deepEqual(address("Hyderabad, India", "IN"), {
+    "@type": "PostalAddress",
+    addressLocality: "Hyderabad",
+    addressCountry: "IN"
+  });
+  assert.deepEqual(address("San Francisco", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "San Francisco",
+    addressCountry: "US"
+  });
+  assert.deepEqual(address("India", "IN"), {
+    "@type": "PostalAddress",
+    addressCountry: "IN"
+  });
+  assert.deepEqual(address("United States", "US"), {
+    "@type": "PostalAddress",
+    addressCountry: "US"
+  });
+  assert.deepEqual(address("Switzerland", "CH"), {
+    "@type": "PostalAddress",
+    addressCountry: "CH"
+  });
+});
+
+test("ambiguous extra commas do not become a region", () => {
+  assert.deepEqual(address("Austin, Downtown, TX", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "Austin, Downtown, TX",
+    addressCountry: "US"
+  });
+  assert.deepEqual(address("New York, NY", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "New York, NY",
+    addressCountry: "US"
+  });
+  assert.deepEqual(address("Luzern, Luzern, Switzerland", "CH"), {
+    "@type": "PostalAddress",
+    addressLocality: "Luzern, Luzern, Switzerland",
+    addressCountry: "CH"
+  });
+  assert.deepEqual(address("Washington, District of Columbia, United States", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "Washington, District of Columbia, United States",
+    addressCountry: "US"
+  });
+});
+
+test("JobPosting omits unknown street, postal code, and salary period", () => {
+  const job = makeJob({
+    location: "Costa Mesa, California, United States",
+    workplace: "Hybrid",
+    description: `Endpoint <Engineer> role. ${"Own endpoint platforms and automation. ".repeat(40)}`,
+    salary: {
+      min: 132000,
+      max: 175000,
+      currency: "USD",
+      currencySource: "source",
+      label: "$132k-$175k"
+    }
+  });
+  const serialized = serializeJsonLd(getJobJsonLd(job));
+  assert.match(serialized, /"addressLocality":"Costa Mesa"/);
+  assert.match(serialized, /"addressRegion":"California"/);
+  assert.match(serialized, /"addressCountry":"US"/);
+  assert.doesNotMatch(serialized, /streetAddress|postalCode|baseSalary/);
+  assert.equal(serialized.includes("\\u003cp>"), true);
+  assert.equal(serialized.includes("&lt;Engineer&gt;"), true);
+  assert.equal(serialized.includes("<"), false);
+});
+
+test("remote and multi-location jobs still omit JobPosting", () => {
+  const description = "Complete role details. ".repeat(60);
+  const remote = makeJob({
+    description,
+    location: "United States",
+    workplace: "Remote"
+  });
+  const multi = makeJob({
+    description,
+    location: "Austin, TX; Seattle, WA",
+    workplace: "Hybrid"
+  });
+  assert.equal(isRichResultEligible(remote), false);
+  assert.equal(isRichResultEligible(multi), false);
+  assert.equal(posting(remote), undefined);
+  assert.equal(posting(multi), undefined);
+  assert.doesNotMatch(serializeJsonLd(getJobJsonLd(remote)), /TELECOMMUTE|applicantLocationRequirements/);
+});

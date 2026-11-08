@@ -47,9 +47,13 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
   });
 
   await run("FEAT-004", "Hero copy and tracked count describe endpoint scope", () => {
-    ["macOS", "Windows", "MDM", "UEM", "endpoint security", "packaging", "automation"].forEach(
-      (term) => assertIncludes(sources.controls, term)
-    );
+    assertNotIncludes(sources.controls, "Endpoint, workplace, and client platform roles");
+    assertNotIncludes(sources.controls, "Focused listings for macOS");
+    assertNotIncludes(sources.controls, "id=\"sort\"");
+    assertIncludes(sources.page, "Newest with salary");
+    assertNotIncludes(sources.page, "Daily listings for macOS");
+    assertNotIncludes(sources.jobPage, "Role overview");
+    assertNotIncludes(sources.jobPage, "Browse all roles");
     assertIncludes(sources.controls, "activeJobsCount");
     assertIncludes(sources.jobBoard, "trackedJobsCount");
     assertIncludes(sources.boardPage, "dedupeJobs(activeJobs).length");
@@ -62,7 +66,8 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
 
   await run("FEAT-022", "Results panel exposes count and daily refresh note", () => {
     assertIncludes(sources.resultsPanel, "endpoint opportunities");
-    assertIncludes(sources.resultsPanel, "Daily refresh");
+    assertIncludes(sources.resultsPanel, "id=\"results-sort\"");
+    assertNotIncludes(sources.resultsPanel, "Daily refresh");
     assertIncludes(sources.resultsPanel, "totalJobs");
   });
 

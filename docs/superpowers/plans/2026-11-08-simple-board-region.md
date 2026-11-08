@@ -29,10 +29,10 @@
 **Interfaces:**
 - Produces: `jobPostingAddress(location: string, addressCountry: string)` returning a PostalAddress object with `addressCountry` and optional `addressLocality` and `addressRegion`.
 
-- [ ] **Step 1:** Add fixtures for Memphis TN, Costa Mesa California United States, Eysins Vaud Switzerland, Hyderabad India, San Francisco, country-only text, and ambiguous extra-comma text. Assert no street, postal code, salary, or `TELECOMMUTE`, and that remote and semicolon jobs still omit `JobPosting`.
-- [ ] **Step 2:** Run `./node_modules/.bin/tsx --test scripts/audits/job-posting-address.test.ts` and confirm the new cases fail.
-- [ ] **Step 3:** Parse source text only. Recognize explicit US states when the country is US and explicit Swiss cantons when the country is CH.
-- [ ] **Step 4:** Re-run the test file and confirm it passes.
+- [x] **Step 1:** Add fixtures for Memphis TN, Costa Mesa California United States, Eysins Vaud Switzerland, Hyderabad India, San Francisco, country-only text, and ambiguous extra-comma text. Assert no street, postal code, salary, or `TELECOMMUTE`, and that remote and semicolon jobs still omit `JobPosting`.
+- [x] **Step 2:** Run `./node_modules/.bin/tsx --test scripts/audits/job-posting-address.test.ts` and confirm the new cases fail.
+- [x] **Step 3:** Parse source text only. Recognize explicit US states when the country is US and explicit Swiss cantons when the country is CH.
+- [x] **Step 4:** Re-run the test file and confirm it passes.
 
 ### Task 2: Public copy
 
@@ -48,12 +48,12 @@
 - Modify: `src/app/job-board-map.css`
 - Modify tests listed in the spec’s locked strings.
 
-- [ ] **Step 1:** Update source and Playwright assertions for the removed strings.
-- [ ] **Step 2:** Remove the approved copy. Keep the results heading at its current size as the board `h1`.
-- [ ] **Step 3:** Run `npm test`, `npm run typecheck`, and `npm run lint`.
+- [x] **Step 1:** Update source and Playwright assertions for the removed strings.
+- [x] **Step 2:** Remove the approved copy. Keep the results heading at its current size as the board `h1`.
+- [x] **Step 3:** Run `npm test`, `npm run typecheck`, and `npm run lint`.
 
 ### Task 3: Verify and review
 
-- [ ] **Step 1:** Run `npm run audit:data`, `npm run build`, and the board, home, and pages Playwright specs.
-- [ ] **Step 2:** Screenshot home, board, a filtered and sorted URL, saved-jobs fixture, and a job page at desktop and mobile.
+- [x] **Step 1:** Run `npm run audit:data`, `npm run build`, and the board, home, and pages Playwright specs.
+- [x] **Step 2:** Screenshot home, board, a filtered and sorted URL, saved-jobs fixture, and a job page at desktop and mobile.
 - [ ] **Step 3:** Open the PR with the Google doc links and the warnings that remain. Request Copilot review and fix only actionable findings.

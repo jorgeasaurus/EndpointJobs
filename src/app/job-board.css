@@ -915,7 +915,7 @@ h1 {
   flex-shrink: 0;
 }
 
-.results-heading h2 {
+.results-heading h1 {
   color: var(--white);
   font-size: 1.55rem;
   line-height: 1.1;

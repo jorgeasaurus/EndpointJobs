@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 async function openBoard(page: Page) {
   await page.goto("/board");
-  await expect(page.getByRole("heading", { level: 1, name: "Endpoint Jobs" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: /endpoint opportunities/i })).toBeVisible();
   // Dev hydration can still be applying the App Router URL after the heading
   // is visible. A select in that window is overwritten back to /board.
   await page.waitForLoadState("networkidle");
@@ -52,9 +52,9 @@ test("[BOARD-04] result heading", async ({ page }) => {
   await openBoard(page);
   const region = page.getByRole("region", { name: "Job listings" });
   await expect(region).toBeVisible();
-  await expect(region.locator("h2")).toContainText("endpoint opportunities");
-  await expect(region.locator("h2 .sr-only")).toHaveText(`${payload.total} `);
-  await expect(region.getByText("Daily refresh")).toBeVisible();
+  await expect(region.locator("h1")).toContainText("endpoint opportunities");
+  await expect(region.locator("h1 .sr-only")).toHaveText(`${payload.total} `);
+  await expect(region.getByText("Daily refresh")).toHaveCount(0);
   await expect(region).not.toHaveAttribute("aria-busy", "true");
 });
 
@@ -72,7 +72,7 @@ test("[SEARCH-01] keyword search", async ({ page }) => {
 
 test("[SEARCH-02] slash focuses search", async ({ page }) => {
   await openBoard(page);
-  await page.getByRole("heading", { level: 1, name: "Endpoint Jobs" }).click();
+  await page.getByRole("heading", { level: 1, name: /endpoint opportunities/i }).click();
   await page.keyboard.press("/");
   await expect(page.locator("#job-search-input")).toBeFocused();
   await expect(page.locator("#job-search-input")).toHaveValue("");
@@ -256,7 +256,8 @@ test("[FILT-15] back restores filters", async ({ page }) => {
   await expect(page.getByRole("button", { name: /^Remote\b/ })).toHaveAttribute("aria-pressed", "true");
   await page.goto("/board?workplace=Nope&platforms=not-a-platform&sort=sideways");
   await expect(page.getByRole("button", { name: /^Any\b/ }).first()).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator("#sort")).toHaveValue("newest");
+  await expect(page.locator("#results-sort")).toHaveValue("newest");
+  await expect(page.locator("#sort")).toHaveCount(0);
 });
 
 test("[FILT-17] legacy remote parameter", async ({ page }) => {
@@ -293,11 +294,9 @@ test("[FILT-19] request a missing place", async ({ page }) => {
 
 test("[SORT-01] sort controls", async ({ page }) => {
   await openBoard(page);
-  await openAdvanced(page);
-  for (const id of ["#sort", "#results-sort"]) {
-    const labels = await page.locator(`${id} option`).allTextContents();
-    expect(labels).toEqual(["Newest", "Compensation", "Company"]);
-  }
+  const labels = await page.locator("#results-sort option").allTextContents();
+  expect(labels).toEqual(["Newest", "Compensation", "Company"]);
+  await expect(page.locator("#sort")).toHaveCount(0);
   await page.locator("#results-sort").selectOption("company");
   await expect(page).toHaveURL(/sort=company/);
   await expect(page.getByRole("button", { name: "Remove filter: Sort: Company" })).toBeVisible();
@@ -337,8 +336,8 @@ test("[MAP-01] show and hide the map", async ({ page }) => {
 test("[MAP-02] mapped jobs heading", async ({ page }) => {
   await openBoard(page);
   const section = page.getByRole("region", { name: "Mapped job locations" });
-  await section.getByRole("button", { name: "Show map" }).click();
-  await expect(section.getByRole("heading", { level: 2 })).toHaveText("Locations");
+  await expect(section.getByRole("heading")).toHaveCount(0);
+  await expect(section.getByText("Job geography")).toHaveCount(0);
   await expect(section).not.toContainText(/\d+ of \d+/);
 });
 
@@ -453,7 +452,7 @@ test("[RESP-01] narrow hit areas", async ({ page }, info) => {
   test.skip(info.project.name !== "mobile", "390px measurement");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/board?e2e-auth=in");
-  await expect(page.getByRole("heading", { level: 1, name: "Endpoint Jobs" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: /endpoint opportunities/i })).toBeVisible();
   await page.locator("summary.advanced-filters-summary").click();
   await expect(page.locator("details.advanced-filters")).toHaveAttribute("open", "");
   await expect(page.locator("#role-family")).toBeVisible();

@@ -210,7 +210,7 @@ test("[AUTH-08] no sign-in control without Supabase", async ({ page }) => {
   test.skip(!supabaseKeysAbsent(), "Supabase keys are present, so Sign in is expected");
   await page.goto("/board");
   await expect(page.getByRole("button", { name: "Sign in" })).toHaveCount(0);
-  await expect(page.getByRole("heading", { name: "Endpoint Jobs" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /endpoint opportunities/i })).toBeVisible();
 });
 
 function supabaseKeysAbsent() {

@@ -162,9 +162,6 @@ export default async function JobPage({ params }: JobPageProps) {
                 Apply for this role
               </a>
               <JobAccountActions jobId={job.id} />
-              <Link className="job-detail-back" href="/board#open-roles">
-                Browse all roles
-              </Link>
             </div>
           </header>
 
@@ -177,7 +174,6 @@ export default async function JobPage({ params }: JobPageProps) {
           >
             {descriptionBlocks.length > 0 ? (
               <section aria-labelledby="job-description-heading" className="job-detail-description">
-                <span className="section-kicker">Role overview</span>
                 <h2 id="job-description-heading">Job description</h2>
                 <DescriptionContent blocks={descriptionBlocks} />
               </section>

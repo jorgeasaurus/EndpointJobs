@@ -4,6 +4,7 @@ import {
   formatDescriptionAsHtml,
   inferAddressCountry,
   isRichResultEligible,
+  jobPostingAddress,
   normalizeEmploymentType
 } from "@/lib/rich-result-schema";
 import {
@@ -193,11 +194,7 @@ function getJobPostingJsonLd(job: Job, jobUrl: string, addressCountry: string) {
     },
     jobLocation: {
       "@type": "Place",
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: job.location,
-        addressCountry
-      }
+      address: jobPostingAddress(job.location, addressCountry)
     }
   };
 }

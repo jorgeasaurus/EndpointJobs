@@ -65,9 +65,6 @@ export default async function Home() {
           <div className="landing-copy">
             <div className="landing-intro">
               <h1 id="landing-title">The board for endpoint engineers.</h1>
-              <p className="landing-lead">
-                Daily listings for macOS, Windows, MDM, and endpoint security roles.
-              </p>
               <div className="landing-actions">
                 <Link className="landing-jobs-link" href={getBoardPath()}>
                   See the jobs

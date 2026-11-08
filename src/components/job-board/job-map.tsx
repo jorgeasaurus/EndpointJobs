@@ -53,10 +53,6 @@ export function JobMap({
       aria-label="Mapped job locations"
     >
       <div className="job-map-heading">
-        <div className="job-map-heading-copy">
-          <span className="section-kicker">Job geography</span>
-          <h2>Locations</h2>
-        </div>
         <div className="job-map-heading-actions">
           <button
             aria-controls="job-map-canvas"

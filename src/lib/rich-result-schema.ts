@@ -3,6 +3,7 @@ import { foldTokens, normalizeText } from "@/lib/text";
 import {
   getUsStateSuffix,
   isAmbiguousPanamaCity,
+  isExplicitUsStateName,
   isJamaicaUsNeighborhood,
   isNewMexicoUsLocation
 } from "@/lib/location-context";
@@ -130,6 +131,158 @@ export function inferAddressCountry(job: Job) {
 
 function foldDiacritics(value: string) {
   return value.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
+}
+
+const countryNames = [
+  "united states of america",
+  "republica dominicana",
+  "dominican republic",
+  "united kingdom",
+  "united states",
+  "south korea",
+  "costa rica",
+  "el salvador",
+  "puerto rico",
+  "switzerland",
+  "philippines",
+  "deutschland",
+  "argentina",
+  "australia",
+  "guatemala",
+  "honduras",
+  "nicaragua",
+  "colombia",
+  "ecuador",
+  "paraguay",
+  "uruguay",
+  "brasil",
+  "brazil",
+  "canada",
+  "france",
+  "germany",
+  "jamaica",
+  "mexico",
+  "panama",
+  "belize",
+  "bolivia",
+  "espana",
+  "india",
+  "italy",
+  "spain",
+  "chile",
+  "peru",
+  "usa",
+  "uk",
+  "us",
+  "pr"
+].sort((left, right) => right.length - left.length);
+
+const countryNameSet = new Set(countryNames);
+
+// Bare Basel and Appenzell name two cantons, so they are not explicit.
+const swissCantons = new Set([
+  "zurich",
+  "bern",
+  "berne",
+  "luzern",
+  "lucerne",
+  "uri",
+  "schwyz",
+  "obwalden",
+  "nidwalden",
+  "glarus",
+  "zug",
+  "fribourg",
+  "freiburg",
+  "solothurn",
+  "basel stadt",
+  "basel landschaft",
+  "baselland",
+  "schaffhausen",
+  "appenzell ausserrhoden",
+  "appenzell innerrhoden",
+  "st gallen",
+  "sankt gallen",
+  "graubunden",
+  "grisons",
+  "grigioni",
+  "aargau",
+  "thurgau",
+  "ticino",
+  "tessin",
+  "vaud",
+  "valais",
+  "wallis",
+  "neuchatel",
+  "geneve",
+  "geneva",
+  "jura"
+]);
+
+type PostalAddress = {
+  "@type": "PostalAddress";
+  addressCountry: string;
+  addressLocality?: string;
+  addressRegion?: string;
+};
+
+export function jobPostingAddress(location: string, addressCountry: string): PostalAddress {
+  const trimmed = location.trim().replace(/\s+/g, " ");
+  const rawParts = trimmed.split(",").map((part) => part.trim()).filter(Boolean);
+  const parts = rawParts.flatMap((part, index) => (
+    index === rawParts.length - 1 ? splitTrailingCountry(part, addressCountry) : [part]
+  ));
+  const places: string[] = [];
+  const regions: string[] = [];
+
+  parts.forEach((part, index) => {
+    const folded = foldTokens(part);
+    const isLast = index === parts.length - 1;
+    if (isLast && (countryNameSet.has(folded) || folded === addressCountry.toLowerCase())) return;
+    if (isExplicitRegion(part, addressCountry)) {
+      regions.push(part);
+      return;
+    }
+    places.push(part);
+  });
+
+  if (places.length > 1 || regions.length > 1) {
+    return {
+      "@type": "PostalAddress",
+      addressLocality: trimmed,
+      addressCountry
+    };
+  }
+
+  return {
+    "@type": "PostalAddress",
+    addressCountry,
+    ...(places.length === 1 ? { addressLocality: places[0] } : {}),
+    ...(regions.length === 1 ? { addressRegion: regions[0] } : {})
+  };
+}
+
+function splitTrailingCountry(part: string, addressCountry: string) {
+  const folded = foldTokens(part);
+  for (const name of countryNames) {
+    if (folded === name || !folded.endsWith(` ${name}`)) continue;
+    const nameWordCount = name.split(" ").length;
+    const words = part.trim().split(/\s+/);
+    if (words.length <= nameWordCount) continue;
+    const prefix = words.slice(0, -nameWordCount).join(" ");
+    if (!isExplicitRegion(prefix, addressCountry)) return [part];
+    return [prefix, words.slice(-nameWordCount).join(" ")];
+  }
+  return [part];
+}
+
+function isExplicitRegion(part: string, addressCountry: string) {
+  const folded = foldTokens(part);
+  if (!folded) return false;
+  if (addressCountry === "US") {
+    return getUsStateSuffix(folded) === folded || isExplicitUsStateName(folded);
+  }
+  return addressCountry === "CH" && swissCantons.has(folded);
 }
 
 export function normalizeEmploymentType(value: string) {

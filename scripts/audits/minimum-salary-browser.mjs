@@ -17,7 +17,7 @@ export async function auditMinimumSalaryBrowser({
 
     const expectedLabel = `$${Number(minimumSalaryScenario.threshold) / 1000}k+`;
     await expect(page.locator(".active-filter-chip", { hasText: `Minimum: ${expectedLabel}` })).toBeVisible();
-    await expect(page.locator(".results-heading h2")).toContainText(
+    await expect(page.locator(".results-heading h1")).toContainText(
       `${minimumSalaryScenario.resultCount} endpoint opportunities`
     );
     expect(new URL(page.url()).searchParams.get("minSalary")).toBe(

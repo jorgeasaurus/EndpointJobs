@@ -23,7 +23,7 @@ test("[JOB-11] back to the job list", async ({ page }) => {
   const href = await page.locator("a.job-title-link").first().getAttribute("href");
   await page.goto(href!);
   await expect(page.getByRole("link", { name: "All endpoint jobs" })).toHaveAttribute("href", "/board#open-roles");
-  await expect(page.getByRole("link", { name: "Browse all roles" })).toHaveAttribute("href", "/board#open-roles");
+  await expect(page.getByRole("link", { name: "Browse all roles" })).toHaveCount(0);
   await page.goto("/api-docs");
   await expect(page.getByRole("link", { name: "Browse jobs" })).toHaveAttribute("href", "/board#open-roles");
   await page.goto("/");
@@ -111,7 +111,7 @@ test("[A11Y-03] reduced motion", async ({ page }) => {
   await page.goto("/board");
   await expect(page.locator(".parallax-field")).toHaveAttribute("aria-hidden", "true");
   await expect(page.locator(".parallax-field canvas")).toHaveCount(0);
-  const heading = page.locator(".results-panel h2 .sr-only");
+  const heading = page.locator(".results-panel h1 .sr-only");
   await expect(heading).toBeVisible();
 });
 

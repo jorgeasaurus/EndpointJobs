@@ -13,7 +13,7 @@ test("[BOARD-06] signed-out board omits Saved jobs only", async ({ page }) => {
   await page.goto("/board?savedOnly=1&saved=1");
   await expect(page.locator(".saved-only-button")).toHaveCount(0);
   await expect(page.locator("article.job-card").nth(1)).toBeVisible();
-  await expect(page.locator(".results-panel h2 .sr-only")).not.toHaveText("1");
+  await expect(page.locator(".results-panel h1 .sr-only")).not.toHaveText("1");
 });
 
 test("[BOARD-06] a shared flag does not turn the filter on", async ({ page }) => {
@@ -32,7 +32,7 @@ test("[BOARD-06] saved jobs only lists the shortlist and drops an unsaved role",
   await expect(page.locator(".saved-only-button")).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("article.job-card")).toHaveCount(1);
   await expect(page.getByRole("heading", { name: "Platform chip alignment fixture" })).toBeVisible();
-  await expect(page.locator(".results-panel h2 .sr-only")).toHaveText("1");
+  await expect(page.locator(".results-panel h1 .sr-only")).toHaveText("1");
   await expect(page).not.toHaveURL(/[?&]saved=/);
   await expect(page).not.toHaveURL(/savedOnly=/);
 
