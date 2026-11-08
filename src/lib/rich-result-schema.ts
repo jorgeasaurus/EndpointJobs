@@ -408,6 +408,7 @@ function isPlainPlaceToken(part: string) {
 function isAddressCountryName(part: string, addressCountry: string) {
   if (!isPlainPlaceToken(part)) return false;
   if (addressCountry === "US" && isUnitedStatesToken(part)) return true;
+  if (!endsWithLetter(part)) return false;
   const folded = foldTokens(part);
   return countryNamesByCode[addressCountry]?.has(folded) === true || folded === addressCountry.toLowerCase();
 }
@@ -422,13 +423,18 @@ function isDistrictOfColumbia(part: string) {
 }
 
 function isExplicitRegion(part: string, addressCountry: string) {
-  if (!isPlainPlaceToken(part)) return false;
-  const folded = foldTokens(part);
-  if (!folded) return false;
+  if (!isPlainPlaceToken(part) || !endsWithLetter(part)) return false;
+  const trimmed = part.trim().replace(/\s+/g, " ");
   if (addressCountry === "US") {
-    return getUsStateSuffix(folded) === folded || isExplicitUsStateName(folded);
+    const code = trimmed.toLowerCase();
+    return (/^[a-z]{2}$/.test(code) && getUsStateSuffix(code) === code) || isExplicitUsStateName(code);
   }
-  return addressCountry === "CH" && swissCantons.has(folded);
+  const folded = foldTokens(trimmed);
+  return Boolean(folded) && addressCountry === "CH" && swissCantons.has(folded);
+}
+
+function endsWithLetter(part: string) {
+  return /\p{L}$/u.test(part.trim());
 }
 
 export function normalizeEmploymentType(value: string) {

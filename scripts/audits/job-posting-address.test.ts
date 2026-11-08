@@ -135,7 +135,14 @@ test("a state with only a rejected country suffix keeps the original text", () =
 });
 
 test("punctuation stuck to a state or country keeps the original text", () => {
-  for (const location of ["Austin, TN!!", "Austin, TX, United States!!!", "Washington, DC!!", "CA United States!!!"]) {
+  for (const location of [
+    "Austin, TN!!",
+    "Austin, TX, United States!!!",
+    "Washington, DC!!",
+    "CA United States!!!",
+    "Austin, TX.",
+    "Austin, Texas."
+  ]) {
     assert.deepEqual(address(location, "US"), {
       "@type": "PostalAddress",
       addressLocality: location,
@@ -143,6 +150,11 @@ test("punctuation stuck to a state or country keeps the original text", () => {
     }, location);
     assert.equal("addressRegion" in address(location, "US"), false, location);
   }
+  assert.deepEqual(address("Eysins, Vaud.", "CH"), {
+    "@type": "PostalAddress",
+    addressLocality: "Eysins, Vaud.",
+    addressCountry: "CH"
+  });
 });
 
 test("a postal or malformed suffix after a state stays the original text", () => {
