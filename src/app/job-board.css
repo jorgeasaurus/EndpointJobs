@@ -915,6 +915,15 @@ h1 {
   flex-shrink: 0;
 }
 
+#comparison-title {
+  margin: 0;
+  color: var(--white);
+  font-family: var(--sans);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
 .results-heading h1 {
   color: var(--white);
   font-size: 1.55rem;
@@ -998,7 +1007,7 @@ h1 {
   gap: 14px;
 }
 
-.job-main h3 {
+.job-main h2 {
   color: var(--white);
   font-size: 1.42rem;
   line-height: 1.15;
@@ -1303,7 +1312,7 @@ ul.description-list li {
   text-align: center;
 }
 
-.empty-state h3 {
+.empty-state h2 {
   font-size: 1.4rem;
   font-weight: 700;
 }

@@ -405,7 +405,7 @@ test("[JOB-09] compare roles", async ({ page }) => {
   await expect(page.getByText("1 role selected")).toBeVisible();
   await expect(page.getByText("Select one more role to compare.")).toBeVisible();
   await buttons.nth(1).click();
-  await expect(page.getByRole("heading", { name: "Compare 2 roles" })).toBeVisible();
+  await expect(page.locator("#comparison-title")).toHaveText("Compare 2 roles");
   const table = page.getByRole("table", { name: "Job comparison" });
   await expect(table).toBeVisible();
   await expect(table).toContainText(/Salary|Not shown/);
@@ -413,7 +413,7 @@ test("[JOB-09] compare roles", async ({ page }) => {
   await buttons.nth(3).click();
   await expect(buttons.nth(4)).toBeDisabled();
   await page.getByRole("button", { name: "Clear comparison" }).click();
-  await expect(page.getByRole("heading", { name: /Compare / })).toHaveCount(0);
+  await expect(page.locator("#comparison-title")).toHaveCount(0);
   await expect(page).not.toHaveURL(/compare/);
 });
 

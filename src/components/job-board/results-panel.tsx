@@ -140,7 +140,7 @@ export function ResultsPanel({
       ) : (
         <div className="empty-state">
           <Layers3 size={34} aria-hidden="true" />
-          <h3>No matching roles</h3>
+          <h2>No matching roles</h2>
           <p>{emptyMessage}</p>
           <button className="clear-button" type="button" onClick={clearFilters}>
             Reset filters

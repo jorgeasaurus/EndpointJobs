@@ -72,11 +72,11 @@ export function JobCard({
 
       <div className="job-main">
         <div>
-          <h3>
+          <h2>
             <Link className="job-title-link" href={getJobPath(job.id)}>
               <HighlightedText query={query} text={job.title} />
             </Link>
-          </h3>
+          </h2>
           <p className="company-line">
             <BriefcaseBusiness size={16} aria-hidden="true" />
             <HighlightedText query={query} text={job.company} />

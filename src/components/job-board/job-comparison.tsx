@@ -37,7 +37,7 @@ export function JobComparison({
     <section className="comparison-panel" id="job-comparison" aria-labelledby="comparison-title">
       <div className="comparison-heading">
         <div>
-          <h2 id="comparison-title">Compare {jobs.length} roles</h2>
+          <p id="comparison-title">Compare {jobs.length} roles</p>
         </div>
         <button className="comparison-clear" type="button" onClick={onClear}>
           Clear comparison

@@ -165,7 +165,7 @@ function StatusSection({
 
   return (
     <section className="status-section">
-      <h2 className="status-section-title">
+      <div className="status-section-title">
         <button
           type="button"
           className="status-section-toggle"
@@ -181,7 +181,7 @@ function StatusSection({
             size={16}
           />
         </button>
-      </h2>
+      </div>
       <div className="status-section-panel" hidden={!open} id={panelId}>
         {meters.map((meter) => (
           <StatusMeter key={meter.key} meter={meter} onFilter={onFilter} />
