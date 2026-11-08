@@ -267,13 +267,28 @@ export function jobPostingAddress(location: string, addressCountry: string): Pos
   parts.forEach((part, index) => {
     const folded = foldTokens(part);
     const isLast = index === parts.length - 1;
-    if (isLast && (countryNameSet.has(folded) || folded === addressCountry.toLowerCase())) return;
+    if (isLast && (isUnitedStatesToken(part) || countryNameSet.has(folded) || folded === addressCountry.toLowerCase())) return;
+    if (isDistrictOfColumbia(part) && addressCountry === "US") {
+      regions.push(part);
+      return;
+    }
     if (isExplicitRegion(part, addressCountry)) {
       regions.push(part);
       return;
     }
     places.push(part);
   });
+
+  const district = regions.find((part) => isDistrictOfColumbia(part));
+  const washington = regions.find((part) => foldTokens(part) === "washington");
+  if (places.length === 0 && district && washington && regions.length === 2) {
+    return {
+      "@type": "PostalAddress",
+      addressLocality: washington,
+      addressRegion: district,
+      addressCountry
+    };
+  }
 
   if (places.length > 1 || regions.length > 1) {
     return {
@@ -311,6 +326,15 @@ function splitTrailingCountry(part: string, addressCountry: string) {
     return [prefix, words.slice(-nameWordCount).join(" ")];
   }
   return [part];
+}
+
+function isUnitedStatesToken(part: string) {
+  const letters = part.replace(/[^A-Za-z]/g, "").toLowerCase();
+  return letters === "us" || letters === "usa";
+}
+
+function isDistrictOfColumbia(part: string) {
+  return part.replace(/[^A-Za-z]/g, "").toLowerCase() === "dc";
 }
 
 function isExplicitRegion(part: string, addressCountry: string) {

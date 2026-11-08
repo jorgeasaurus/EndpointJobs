@@ -73,6 +73,31 @@ test("city and country-only text do not gain an invented region or locality", ()
   });
 });
 
+test("dotted country and district abbreviations stay explicit", () => {
+  assert.deepEqual(address("Memphis, TN, U.S.", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "Memphis",
+    addressRegion: "TN",
+    addressCountry: "US"
+  });
+  assert.deepEqual(address("Austin, TX, U.S.A.", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "Austin",
+    addressRegion: "TX",
+    addressCountry: "US"
+  });
+  assert.deepEqual(address("Washington, D.C.", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "Washington",
+    addressRegion: "D.C.",
+    addressCountry: "US"
+  });
+  assert.deepEqual(address("U.S.", "US"), {
+    "@type": "PostalAddress",
+    addressCountry: "US"
+  });
+});
+
 test("empty comma parts stay the original text", () => {
   assert.deepEqual(address("Austin,, TX", "US"), {
     "@type": "PostalAddress",
