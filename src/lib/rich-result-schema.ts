@@ -144,6 +144,9 @@ const countryNames = [
   "el salvador",
   "puerto rico",
   "switzerland",
+  "svizzera",
+  "schweiz",
+  "suisse",
   "philippines",
   "deutschland",
   "argentina",
@@ -244,7 +247,9 @@ const ambiguousCityRegions = new Set([
   "sankt gallen",
   "geneve",
   "geneva",
-  "neuchatel"
+  "neuchatel",
+  "schwyz",
+  "glarus"
 ]);
 
 export function jobPostingAddress(location: string, addressCountry: string): PostalAddress {

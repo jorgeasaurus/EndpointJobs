@@ -35,12 +35,9 @@ try {
   await expectOrder("newest");
   await expect(page.locator("#open-roles .pagination-summary").first()).toContainText("Showing 1-20");
   await page.getByRole("button", { name: "Go to job page 2", exact: true }).first().click();
-  const advanced = page.locator(".advanced-filters");
-  const advancedSort = advanced.locator(".field", { hasText: "Sort" }).locator("select");
-  if (!(await advancedSort.isVisible())) await advanced.locator("summary").click();
-  await advancedSort.selectOption("salary");
+  await sort.selectOption("salary");
   await expectOrder("salary");
-  await advancedSort.selectOption("newest");
+  await sort.selectOption("newest");
   await expectOrder("newest");
   await expect(page.locator("#open-roles .pagination-summary").first()).toContainText("Showing 1-20");
   await sort.selectOption("company");
