@@ -342,7 +342,11 @@ export function jobPostingAddress(location: string, addressCountry: string): Pos
     }
   }
 
-  if (places.length === 1 && regions.length === 1 && !isPlainPlaceToken(places[0])) {
+  if (
+    places.length === 1
+    && regions.length === 1
+    && (!isPlainPlaceToken(places[0]) || isRejectedCountrySuffix(places[0], addressCountry))
+  ) {
     return {
       "@type": "PostalAddress",
       addressLocality: trimmed,
@@ -387,6 +391,14 @@ function splitTrailingCountry(part: string, addressCountry: string) {
     return [prefix, words.slice(-nameWordCount).join(" ")];
   }
   return [part];
+}
+
+function isRejectedCountrySuffix(part: string, addressCountry: string) {
+  const words = part.trim().split(/\s+/);
+  for (let count = 1; count < words.length; count += 1) {
+    if (isAddressCountryName(words.slice(0, count).join(" "), addressCountry)) return true;
+  }
+  return false;
 }
 
 function isPlainPlaceToken(part: string) {
