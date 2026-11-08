@@ -180,7 +180,40 @@ const countryNames = [
   "pr"
 ].sort((left, right) => right.length - left.length);
 
-const countryNameSet = new Set(countryNames);
+const countryNamesByCode: Record<string, ReadonlySet<string>> = {
+  US: new Set(["united states of america", "united states", "usa", "us"]),
+  GB: new Set(["united kingdom", "uk"]),
+  AU: new Set(["australia"]),
+  CA: new Set(["canada"]),
+  DE: new Set(["germany", "deutschland"]),
+  CH: new Set(["switzerland", "schweiz", "suisse", "svizzera"]),
+  FR: new Set(["france"]),
+  ES: new Set(["spain", "espana"]),
+  IN: new Set(["india"]),
+  IT: new Set(["italy"]),
+  PH: new Set(["philippines"]),
+  KR: new Set(["south korea"]),
+  BR: new Set(["brazil", "brasil"]),
+  AR: new Set(["argentina"]),
+  CL: new Set(["chile"]),
+  CO: new Set(["colombia"]),
+  PE: new Set(["peru"]),
+  MX: new Set(["mexico"]),
+  GT: new Set(["guatemala"]),
+  BZ: new Set(["belize"]),
+  SV: new Set(["el salvador"]),
+  HN: new Set(["honduras"]),
+  NI: new Set(["nicaragua"]),
+  CR: new Set(["costa rica"]),
+  PA: new Set(["panama"]),
+  EC: new Set(["ecuador"]),
+  UY: new Set(["uruguay"]),
+  PY: new Set(["paraguay"]),
+  BO: new Set(["bolivia"]),
+  DO: new Set(["dominican republic", "republica dominicana"]),
+  JM: new Set(["jamaica"]),
+  PR: new Set(["puerto rico", "pr"])
+};
 
 // Bare Basel and Appenzell name two cantons, so they are not explicit.
 const swissCantons = new Set([
@@ -274,7 +307,7 @@ export function jobPostingAddress(location: string, addressCountry: string): Pos
   parts.forEach((part, index) => {
     const folded = foldTokens(part);
     const isLast = index === parts.length - 1;
-    if (isLast && (isUnitedStatesToken(part) || countryNameSet.has(folded) || folded === addressCountry.toLowerCase())) return;
+    if (isLast && isAddressCountryName(part, addressCountry)) return;
     if (isDistrictOfColumbia(part) && addressCountry === "US") {
       regions.push(part);
       return;
@@ -345,6 +378,12 @@ function splitTrailingCountry(part: string, addressCountry: string) {
     return [prefix, words.slice(-nameWordCount).join(" ")];
   }
   return [part];
+}
+
+function isAddressCountryName(part: string, addressCountry: string) {
+  if (addressCountry === "US" && isUnitedStatesToken(part)) return true;
+  const folded = foldTokens(part);
+  return countryNamesByCode[addressCountry]?.has(folded) === true || folded === addressCountry.toLowerCase();
 }
 
 function isUnitedStatesToken(part: string) {

@@ -123,6 +123,29 @@ test("a ZIP or other suffix on DC stays in the original locality", () => {
   }
 });
 
+test("a US place that shares a country name stays in the locality", () => {
+  assert.deepEqual(address("Jamaica", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "Jamaica",
+    addressCountry: "US"
+  });
+  assert.deepEqual(address("Queens, Jamaica", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "Queens, Jamaica",
+    addressCountry: "US"
+  });
+  assert.deepEqual(address("Mexico", "US"), {
+    "@type": "PostalAddress",
+    addressLocality: "Mexico",
+    addressCountry: "US"
+  });
+  assert.deepEqual(address("Kingston, Jamaica", "JM"), {
+    "@type": "PostalAddress",
+    addressLocality: "Kingston",
+    addressCountry: "JM"
+  });
+});
+
 test("empty comma parts stay the original text", () => {
   assert.deepEqual(address("Austin,, TX", "US"), {
     "@type": "PostalAddress",
