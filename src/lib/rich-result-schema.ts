@@ -219,6 +219,7 @@ const swissCantons = new Set([
   "neuchatel",
   "geneve",
   "geneva",
+  "genf",
   "jura"
 ]);
 
@@ -249,7 +250,8 @@ const ambiguousCityRegions = new Set([
   "geneva",
   "neuchatel",
   "schwyz",
-  "glarus"
+  "glarus",
+  "genf"
 ]);
 
 export function jobPostingAddress(location: string, addressCountry: string): PostalAddress {
@@ -293,6 +295,18 @@ export function jobPostingAddress(location: string, addressCountry: string): Pos
       addressRegion: district,
       addressCountry
     };
+  }
+
+  if (places.length === 1 && regions.length === 1 && ambiguousCityRegions.has(foldTokens(regions[0]))) {
+    const regionIndex = parts.indexOf(regions[0]);
+    const placeIndex = parts.indexOf(places[0]);
+    if (regionIndex >= 0 && placeIndex >= 0 && regionIndex < placeIndex) {
+      return {
+        "@type": "PostalAddress",
+        addressLocality: trimmed,
+        addressCountry
+      };
+    }
   }
 
   if (places.length > 1 || regions.length > 1) {

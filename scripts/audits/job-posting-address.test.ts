@@ -157,6 +157,27 @@ test("a shared city and region name stays a locality", () => {
     addressLocality: "Glarus",
     addressCountry: "CH"
   });
+  assert.deepEqual(address("Genf", "CH"), {
+    "@type": "PostalAddress",
+    addressLocality: "Genf",
+    addressCountry: "CH"
+  });
+  assert.deepEqual(address("Meyrin, Genf, Switzerland", "CH"), {
+    "@type": "PostalAddress",
+    addressLocality: "Meyrin",
+    addressRegion: "Genf",
+    addressCountry: "CH"
+  });
+  assert.deepEqual(address("Bern, Bern-Mittelland", "CH"), {
+    "@type": "PostalAddress",
+    addressLocality: "Bern, Bern-Mittelland",
+    addressCountry: "CH"
+  });
+  assert.deepEqual(address("Zürich, ZH, Switzerland", "CH"), {
+    "@type": "PostalAddress",
+    addressLocality: "Zürich, ZH, Switzerland",
+    addressCountry: "CH"
+  });
 });
 
 test("ambiguous extra commas do not become a region", () => {
