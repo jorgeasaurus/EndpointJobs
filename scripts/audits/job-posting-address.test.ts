@@ -123,6 +123,22 @@ test("a ZIP or other suffix on DC stays in the original locality", () => {
   }
 });
 
+test("a postal or malformed suffix after a state stays the original text", () => {
+  for (const location of [
+    "Memphis, TN, US 20001",
+    "Austin, TX, U.S. 78701",
+    "Austin, TX, USA abc"
+  ]) {
+    assert.deepEqual(address(location, "US"), {
+      "@type": "PostalAddress",
+      addressLocality: location,
+      addressCountry: "US"
+    }, location);
+    assert.equal("postalCode" in address(location, "US"), false, location);
+    assert.equal("addressRegion" in address(location, "US"), false, location);
+  }
+});
+
 test("a US place that shares a country name stays in the locality", () => {
   assert.deepEqual(address("Jamaica", "US"), {
     "@type": "PostalAddress",

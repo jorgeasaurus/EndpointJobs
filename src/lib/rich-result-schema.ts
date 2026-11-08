@@ -387,8 +387,8 @@ function isAddressCountryName(part: string, addressCountry: string) {
 }
 
 function isUnitedStatesToken(part: string) {
-  const letters = part.replace(/[^A-Za-z]/g, "").toLowerCase();
-  return letters === "us" || letters === "usa";
+  const compact = part.replace(/[\s.]+/g, "").toLowerCase();
+  return compact === "us" || compact === "usa";
 }
 
 function isDistrictOfColumbia(part: string) {
