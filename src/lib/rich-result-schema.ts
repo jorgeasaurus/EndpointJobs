@@ -345,7 +345,11 @@ export function jobPostingAddress(location: string, addressCountry: string): Pos
   if (
     places.length === 1
     && regions.length === 1
-    && (!isPlainPlaceToken(places[0]) || isRejectedCountrySuffix(places[0], addressCountry))
+    && (
+      !isPlainPlaceToken(places[0])
+      || isRejectedCountrySuffix(places[0], addressCountry)
+      || isCountryLikePlace(places[0], addressCountry)
+    )
   ) {
     return {
       "@type": "PostalAddress",
@@ -391,6 +395,14 @@ function splitTrailingCountry(part: string, addressCountry: string) {
     return [prefix, words.slice(-nameWordCount).join(" ")];
   }
   return [part];
+}
+
+function isCountryLikePlace(part: string, addressCountry: string) {
+  if (isUnitedStatesToken(part) || isAddressCountryName(part, addressCountry)) return true;
+  const peeled = part.trim().replace(/[.!,;:]+$/g, "").trim();
+  if (peeled !== part.trim() && (isUnitedStatesToken(peeled) || isAddressCountryName(peeled, addressCountry))) return true;
+  const compact = part.replace(/[^A-Za-z]/g, "").toLowerCase();
+  return addressCountry === "US" && compact.startsWith("usa") && compact !== "usa";
 }
 
 function isRejectedCountrySuffix(part: string, addressCountry: string) {
