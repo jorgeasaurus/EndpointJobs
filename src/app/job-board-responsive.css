@@ -57,6 +57,7 @@
 
 @media (max-width: 760px) {
   .site-frame {
+    --stuck-header-height: 56px;
     padding: 8px;
   }
 
@@ -71,9 +72,9 @@
     flex-wrap: nowrap;
     align-items: center;
     gap: 8px;
-    height: 56px;
-    min-height: 56px;
-    max-height: 56px;
+    height: var(--stuck-header-height);
+    min-height: var(--stuck-header-height);
+    max-height: var(--stuck-header-height);
     padding: 0 8px;
     margin-bottom: 10px;
   }
@@ -342,7 +343,7 @@
   }
 
   .sticky-active-filters {
-    top: 100px;
+    top: var(--stuck-header-height);
     margin-bottom: 10px;
     padding: 8px;
   }

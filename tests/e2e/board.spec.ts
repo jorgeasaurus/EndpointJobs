@@ -226,6 +226,78 @@ test("[FILT-12] minimum salary", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Remove filter: Minimum: $100k+" })).toBeVisible();
 });
 
+test("[FILT-13] scrolled chips sit against the header", async ({ page }, info) => {
+  test.skip(info.project.name !== "mobile", "390px measurement");
+  for (const width of [390, 393, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("/board?sort=salary&metroAreas=Seattle%2C%20WA");
+    await expect(page.getByRole("heading", { level: 1, name: /endpoint opportunities/i })).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    await expect(page.locator(".sticky-active-filters")).toContainText("Seattle, WA");
+    await expect(page.locator("details.advanced-filters")).toHaveAttribute("open", "");
+    const expanded = await scrollUntilChipsStick(page);
+    expect(expanded.gap, `${width}px filters expanded`).toBeGreaterThanOrEqual(-1);
+    expect(expanded.gap, `${width}px filters expanded`).toBeLessThanOrEqual(8);
+    expect(expanded.headingSlice, `${width}px filters expanded`).toBeLessThanOrEqual(2);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    const rested = await page.locator(".topbar").boundingBox();
+    expect(rested?.y ?? 99).toBeGreaterThanOrEqual(0);
+    expect(rested?.y ?? 99).toBeLessThanOrEqual(16);
+
+    await page.goto("/board?sort=salary");
+    await expect(page.getByRole("heading", { level: 1, name: /endpoint opportunities/i })).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    await expect(page.locator(".sticky-active-filters")).toContainText("Compensation");
+    await expect(page.locator("details.advanced-filters")).not.toHaveAttribute("open");
+    const collapsed = await scrollUntilChipsStick(page);
+    expect(collapsed.gap, `${width}px filters collapsed`).toBeGreaterThanOrEqual(-1);
+    expect(collapsed.gap, `${width}px filters collapsed`).toBeLessThanOrEqual(8);
+    expect(collapsed.headingSlice, `${width}px filters collapsed`).toBeLessThanOrEqual(2);
+  }
+});
+
+async function scrollUntilChipsStick(page: Page) {
+  await page.locator(".sticky-active-filters").evaluate((node) => {
+    const top = node.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo(0, Math.max(0, top));
+  });
+  await page.evaluate(() => {
+    const heading = document.querySelector(".results-heading");
+    const header = document.querySelector(".topbar");
+    if (!heading || !header) return;
+    const headingTop = heading.getBoundingClientRect().top + window.scrollY;
+    const headerBottom = header.getBoundingClientRect().bottom;
+    window.scrollTo(0, Math.max(0, headingTop - headerBottom - 20));
+  });
+  return page.evaluate(() => {
+    const header = document.querySelector(".topbar")?.getBoundingClientRect();
+    const bar = document.querySelector(".sticky-active-filters")?.getBoundingClientRect();
+    const heading = document.querySelector(".results-heading")?.getBoundingClientRect();
+    const gapTop = header?.bottom ?? 0;
+    const gapBottom = bar?.top ?? 0;
+    const overlap = Math.min(heading?.bottom ?? 0, gapBottom) - Math.max(heading?.top ?? 0, gapTop);
+    return {
+      gap: gapBottom - gapTop,
+      headingSlice: overlap
+    };
+  });
+}
+
+test("[FILT-13] desktop chips stay clear of the header", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "1280px measurement");
+  await page.goto("/board?sort=salary&metroAreas=Seattle%2C%20WA");
+  await expect(page.getByRole("heading", { level: 1, name: /endpoint opportunities/i })).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator(".sticky-active-filters")).toContainText("Seattle, WA");
+  const stuck = await scrollUntilChipsStick(page);
+  expect(stuck.gap).toBeGreaterThanOrEqual(-1);
+  expect(stuck.gap).toBeLessThanOrEqual(12);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  const rested = await page.locator(".topbar").boundingBox();
+  expect(rested?.y ?? 99).toBeGreaterThanOrEqual(0);
+  expect(rested?.y ?? 99).toBeLessThanOrEqual(24);
+});
+
 test("[FILT-13] active chips and clear", async ({ page }) => {
   await openBoard(page);
   await expect(page.locator(".sticky-active-filters")).toBeHidden();
