@@ -124,7 +124,7 @@ test("a ZIP or other suffix on DC stays in the original locality", () => {
 });
 
 test("a state with only a rejected country suffix keeps the original text", () => {
-  for (const location of ["TX, US 20001", "TX, United States!!!", "TX, USA abc", "CA, U.S. extra", "U.S., TX", "U.S.A., TX", "TX, U.S.A.A", "United States., TX"]) {
+  for (const location of ["TX, US 20001", "TX, United States!!!", "TX, USA abc", "CA, U.S. extra", "U.S., TX", "U.S.A., TX", "U..S, TX", "TX, U.S.A.A", "United States., TX"]) {
     assert.deepEqual(address(location, "US"), {
       "@type": "PostalAddress",
       addressLocality: location,
@@ -166,7 +166,9 @@ test("a postal or malformed suffix after a state stays the original text", () =>
   for (const location of [
     "Memphis, TN, US 20001",
     "Austin, TX, U.S. 78701",
-    "Austin, TX, USA abc"
+    "Austin, TX, USA abc",
+    "Memphis, TN, U..S",
+    "Austin, TX, U..S.A"
   ]) {
     assert.deepEqual(address(location, "US"), {
       "@type": "PostalAddress",

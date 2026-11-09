@@ -402,7 +402,8 @@ function isCountryLikePlace(part: string, addressCountry: string) {
   const peeled = part.trim().replace(/[.!,;:]+$/g, "").trim();
   if (peeled !== part.trim() && (isUnitedStatesToken(peeled) || isAddressCountryName(peeled, addressCountry))) return true;
   const compact = part.replace(/[^A-Za-z]/g, "").toLowerCase();
-  return addressCountry === "US" && compact.startsWith("usa") && compact !== "usa";
+  if (addressCountry !== "US" || (compact !== "us" && compact !== "usa" && !compact.startsWith("usa"))) return false;
+  return /[.]/.test(part) && !isUnitedStatesToken(part) || (compact.startsWith("usa") && compact !== "usa");
 }
 
 function isRejectedCountrySuffix(part: string, addressCountry: string) {
@@ -426,8 +427,7 @@ function isAddressCountryName(part: string, addressCountry: string) {
 }
 
 function isUnitedStatesToken(part: string) {
-  const compact = part.replace(/[\s.]+/g, "").toLowerCase();
-  return compact === "us" || compact === "usa";
+  return /^(?:us|u\.s\.?|usa|u\.s\.a\.?)$/i.test(part.trim());
 }
 
 function isDistrictOfColumbia(part: string) {
