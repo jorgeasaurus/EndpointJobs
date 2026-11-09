@@ -11,7 +11,7 @@ const feedData = JSON.parse(readFileSync(new URL("../../src/data/jobs.json", imp
 test("[HOME-01] landing hero", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1, name: "The board for endpoint engineers." })).toBeVisible();
-  await expect(page.getByText("Daily listings for macOS, Windows, MDM, and endpoint security roles.")).toBeVisible();
+  await expect(page.getByText("Daily listings for macOS, Windows, MDM, and endpoint security roles.")).toHaveCount(0);
   const jobs = page.getByRole("link", { name: "See the jobs" });
   await expect(jobs).toBeVisible();
   await expect(jobs).toHaveAttribute("href", "/board");

@@ -607,7 +607,7 @@ await run("QA-014", "Advanced select filters serialize, hydrate, and sort visibl
   const freshnessSelect = page.locator(".high-signal-filters .mini-field", { hasText: "Freshness" }).locator("select");
   const advancedFilters = page.locator(".advanced-filters");
   const senioritySelect = advancedFilters.locator(".field", { hasText: "Seniority" }).locator("select");
-  const sortSelect = advancedFilters.locator(".field", { hasText: "Sort" }).locator("select");
+  const sortSelect = page.locator("#results-sort");
 
   await advancedFilters.locator("summary").click();
   await expect(freshnessSelect.locator('option[value="1"]')).toHaveText("Last 1 day");

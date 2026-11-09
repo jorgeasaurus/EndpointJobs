@@ -9,6 +9,7 @@ test("job and API links target the open-roles anchor on the board", () => {
   const apiDocs = readFileSync(new URL("../../src/app/api-docs/page.tsx", import.meta.url), "utf8");
   assert.equal(jobPage.includes('href="/#open-roles"'), false);
   assert.equal(apiDocs.includes('href="/#open-roles"'), false);
-  assert.equal((jobPage.match(/href="\/board#open-roles"/g) ?? []).length, 2);
+  assert.equal((jobPage.match(/href="\/board#open-roles"/g) ?? []).length, 1);
+  assert.equal(jobPage.includes("Browse all roles"), false);
   assert.equal(apiDocs.includes(href), true);
 });

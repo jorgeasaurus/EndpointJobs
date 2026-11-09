@@ -47,7 +47,7 @@ test("a failed saved-jobs request keeps the last results and the Saved jobs only
 
     const afterFailure = await page.evaluate((jobTitle) => {
       const button = document.querySelector(".saved-only-button");
-      const heading = [...document.querySelectorAll("h3")].some((node) => node.textContent?.includes(jobTitle));
+      const heading = [...document.querySelectorAll("h2")].some((node) => node.textContent?.includes(jobTitle));
       return {
         heading,
         control: button instanceof HTMLButtonElement && !button.hidden,
@@ -63,7 +63,7 @@ test("a failed saved-jobs request keeps the last results and the Saved jobs only
     await control.click();
     await page.waitForFunction(() => document.querySelector(".saved-only-button")?.getAttribute("aria-pressed") === "false");
     assert.equal(
-      await page.evaluate((jobTitle) => [...document.querySelectorAll("h3")].some((node) => node.textContent?.includes(jobTitle)), title),
+      await page.evaluate((jobTitle) => [...document.querySelectorAll("h2")].some((node) => node.textContent?.includes(jobTitle)), title),
       true
     );
   } finally {

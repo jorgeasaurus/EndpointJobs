@@ -27,7 +27,7 @@ export async function auditJobComparisonBrowser({
       await card.getByRole("button", { name: "Compare", exact: true }).click();
     }
 
-    await expect(desktopPage.getByRole("heading", { name: "Compare 4 roles" })).toBeVisible();
+    await expect(desktopPage.locator("#comparison-title")).toBeVisible();
     const table = desktopPage.getByRole("table", { name: "Job comparison" });
     await expect(table).toBeVisible();
     await expectCategoriesInFirstHeaderCell(table);
@@ -44,12 +44,12 @@ export async function auditJobComparisonBrowser({
     const search = desktopPage.getByRole("searchbox", { name: "Search jobs" });
     await search.fill("no matching comparison card");
     await expect(desktopPage.getByText("No matching roles")).toBeVisible();
-    await expect(desktopPage.getByRole("heading", { name: "Compare 4 roles" })).toBeVisible();
+    await expect(desktopPage.locator("#comparison-title")).toBeVisible();
     await search.fill("");
     await expect(desktopPage.locator(".job-card").first()).toBeVisible();
 
     await desktopPage.locator(".comparison-remove").first().click();
-    await expect(desktopPage.getByRole("heading", { name: "Compare 3 roles" })).toBeVisible();
+    await expect(desktopPage.locator("#comparison-title")).toHaveText("Compare 3 roles");
     await expect(desktopPage.getByRole("button", { name: "Compare", exact: true }).first()).toBeEnabled();
     await desktopPage.getByRole("button", { name: "Clear comparison" }).click();
     await expect(table).toHaveCount(0);
@@ -59,7 +59,7 @@ export async function auditJobComparisonBrowser({
     for (let selectedCount = 0; selectedCount < 4; selectedCount += 1) {
       await mobilePage.getByRole("button", { name: "Compare", exact: true }).first().click();
     }
-    await expect(mobilePage.getByRole("heading", { name: "Compare 4 roles" })).toBeVisible();
+    await expect(mobilePage.locator("#comparison-title")).toBeVisible();
     const mobileTable = mobilePage.getByRole("table", { name: "Job comparison" });
     await expectCategoriesInFirstHeaderCell(mobileTable);
     const scrollRegion = mobilePage.getByRole("region", { name: "Scrollable job comparison" });

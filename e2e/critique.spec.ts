@@ -45,7 +45,7 @@ test("server HTML includes the job before client paint", async ({ page, request 
 test("home desktop keeps counts with their labels and shortens cards", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop");
   await page.goto("/board");
-  await expect(page.getByRole("heading", { name: "Endpoint Jobs" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /endpoint opportunities/i })).toBeVisible();
 
   const remote = page.getByRole("button", { name: /Remote/ }).first();
   const box = await remote.boundingBox();
@@ -161,13 +161,16 @@ test("mobile layout keeps the first job above collapsed stats", async ({ page },
   await page.screenshot({ path: "/opt/cursor/artifacts/job-mobile-description-after.png", fullPage: false });
 });
 
-test("mobile sticky filters stay below the two-row header", async ({ page }, testInfo) => {
+test("mobile sticky filters sit against the single-row header", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/board?q=Intune");
   const sticky = page.locator(".sticky-active-filters");
   await expect(sticky).toBeVisible();
-  await page.evaluate(() => window.scrollTo(0, 1200));
+  await sticky.evaluate((node) => {
+    const top = node.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo(0, Math.max(0, top));
+  });
   const overlap = await page.evaluate(() => {
     const header = document.querySelector(".topbar")?.getBoundingClientRect();
     const bar = document.querySelector(".sticky-active-filters")?.getBoundingClientRect();
@@ -176,6 +179,7 @@ test("mobile sticky filters stay below the two-row header", async ({ page }, tes
       stickyTop: bar?.top ?? 0
     };
   });
+  expect(overlap.stickyTop - overlap.headerBottom).toBeLessThanOrEqual(8);
   expect(overlap.stickyTop).toBeGreaterThanOrEqual(overlap.headerBottom - 1);
 });
 

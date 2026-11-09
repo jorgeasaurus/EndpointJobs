@@ -44,6 +44,7 @@
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
+  margin-left: auto;
 }
 
 .map-count-pill {
@@ -608,6 +609,7 @@
 
   .job-map-heading-actions {
     justify-content: flex-start;
+    margin-left: 0;
   }
 
   .job-map-heading h2 {

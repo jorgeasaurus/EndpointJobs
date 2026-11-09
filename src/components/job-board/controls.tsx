@@ -7,7 +7,6 @@ import {
   Cpu,
   DollarSign,
   MapPin,
-  ShieldCheck,
   SlidersHorizontal,
   UsersRound,
   X
@@ -33,8 +32,7 @@ import { LocationFilters, LocationRequestLink, WorkplaceFilters } from "./locati
 import {
   freshnessFilterOptions,
   metroAreaOptions,
-  minimumSalaryFilterOptions,
-  sortOptions
+  minimumSalaryFilterOptions
 } from "./filter-model";
 import type {
   FilterDispatch,
@@ -44,7 +42,6 @@ import type {
   MinimumSalaryFilter,
   RoleFamilyFilter,
   SeniorityFilter,
-  SortKey,
   WorkplaceFilter
 } from "./filter-model";
 import {
@@ -52,8 +49,7 @@ import {
   toFreshnessFilter,
   toMinimumSalaryFilter,
   toRoleFamilyFilter,
-  toSeniorityFilter,
-  toSortKey
+  toSeniorityFilter
 } from "./filter-url";
 
 export function CommandPanel({
@@ -83,21 +79,6 @@ export function CommandPanel({
     <div className="command-panel">
       <div className="command-layout">
         <div className="command-primary">
-          <div className="eyebrow">
-            <ShieldCheck size={16} aria-hidden="true" />
-            Endpoint, workplace, and client platform roles
-          </div>
-
-          <div className="title-row">
-            <div>
-              <h1>Endpoint Jobs</h1>
-              <p>
-                Focused listings for macOS, Windows, MDM, UEM, endpoint security,
-                packaging, and automation work.
-              </p>
-            </div>
-          </div>
-
           <SearchStrip
             dispatch={dispatch}
             leadershipOnly={filters.leadershipOnly}
@@ -137,7 +118,6 @@ export function CommandPanel({
             sponsorship={filters.sponsorship}
             minimumSalary={filters.minimumSalary}
             seniority={filters.seniority}
-            sort={filters.sort}
           />
         </div>
 
@@ -360,14 +340,12 @@ function countAdvancedFilters({
   sponsorship,
   minimumSalary,
   seniority,
-  sort,
   selectedMetroAreas,
   selectedTools
 }: {
   sponsorship: FilterState["sponsorship"];
   minimumSalary: MinimumSalaryFilter;
   seniority: SeniorityFilter;
-  sort: SortKey;
   selectedMetroAreas: MetroAreaFilter[];
   selectedTools: EndpointTool[];
 }) {
@@ -376,7 +354,6 @@ function countAdvancedFilters({
   if (sponsorship !== "Any") count += 1;
   if (minimumSalary !== "Any") count += 1;
   if (seniority !== "All") count += 1;
-  if (sort !== "newest") count += 1;
   count += selectedMetroAreas.length;
   count += selectedTools.length;
 
@@ -392,8 +369,7 @@ function AdvancedFilters({
   selectedTools,
   sponsorship,
   minimumSalary,
-  seniority,
-  sort
+  seniority
 }: {
   activeFilterCount: number;
   activeFilterLabel: string;
@@ -404,13 +380,11 @@ function AdvancedFilters({
   sponsorship: FilterState["sponsorship"];
   minimumSalary: MinimumSalaryFilter;
   seniority: SeniorityFilter;
-  sort: SortKey;
 }) {
   const advancedCount = countAdvancedFilters({
     sponsorship,
     minimumSalary,
     seniority,
-    sort,
     selectedMetroAreas,
     selectedTools
   });
@@ -493,25 +467,6 @@ function AdvancedFilters({
               {seniorityOptions.map((level) => (
                 <option key={level} value={level}>
                   {level}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="field">
-            <span>Sort</span>
-            <select
-              id="sort"
-              name="sort"
-              value={sort}
-              aria-label="Sort"
-              onChange={(event) =>
-                dispatch({ type: "setSort", value: toSortKey(event.currentTarget.value) })
-              }
-            >
-              {sortOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
                 </option>
               ))}
             </select>

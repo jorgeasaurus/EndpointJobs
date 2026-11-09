@@ -22,7 +22,7 @@ test("[JOB-11] job and API links open the board", async ({ page }) => {
   expect(href).toBeTruthy();
   await page.goto(href!);
   await expect(page.getByRole("link", { name: "All endpoint jobs" })).toHaveAttribute("href", openRolesHref);
-  await expect(page.getByRole("link", { name: "Browse all roles" })).toHaveAttribute("href", openRolesHref);
+  await expect(page.getByRole("link", { name: "Browse all roles" })).toHaveCount(0);
   await page.goto("/api-docs");
   await expect(page.getByRole("link", { name: "Browse jobs" })).toHaveAttribute("href", openRolesHref);
   await page.goto("/");
@@ -34,7 +34,8 @@ test("[JOB-11] job and API links open the board", async ({ page }) => {
 test("[BOARD-04] daily refresh stays visible", async ({ page }) => {
   await page.goto("/board");
   const region = page.getByRole("region", { name: "Job listings" });
-  await expect(region.getByText("Daily refresh")).toBeVisible();
+  await expect(region.getByText("Daily refresh")).toHaveCount(0);
+  await expect(region.locator("#results-sort")).toBeVisible();
 });
 
 test("[FEED-01] footer feedback stays reachable", async ({ page }) => {

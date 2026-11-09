@@ -27,6 +27,8 @@ const home = readFileSync(homePath, "utf8");
 const board = readFileSync(new URL("../../src/app/board/page.tsx", import.meta.url), "utf8");
 
 test("the home page is a landing page with inline provider buttons", () => {
+  assert.match(home, /The board for endpoint engineers/);
+  assert.doesNotMatch(home, /Daily listings for macOS/);
   assert.match(home, /See the jobs/);
   assert.match(home, /href=\{getBoardPath\(\)\}/);
   assert.doesNotMatch(home, /Sign in to save/);

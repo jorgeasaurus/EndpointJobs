@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 
 async function openBoard(page: Page) {
   await page.goto("/board");
-  await expect(page.getByRole("heading", { level: 1, name: "Endpoint Jobs" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: /endpoint opportunities/i })).toBeVisible();
   // Dev hydration can still be applying the App Router URL after the heading
   // is visible. A select in that window is overwritten back to /board.
   await page.waitForLoadState("networkidle");
@@ -52,9 +52,9 @@ test("[BOARD-04] result heading", async ({ page }) => {
   await openBoard(page);
   const region = page.getByRole("region", { name: "Job listings" });
   await expect(region).toBeVisible();
-  await expect(region.locator("h2")).toContainText("endpoint opportunities");
-  await expect(region.locator("h2 .sr-only")).toHaveText(`${payload.total} `);
-  await expect(region.getByText("Daily refresh")).toBeVisible();
+  await expect(region.locator("h1")).toContainText("endpoint opportunities");
+  await expect(region.locator("h1 .sr-only")).toHaveText(`${payload.total} `);
+  await expect(region.getByText("Daily refresh")).toHaveCount(0);
   await expect(region).not.toHaveAttribute("aria-busy", "true");
 });
 
@@ -72,7 +72,7 @@ test("[SEARCH-01] keyword search", async ({ page }) => {
 
 test("[SEARCH-02] slash focuses search", async ({ page }) => {
   await openBoard(page);
-  await page.getByRole("heading", { level: 1, name: "Endpoint Jobs" }).click();
+  await page.getByRole("heading", { level: 1, name: /endpoint opportunities/i }).click();
   await page.keyboard.press("/");
   await expect(page.locator("#job-search-input")).toBeFocused();
   await expect(page.locator("#job-search-input")).toHaveValue("");
@@ -226,6 +226,78 @@ test("[FILT-12] minimum salary", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Remove filter: Minimum: $100k+" })).toBeVisible();
 });
 
+test("[FILT-13] scrolled chips sit against the header", async ({ page }, info) => {
+  test.skip(info.project.name !== "mobile", "390px measurement");
+  for (const width of [390, 393, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("/board?sort=salary&metroAreas=Seattle%2C%20WA");
+    await expect(page.getByRole("heading", { level: 1, name: /endpoint opportunities/i })).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    await expect(page.locator(".sticky-active-filters")).toContainText("Seattle, WA");
+    await expect(page.locator("details.advanced-filters")).toHaveAttribute("open", "");
+    const expanded = await scrollUntilChipsStick(page);
+    expect(expanded.gap, `${width}px filters expanded`).toBeGreaterThanOrEqual(-1);
+    expect(expanded.gap, `${width}px filters expanded`).toBeLessThanOrEqual(8);
+    expect(expanded.headingSlice, `${width}px filters expanded`).toBeLessThanOrEqual(2);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    const rested = await page.locator(".topbar").boundingBox();
+    expect(rested?.y ?? 99).toBeGreaterThanOrEqual(0);
+    expect(rested?.y ?? 99).toBeLessThanOrEqual(16);
+
+    await page.goto("/board?sort=salary");
+    await expect(page.getByRole("heading", { level: 1, name: /endpoint opportunities/i })).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    await expect(page.locator(".sticky-active-filters")).toContainText("Compensation");
+    await expect(page.locator("details.advanced-filters")).not.toHaveAttribute("open");
+    const collapsed = await scrollUntilChipsStick(page);
+    expect(collapsed.gap, `${width}px filters collapsed`).toBeGreaterThanOrEqual(-1);
+    expect(collapsed.gap, `${width}px filters collapsed`).toBeLessThanOrEqual(8);
+    expect(collapsed.headingSlice, `${width}px filters collapsed`).toBeLessThanOrEqual(2);
+  }
+});
+
+async function scrollUntilChipsStick(page: Page) {
+  await page.locator(".sticky-active-filters").evaluate((node) => {
+    const top = node.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo(0, Math.max(0, top));
+  });
+  await page.evaluate(() => {
+    const heading = document.querySelector(".results-heading");
+    const header = document.querySelector(".topbar");
+    if (!heading || !header) return;
+    const headingTop = heading.getBoundingClientRect().top + window.scrollY;
+    const headerBottom = header.getBoundingClientRect().bottom;
+    window.scrollTo(0, Math.max(0, headingTop - headerBottom - 20));
+  });
+  return page.evaluate(() => {
+    const header = document.querySelector(".topbar")?.getBoundingClientRect();
+    const bar = document.querySelector(".sticky-active-filters")?.getBoundingClientRect();
+    const heading = document.querySelector(".results-heading")?.getBoundingClientRect();
+    const gapTop = header?.bottom ?? 0;
+    const gapBottom = bar?.top ?? 0;
+    const overlap = Math.min(heading?.bottom ?? 0, gapBottom) - Math.max(heading?.top ?? 0, gapTop);
+    return {
+      gap: gapBottom - gapTop,
+      headingSlice: overlap
+    };
+  });
+}
+
+test("[FILT-13] desktop chips stay clear of the header", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "1280px measurement");
+  await page.goto("/board?sort=salary&metroAreas=Seattle%2C%20WA");
+  await expect(page.getByRole("heading", { level: 1, name: /endpoint opportunities/i })).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await expect(page.locator(".sticky-active-filters")).toContainText("Seattle, WA");
+  const stuck = await scrollUntilChipsStick(page);
+  expect(stuck.gap).toBeGreaterThanOrEqual(-1);
+  expect(stuck.gap).toBeLessThanOrEqual(12);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  const rested = await page.locator(".topbar").boundingBox();
+  expect(rested?.y ?? 99).toBeGreaterThanOrEqual(0);
+  expect(rested?.y ?? 99).toBeLessThanOrEqual(24);
+});
+
 test("[FILT-13] active chips and clear", async ({ page }) => {
   await openBoard(page);
   await expect(page.locator(".sticky-active-filters")).toBeHidden();
@@ -256,7 +328,8 @@ test("[FILT-15] back restores filters", async ({ page }) => {
   await expect(page.getByRole("button", { name: /^Remote\b/ })).toHaveAttribute("aria-pressed", "true");
   await page.goto("/board?workplace=Nope&platforms=not-a-platform&sort=sideways");
   await expect(page.getByRole("button", { name: /^Any\b/ }).first()).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator("#sort")).toHaveValue("newest");
+  await expect(page.locator("#results-sort")).toHaveValue("newest");
+  await expect(page.locator("#sort")).toHaveCount(0);
 });
 
 test("[FILT-17] legacy remote parameter", async ({ page }) => {
@@ -293,11 +366,9 @@ test("[FILT-19] request a missing place", async ({ page }) => {
 
 test("[SORT-01] sort controls", async ({ page }) => {
   await openBoard(page);
-  await openAdvanced(page);
-  for (const id of ["#sort", "#results-sort"]) {
-    const labels = await page.locator(`${id} option`).allTextContents();
-    expect(labels).toEqual(["Newest", "Compensation", "Company"]);
-  }
+  const labels = await page.locator("#results-sort option").allTextContents();
+  expect(labels).toEqual(["Newest", "Compensation", "Company"]);
+  await expect(page.locator("#sort")).toHaveCount(0);
   await page.locator("#results-sort").selectOption("company");
   await expect(page).toHaveURL(/sort=company/);
   await expect(page.getByRole("button", { name: "Remove filter: Sort: Company" })).toBeVisible();
@@ -337,8 +408,8 @@ test("[MAP-01] show and hide the map", async ({ page }) => {
 test("[MAP-02] mapped jobs heading", async ({ page }) => {
   await openBoard(page);
   const section = page.getByRole("region", { name: "Mapped job locations" });
-  await section.getByRole("button", { name: "Show map" }).click();
-  await expect(section.getByRole("heading", { level: 2 })).toHaveText("Locations");
+  await expect(section.getByRole("heading")).toHaveCount(0);
+  await expect(section.getByText("Job geography")).toHaveCount(0);
   await expect(section).not.toContainText(/\d+ of \d+/);
 });
 
@@ -406,7 +477,7 @@ test("[JOB-09] compare roles", async ({ page }) => {
   await expect(page.getByText("1 role selected")).toBeVisible();
   await expect(page.getByText("Select one more role to compare.")).toBeVisible();
   await buttons.nth(1).click();
-  await expect(page.getByRole("heading", { name: "Compare 2 roles" })).toBeVisible();
+  await expect(page.locator("#comparison-title")).toHaveText("Compare 2 roles");
   const table = page.getByRole("table", { name: "Job comparison" });
   await expect(table).toBeVisible();
   await expect(table).toContainText(/Salary|Not shown/);
@@ -414,7 +485,7 @@ test("[JOB-09] compare roles", async ({ page }) => {
   await buttons.nth(3).click();
   await expect(buttons.nth(4)).toBeDisabled();
   await page.getByRole("button", { name: "Clear comparison" }).click();
-  await expect(page.getByRole("heading", { name: /Compare / })).toHaveCount(0);
+  await expect(page.locator("#comparison-title")).toHaveCount(0);
   await expect(page).not.toHaveURL(/compare/);
 });
 
@@ -453,7 +524,7 @@ test("[RESP-01] narrow hit areas", async ({ page }, info) => {
   test.skip(info.project.name !== "mobile", "390px measurement");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/board?e2e-auth=in");
-  await expect(page.getByRole("heading", { level: 1, name: "Endpoint Jobs" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: /endpoint opportunities/i })).toBeVisible();
   await page.locator("summary.advanced-filters-summary").click();
   await expect(page.locator("details.advanced-filters")).toHaveAttribute("open", "");
   await expect(page.locator("#role-family")).toBeVisible();

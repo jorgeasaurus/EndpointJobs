@@ -49,8 +49,8 @@ export async function auditMaps({ feed, run, sources }: AuditContext) {
     assertTruthy(mappedLocationJobs.length > 0, "mapped location filter returned no jobs");
     assertTruthy(mappedLocationPoints.length > 0, "mapped location filter returned no mapped jobs");
     assertNoStaticImport(sources.jobMap, "./job-map-canvas", "map canvas should not be a static import");
-    assertIncludes(sources.jobMap, "const mappedJobCount = knownMappedCount ?? points.length");
-    assertIncludes(sources.jobMap, "Job geography");
+    assertIncludes(sources.jobMap, "Show map");
+    assertNotIncludes(sources.jobMap, "Job geography");
     assertNotIncludes(sources.jobMap, "{mappedJobCount} of {totalJobs}");
     assertIncludes(sources.jobMapFeatures, "buildFeatureCollection");
     assertIncludes(sources.refresh, "addResolvedMapLocation");

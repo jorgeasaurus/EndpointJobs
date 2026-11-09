@@ -158,7 +158,8 @@ async function openLocationMap(page, scenario, withQuery) {
 }
 
 async function expectMapCounts(page) {
-  await expect(page.locator(".job-map-heading h2")).toHaveText("Locations");
+  await expect(page.locator(".job-map-heading h2")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Hide map" })).toBeVisible();
   await expect(page.locator(".map-count-pill")).toHaveCount(0);
 }
 

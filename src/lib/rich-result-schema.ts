@@ -3,6 +3,7 @@ import { foldTokens, normalizeText } from "@/lib/text";
 import {
   getUsStateSuffix,
   isAmbiguousPanamaCity,
+  isExplicitUsStateName,
   isJamaicaUsNeighborhood,
   isNewMexicoUsLocation
 } from "@/lib/location-context";
@@ -130,6 +131,322 @@ export function inferAddressCountry(job: Job) {
 
 function foldDiacritics(value: string) {
   return value.normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
+}
+
+const countryNames = [
+  "united states of america",
+  "republica dominicana",
+  "dominican republic",
+  "united kingdom",
+  "united states",
+  "south korea",
+  "costa rica",
+  "el salvador",
+  "puerto rico",
+  "switzerland",
+  "svizzera",
+  "schweiz",
+  "suisse",
+  "philippines",
+  "deutschland",
+  "argentina",
+  "australia",
+  "guatemala",
+  "honduras",
+  "nicaragua",
+  "colombia",
+  "ecuador",
+  "paraguay",
+  "uruguay",
+  "brasil",
+  "brazil",
+  "canada",
+  "france",
+  "germany",
+  "jamaica",
+  "mexico",
+  "panama",
+  "belize",
+  "bolivia",
+  "espana",
+  "india",
+  "italy",
+  "spain",
+  "chile",
+  "peru",
+  "usa",
+  "uk",
+  "us",
+  "pr"
+].sort((left, right) => right.length - left.length);
+
+const countryNamesByCode: Record<string, ReadonlySet<string>> = {
+  US: new Set(["united states of america", "united states", "usa", "us"]),
+  GB: new Set(["united kingdom", "uk"]),
+  AU: new Set(["australia"]),
+  CA: new Set(["canada"]),
+  DE: new Set(["germany", "deutschland"]),
+  CH: new Set(["switzerland", "schweiz", "suisse", "svizzera"]),
+  FR: new Set(["france"]),
+  ES: new Set(["spain", "espana"]),
+  IN: new Set(["india"]),
+  IT: new Set(["italy"]),
+  PH: new Set(["philippines"]),
+  KR: new Set(["south korea"]),
+  BR: new Set(["brazil", "brasil"]),
+  AR: new Set(["argentina"]),
+  CL: new Set(["chile"]),
+  CO: new Set(["colombia"]),
+  PE: new Set(["peru"]),
+  MX: new Set(["mexico"]),
+  GT: new Set(["guatemala"]),
+  BZ: new Set(["belize"]),
+  SV: new Set(["el salvador"]),
+  HN: new Set(["honduras"]),
+  NI: new Set(["nicaragua"]),
+  CR: new Set(["costa rica"]),
+  PA: new Set(["panama"]),
+  EC: new Set(["ecuador"]),
+  UY: new Set(["uruguay"]),
+  PY: new Set(["paraguay"]),
+  BO: new Set(["bolivia"]),
+  DO: new Set(["dominican republic", "republica dominicana"]),
+  JM: new Set(["jamaica"]),
+  PR: new Set(["puerto rico", "pr"])
+};
+
+// Bare Basel and Appenzell name two cantons, so they are not explicit.
+const swissCantons = new Set([
+  "zurich",
+  "bern",
+  "berne",
+  "luzern",
+  "lucerne",
+  "uri",
+  "schwyz",
+  "obwalden",
+  "nidwalden",
+  "glarus",
+  "zug",
+  "fribourg",
+  "freiburg",
+  "solothurn",
+  "basel stadt",
+  "basel landschaft",
+  "baselland",
+  "schaffhausen",
+  "appenzell ausserrhoden",
+  "appenzell innerrhoden",
+  "st gallen",
+  "sankt gallen",
+  "graubunden",
+  "grisons",
+  "grigioni",
+  "aargau",
+  "thurgau",
+  "ticino",
+  "tessin",
+  "vaud",
+  "valais",
+  "wallis",
+  "neuchatel",
+  "geneve",
+  "geneva",
+  "genf",
+  "jura"
+]);
+
+type PostalAddress = {
+  "@type": "PostalAddress";
+  addressCountry: string;
+  addressLocality?: string;
+  addressRegion?: string;
+};
+
+// A token that is both a city and a state or canton. Alone, it stays a locality.
+const ambiguousCityRegions = new Set([
+  "new york",
+  "washington",
+  "zurich",
+  "bern",
+  "berne",
+  "luzern",
+  "lucerne",
+  "zug",
+  "fribourg",
+  "freiburg",
+  "solothurn",
+  "schaffhausen",
+  "st gallen",
+  "sankt gallen",
+  "geneve",
+  "geneva",
+  "neuchatel",
+  "schwyz",
+  "glarus",
+  "genf"
+]);
+
+export function jobPostingAddress(location: string, addressCountry: string): PostalAddress {
+  const trimmed = location.trim().replace(/\s+/g, " ");
+  const commaParts = trimmed.split(",").map((part) => part.trim());
+  if (commaParts.some((part) => part.length === 0)) {
+    return {
+      "@type": "PostalAddress",
+      addressLocality: trimmed,
+      addressCountry
+    };
+  }
+  const rawParts = commaParts;
+  const parts = rawParts.flatMap((part, index) => (
+    index === rawParts.length - 1 ? splitTrailingCountry(part, addressCountry) : [part]
+  ));
+  const places: string[] = [];
+  const regions: string[] = [];
+
+  parts.forEach((part, index) => {
+    const folded = foldTokens(part);
+    const isLast = index === parts.length - 1;
+    if (isLast && isAddressCountryName(part, addressCountry)) return;
+    if (isDistrictOfColumbia(part) && addressCountry === "US") {
+      regions.push(part);
+      return;
+    }
+    if (isExplicitRegion(part, addressCountry)) {
+      regions.push(part);
+      return;
+    }
+    places.push(part);
+  });
+
+  const district = regions.find((part) => isDistrictOfColumbia(part));
+  const washington = regions.find((part) => foldTokens(part) === "washington");
+  if (places.length === 0 && district && washington && regions.length === 2) {
+    return {
+      "@type": "PostalAddress",
+      addressLocality: washington,
+      addressRegion: district,
+      addressCountry
+    };
+  }
+
+  if (places.length === 1 && regions.length === 1 && ambiguousCityRegions.has(foldTokens(regions[0]))) {
+    const regionIndex = parts.indexOf(regions[0]);
+    const placeIndex = parts.indexOf(places[0]);
+    if (regionIndex >= 0 && placeIndex >= 0 && regionIndex < placeIndex) {
+      return {
+        "@type": "PostalAddress",
+        addressLocality: trimmed,
+        addressCountry
+      };
+    }
+  }
+
+  if (
+    places.length === 1
+    && regions.length === 1
+    && (
+      !isPlainPlaceToken(places[0])
+      || isRejectedCountrySuffix(places[0], addressCountry)
+      || isCountryLikePlace(places[0], addressCountry)
+    )
+  ) {
+    return {
+      "@type": "PostalAddress",
+      addressLocality: trimmed,
+      addressCountry
+    };
+  }
+
+  if (places.length > 1 || regions.length > 1) {
+    return {
+      "@type": "PostalAddress",
+      addressLocality: trimmed,
+      addressCountry
+    };
+  }
+
+  if (places.length === 0 && regions.length === 1 && ambiguousCityRegions.has(foldTokens(regions[0]))) {
+    return {
+      "@type": "PostalAddress",
+      addressLocality: regions[0],
+      addressCountry
+    };
+  }
+
+  return {
+    "@type": "PostalAddress",
+    addressCountry,
+    ...(places.length === 1 ? { addressLocality: places[0] } : {}),
+    ...(regions.length === 1 ? { addressRegion: regions[0] } : {})
+  };
+}
+
+function splitTrailingCountry(part: string, addressCountry: string) {
+  if (!isPlainPlaceToken(part)) return [part];
+  const folded = foldTokens(part);
+  for (const name of countryNames) {
+    if (folded === name || !folded.endsWith(` ${name}`)) continue;
+    const nameWordCount = name.split(" ").length;
+    const words = part.trim().split(/\s+/);
+    if (words.length <= nameWordCount) continue;
+    const prefix = words.slice(0, -nameWordCount).join(" ");
+    if (!isExplicitRegion(prefix, addressCountry)) return [part];
+    return [prefix, words.slice(-nameWordCount).join(" ")];
+  }
+  return [part];
+}
+
+function isCountryLikePlace(part: string, addressCountry: string) {
+  if (isUnitedStatesToken(part) || isAddressCountryName(part, addressCountry)) return true;
+  const peeled = part.trim().replace(/[.!,;:]+$/g, "").trim();
+  if (peeled !== part.trim() && (isUnitedStatesToken(peeled) || isAddressCountryName(peeled, addressCountry))) return true;
+  const compact = part.replace(/[^A-Za-z]/g, "").toLowerCase();
+  if (addressCountry !== "US" || (compact !== "us" && compact !== "usa" && !compact.startsWith("usa"))) return false;
+  return /[.]/.test(part) && !isUnitedStatesToken(part) || (compact.startsWith("usa") && compact !== "usa");
+}
+
+function isRejectedCountrySuffix(part: string, addressCountry: string) {
+  const words = part.trim().split(/\s+/);
+  for (let count = 1; count < words.length; count += 1) {
+    if (isAddressCountryName(words.slice(0, count).join(" "), addressCountry)) return true;
+  }
+  return false;
+}
+
+function isPlainPlaceToken(part: string) {
+  return /^[\p{L}\p{M}\s.'’-]+$/u.test(part.trim());
+}
+
+function isAddressCountryName(part: string, addressCountry: string) {
+  if (!isPlainPlaceToken(part)) return false;
+  if (addressCountry === "US" && isUnitedStatesToken(part)) return true;
+  if (!endsWithLetter(part)) return false;
+  const folded = foldTokens(part);
+  return countryNamesByCode[addressCountry]?.has(folded) === true || folded === addressCountry.toLowerCase();
+}
+
+function isUnitedStatesToken(part: string) {
+  return /^(?:us|u\.s\.?|usa|u\.s\.a\.?)$/i.test(part.trim());
+}
+
+function isDistrictOfColumbia(part: string) {
+  return /^d\.?c\.?$/i.test(part.replace(/\s+/g, ""));
+}
+
+function isExplicitRegion(part: string, addressCountry: string) {
+  if (!isPlainPlaceToken(part) || !endsWithLetter(part)) return false;
+  const trimmed = part.trim().replace(/\s+/g, " ");
+  if (addressCountry === "US") {
+    const code = trimmed.toLowerCase();
+    return (/^[a-z]{2}$/.test(code) && getUsStateSuffix(code) === code) || isExplicitUsStateName(code);
+  }
+  const folded = foldTokens(trimmed);
+  return Boolean(folded) && addressCountry === "CH" && swissCantons.has(folded);
+}
+
+function endsWithLetter(part: string) {
+  return /\p{L}$/u.test(part.trim());
 }
 
 export function normalizeEmploymentType(value: string) {
