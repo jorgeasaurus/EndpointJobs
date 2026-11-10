@@ -1,0 +1,65 @@
+{
+  "updatedAt": "2026-11-05T18:08:32.170Z",
+  "total": 1367,
+  "remoteOrHybrid": 488,
+  "salaryShown": 549,
+  "locations": 86,
+  "tools": [
+    {
+      "name": "Intune",
+      "total": 449
+    },
+    {
+      "name": "PowerShell",
+      "total": 354
+    },
+    {
+      "name": "Entra ID",
+      "total": 252
+    },
+    {
+      "name": "SCCM",
+      "total": 222
+    },
+    {
+      "name": "Jamf",
+      "total": 149
+    },
+    {
+      "name": "Autopilot",
+      "total": 149
+    }
+  ],
+  "highlights": [
+    {
+      "title": "Senior Windows Endpoint Engineer",
+      "workplace": "Remote",
+      "salary": "$123k-$161k",
+      "tools": [
+        "Intune",
+        "SCCM",
+        "Workspace ONE"
+      ]
+    },
+    {
+      "title": "AI-Ready Endpoint & MDM Engineer",
+      "workplace": "Remote",
+      "salary": "$130k-$190k",
+      "tools": [
+        "Jamf",
+        "Intune",
+        "PowerShell"
+      ]
+    },
+    {
+      "title": "Endpoint Engineer (Journeyman)",
+      "workplace": "Remote",
+      "salary": "$100k-$130k",
+      "tools": [
+        "Intune",
+        "SCCM",
+        "Entra ID"
+      ]
+    }
+  ]
+}
