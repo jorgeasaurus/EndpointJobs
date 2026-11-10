@@ -383,7 +383,7 @@ const CtaScene = ({siteUrl}: EndpointJobsSocialProps) => {
           <div style={{position: "absolute", top: -60, left: sweep, width: 220, height: 260, transform: "rotate(18deg)", background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.16), transparent)"}} />
         </div>
         <div style={{fontFamily: mono, fontSize: 30, fontWeight: 700, letterSpacing: 2, color: colors.muted, marginTop: 56, ...lift(detailIn, 20)}}>
-          FREE · REFRESHED DAILY · NO SIGN-UP
+          FREE · REFRESHED DAILY
         </div>
       </AbsoluteFill>
     </SceneWipe>
