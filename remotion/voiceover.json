@@ -1,0 +1,32 @@
+[
+  {
+    "id": "hook",
+    "text": "Still scrolling past help desk jobs?",
+    "file": "voiceover/hook.mp3",
+    "durationSeconds": 2.56
+  },
+  {
+    "id": "count",
+    "text": "1,300+ endpoint roles. Nothing else.",
+    "file": "voiceover/count.mp3",
+    "durationSeconds": 3.45
+  },
+  {
+    "id": "tools",
+    "text": "Filter by your stack. Intune. PowerShell.",
+    "file": "voiceover/tools.mp3",
+    "durationSeconds": 3.22
+  },
+  {
+    "id": "proof",
+    "text": "Remote roles. Salaries up front.",
+    "file": "voiceover/proof.mp3",
+    "durationSeconds": 2.43
+  },
+  {
+    "id": "cta",
+    "text": "Find your next role. Endpoint jobs dot dev.",
+    "file": "voiceover/cta.mp3",
+    "durationSeconds": 3.45
+  }
+]

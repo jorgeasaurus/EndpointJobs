@@ -3,14 +3,17 @@ import {loadFont as loadSpaceGrotesk} from "@remotion/google-fonts/SpaceGrotesk"
 import {ArrowRight, DollarSign, Globe2, MapPin, Wifi} from "lucide-react";
 import {
   AbsoluteFill,
+  Audio,
   Easing,
   interpolate,
   Sequence,
+  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
 
 import stats from "./ad-stats.json";
+import voiceover from "./voiceover.json";
 import {colors, fadeRange, mono, reveal, sans, snappyReveal} from "./theme";
 import {Brand, GlassPanel, Pill} from "./ui";
 
@@ -21,16 +24,31 @@ export type EndpointJobsSocialProps = {
   siteUrl: string;
 };
 
-// Scene boundaries in seconds. Each scene overlaps the next by OVERLAP for the wipe.
+// Scene timing is derived from the voiceover: each scene lasts at least long enough for its
+// animation, and stretches when its narration clip runs longer. Scenes overlap by OVERLAP for the wipe.
 const OVERLAP = 0.35;
-const SCENES = {
-  hook: [0, 3.1],
-  count: [2.75, 6.1],
-  tools: [5.75, 9.6],
-  proof: [9.25, 12.9],
-  cta: [12.55, 16],
-} as const;
-export const SOCIAL_DURATION_SECONDS = 16;
+const VOICE_LEAD = 0.3; // narration starts once the wipe has mostly landed
+const VOICE_GAP = 0.25; // breathing room before the next scene's line
+const CTA_HOLD = 0.8; // hold on the end card after the last word
+const SCENE_IDS = ["hook", "count", "tools", "proof", "cta"] as const;
+type SceneId = (typeof SCENE_IDS)[number];
+const MIN_SCENE_SECONDS: Record<SceneId, number> = {hook: 3.1, count: 3.35, tools: 3.85, proof: 3.65, cta: 3.45};
+
+const buildTimeline = () => {
+  let cursor = 0;
+  return SCENE_IDS.map((id) => {
+    const voice = voiceover.find((line) => line.id === id);
+    const lead = id === "hook" ? 0.25 : VOICE_LEAD;
+    const tail = id === "cta" ? CTA_HOLD : VOICE_GAP;
+    const length = Math.max(MIN_SCENE_SECONDS[id], voice ? lead + voice.durationSeconds + tail : 0);
+    const scene = {id, start: cursor, end: cursor + length, voice, voiceStart: lead};
+    cursor += length - OVERLAP;
+    return scene;
+  });
+};
+
+const TIMELINE = buildTimeline();
+export const SOCIAL_DURATION_SECONDS = TIMELINE[TIMELINE.length - 1].end;
 
 const NOISE_TITLES = [
   "Help Desk Technician",
@@ -132,10 +150,9 @@ const Glow = () => {
 const StoryProgress = () => {
   const frame = useCurrentFrame();
   const {fps, durationInFrames} = useVideoConfig();
-  const segments = Object.values(SCENES);
   return (
     <div style={{position: "absolute", top: 54, left: 54, right: 54, display: "flex", gap: 10}}>
-      {segments.map(([start, end]) => {
+      {TIMELINE.map(({start, end}) => {
         const fill = interpolate(frame, [start * fps, Math.min(end * fps, durationInFrames)], [0, 100], {extrapolateLeft: "clamp", extrapolateRight: "clamp"});
         return (
           <div key={start} style={{flex: 1, height: 6, borderRadius: 6, background: "rgba(255,255,255,0.14)", overflow: "hidden"}}>
@@ -373,11 +390,13 @@ const CtaScene = ({siteUrl}: EndpointJobsSocialProps) => {
   );
 };
 
-const sceneSequence = (fps: number, [start, end]: readonly [number, number]) => ({
-  from: Math.round(start * fps),
-  durationInFrames: Math.round((end - start) * fps),
-  premountFor: fps,
-});
+const SCENE_COMPONENTS: Record<SceneId, React.ComponentType<EndpointJobsSocialProps>> = {
+  hook: HookScene,
+  count: CountScene,
+  tools: ToolsScene,
+  proof: ProofScene,
+  cta: CtaScene,
+};
 
 export const EndpointJobsSocial = ({siteUrl}: EndpointJobsSocialProps) => {
   const {fps} = useVideoConfig();
@@ -386,11 +405,19 @@ export const EndpointJobsSocial = ({siteUrl}: EndpointJobsSocialProps) => {
     <AbsoluteFill style={{fontFamily: sans, background: colors.black, overflow: "hidden"}}>
       <AbsoluteFill style={{background: "linear-gradient(180deg, #050b0a 0%, #000000 60%, #060c07 100%)"}} />
       <SceneGrid />
-      <Sequence {...sceneSequence(fps, SCENES.hook)}><HookScene /></Sequence>
-      <Sequence {...sceneSequence(fps, SCENES.count)}><CountScene /></Sequence>
-      <Sequence {...sceneSequence(fps, SCENES.tools)}><ToolsScene /></Sequence>
-      <Sequence {...sceneSequence(fps, SCENES.proof)}><ProofScene /></Sequence>
-      <Sequence {...sceneSequence(fps, SCENES.cta)}><CtaScene siteUrl={siteUrl} /></Sequence>
+      {TIMELINE.map(({id, start, end, voice, voiceStart}) => {
+        const Scene = SCENE_COMPONENTS[id];
+        return (
+          <Sequence key={id} from={Math.round(start * fps)} durationInFrames={Math.round((end - start) * fps)} premountFor={fps}>
+            <Scene siteUrl={siteUrl} />
+            {voice && (
+              <Sequence from={Math.round(voiceStart * fps)} layout="none">
+                <Audio src={staticFile(voice.file)} />
+              </Sequence>
+            )}
+          </Sequence>
+        );
+      })}
       <Glow />
       <StoryProgress />
     </AbsoluteFill>

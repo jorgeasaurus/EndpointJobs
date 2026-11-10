@@ -18,7 +18,7 @@ export const RemotionRoot = () => {
       <Composition
         id="EndpointJobsSocial"
         component={EndpointJobsSocial}
-        durationInFrames={SOCIAL_DURATION_SECONDS * 30}
+        durationInFrames={Math.round(SOCIAL_DURATION_SECONDS * 30)}
         fps={30}
         width={1080}
         height={1920}

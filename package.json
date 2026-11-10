@@ -32,7 +32,8 @@
     "audit:mcp": "tsx scripts/audits/jobs-mcp-smoke.ts",
     "audit:mcp-guide": "node scripts/audits/mcp-guide-browser.mjs",
     "video:stats": "node scripts/build-ad-stats.mjs",
-    "video:render:social": "npm run video:stats && remotion render remotion/index.ts EndpointJobsSocial out/endpoint-jobs-social.mp4"
+    "video:render:social": "npm run video:stats && remotion render remotion/index.ts EndpointJobsSocial out/endpoint-jobs-social.mp4",
+    "video:voiceover": "node scripts/build-ad-voiceover.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "^2.3.0",
