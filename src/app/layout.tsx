@@ -1,7 +1,8 @@
-import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
+
+import { SiteAnalytics } from "@/components/site-analytics";
 
 import {
   ogImage,
@@ -84,7 +85,7 @@ export default function RootLayout({
       <body>
         {children}
         <Script src="https://appreciate-button.com/widget.js" strategy="afterInteractive" />
-        <Analytics />
+        <SiteAnalytics />
       </body>
     </html>
   );

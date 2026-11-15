@@ -543,8 +543,9 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
   });
 
   await run("FEAT-054", "Vercel Analytics is installed globally", () => {
-    assertIncludes(sources.layout, "@vercel/analytics/next");
-    assertIncludes(sources.layout, "<Analytics />");
+    assertIncludes(sources.layout, "<SiteAnalytics />");
+    assertIncludes(sources.siteAnalytics, "@vercel/analytics/next");
+    assertIncludes(sources.siteAnalytics, "<Analytics beforeSend={dropCrawlerEvents} />");
     assertIncludes(sources.packageJson, "\"@vercel/analytics\"");
   });
 
