@@ -76,6 +76,14 @@ const serpApiMarketPresets = {
     hl: "en",
     location: "Australia"
   },
+  gb: {
+    code: "gb",
+    currency: "GBP",
+    gl: "uk",
+    googleDomain: "google.co.uk",
+    hl: "en",
+    location: "United Kingdom"
+  },
   us: {
     code: "us",
     currency: "USD",
