@@ -60,6 +60,7 @@ const sourcePaths = {
   jobsApiBrowserAudit: "scripts/audits/jobs-api-browser.mjs",
   minimumSalaryAudit: "scripts/audits/minimum-salary-data.ts",
   layout: "src/app/layout.tsx",
+  siteAnalytics: "src/components/site-analytics.tsx",
   mapAudit: "scripts/audits/map-audits.ts",
   mapLocation: "src/lib/map-location.ts",
   normalizerAudit: "scripts/audits/normalizer-audits.ts",

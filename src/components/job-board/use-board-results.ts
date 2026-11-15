@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import type { BoardMapJob, BoardPage } from "@/lib/board-page";
+import { isKnownCrawler } from "@/lib/known-crawler";
 import type { FilterState } from "./filter-model";
 import { filterStateToBoardSearchParams } from "./filter-url";
 
@@ -65,6 +66,10 @@ export function useDebouncedFilters(filters: FilterState) {
   return debounced;
 }
 
+export function boardUsesInitialPage(isInitial: boolean, userAgent: string) {
+  return isInitial || isKnownCrawler(userAgent);
+}
+
 export function useBoardPage(
   initialPage: BoardPage,
   filters: FilterState,
@@ -83,6 +88,7 @@ export function useBoardPage(
     status: BoardStatus;
   }>({ key: "", page: initialPage, scope: "public", status: "ready" });
   const isInitial = filterKey === initialFilterKey && page === 1 && attempt === 0 && saved.kind === "off";
+  const showInitialPage = boardUsesInitialPage(isInitial, readClientUserAgent());
   const desiredScope: BoardScope = saved.kind === "off" ? "public" : "saved";
   const matches = state.key === requestKey;
   // scope stays on the last successful response. A failed change is settled for
@@ -93,7 +99,7 @@ export function useBoardPage(
   const pendingScope = scopeMismatch && !scopeChangeFailed;
 
   useEffect(() => {
-    if (isInitial) return undefined;
+    if (showInitialPage) return undefined;
 
     const controller = new AbortController();
     const request = boardResultsRequest(filters, page, saved);
@@ -121,15 +127,20 @@ export function useBoardPage(
       controller.abort();
       window.clearTimeout(timer);
     };
-  }, [desiredScope, filters, isInitial, page, requestKey, saved]);
+  }, [desiredScope, filters, page, requestKey, saved, showInitialPage]);
 
   return {
-    page: isInitial ? initialPage : state.page,
+    page: showInitialPage ? initialPage : state.page,
     pendingScope,
     scope: state.scope,
     retry: () => setAttempt((current) => current + 1),
-    status: isInitial ? "ready" : matches ? state.status : "loading"
+    status: showInitialPage ? "ready" : matches ? state.status : "loading"
   };
+}
+
+function readClientUserAgent() {
+  if (typeof navigator === "undefined") return "";
+  return navigator.userAgent;
 }
 
 export function useBoardMap(filters: FilterState, enabled: boolean, saved: BoardSavedQuery = { kind: "off" }) {
