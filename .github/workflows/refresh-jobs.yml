@@ -53,11 +53,9 @@ jobs:
           JOB_THEIRSTACK_LIMIT: "25"
           JOB_THEIRSTACK_COUNTRY_CODES: US,CH,IT,ES,FR,DE,BR,AR,CL,CO,PE,MX,GT,BZ,SV,HN,NI,CR,PA,EC,UY,PY,BO,DO,JM,PR
           SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
-          JOB_SERPAPI_COUNTRIES: us,au,gb
-          JOB_SERPAPI_US_QUERY_LIMIT: "24"
+          JOB_SERPAPI_COUNTRIES: us,gb
+          JOB_SERPAPI_US_QUERY_LIMIT: "26"
           JOB_SERPAPI_ROTATION_INDEX: ${{ github.run_number }}
-          JOB_SERPAPI_AU_QUERIES: endpoint engineer
-          JOB_SERPAPI_AU_LOCATIONS: Sydney, New South Wales, Australia|Melbourne, Victoria, Australia
           JOB_SERPAPI_GB_QUERIES: endpoint engineer,intune engineer
           JOB_SERPAPI_GB_LOCATIONS: London, England, United Kingdom
           JOB_SERPAPI_MAX_PAGES: "1"
