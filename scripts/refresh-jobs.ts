@@ -22,7 +22,11 @@ import { WorkdayIncompleteSnapshotError } from "./job-refresh/providers/workday"
 import { usaJobsProvider } from "./job-refresh/providers/usajobs";
 import { resolveJobMapLocation } from "./job-refresh/map-location";
 import { mergeRetainedSerpApiJobs } from "./job-refresh/retained-jobs";
-import { readPreviousFeedJobs, resolveRetentionFeedPath } from "./job-refresh/retention-snapshot";
+import {
+  readPreviousFeedJobs,
+  readPreviousFeedSourceJobs,
+  resolveRetentionFeedPath
+} from "./job-refresh/retention-snapshot";
 import { shouldWriteFeed, validateFeed } from "./job-refresh/feed-safety";
 import {
   compareFeedSelectionPriority,
@@ -52,7 +56,16 @@ async function main() {
   const previousJobs = configuredProviders.includes("serpapi")
     ? await readPreviousFeedJobs(previousFeedPath)
     : [];
-  const result = await fetchConfiguredProviderJobs(configuredProviders, fetchedAt);
+  const previousProviderJobs: PreviousProviderJobs = {
+    workday: configuredProviders.includes("workday")
+      ? await readPreviousFeedSourceJobs(previousFeedPath, "Workday")
+      : undefined
+  };
+  const result = await fetchConfiguredProviderJobs(
+    configuredProviders,
+    fetchedAt,
+    previousProviderJobs
+  );
   const reservedJobIds = new Set(result.reservedJobIds);
   const currentJobs = result.jobs.filter((job): job is Job => Boolean(job));
   const candidateJobs = mergeRetainedSerpApiJobs(currentJobs, previousJobs, fetchedAt);
@@ -193,9 +206,12 @@ function normalizeProviderName(value: string): SupportedProvider {
   return provider;
 }
 
+type PreviousProviderJobs = Partial<Record<SupportedProvider, readonly Job[]>>;
+
 async function fetchConfiguredProviderJobs(
   providers: SupportedProvider[],
-  fetchedAt: Date
+  fetchedAt: Date,
+  previousProviderJobs: PreviousProviderJobs = {}
 ): Promise<{
   jobs: Array<Job | null>;
   providers: SupportedProvider[];
@@ -210,7 +226,11 @@ async function fetchConfiguredProviderJobs(
     const sourceUrl = getConfiguredSourceUrl(provider, providers.length === 1);
 
     try {
-      const providerJobs = await adapter.fetchJobs({ url: sourceUrl, fetchedAt });
+      const providerJobs = await adapter.fetchJobs({
+        url: sourceUrl,
+        fetchedAt,
+        previousJobs: previousProviderJobs[provider]
+      });
       successfulProviders.push(provider);
       jobs.push(...providerJobs);
 

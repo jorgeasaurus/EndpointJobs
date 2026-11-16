@@ -966,3 +966,72 @@ test("Workday closes a posting at its exact expiry instant", async (t) => {
   const atExpiry = await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00.000Z") });
   assert.equal(atExpiry.filter(Boolean).length, 0);
 });
+
+function previousWorkdayJob(id: string, sourceUrl: string): Job {
+  return { id, source: "Workday", sourceUrl, title: "Endpoint Engineer", company: "Example" } as Job;
+}
+
+for (const throttledAt of ["search", "detail"] as const) {
+  test(`Workday carries forward a strict site's previous jobs when its ${throttledAt} stays throttled`, async () => {
+    const originalFetch = globalThis.fetch;
+    const originalEnv = { ...process.env };
+    process.env.JOB_WORKDAY_SITES = "Throttled|https://throttled.example/wday/cxs/t/Careers/jobs|Endpoint;Intune|true;;Healthy|https://healthy.example/wday/cxs/h/Careers/jobs|Endpoint|true";
+    process.env.JOB_WORKDAY_THROTTLE_DELAYS_MS = "0,0,0";
+    let throttledSearches = 0;
+    globalThis.fetch = async (input, init) => {
+      const url = String(input);
+      const throttled = url.includes("throttled.example");
+      if (init?.method === "POST") {
+        if (throttled && throttledAt === "search") return new Response(null, { status: 429 });
+        if (throttled) throttledSearches += 1;
+        return workdaySearchResponse([{ ...detailPosting, externalPath: `${detailPosting.externalPath}-${throttledSearches}` }]);
+      }
+      // The first throttled query's detail succeeds; the second stays throttled.
+      if (throttled && throttledSearches > 1) return new Response(null, { status: 429 });
+      return Response.json({ jobPostingInfo: validDetail });
+    };
+    const previousJobs = [
+      previousWorkdayJob("throttled-old", "https://throttled.example/Careers/job/Chicago/Old_1"),
+      previousWorkdayJob("other-site-old", "https://elsewhere.example/Careers/job/Chicago/Old_2"),
+      { ...previousWorkdayJob("not-workday", "https://throttled.example/Careers/job/x"), source: "Greenhouse" } as Job
+    ];
+    try {
+      const jobs = (await workdayProvider.fetchJobs({
+        url: workdayProvider.defaultUrl,
+        fetchedAt: new Date("2026-09-12T12:00:00Z"),
+        previousJobs
+      })).filter((job) => job !== null);
+      const throttledJobs = jobs.filter((job) => job.sourceUrl.startsWith("https://throttled.example/"));
+      assert.deepEqual(throttledJobs.map((job) => job.id), ["throttled-old"], "Only the site's previous jobs replace its partial results");
+      assert.ok(jobs.some((job) => job.sourceUrl.startsWith("https://healthy.example/")), "The next site still runs");
+    } finally {
+      globalThis.fetch = originalFetch;
+      process.env = originalEnv;
+    }
+  });
+}
+
+for (const scenario of ["no previous feed", "non-throttle failure"] as const) {
+  test(`Workday still rejects the snapshot for a strict site with ${scenario}`, async () => {
+    const originalFetch = globalThis.fetch;
+    const originalEnv = { ...process.env };
+    process.env.JOB_WORKDAY_SITES = "Throttled|https://throttled.example/wday/cxs/t/Careers/jobs|Endpoint|true";
+    process.env.JOB_WORKDAY_THROTTLE_DELAYS_MS = "0,0,0";
+    globalThis.fetch = async () => new Response(null, { status: scenario === "no previous feed" ? 429 : 500 });
+    try {
+      await assert.rejects(
+        workdayProvider.fetchJobs({
+          url: workdayProvider.defaultUrl,
+          fetchedAt: new Date("2026-09-12T12:00:00Z"),
+          previousJobs: scenario === "no previous feed"
+            ? undefined
+            : [previousWorkdayJob("throttled-old", "https://throttled.example/Careers/job/Chicago/Old_1")]
+        }),
+        WorkdayIncompleteSnapshotError
+      );
+    } finally {
+      globalThis.fetch = originalFetch;
+      process.env = originalEnv;
+    }
+  });
+}

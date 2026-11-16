@@ -4,7 +4,7 @@ import { dirname } from "node:path";
 import { jobsFeedReadUrl } from "../../src/lib/jobs-feed-config";
 import { parsePublishedJobsFeed } from "../../src/lib/published-jobs-feed";
 import type { Job, JobsFeed } from "../../src/types/job";
-import { getValidatedPreviousSerpApiJobs } from "./retained-jobs";
+import { getValidatedPreviousSerpApiJobs, getValidatedPreviousSourceJobs } from "./retained-jobs";
 
 export type RetentionLoadResult =
   | { status: "skipped"; detail: string }
@@ -61,6 +61,31 @@ export async function readPreviousFeedJobs(path: string): Promise<Job[]> {
       }`
     );
     return [];
+  }
+}
+
+/**
+ * Jobs from one source in the previous feed, or undefined when that feed is
+ * missing or invalid. Callers that fall back to these jobs must treat
+ * undefined as "nothing to fall back on", not as "the source had no jobs".
+ */
+export async function readPreviousFeedSourceJobs(path: string, source: string): Promise<Job[] | undefined> {
+  try {
+    const parsed: unknown = JSON.parse(await readFile(path, "utf8"));
+    if (!isJobsFeed(parsed)) {
+      console.warn(`Previous feed ${path} is not a jobs feed; no ${source} fallback is available`);
+      return undefined;
+    }
+    return getValidatedPreviousSourceJobs(parsed, source);
+  } catch (error) {
+    if (!(isNodeError(error) && error.code === "ENOENT")) {
+      console.warn(
+        `No ${source} fallback is available because the previous feed could not be loaded as a valid jobs feed: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
+    return undefined;
   }
 }
 
