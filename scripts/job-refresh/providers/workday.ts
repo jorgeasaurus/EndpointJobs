@@ -103,6 +103,14 @@ async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
         console.warn(
           `Skipping Workday/${site.name} query ${query}: ${error instanceof Error ? error.message : String(error)}`,
         );
+        if (isWorkdayThrottleError(error)) {
+          // The tenant is still throttled after the full retry schedule;
+          // its remaining queries would each wait through it too.
+          console.warn(
+            `Skipping remaining Workday/${site.name} queries while the site is throttled`,
+          );
+          break;
+        }
         continue;
       }
       completedQueries += 1;
@@ -190,11 +198,13 @@ function workdayRequestSignal(deadline: number | undefined) {
 }
 
 const retryableWorkdayStatuses = new Set([429, 502, 503, 504]);
-const maxWorkdayRetryAfterMs = 10_000;
+const maxWorkdayRetryAfterMs = 30_000;
+const defaultWorkdayThrottleDelaysMs = [5_000, 15_000, 30_000];
 
 class WorkdayRetryableError extends Error {
   constructor(
     message: string,
+    readonly throttled: boolean,
     readonly retryAfterMs?: number,
   ) {
     super(message);
@@ -202,11 +212,18 @@ class WorkdayRetryableError extends Error {
   }
 }
 
-// Workday throttles GitHub runners intermittently: a 429, a 5xx gateway
-// error, or an HTML bot-check page in place of JSON. One such response on a
-// detail-fetching site aborts the whole refresh, so retry those signals with
-// backoff before giving up. Other failures (500, malformed JSON) still fail
-// at once so the refresh never publishes a partial snapshot.
+export function isWorkdayThrottleError(error: unknown) {
+  return error instanceof WorkdayRetryableError && error.throttled;
+}
+
+// Workday throttles GitHub runners one tenant at a time: every query on a
+// site gets 429 for tens of seconds while neighbouring sites answer, and no
+// Retry-After header is sent. One such response on a detail-fetching site
+// aborts the whole refresh, so a 429 waits through a long schedule
+// (JOB_WORKDAY_THROTTLE_DELAYS_MS, default 5s, 15s, 30s). Gateway errors and
+// HTML bot-check pages get short retries (JOB_WORKDAY_MAX_RETRIES from
+// JOB_WORKDAY_RETRY_DELAY_MS). Other failures (500, malformed JSON) still
+// fail at once so the refresh never publishes a partial snapshot.
 async function fetchWorkdayJson(
   url: string,
   init: RequestInit,
@@ -215,16 +232,29 @@ async function fetchWorkdayJson(
 ): Promise<{ status: number; json: unknown }> {
   const maxRetries = getNonNegativeInteger(process.env.JOB_WORKDAY_MAX_RETRIES, 2);
   const baseDelayMs = getNonNegativeInteger(process.env.JOB_WORKDAY_RETRY_DELAY_MS, 1_000);
+  const throttleDelaysMs = getWorkdayThrottleDelaysMs();
+  let retries = 0;
+  let throttleRetries = 0;
 
-  for (let attempt = 0; ; attempt += 1) {
+  while (true) {
     try {
       return await fetchWorkdayJsonOnce(url, init, deadline, passthroughStatuses);
     } catch (error) {
-      if (!(error instanceof WorkdayRetryableError) || attempt >= maxRetries) {
+      if (!(error instanceof WorkdayRetryableError)) {
         throw error;
       }
 
-      const delayMs = error.retryAfterMs ?? baseDelayMs * 2 ** attempt;
+      let delayMs: number;
+      if (error.throttled) {
+        if (throttleRetries >= throttleDelaysMs.length) throw error;
+        delayMs = error.retryAfterMs ?? throttleDelaysMs[throttleRetries];
+        throttleRetries += 1;
+      } else {
+        if (retries >= maxRetries) throw error;
+        delayMs = baseDelayMs * 2 ** retries;
+        retries += 1;
+      }
+
       if (deadline !== undefined && Date.now() + delayMs >= deadline) {
         throw error;
       }
@@ -232,6 +262,16 @@ async function fetchWorkdayJson(
       await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
   }
+}
+
+function getWorkdayThrottleDelaysMs() {
+  const configured = process.env.JOB_WORKDAY_THROTTLE_DELAYS_MS;
+  if (configured === undefined) return defaultWorkdayThrottleDelaysMs;
+  if (configured.trim() === "") return [];
+  const delays = configured.split(",").map((value) => value.trim());
+  return delays.every((value) => /^\d+$/.test(value))
+    ? delays.map((value) => Number.parseInt(value, 10))
+    : defaultWorkdayThrottleDelaysMs;
 }
 
 async function fetchWorkdayJsonOnce(
@@ -254,6 +294,7 @@ async function fetchWorkdayJsonOnce(
     if (retryableWorkdayStatuses.has(response.status)) {
       throw new WorkdayRetryableError(
         message,
+        response.status === 429,
         parseRetryAfterMs(response.headers.get("retry-after")),
       );
     }
@@ -266,6 +307,7 @@ async function fetchWorkdayJsonOnce(
   } catch (error) {
     throw new WorkdayRetryableError(
       `Workday returned a non-JSON response: ${error instanceof Error ? error.message : String(error)}`,
+      false,
     );
   }
 }

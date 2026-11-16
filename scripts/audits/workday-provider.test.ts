@@ -251,7 +251,9 @@ for (const failure of ["network", "429", "500", "invalid-json", "missing-detail"
       const originalFetch = globalThis.fetch;
     const originalSites = process.env.JOB_WORKDAY_SITES;
     const originalRetryDelay = process.env.JOB_WORKDAY_RETRY_DELAY_MS;
+    const originalThrottleDelays = process.env.JOB_WORKDAY_THROTTLE_DELAYS_MS;
     process.env.JOB_WORKDAY_RETRY_DELAY_MS = "0";
+    process.env.JOB_WORKDAY_THROTTLE_DELAYS_MS = "0,0,0";
     process.env.JOB_WORKDAY_SITES = "First|https://first.example/wday/cxs/first/Careers/jobs|Endpoint;Intune|true;;Second|https://second.example/wday/cxs/second/Careers/jobs|Endpoint;Intune|true";
     let detailRequests = 0;
     let searchRequests = 0;
@@ -270,14 +272,16 @@ for (const failure of ["network", "429", "500", "invalid-json", "missing-detail"
     try {
       await assert.rejects(workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") }), WorkdayDetailError);
       assert.equal(searchRequests, 3, "Stops on the failed detail despite already completed queries and sites");
-      const retried = failure === "429" || failure === "invalid-json";
-      assert.equal(detailRequests, retried ? 5 : 3, "Only throttling signals are retried, twice");
+      const expectedDetailRequests = failure === "429" ? 6 : failure === "invalid-json" ? 5 : 3;
+      assert.equal(detailRequests, expectedDetailRequests, "429 gets the throttle schedule, non-JSON two short retries, others none");
     } finally {
       globalThis.fetch = originalFetch;
       if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
       else process.env.JOB_WORKDAY_SITES = originalSites;
       if (originalRetryDelay === undefined) delete process.env.JOB_WORKDAY_RETRY_DELAY_MS;
       else process.env.JOB_WORKDAY_RETRY_DELAY_MS = originalRetryDelay;
+      if (originalThrottleDelays === undefined) delete process.env.JOB_WORKDAY_THROTTLE_DELAYS_MS;
+      else process.env.JOB_WORKDAY_THROTTLE_DELAYS_MS = originalThrottleDelays;
     }
   });
 }
@@ -287,6 +291,7 @@ test("Workday retries throttled searches and details, then completes the snapsho
   const originalEnv = { ...process.env };
   process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
   process.env.JOB_WORKDAY_RETRY_DELAY_MS = "0";
+  process.env.JOB_WORKDAY_THROTTLE_DELAYS_MS = "0,0,0";
   const responses = {
     search: [
       () => new Response(null, { status: 429, headers: { "retry-after": "0" } }),
@@ -310,6 +315,35 @@ test("Workday retries throttled searches and details, then completes the snapsho
     const jobs = await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
     assert.equal(jobs.filter(Boolean).length, 1);
     assert.deepEqual(calls, { search: 3, detail: 2 });
+  } finally {
+    globalThis.fetch = originalFetch;
+    process.env = originalEnv;
+  }
+});
+
+test("Workday skips the rest of a throttled ordinary site and continues with the next site", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalEnv = { ...process.env };
+  process.env.JOB_WORKDAY_SITES = "Throttled|https://throttled.example/wday/cxs/t/Careers/jobs|Endpoint;Intune;Jamf|false;;Healthy|https://healthy.example/wday/cxs/h/Careers/jobs|Endpoint|false";
+  process.env.JOB_WORKDAY_THROTTLE_DELAYS_MS = "0,0,0";
+  const searches: string[] = [];
+  globalThis.fetch = async (input, init) => {
+    const url = String(input);
+    const body = JSON.parse(String(init?.body ?? "{}")) as { searchText?: string };
+    searches.push(`${new URL(url).hostname} ${body.searchText}`);
+    if (url.includes("throttled.example")) return new Response(null, { status: 429 });
+    return workdaySearchResponse([detailPosting]);
+  };
+  try {
+    const jobs = await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
+    assert.ok(jobs.length >= 1, "The healthy site still contributes jobs");
+    assert.deepEqual(searches, [
+      "throttled.example Endpoint",
+      "throttled.example Endpoint",
+      "throttled.example Endpoint",
+      "throttled.example Endpoint",
+      "healthy.example Endpoint"
+    ], "One query waits through the schedule, then the site's other queries are skipped");
   } finally {
     globalThis.fetch = originalFetch;
     process.env = originalEnv;
