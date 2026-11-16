@@ -8,6 +8,7 @@ import {
   cleanText,
   containsAlias,
   getJobStaleDays,
+  getNonNegativeInteger,
   getPositiveInteger,
   inferWorkplace,
   normalizeEmploymentTypeLabel,
@@ -188,6 +189,98 @@ function workdayRequestSignal(deadline: number | undefined) {
   return AbortSignal.timeout(Math.min(15_000, remaining));
 }
 
+const retryableWorkdayStatuses = new Set([429, 502, 503, 504]);
+const maxWorkdayRetryAfterMs = 10_000;
+
+class WorkdayRetryableError extends Error {
+  constructor(
+    message: string,
+    readonly retryAfterMs?: number,
+  ) {
+    super(message);
+    this.name = "WorkdayRetryableError";
+  }
+}
+
+// Workday throttles GitHub runners intermittently: a 429, a 5xx gateway
+// error, or an HTML bot-check page in place of JSON. One such response on a
+// detail-fetching site aborts the whole refresh, so retry those signals with
+// backoff before giving up. Other failures (500, malformed JSON) still fail
+// at once so the refresh never publishes a partial snapshot.
+async function fetchWorkdayJson(
+  url: string,
+  init: RequestInit,
+  deadline: number | undefined,
+  passthroughStatuses: readonly number[] = [],
+): Promise<{ status: number; json: unknown }> {
+  const maxRetries = getNonNegativeInteger(process.env.JOB_WORKDAY_MAX_RETRIES, 2);
+  const baseDelayMs = getNonNegativeInteger(process.env.JOB_WORKDAY_RETRY_DELAY_MS, 1_000);
+
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      return await fetchWorkdayJsonOnce(url, init, deadline, passthroughStatuses);
+    } catch (error) {
+      if (!(error instanceof WorkdayRetryableError) || attempt >= maxRetries) {
+        throw error;
+      }
+
+      const delayMs = error.retryAfterMs ?? baseDelayMs * 2 ** attempt;
+      if (deadline !== undefined && Date.now() + delayMs >= deadline) {
+        throw error;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+}
+
+async function fetchWorkdayJsonOnce(
+  url: string,
+  init: RequestInit,
+  deadline: number | undefined,
+  passthroughStatuses: readonly number[],
+) {
+  const response = await fetch(url, {
+    ...init,
+    signal: workdayRequestSignal(deadline),
+  });
+
+  if (passthroughStatuses.includes(response.status)) {
+    return { status: response.status, json: undefined };
+  }
+
+  if (!response.ok) {
+    const message = `Workday request failed: ${response.status} ${response.statusText}`;
+    if (retryableWorkdayStatuses.has(response.status)) {
+      throw new WorkdayRetryableError(
+        message,
+        parseRetryAfterMs(response.headers.get("retry-after")),
+      );
+    }
+    throw new Error(message);
+  }
+
+  const body = await response.text();
+  try {
+    return { status: response.status, json: JSON.parse(body) as unknown };
+  } catch (error) {
+    throw new WorkdayRetryableError(
+      `Workday returned a non-JSON response: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+}
+
+function parseRetryAfterMs(value: string | null) {
+  if (!value) return undefined;
+  const seconds = Number(value.trim());
+  if (Number.isFinite(seconds) && seconds >= 0) {
+    return Math.min(seconds * 1_000, maxWorkdayRetryAfterMs);
+  }
+  const date = Date.parse(value);
+  if (Number.isNaN(date)) return undefined;
+  return Math.min(Math.max(date - Date.now(), 0), maxWorkdayRetryAfterMs);
+}
+
 async function fetchWorkdaySearch(
   url: string,
   query: string,
@@ -204,32 +297,27 @@ async function fetchWorkdaySearch(
   let reportedTotal: number | undefined;
 
   while (true) {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "accept-language": "en-US,en;q=0.9",
-        "content-type": "application/json",
-        origin: new URL(url).origin,
-        referer: new URL(url).origin,
-        "user-agent": "Mozilla/5.0",
+    const { json } = await fetchWorkdayJson(
+      url,
+      {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "accept-language": "en-US,en;q=0.9",
+          "content-type": "application/json",
+          origin: new URL(url).origin,
+          referer: new URL(url).origin,
+          "user-agent": "Mozilla/5.0",
+        },
+        body: JSON.stringify({
+          appliedFacets: {},
+          limit,
+          offset,
+          searchText: query,
+        }),
       },
-      body: JSON.stringify({
-        appliedFacets: {},
-        limit,
-        offset,
-        searchText: query,
-      }),
-      signal: workdayRequestSignal(deadline),
-    });
-
-    if (!response.ok) {
-      throw new Error(
-        `Workday request failed: ${response.status} ${response.statusText}`,
-      );
-    }
-
-    const json: unknown = await response.json();
+      deadline,
+    );
 
     if (
       !json ||
@@ -303,18 +391,19 @@ async function fetchWorkdayDetail(
 ): Promise<WorkdayJob | null> {
   const url =
     siteUrl.replace(/\/+$/, "").replace(/\/jobs$/, "") + job.externalPath;
-  const response = await fetch(url, {
-    headers: {
-      accept: "application/json",
-      "accept-language": "en-US,en;q=0.9",
-      "user-agent": "Mozilla/5.0",
+  const { status, json: payload } = await fetchWorkdayJson(
+    url,
+    {
+      headers: {
+        accept: "application/json",
+        "accept-language": "en-US,en;q=0.9",
+        "user-agent": "Mozilla/5.0",
+      },
     },
-    signal: workdayRequestSignal(deadline),
-  });
-  if (response.status === 404 || response.status === 410) return null;
-  if (!response.ok)
-    throw new Error(`Workday detail request failed: ${response.status}`);
-  const payload: unknown = await response.json();
+    deadline,
+    [404, 410],
+  );
+  if (status === 404 || status === 410) return null;
   const detail =
     payload && typeof payload === "object"
       ? (payload as { jobPostingInfo?: WorkdayJob["detail"] }).jobPostingInfo

@@ -250,6 +250,8 @@ for (const failure of ["network", "429", "500", "invalid-json", "missing-detail"
   test(`Workday rejects the entire snapshot on ${failure} detail failures across sites and queries`, async () => {
       const originalFetch = globalThis.fetch;
     const originalSites = process.env.JOB_WORKDAY_SITES;
+    const originalRetryDelay = process.env.JOB_WORKDAY_RETRY_DELAY_MS;
+    process.env.JOB_WORKDAY_RETRY_DELAY_MS = "0";
     process.env.JOB_WORKDAY_SITES = "First|https://first.example/wday/cxs/first/Careers/jobs|Endpoint;Intune|true;;Second|https://second.example/wday/cxs/second/Careers/jobs|Endpoint;Intune|true";
     let detailRequests = 0;
     let searchRequests = 0;
@@ -268,14 +270,73 @@ for (const failure of ["network", "429", "500", "invalid-json", "missing-detail"
     try {
       await assert.rejects(workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") }), WorkdayDetailError);
       assert.equal(searchRequests, 3, "Stops on the failed detail despite already completed queries and sites");
-      assert.equal(detailRequests, 3);
+      const retried = failure === "429" || failure === "invalid-json";
+      assert.equal(detailRequests, retried ? 5 : 3, "Only throttling signals are retried, twice");
     } finally {
       globalThis.fetch = originalFetch;
       if (originalSites === undefined) delete process.env.JOB_WORKDAY_SITES;
       else process.env.JOB_WORKDAY_SITES = originalSites;
+      if (originalRetryDelay === undefined) delete process.env.JOB_WORKDAY_RETRY_DELAY_MS;
+      else process.env.JOB_WORKDAY_RETRY_DELAY_MS = originalRetryDelay;
     }
   });
 }
+
+test("Workday retries throttled searches and details, then completes the snapshot", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalEnv = { ...process.env };
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
+  process.env.JOB_WORKDAY_RETRY_DELAY_MS = "0";
+  const responses = {
+    search: [
+      () => new Response(null, { status: 429, headers: { "retry-after": "0" } }),
+      () => new Response("<!DOCTYPE html><html>Checking your browser</html>", { headers: { "content-type": "text/html" } }),
+      () => workdaySearchResponse([detailPosting])
+    ],
+    detail: [
+      () => new Response(null, { status: 503 }),
+      () => Response.json({ jobPostingInfo: validDetail })
+    ]
+  };
+  const calls = { search: 0, detail: 0 };
+  globalThis.fetch = async (_input, init) => {
+    const kind = init?.method === "POST" ? "search" : "detail";
+    const respond = responses[kind][calls[kind]];
+    calls[kind] += 1;
+    if (!respond) throw new Error(`Unexpected extra ${kind} request`);
+    return respond();
+  };
+  try {
+    const jobs = await workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") });
+    assert.equal(jobs.filter(Boolean).length, 1);
+    assert.deepEqual(calls, { search: 3, detail: 2 });
+  } finally {
+    globalThis.fetch = originalFetch;
+    process.env = originalEnv;
+  }
+});
+
+test("Workday does not retry plain 500 search failures", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalEnv = { ...process.env };
+  process.env.JOB_WORKDAY_SITES = "Example|https://example.com/wday/cxs/example/Careers/jobs|Endpoint|true";
+  process.env.JOB_WORKDAY_RETRY_DELAY_MS = "0";
+  let searchRequests = 0;
+  globalThis.fetch = async () => {
+    searchRequests += 1;
+    return new Response(null, { status: 500 });
+  };
+  try {
+    await assert.rejects(
+      workdayProvider.fetchJobs({ url: workdayProvider.defaultUrl, fetchedAt: new Date("2026-09-12T12:00:00Z") }),
+      WorkdayIncompleteSnapshotError
+    );
+    assert.equal(searchRequests, 1);
+  } finally {
+    globalThis.fetch = originalFetch;
+    process.env = originalEnv;
+  }
+});
 
 test("Workday treats 404 and 410 details as closed postings and continues", async () => {
   const originalFetch = globalThis.fetch;
