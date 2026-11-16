@@ -83,3 +83,54 @@ for (const { provider, detailStatus, searchFailure = false, searchTimeout = fals
     }
   });
 }
+
+test("refresh keeps a throttled strict Workday site's jobs from the previous feed", async (t) => {
+  const directory = await mkdtemp(join(tmpdir(), "endpoint-refresh-"));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const output = join(directory, "jobs.json");
+  const runRefresh = (detailThrottled: boolean) => spawnSync(process.execPath, ["--import", "tsx", "--input-type=module", "-e", `
+    globalThis.fetch = async (input, init) => {
+      const url = String(input);
+      if (url.includes("boards-api.greenhouse.io")) return Response.json({ jobs: [{
+        id: 123, title: "Endpoint Engineer", absolute_url: "https://example.com/jobs/123",
+        updated_at: new Date().toISOString(), location: { name: "Chicago, IL" },
+        content: "Manage Windows endpoints with Intune."
+      }] });
+      if (url.includes("example.wd1.myworkdayjobs.com")) {
+        if (init?.method === "POST") return Response.json({ jobPostingInfo: undefined, jobPostings: [{
+          title: "Endpoint Engineer", externalPath: "/job/Chicago/Endpoint_456"
+        }], total: 1 });
+        if (${detailThrottled}) return new Response(null, { status: 429 });
+        return Response.json({ jobPostingInfo: {
+          title: "Endpoint Engineer", startDate: new Date().toISOString().slice(0, 10), location: "Chicago, IL",
+          jobDescription: "Manage enterprise Windows and macOS endpoints with Microsoft Intune and Jamf."
+        } });
+      }
+      throw new Error("Unexpected network request: " + url);
+    };
+    await import("./scripts/refresh-jobs.ts");
+  `], {
+    cwd: process.cwd(), encoding: "utf8", timeout: 15_000,
+    env: {
+      ...process.env, JOB_PROVIDERS: "greenhouse,workday", JOB_OUTPUT_PATH: output,
+      JOB_PREVIOUS_FEED_PATH: "", JOB_WORKDAY_THROTTLE_DELAYS_MS: "0,0,0",
+      JOB_GREENHOUSE_BOARDS: "test", JOB_GREENHOUSE_API_URL: "https://boards-api.greenhouse.io/v1/boards",
+      JOB_WORKDAY_SITES: "Example|https://example.wd1.myworkdayjobs.com/wday/cxs/example/Careers/jobs|Endpoint|true"
+    }
+  });
+
+  const first = runRefresh(false);
+  assert.equal(first.status, 0, first.stderr);
+  const firstFeed = JSON.parse(await readFile(output, "utf8"));
+  const workdayIds = firstFeed.jobs.filter((job: { source: string }) => job.source === "Workday").map((job: { id: string }) => job.id);
+  assert.equal(workdayIds.length, 1, "The first refresh publishes the Workday job");
+
+  const second = runRefresh(true);
+  assert.equal(second.status, 0, second.stderr);
+  assert.match(second.stderr + second.stdout, /Carrying forward 1 Workday\/Example jobs from the previous feed/);
+  const secondFeed = JSON.parse(await readFile(output, "utf8"));
+  assert.deepEqual(
+    secondFeed.jobs.filter((job: { source: string }) => job.source === "Workday").map((job: { id: string }) => job.id),
+    workdayIds
+  );
+});

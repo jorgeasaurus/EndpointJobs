@@ -4,7 +4,11 @@ import type { Job, JobsFeed } from "../../src/types/job";
 import { validateFeed } from "./feed-safety";
 
 export function getValidatedPreviousSerpApiJobs(feed: JobsFeed) {
-  const jobs = feed.jobs.filter((job) => job?.source === serpApiJobSourceName);
+  return getValidatedPreviousSourceJobs(feed, serpApiJobSourceName);
+}
+
+export function getValidatedPreviousSourceJobs(feed: JobsFeed, source: string) {
+  const jobs = feed.jobs.filter((job) => job?.source === source);
   validateFeed({ ...feed, jobs });
   return jobs;
 }

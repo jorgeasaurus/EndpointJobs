@@ -46,7 +46,8 @@ export const workdayProvider = {
   displayName: "Workday",
   defaultUrl:
     "https://accenture.wd103.myworkdayjobs.com/wday/cxs/accenture/AccentureCareers/jobs",
-  fetchJobs: ({ url, fetchedAt }) => fetchWorkdayJobs(url, fetchedAt),
+  fetchJobs: ({ url, fetchedAt, previousJobs }) =>
+    fetchWorkdayJobs(url, fetchedAt, previousJobs),
 } as const satisfies ProviderAdapter<"workday">;
 
 export class WorkdayIncompleteSnapshotError extends Error {
@@ -66,7 +67,11 @@ export class WorkdayDetailError extends WorkdayIncompleteSnapshotError {
   }
 }
 
-async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
+async function fetchWorkdayJobs(
+  url: string,
+  fetchedAt: Date,
+  previousJobs?: readonly Job[],
+) {
   let sites: WorkdaySite[];
   try {
     sites = getWorkdaySites(url);
@@ -75,114 +80,156 @@ async function fetchWorkdayJobs(url: string, fetchedAt: Date) {
   }
   const jobs: Array<Job | null> = [];
   let completedQueries = 0;
+  let carriedForwardSites = 0;
 
   for (const site of sites) {
-    const deadline = site.fetchDetails ? Date.now() + 120_000 : undefined;
-    const seenPaths = new Set<string>();
-    for (const query of site.queries) {
-      let payload: WorkdayJob[];
-      try {
-        payload = await fetchWorkdaySearch(
-          site.url,
-          query,
-          site.fetchDetails,
-          deadline,
-        );
-        assertWorkdayDeadline(deadline);
-      } catch (error) {
-        if (
-          site.fetchDetails ||
-          (deadline !== undefined && Date.now() >= deadline)
-        ) {
-          throw new WorkdayIncompleteSnapshotError(
-            site.name,
-            `query ${query}`,
-            error,
+    const siteStart = jobs.length;
+    const siteCompletedQueries = completedQueries;
+    try {
+      const deadline = site.fetchDetails ? Date.now() + 120_000 : undefined;
+      const seenPaths = new Set<string>();
+      for (const query of site.queries) {
+        let payload: WorkdayJob[];
+        try {
+          payload = await fetchWorkdaySearch(
+            site.url,
+            query,
+            site.fetchDetails,
+            deadline,
           );
-        }
-        console.warn(
-          `Skipping Workday/${site.name} query ${query}: ${error instanceof Error ? error.message : String(error)}`,
-        );
-        if (isWorkdayThrottleError(error)) {
-          // The tenant is still throttled after the full retry schedule;
-          // its remaining queries would each wait through it too.
-          console.warn(
-            `Skipping remaining Workday/${site.name} queries while the site is throttled`,
-          );
-          break;
-        }
-        continue;
-      }
-      completedQueries += 1;
-      const uniqueJobs = payload.filter(
-        (job): job is WorkdayJob & { externalPath: string } => {
-          if (!job.externalPath || seenPaths.has(job.externalPath))
-            return false;
-          seenPaths.add(job.externalPath);
-          return true;
-        },
-      );
-      for (
-        let offset = 0;
-        offset < uniqueJobs.length;
-        offset += workdayDetailConcurrency
-      ) {
-        const batch = uniqueJobs.slice(
-          offset,
-          offset + workdayDetailConcurrency,
-        );
-        const enrichedJobs = await Promise.all(
-          batch.map(async (job) => {
-            try {
-              const enriched = site.fetchDetails
-                ? await fetchWorkdayDetail(site.url, job, deadline)
-                : job;
-              assertWorkdayDeadline(deadline);
-              return enriched
-                ? normalizeWorkdayJob(enriched, site, query, fetchedAt)
-                : null;
-            } catch (error) {
-              if (site.fetchDetails)
-                throw new WorkdayDetailError(
-                  site.name,
-                  job.externalPath,
-                  error,
-                );
-              if (deadline !== undefined && Date.now() >= deadline) {
-                throw new WorkdayIncompleteSnapshotError(
-                  site.name,
-                  `query ${query}`,
-                  error,
-                );
-              }
-              throw error;
-            }
-          }),
-        );
-        jobs.push(...enrichedJobs);
-        if (deadline !== undefined) {
-          try {
-            assertWorkdayDeadline(deadline);
-          } catch (error) {
+          assertWorkdayDeadline(deadline);
+        } catch (error) {
+          if (
+            site.fetchDetails ||
+            (deadline !== undefined && Date.now() >= deadline)
+          ) {
             throw new WorkdayIncompleteSnapshotError(
               site.name,
               `query ${query}`,
               error,
             );
           }
+          console.warn(
+            `Skipping Workday/${site.name} query ${query}: ${error instanceof Error ? error.message : String(error)}`,
+          );
+          if (isWorkdayThrottleError(error)) {
+            // The tenant is still throttled after the full retry schedule;
+            // its remaining queries would each wait through it too.
+            console.warn(
+              `Skipping remaining Workday/${site.name} queries while the site is throttled`,
+            );
+            break;
+          }
+          continue;
         }
+        completedQueries += 1;
+        const uniqueJobs = payload.filter(
+          (job): job is WorkdayJob & { externalPath: string } => {
+            if (!job.externalPath || seenPaths.has(job.externalPath))
+              return false;
+            seenPaths.add(job.externalPath);
+            return true;
+          },
+        );
+        for (
+          let offset = 0;
+          offset < uniqueJobs.length;
+          offset += workdayDetailConcurrency
+        ) {
+          const batch = uniqueJobs.slice(
+            offset,
+            offset + workdayDetailConcurrency,
+          );
+          const enrichedJobs = await Promise.all(
+            batch.map(async (job) => {
+              try {
+                const enriched = site.fetchDetails
+                  ? await fetchWorkdayDetail(site.url, job, deadline)
+                  : job;
+                assertWorkdayDeadline(deadline);
+                return enriched
+                  ? normalizeWorkdayJob(enriched, site, query, fetchedAt)
+                  : null;
+              } catch (error) {
+                if (site.fetchDetails)
+                  throw new WorkdayDetailError(
+                    site.name,
+                    job.externalPath,
+                    error,
+                  );
+                if (deadline !== undefined && Date.now() >= deadline) {
+                  throw new WorkdayIncompleteSnapshotError(
+                    site.name,
+                    `query ${query}`,
+                    error,
+                  );
+                }
+                throw error;
+              }
+            }),
+          );
+          jobs.push(...enrichedJobs);
+          if (deadline !== undefined) {
+            try {
+              assertWorkdayDeadline(deadline);
+            } catch (error) {
+              throw new WorkdayIncompleteSnapshotError(
+                site.name,
+                `query ${query}`,
+                error,
+              );
+            }
+          }
+        }
+        console.log(
+          `Fetched ${payload.length} raw jobs from Workday/${site.name} query ${query}`,
+        );
       }
-      console.log(
-        `Fetched ${payload.length} raw jobs from Workday/${site.name} query ${query}`,
+    } catch (error) {
+      const carried = getCarriedForwardSiteJobs(site, error, previousJobs);
+      if (!carried) throw error;
+      // Drop this site's partial results so the feed holds one consistent
+      // snapshot of it: the last published one.
+      jobs.length = siteStart;
+      completedQueries = siteCompletedQueries;
+      jobs.push(...carried);
+      carriedForwardSites += 1;
+      console.warn(
+        `Carrying forward ${carried.length} Workday/${site.name} jobs from the previous feed: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }
 
-  if (completedQueries === 0) {
+  if (completedQueries === 0 && carriedForwardSites === 0) {
     throw new Error("No Workday queries completed successfully");
   }
 
   return jobs;
+}
+
+// A detail-fetching site rejects the snapshot on any failure, so a tenant
+// that keeps throttling the runner would fail every refresh. When the failure
+// is that throttle, and the last published feed could be read, keep that
+// site's previously published jobs instead. Any other failure still rejects.
+function getCarriedForwardSiteJobs(
+  site: WorkdaySite,
+  error: unknown,
+  previousJobs: readonly Job[] | undefined,
+) {
+  if (!site.fetchDetails || !previousJobs) return undefined;
+  if (!(error instanceof WorkdayIncompleteSnapshotError)) return undefined;
+  if (!isWorkdayThrottleError(error.cause)) return undefined;
+
+  const prefix = getWorkdaySiteJobUrlPrefix(site.url);
+  if (!prefix) return undefined;
+  return previousJobs.filter(
+    (job) => job.source === "Workday" && job.sourceUrl.startsWith(prefix),
+  );
+}
+
+function getWorkdaySiteJobUrlPrefix(siteUrl: string) {
+  const probe = buildWorkdayJobUrl(siteUrl, "/job/");
+  return probe?.slice(0, -"job/".length);
 }
 
 function assertWorkdayDeadline(deadline: number | undefined) {
