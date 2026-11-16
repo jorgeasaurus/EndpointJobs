@@ -196,8 +196,12 @@ async function fetchAdzunaJobs(url: string, fetchedAt: Date) {
   const failures: string[] = [];
 
   for (const country of countries) {
-    for (const query of queries) {
-      const queryUrl = buildAdzunaSearchUrl(url, query, country, appId, appKey);
+    const countryKey = country.trim().toUpperCase();
+    const countryQueries = getCsvConfig(`JOB_ADZUNA_${countryKey}_QUERIES`, queries);
+    const where = process.env[`JOB_ADZUNA_${countryKey}_WHERE`]?.trim();
+
+    for (const query of countryQueries) {
+      const queryUrl = buildAdzunaSearchUrl(url, query, country, appId, appKey, where);
       try {
         const payload = await fetchAdzunaSearch(queryUrl);
         successfulSearches += 1;
@@ -725,7 +729,8 @@ function buildAdzunaSearchUrl(
   query: string,
   country: string,
   appId: string,
-  appKey: string
+  appKey: string,
+  where?: string
 ) {
   const page = process.env.JOB_ADZUNA_PAGE ?? "1";
   const resultsPerPage = process.env.JOB_ADZUNA_RESULTS_PER_PAGE ?? "25";
@@ -738,6 +743,9 @@ function buildAdzunaSearchUrl(
   url.searchParams.set("app_key", appKey);
   url.searchParams.set("results_per_page", resultsPerPage);
   url.searchParams.set("what", query);
+  if (where) {
+    url.searchParams.set("where", where);
+  }
   url.searchParams.set("content-type", "application/json");
 
   return url.toString();
