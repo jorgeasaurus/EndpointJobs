@@ -342,7 +342,8 @@ export async function auditProviders({ run, sources }: AuditContext) {
     assertIncludes(sources.readme, "Spain, South America, Mexico, Central America, and the Caribbean are not added to SerpAPI");
     assertIncludes(sources.readme, "Adzuna still only has Brazil (`br`) and Mexico (`mx`)");
     assertIncludes(sources.readme, "Caribbean countries are now queried");
-    assertIncludes(sources.workflow, "JOB_SERPAPI_COUNTRIES: us,au,gb", "SerpAPI quota stays US+AU+London");
+    assertIncludes(sources.workflow, "JOB_SERPAPI_COUNTRIES: us,gb", "SerpAPI quota stays US+London");
+    assertNotIncludes(sources.workflow, "JOB_SERPAPI_AU_", "SerpAPI rejects gl=au, so no Australia searches are scheduled");
   });
 
   await run("FEAT-067", "Provider adapter contract is shared by refresh orchestration", () => {
@@ -396,17 +397,13 @@ export async function auditProviders({ run, sources }: AuditContext) {
     ]);
     assertIncludes(sources.searchConfig, "defaultEndpointSearchQueries");
     assertIncludes(sources.rapidApiLinkedIn, "powerShellSysadminTitleFilters");
-    assertIncludes(sources.workflow, "JOB_SERPAPI_COUNTRIES: us,au,gb");
-    const serpApiAuQueries = sources.workflow.match(/JOB_SERPAPI_AU_QUERIES:\s*([^\n]+)/)?.[1];
-    const serpApiAuLocations = sources.workflow.match(/JOB_SERPAPI_AU_LOCATIONS:\s*([^\n]+)/)?.[1];
+    assertIncludes(sources.workflow, "JOB_SERPAPI_COUNTRIES: us,gb");
     const serpApiGbQueries = sources.workflow.match(/JOB_SERPAPI_GB_QUERIES:\s*([^\n]+)/)?.[1];
     const serpApiGbLocations = sources.workflow.match(/JOB_SERPAPI_GB_LOCATIONS:\s*([^\n]+)/)?.[1];
     assertEqual(new Set([...defaultEndpointSearchQueries, ...defaultCompanyJobQueries]).size, 71);
-    assertEqual(serpApiAuQueries, "endpoint engineer");
-    assertEqual(serpApiAuLocations?.split("|").length, 2);
     assertEqual(serpApiGbQueries, "endpoint engineer,intune engineer");
     assertEqual(serpApiGbLocations, "London, England, United Kingdom");
-    assertIncludes(sources.workflow, 'JOB_SERPAPI_US_QUERY_LIMIT: "24"');
+    assertIncludes(sources.workflow, 'JOB_SERPAPI_US_QUERY_LIMIT: "26"');
     assertIncludes(sources.workflow, "JOB_ADZUNA_GB_WHERE: London", "Adzuna UK searches stay scoped to London");
     assertIncludes(sources.workflow, "JOB_SERPAPI_ROTATION_INDEX: ${{ github.run_number }}");
     assertIncludes(sources.workflow, 'JOB_SERPAPI_MAX_SEARCHES_PER_RUN: "28"');
