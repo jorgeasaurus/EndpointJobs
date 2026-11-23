@@ -28,7 +28,9 @@ import type { ActiveFilterItem } from "./active-filters";
 import { JobSearch } from "./job-search";
 import { CommandStatusRail } from "./status-rail";
 import { ToggleButton } from "./toggle-button";
-import { LocationFilters, LocationRequestLink, WorkplaceFilters } from "./location-filters";
+import { LocationFilters } from "./location-filters";
+import { LocationRequestLink } from "./location-request-link";
+import { WorkplaceFilters } from "./workplace-filters";
 import {
   freshnessFilterOptions,
   metroAreaOptions,

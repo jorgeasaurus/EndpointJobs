@@ -10,7 +10,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getJobPath } from "@/app/site-metadata";
 import type { JobsFeed } from "@/types/job";
 
-import { ClearViewHistoryButton, DeleteAccountForm, ExportAccountButton } from "./account-actions";
+import { DeleteAccountForm } from "./account-actions";
+import { ClearViewHistoryButton } from "./clear-view-history-button";
+import { ExportAccountButton } from "./export-account-button";
 import "./account.css";
 
 export const metadata: Metadata = {

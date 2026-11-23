@@ -2,12 +2,29 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { initialFilterState } from "../../src/components/job-board/filter-model";
-import { queryBoardPage, selectLandingPreview } from "../../src/lib/board-page";
+import { queryBoardPage } from "../../src/lib/board-page";
+import { selectLanding } from "../../src/lib/landing";
 import { formatRelativePosted, formatRelativeUpdated } from "../../src/lib/jobs";
 import { formatRolePlace } from "../../src/lib/role-place";
 import { presentSalary } from "../../src/lib/job-trust";
 import { formatShownSalary, hasListedSalary, hasShownSalary } from "../../src/lib/shown-salary";
 import { makeJob } from "./shared";
+
+test("shown salaries print a currency code only when the symbol leaves it ambiguous", () => {
+  const listing = (id: string, location: string, currency: string, label: string) => makeJob({
+    id,
+    title: id,
+    company: id,
+    location,
+    sourceUrl: `https://example.com/${id}`,
+    applyUrl: `https://example.com/${id}/apply`,
+    salary: { min: 100000, max: 120000, currency, currencySource: "source", label }
+  });
+
+  assert.equal(formatShownSalary(listing("gbp", "London, United Kingdom", "GBP", "£100k-£120k")), "£100k\u2013£120k");
+  assert.equal(formatShownSalary(listing("cad", "Toronto, Canada", "CAD", "CA$100k-CA$120k")), "CA$100k\u2013CA$120k");
+  assert.equal(formatShownSalary(listing("inr", "Bengaluru, India", "INR", "₹100k-₹120k")), "₹100k\u2013₹120k INR");
+});
 
 test("shown salaries use the posting currency and stay in sync with the salary stat", () => {
   const listing = (id: string, location: string, salary: NonNullable<ReturnType<typeof makeJob>["salary"]>) => makeJob({
@@ -48,7 +65,7 @@ test("shown salaries use the posting currency and stay in sync with the salary s
   }, initialFilterState, 1);
 
   assert.equal(formatShownSalary(usd), "$120k\u2013$150k");
-  assert.equal(formatShownSalary(euro), "€60k\u2013€75k EUR");
+  assert.equal(formatShownSalary(euro), "€60k\u2013€75k");
   assert.equal(formatShownSalary(estimated), undefined);
   assert.equal(hasShownSalary(estimated), false);
   assert.equal(formatShownSalary(hourly), "$55\u2013$70/hr");
@@ -62,7 +79,7 @@ test("shown salaries use the posting currency and stay in sync with the salary s
   }
   assert.equal(page.metrics.salaryJobsCount, jobs.filter(hasListedSalary).length);
   assert.ok(page.metrics.salaryJobsCount > jobs.filter(hasShownSalary).length);
-  assert.deepEqual(selectLandingPreview(jobs, initialFilterState).map((job) => job.id), [
+  assert.deepEqual(selectLanding(jobs).preview.map(({ job }) => job.id), [
     "usd-range",
     "eur-range",
     "hourly"

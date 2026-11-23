@@ -437,33 +437,13 @@
 
   .results-heading,
   .job-main,
-  .job-actions,
-  .footer-bottom,
-  .site-footer {
+  .job-actions {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .footer-meta,
-  .footer-links,
-  .footer-groups,
-  .footer-link-group {
-    justify-content: space-between;
-    width: 100%;
-  }
-
   .topbar-overflow-panel {
     max-width: calc(100vw - 16px);
-  }
-
-  .footer-link {
-    flex: 1 1 140px;
-    justify-content: center;
-  }
-
-  .site-footer .feedback-link {
-    min-width: 44px;
-    min-height: 44px;
   }
 
   .results-heading {
@@ -655,10 +635,6 @@
     overflow: visible;
     text-overflow: clip;
     white-space: nowrap;
-  }
-
-  .refresh-pill svg {
-    display: none;
   }
 
   h1 {

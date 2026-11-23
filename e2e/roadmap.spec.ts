@@ -32,15 +32,15 @@ test("[ROAD-02] checked skills stay in this browser", async ({ page }) => {
   const skill = page.getByRole("checkbox", { name: "Separate MDM from MAM" });
   await expect(skill).not.toBeChecked();
   const track = page.getByRole("progressbar", { name: "Microsoft Intune progress" });
-  await expect(track).toHaveAttribute("aria-valuenow", "0");
+  await expect(track).toHaveJSProperty("value", 0);
   await skill.check();
   await expect(skill).toBeChecked();
-  await expect(track).not.toHaveAttribute("aria-valuenow", "0");
+  await expect(track).not.toHaveJSProperty("value", 0);
   const stored = await page.evaluate(() => localStorage.getItem("endpointjobs.roadmap.completed.v1"));
   expect(stored).toContain("intune.foundations.mdm-mam");
   await page.reload();
   await expect(page.getByRole("checkbox", { name: "Separate MDM from MAM" })).toBeChecked();
-  await expect(page.getByRole("progressbar", { name: "Microsoft Intune progress" })).not.toHaveAttribute("aria-valuenow", "0");
+  await expect(page.getByRole("progressbar", { name: "Microsoft Intune progress" })).not.toHaveJSProperty("value", 0);
 });
 
 test("[ROAD-03] skill sources open in a new tab", async ({ page }) => {

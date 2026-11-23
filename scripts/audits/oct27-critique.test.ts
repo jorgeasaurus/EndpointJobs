@@ -10,7 +10,8 @@ import { fileURLToPath } from "node:url";
 
 import { initialFilterState } from "../../src/components/job-board/filter-model";
 import { DescriptionContent } from "../../src/components/job-board/description-content";
-import { queryBoardPage, selectLandingPreview } from "../../src/lib/board-page";
+import { queryBoardPage } from "../../src/lib/board-page";
+import { selectLanding } from "../../src/lib/landing";
 import { isDescriptionHeading, repairJobDescription, toDescriptionBlocks } from "../../src/lib/job-description";
 import { getCardPostedLabel } from "../../src/lib/jobs";
 import { cardSourceLabels, dedupeJobLead, isBoilerplateListingText } from "../../src/lib/listing-copy";
@@ -200,7 +201,7 @@ test("the salary stat counts assumed currencies and the newest preview does not"
   assert.equal(hasListedSalary(estimated), true);
   assert.equal(hasShownSalary(estimated), false);
   assert.equal(page.metrics.salaryJobsCount, 2);
-  assert.deepEqual(selectLandingPreview(jobs, initialFilterState).map((job) => job.id), ["stated"]);
+  assert.deepEqual(selectLanding(jobs).preview.map(({ job }) => job.id), ["stated"]);
 });
 
 test("the mobile overflow menu opens, closes on Escape and outside click, and moves focus", { timeout: 60_000 }, async () => {

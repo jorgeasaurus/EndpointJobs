@@ -8,7 +8,11 @@ import ts from "typescript";
 
 import { initialFilterState } from "../../src/components/job-board/filter-model";
 import { getLandingJsonLd, serializeJsonLd } from "../../src/app/structured-data";
-import { hasShownSalary, queryBoardPage, selectLandingPreview } from "../../src/lib/board-page";
+import {
+  hasShownSalary,
+  queryBoardPage,
+} from "../../src/lib/board-page";
+import { selectLanding } from "../../src/lib/landing";
 import { hasListedSalary } from "../../src/lib/shown-salary";
 import { boardHomeRedirectKeys, filterSearchParamKeys } from "../../src/lib/board-search-params";
 import { legacyHomeBoardRedirect } from "../../src/lib/legacy-board-url";
@@ -29,7 +33,9 @@ const board = readFileSync(new URL("../../src/app/board/page.tsx", import.meta.u
 test("the home page is a landing page with inline provider buttons", () => {
   assert.match(home, /The board for endpoint engineers/);
   assert.doesNotMatch(home, /Daily listings for macOS/);
-  assert.match(home, /See the jobs/);
+  assert.match(home, /Endpoint roles only, gathered daily from company career pages and job boards\./);
+  assert.match(home, /<Topbar \/>/);
+  assert.match(home, /id="landing-tools-caption">Open roles by tool</);
   assert.match(home, /href=\{getBoardPath\(\)\}/);
   assert.doesNotMatch(home, /Sign in to save/);
   assert.match(home, /<LandingSignIn \/>/);
@@ -45,13 +51,13 @@ test("the home page is a landing page with inline provider buttons", () => {
   assert.doesNotMatch(home, /An account is optional/);
   assert.doesNotMatch(home, /href="\/privacy"/);
   assert.match(home, /export const revalidate = 86400/);
-  assert.match(home, /selectLandingPreview\(activeFeed\.jobs, initialFilterState\)/);
+  assert.match(home, /selectLanding\(activeFeed\.jobs\)/);
+  assert.match(home, /See all \{countFormat\.format\(total\)\} jobs/);
   assert.match(home, /Newest with salary/);
-  assert.match(home, />All roles</);
+  assert.match(home, />Job board</);
+  assert.match(home, /<h2 className="section-kicker">Newest with salary<\/h2>/);
   assert.doesNotMatch(home, /Newest on the board/);
-  assert.match(home, /label: "Open roles", value: board\.total/);
-  assert.match(home, /label: "Remote\/hybrid", value: board\.metrics\.remoteJobsCount/);
-  assert.doesNotMatch(home, /label: "Remote",/);
+  assert.match(home, /href=\{getEndpointToolPath\(tool\)\}/);
   assert.doesNotMatch(home, /trackedJobsCount/);
   assert.doesNotMatch(home, /<JobBoard/);
   assert.doesNotMatch(home, /board\.jobs\b(?!\.slice)/);
@@ -276,6 +282,71 @@ test("a shown salary is a posted amount, not an empty or placeholder label", () 
   );
 });
 
+test("the landing preview leads with management-platform roles, newest first within each tier", () => {
+  const paid = (id: string, days: number, tools: Job["tools"]): Job => makeJob({
+    id,
+    title: id,
+    company: id,
+    postedAt: daysAgo(days),
+    sourceUrl: `https://example.com/${id}`,
+    applyUrl: `https://example.com/${id}/apply`,
+    tools,
+    salary: { min: 120000, max: 140000, currency: "USD", label: "$120k-$140k" }
+  });
+  const jobs = [
+    paid("newest-adjacent", 1, ["Entra ID", "PowerShell"]),
+    paid("jamf", 2, ["Jamf", "Okta"]),
+    paid("older-adjacent", 3, ["PowerShell"]),
+    paid("intune", 4, ["Intune", "Autopilot"]),
+    paid("okta-jamf-intune", 5, ["Okta", "Jamf", "Intune"])
+  ];
+  const { preview } = selectLanding(jobs);
+
+  assert.deepEqual(
+    preview.map(({ job }) => job.id),
+    ["jamf", "intune", "okta-jamf-intune", "newest-adjacent"]
+  );
+  // Tags follow the board's tool order, not the posting's.
+  assert.deepEqual(preview.map(({ platformTools }) => platformTools), [
+    ["Jamf"],
+    ["Intune", "Autopilot"],
+    ["Intune", "Jamf"],
+    []
+  ]);
+});
+
+test("landing tool counts match each tool page and skip adjacent-role tools", () => {
+  const job = (id: string, tools: Job["tools"]): Job => makeJob({
+    id,
+    title: `Endpoint Engineer ${id}`,
+    company: `Company ${id}`,
+    sourceUrl: `https://example.com/${id}`,
+    applyUrl: `https://example.com/${id}/apply`,
+    tools
+  });
+  const jobs = [
+    job("a", ["Intune", "Autopilot", "PowerShell"]),
+    job("b", ["Intune", "PowerShell"]),
+    job("c", ["Jamf", "PowerShell"]),
+    job("d", ["Intune", "Jamf"]),
+    job("e", ["SCCM", "Entra ID"]),
+    job("f", ["Kandji"])
+  ];
+  const { toolCounts: counts } = selectLanding(jobs);
+
+  assert.deepEqual(counts.map(({ tool }) => tool), ["Intune", "Jamf", "SCCM", "Autopilot"]);
+  assert.ok(!counts.some(({ tool }) => tool === "PowerShell" || tool === "Entra ID"));
+  for (const { tool, count } of counts) {
+    const toolPage = queryBoardPage(
+      { updatedAt: daysAgo(0), source: { name: "Audit", url: "https://example.com" }, jobs },
+      { ...initialFilterState, selectedTools: [tool] },
+      1
+    );
+    assert.equal(count, toolPage.total, tool);
+  }
+  assert.deepEqual(selectLanding([]), { total: 0, preview: [], toolCounts: [] });
+});
+
 test("the landing preview is the newest roles with a shown salary, capped at the same four rows", () => {
   const paid = (id: string, days: number, label: string, min: number): Job => makeJob({
     id,
@@ -317,7 +388,8 @@ test("the landing preview is the newest roles with a shown salary, capped at the
     jobs
   };
   const page = queryBoardPage(feed, initialFilterState, 1);
-  const preview = selectLandingPreview(jobs, initialFilterState);
+  const preview = selectLanding(jobs).preview.map(({ job }) => job);
+  assert.equal(selectLanding(jobs).total, page.total);
   const shownIds = ["paid-new", "paid-mid", "paid-older", "paid-fourth", "paid-fifth", "unknown-date-paid"];
 
   assert.equal(page.metrics.salaryJobsCount, jobs.filter(hasListedSalary).length);
@@ -330,7 +402,7 @@ test("the landing preview is the newest roles with a shown salary, capped at the
 
   const shortFeed = jobs.filter((job) => job.id === "paid-new" || job.id === "newest-unpaid" || job.id === "placeholder-salary");
   const shortPage = queryBoardPage({ ...feed, jobs: shortFeed }, initialFilterState, 1);
-  const shortPreview = selectLandingPreview(shortFeed, initialFilterState);
+  const shortPreview = selectLanding(shortFeed).preview.map(({ job }) => job);
 
   assert.equal(shortPage.metrics.salaryJobsCount, shortFeed.filter(hasListedSalary).length);
   assert.deepEqual(shortPreview.map((job) => job.id), ["paid-new"]);
@@ -347,7 +419,7 @@ test("the home preview prints each shown salary and leaves the all-roles link al
   assert.match(home, /className="landing-posted"/);
   assert.match(home, /title=\{formatUpdatedAt\(activeFeed\.updatedAt\)\}/);
   assert.match(home, /formatRelativeUpdated\(activeFeed\.updatedAt\)/);
-  assert.match(home, /<Link href=\{getBoardPath\(\)\}>All roles<\/Link>/);
+  assert.match(home, /<Link href=\{getBoardPath\(\)\}>Job board<\/Link>/);
   assert.doesNotMatch(home, /salary=1/);
   assert.match(home, /No roles with a posted salary yet/);
 });

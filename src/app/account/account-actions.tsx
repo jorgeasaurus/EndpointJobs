@@ -1,65 +1,10 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
 
 import { deleteAccountConfirmation, deletionConfirmed } from "@/lib/account/records";
-import { clearViewHistory } from "@/components/job-board/use-account-board";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
-
-export function ExportAccountButton() {
-  const [error, setError] = useState<string | null>(null);
-
-  async function download() {
-    setError(null);
-    const response = await fetch("/api/account/export");
-    if (!response.ok) {
-      setError("Export did not finish.");
-      return;
-    }
-    const blob = await response.blob();
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "endpoint-jobs-account.json";
-    link.click();
-    URL.revokeObjectURL(url);
-  }
-
-  return (
-    <div className="account-actions">
-      <button className="compare-button" type="button" onClick={() => void download()}>
-        Export my data
-      </button>
-      {error ? <p className="account-error" role="alert">{error}</p> : null}
-    </div>
-  );
-}
-
-export function ClearViewHistoryButton() {
-  const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-
-  async function clear() {
-    setError(null);
-    const cleared = await clearViewHistory();
-    if (!cleared) {
-      setError("View history could not be cleared.");
-      return;
-    }
-    router.refresh();
-  }
-
-  return (
-    <div className="account-actions">
-      <button className="compare-button" type="button" onClick={() => void clear()}>
-        Clear view history
-      </button>
-      {error ? <p className="account-error" role="alert">{error}</p> : null}
-    </div>
-  );
-}
 
 export function DeleteAccountForm() {
   const [confirmation, setConfirmation] = useState("");

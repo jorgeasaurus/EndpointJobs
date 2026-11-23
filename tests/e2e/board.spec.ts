@@ -591,7 +591,7 @@ test("[NAV-01] brand and footer", async ({ page }) => {
   await expect(brand).toHaveAttribute("href", "/");
   const footer = page.getByRole("navigation", { name: "Project links" });
   await expect(footer.getByRole("link", { name: "Job board" })).toHaveAttribute("href", "/board");
-  await expect(footer.getByRole("link", { name: "All jobs" })).toHaveAttribute("href", "/jobs");
+  await expect(footer.getByRole("link", { name: "Job directory" })).toHaveAttribute("href", "/jobs");
   await expect(footer.getByRole("link", { name: "Privacy" })).toHaveAttribute("href", "/privacy");
   const repo = footer.getByRole("link", { name: /GitHub repository/ });
   await expect(repo).toHaveAttribute("href", "https://github.com/jorgeasaurus/EndpointJobs");

@@ -42,10 +42,7 @@
 .company-line,
 .metadata-row span,
 .job-actions,
-.apply-link,
-.footer-bottom,
-.footer-meta,
-.footer-links {
+.apply-link {
   display: inline-flex;
   align-items: center;
 }
@@ -63,6 +60,25 @@
   min-width: 0;
   color: var(--white);
   font-weight: 700;
+}
+
+.topbar .refresh-pill {
+  padding: 0 6px;
+  color: var(--white-60);
+  background: none;
+  border-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.refresh-label {
+  color: var(--white-45);
+}
+
+.brand:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+  border-radius: 8px;
 }
 
 .brand-mark {
@@ -642,7 +658,6 @@ h1 {
 .section-kicker,
 .metadata-row span,
 .attribution-label,
-.site-footer,
 .source-pill,
 .posted-pill {
   font-family: var(--mono);
@@ -1327,78 +1342,4 @@ ul.description-list li {
   min-width: 148px;
   padding: 0 16px;
   color: var(--white);
-}
-
-.site-footer {
-  display: grid;
-  gap: 14px;
-  padding: 24px 4px 4px;
-  color: var(--white-45);
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.footer-bottom {
-  justify-content: space-between;
-  gap: 16px;
-  min-width: 0;
-}
-
-.footer-appreciation {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  min-height: 48px;
-  color: var(--white-60);
-}
-
-.appreciate-button-host {
-  display: inline-flex;
-  min-width: 44px;
-  min-height: 44px;
-}
-
-.footer-appreciation appreciate-button {
-  --appreciate-size: 24px;
-  --appreciate-default: var(--white-60);
-  --appreciate-hover: var(--white);
-  --appreciate-clicked: #bef264;
-  --appreciate-full: #bef264;
-}
-
-.footer-appreciation appreciate-button::part(button) {
-  min-width: 44px;
-  min-height: 44px;
-}
-
-.footer-meta,
-.footer-links {
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.footer-groups,
-.footer-link-group {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
-.footer-groups {
-  gap: 12px 28px;
-}
-
-.footer-link {
-  min-height: 36px;
-  color: var(--white-60);
-  text-decoration: none;
-}
-
-.footer-link:hover {
-  color: var(--white);
-  border-color: rgb(190 242 100 / 40%);
 }

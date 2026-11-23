@@ -1,16 +1,9 @@
 import {
-  Coffee,
-  Github,
-  FileJson,
-  MessageSquarePlus,
   MonitorSmartphone,
-  Rows3,
-  Search,
-  RefreshCw,
   Route,
-  Shield,
   SquareTerminal
 } from "lucide-react";
+import type { Route as AppRoute } from "next";
 import Link from "next/link";
 
 import { AppreciateButton } from "@/components/appreciate-button";
@@ -27,7 +20,8 @@ import {
 
 import { TopbarOverflow } from "./topbar-overflow";
 
-export function Topbar({ updatedAt }: { updatedAt: string }) {
+/** Omit `updatedAt` on pages that already show the feed's freshness. */
+export function Topbar({ updatedAt }: { updatedAt?: string }) {
   return (
     <header className="topbar">
       <Link className="brand" href="/" aria-label="Endpoint Jobs home">
@@ -39,10 +33,11 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
 
       <div className="topbar-actions">
         <AuthMenu />
-        <span className="refresh-pill">
-          <RefreshCw size={15} aria-hidden="true" />
-          {formatUpdatedAt(updatedAt)}
-        </span>
+        {updatedAt ? (
+          <span className="refresh-pill">
+            <span className="refresh-label">Updated</span> {formatUpdatedAt(updatedAt)}
+          </span>
+        ) : null}
         <TopbarOverflow>
           <Link
             aria-label="Learning roadmap"
@@ -70,6 +65,59 @@ export function Topbar({ updatedAt }: { updatedAt: string }) {
   );
 }
 
+type FooterLink =
+  | { text: string; href: AppRoute; label?: string; className?: string }
+  | { text: string; href: string; label: string; title: string; className?: string; external: true };
+
+const footerGroups: { id: string; label: string; links: FooterLink[] }[] = [
+  {
+    id: "browse",
+    label: "Browse",
+    links: [
+      { text: "Job board", href: getBoardPath() },
+      { text: "Job directory", href: getJobsDirectoryPath() },
+      { text: "Roadmap", href: getRoadmapPath() },
+      { text: "API docs", href: getApiDocsPath(), label: "Open API documentation", className: "api-docs-link" },
+      { text: "Privacy", href: "/privacy" }
+    ]
+  },
+  {
+    id: "project",
+    label: "Project",
+    links: [
+      {
+        text: "PowerShell",
+        href: "https://github.com/jorgeasaurus/EndpointJobs/blob/main/powershell/EndpointJobs/README.md",
+        label: "Open PowerShell module documentation on GitHub",
+        title: "Open PowerShell module documentation on GitHub",
+        external: true
+      },
+      {
+        text: "Report / request",
+        href: "https://github.com/jorgeasaurus/EndpointJobs/issues/new?template=report-or-request.yml",
+        label: "Report an issue or request a feature on GitHub",
+        title: "Report an issue or request a feature",
+        external: true
+      },
+      {
+        text: "Support the board",
+        href: "https://buymeacoffee.com/jorgeasaurus",
+        label: "Support the board on Buy Me a Coffee",
+        title: "Support the board",
+        className: "support-link",
+        external: true
+      },
+      {
+        text: "GitHub repo",
+        href: "https://github.com/jorgeasaurus/EndpointJobs",
+        label: "Open the Endpoint Jobs GitHub repository",
+        title: "Open GitHub repository",
+        external: true
+      }
+    ]
+  }
+];
+
 export function SiteFooter({ updatedAt }: { updatedAt: string }) {
   return (
     <footer className="site-footer">
@@ -83,80 +131,40 @@ export function SiteFooter({ updatedAt }: { updatedAt: string }) {
 
         <nav className="footer-links" aria-label="Project links">
           <div className="footer-groups">
-            <div className="footer-link-group" role="group" aria-label="Browse">
-              <Link className="feedback-link footer-link" href={getBoardPath()} prefetch={false}>
-                <Search size={15} aria-hidden="true" />
-                <span>Job board</span>
-              </Link>
-              {/* Disable speculative prefetch to prevent stale page-one metadata during query pagination. */}
-              <Link className="feedback-link footer-link" href={getJobsDirectoryPath()} prefetch={false}>
-                <Rows3 size={15} aria-hidden="true" />
-                <span>All jobs</span>
-              </Link>
-              <Link className="feedback-link footer-link" href={getRoadmapPath()} prefetch={false}>
-                <Route size={15} aria-hidden="true" />
-                <span>Roadmap</span>
-              </Link>
-              <Link
-                aria-label="Open API documentation"
-                className="feedback-link footer-link api-docs-link"
-                href={getApiDocsPath()}
-                prefetch={false}
-                title="Open API documentation"
-              >
-                <FileJson size={15} aria-hidden="true" />
-                <span>API docs</span>
-              </Link>
-              <Link className="feedback-link footer-link" href="/privacy">
-                <Shield size={15} aria-hidden="true" />
-                <span>Privacy</span>
-              </Link>
-            </div>
-            <div className="footer-link-group" role="group" aria-label="Project">
-              <a
-                aria-label="Open PowerShell module documentation on GitHub"
-                className="feedback-link footer-link"
-                href="https://github.com/jorgeasaurus/EndpointJobs/blob/main/powershell/EndpointJobs/README.md"
-                rel="noopener noreferrer"
-                target="_blank"
-                title="Open PowerShell module documentation on GitHub"
-              >
-                <SquareTerminal size={15} aria-hidden="true" /><span>PowerShell</span>
-              </a>
-              <a
-                aria-label="Report an issue or request a feature on GitHub"
-                className="feedback-link footer-link"
-                href="https://github.com/jorgeasaurus/EndpointJobs/issues/new?template=report-or-request.yml"
-                rel="noopener noreferrer"
-                target="_blank"
-                title="Report an issue or request a feature"
-              >
-                <MessageSquarePlus size={15} aria-hidden="true" />
-                <span>Report / request</span>
-              </a>
-              <a
-                aria-label="Support the board on Buy Me a Coffee"
-                className="feedback-link footer-link support-link"
-                href="https://buymeacoffee.com/jorgeasaurus"
-                rel="noopener noreferrer"
-                target="_blank"
-                title="Support the board"
-              >
-                <Coffee size={15} aria-hidden="true" />
-                <span>Support the board</span>
-              </a>
-              <a
-                aria-label="Open the Endpoint Jobs GitHub repository"
-                className="feedback-link footer-link"
-                href="https://github.com/jorgeasaurus/EndpointJobs"
-                rel="noopener noreferrer"
-                target="_blank"
-                title="Open GitHub repository"
-              >
-                <Github size={15} aria-hidden="true" />
-                <span>GitHub repo</span>
-              </a>
-            </div>
+            {footerGroups.map((group) => {
+              const labelId = `footer-group-${group.id}`;
+              return (
+                <div className="footer-link-group" key={group.id}>
+                  <span className="footer-group-label" id={labelId}>{group.label}</span>
+                  <ul className="footer-link-list" aria-labelledby={labelId}>
+                    {group.links.map((link) => {
+                      const className = link.className ? `footer-link ${link.className}` : "footer-link";
+                      return (
+                        <li key={link.text}>
+                          {"external" in link ? (
+                            <a
+                              aria-label={link.label}
+                              className={className}
+                              href={link.href}
+                              rel="noopener noreferrer"
+                              target="_blank"
+                              title={link.title}
+                            >
+                              {link.text}
+                            </a>
+                          ) : (
+                            // Disable speculative prefetch to prevent stale page-one metadata during query pagination.
+                            <Link aria-label={link.label} className={className} href={link.href} prefetch={false}>
+                              {link.text}
+                            </Link>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              );
+            })}
           </div>
         </nav>
       </div>

@@ -1,8 +1,8 @@
 import { filterSearchParamKeys } from "@/lib/board-search-params";
 import { filterStateFromSearchParams, filterStateToBoardSearchParams } from "@/components/job-board/filter-url";
-import { initialFilterState, type FilterState } from "@/components/job-board/filter-model";
+import type { FilterState } from "@/components/job-board/filter-model";
 
-export const preferenceSchemaVersion = 1;
+const preferenceSchemaVersion = 1;
 
 export type SavedPreferences = {
   filters: FilterState;
@@ -10,7 +10,7 @@ export type SavedPreferences = {
   savedOnly: boolean;
 };
 
-export function encodePreferences(filters: FilterState, hideViewed: boolean, savedOnly = false) {
+export function encodePreferences({ filters, hideViewed, savedOnly }: SavedPreferences) {
   const params = filterStateToBoardSearchParams(filters, 1);
   params.delete("page");
   const stored: Record<string, string | boolean> = { hideViewed, savedOnly };
@@ -57,21 +57,11 @@ export function shouldRestoreSavedFilters(pathname: string, search: string) {
   return segment === "" || segment === "board";
 }
 
-export function preferenceRow(
-  userId: string,
-  filters: FilterState,
-  hideViewed: boolean,
-  updatedAt: string,
-  savedOnly = false
-) {
+export function preferenceRow(userId: string, preferences: SavedPreferences, updatedAt: string) {
   return {
     user_id: userId,
-    filters: encodePreferences(filters, hideViewed, savedOnly),
+    filters: encodePreferences(preferences),
     schema_version: preferenceSchemaVersion,
     updated_at: updatedAt
   };
-}
-
-export function emptyPreferences(): SavedPreferences {
-  return { filters: initialFilterState, hideViewed: false, savedOnly: false };
 }

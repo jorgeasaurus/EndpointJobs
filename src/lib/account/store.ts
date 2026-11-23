@@ -1,6 +1,4 @@
-import type { FilterState } from "@/components/job-board/filter-model";
-
-import { decodePreferences, preferenceRow, type SavedPreferences } from "./preferences";
+import { decodePreferences, type SavedPreferences } from "./preferences";
 import { savedJobSnapshot, type SavedJobSnapshot } from "./records";
 
 type ErrorResult = { error: { message: string } | null; data?: unknown };
@@ -13,29 +11,13 @@ type EqQuery = {
   };
 };
 
+/** Browser reads only; writes go through the `/api/account/*` routes. */
 export type AccountClient = {
   from: (table: string) => {
-    upsert: (values: unknown, options: { onConflict: string }) => Promise<ErrorResult>;
-    insert: (values: unknown) => Promise<ErrorResult>;
     select: (columns: string) => EqQuery;
-    delete: () => EqQuery;
   };
   rpc: (name: string, args: { p_job_id: string }) => Promise<ErrorResult>;
 };
-
-export async function upsertPreferences(
-  client: AccountClient,
-  userId: string,
-  filters: FilterState,
-  hideViewed: boolean,
-  updatedAt: string,
-  savedOnly = false
-) {
-  return client.from("user_preferences").upsert(
-    preferenceRow(userId, filters, hideViewed, updatedAt, savedOnly),
-    { onConflict: "user_id" }
-  );
-}
 
 export async function readPreferences(client: AccountClient, userId: string): Promise<SavedPreferences | null> {
   const result = await client
@@ -56,10 +38,6 @@ export async function recordJobView(client: AccountClient, jobId: string) {
 export async function listViewedIds(client: AccountClient, userId: string) {
   const result = await client.from("job_views").select("job_id").eq("user_id", userId);
   return idsFrom(result.data);
-}
-
-export async function clearJobViews(client: AccountClient, userId: string) {
-  return client.from("job_views").delete().eq("user_id", userId);
 }
 
 export async function listSavedJobs(client: AccountClient, userId: string) {
@@ -91,19 +69,6 @@ export async function listSavedJobs(client: AccountClient, userId: string) {
 export async function listSavedIds(client: AccountClient, userId: string) {
   const saved = await listSavedJobs(client, userId);
   return saved.map((job) => job.jobId);
-}
-
-export async function saveJob(client: AccountClient, userId: string, job: SavedJobSnapshot & { id: string }) {
-  return client.from("saved_jobs").upsert({
-    user_id: userId,
-    job_id: job.id,
-    job_snapshot: savedJobSnapshot(job),
-    saved_at: new Date().toISOString()
-  }, { onConflict: "user_id,job_id" });
-}
-
-export async function unsaveJob(client: AccountClient, userId: string, jobId: string) {
-  return client.from("saved_jobs").delete().eq("user_id", userId).eq("job_id", jobId);
 }
 
 function idsFrom(data: unknown) {

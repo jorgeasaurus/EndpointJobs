@@ -138,7 +138,7 @@ test("failed and missing remote reads back off before trying the blob again", as
 
 test("a newer bundled snapshot wins until the remote snapshot catches up", async () => {
   let requests = 0;
-  let updatedAt = "2020-01-01T00:00:00.000Z";
+  const updatedAt = "2020-01-01T00:00:00.000Z";
   resetPublishedJobsFeedForTests(async () => {
     requests += 1;
     return {
@@ -262,7 +262,7 @@ test("a current feed revalidates when the version pointer is missing, older, or 
   const previous = atOffset(hour);
   const expected = atOffset(hour * 2);
   let versionStatus = 404;
-  let version = previous;
+  const version = previous;
   let feedUpdatedAt = expected;
   resetPublishedJobsFeedForTests(async (url) => {
     if (url.includes("/jobs/version")) return { status: versionStatus, etag: null, body: version };

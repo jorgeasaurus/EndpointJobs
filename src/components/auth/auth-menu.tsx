@@ -83,7 +83,7 @@ export function AuthMenu() {
       >
         <form method="dialog" className="auth-dialog-body">
           <h2 id={dialogTitleId}>Sign in to Endpoint Jobs</h2>
-          <p>Save jobs, keep your filters, and hide what you've seen.</p>
+          <p>{"Save jobs, keep your filters, and hide what you've seen."}</p>
           <AuthProviderButtons key={providerReset} />
           <p className="auth-dialog-privacy">
             By continuing you agree to the{" "}

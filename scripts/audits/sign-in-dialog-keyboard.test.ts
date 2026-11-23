@@ -45,7 +45,7 @@ test("keyboard activation of a provider keeps the dialog and its error open", as
     for (const id of ["google", "github"]) {
       await page.locator(`#${id}`).focus();
       await page.keyboard.press(id === "google" ? "Enter" : " ");
-      const state = await page.evaluate((buttonId) => {
+      const state = await page.evaluate(() => {
         const dialog = document.querySelector("dialog");
         const error = document.querySelector("#error");
         const box = dialog?.getBoundingClientRect();
@@ -55,7 +55,7 @@ test("keyboard activation of a provider keeps the dialog and its error open", as
           visible: Boolean(error && error.getClientRects().length > 0),
           top: box?.top ?? 0
         };
-      }, id);
+      });
       assert.equal(state.open, true, `${id} keyboard activation closed the dialog`);
       assert.equal(state.error, errorCopy);
       assert.equal(state.visible, true, "the OAuth error is not visible");
