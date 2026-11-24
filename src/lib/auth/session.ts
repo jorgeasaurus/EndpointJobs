@@ -6,10 +6,16 @@ export type DevAccountFixture = {
   savedOnly: boolean;
 };
 
+/** Where the signed-in user's account data comes from. */
+export type AccountSource =
+  | { kind: "none" }
+  | { kind: "fixture"; userId: string; fixture: DevAccountFixture }
+  | { kind: "account"; userId: string };
+
 export type SignInSession = {
   configured: boolean;
   email: string | null;
-  userId?: string | null;
-  /** Set only by the dev auth fixture; account hooks then use it instead of Supabase. */
-  fixtureAccount?: DevAccountFixture;
+  account: AccountSource;
 };
+
+export const noAccount: AccountSource = { kind: "none" };

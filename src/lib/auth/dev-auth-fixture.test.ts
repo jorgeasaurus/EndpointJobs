@@ -5,29 +5,24 @@ import test from "node:test";
 import { devAuthFixture } from "./dev-auth-fixture";
 
 test("the dev auth fixture only invents a session when the caller enables it", () => {
+  const signedIn = (email: string) => ({
+    configured: true,
+    email,
+    account: {
+      kind: "fixture",
+      userId: "e2e-user",
+      fixture: { savedIds: [], viewedIds: [], hideViewed: false, savedOnly: false }
+    }
+  });
+
   assert.equal(devAuthFixture("?e2e-auth=in", false), null);
   assert.equal(devAuthFixture("?e2e-auth=out", false), null);
   assert.equal(devAuthFixture("", true), null);
-  assert.deepEqual(devAuthFixture("?e2e-auth=out", true), { configured: true, email: null });
-  assert.deepEqual(devAuthFixture("?e2e-auth=off", true), { configured: false, email: null });
-  assert.deepEqual(devAuthFixture("e2e-auth=in", true), {
-    configured: true,
-    email: "jorgesuarez@gmail.com",
-    userId: "e2e-user",
-    fixtureAccount: { savedIds: [], viewedIds: [], hideViewed: false, savedOnly: false }
-  });
-  assert.deepEqual(devAuthFixture("?e2e-auth=in&e2e-email=person@example.com", true), {
-    configured: true,
-    email: "person@example.com",
-    userId: "e2e-user",
-    fixtureAccount: { savedIds: [], viewedIds: [], hideViewed: false, savedOnly: false }
-  });
-  assert.deepEqual(devAuthFixture("?e2e-auth=in&e2e-email=%20%20", true), {
-    configured: true,
-    email: "jorgesuarez@gmail.com",
-    userId: "e2e-user",
-    fixtureAccount: { savedIds: [], viewedIds: [], hideViewed: false, savedOnly: false }
-  });
+  assert.deepEqual(devAuthFixture("?e2e-auth=out", true), { configured: true, email: null, account: { kind: "none" } });
+  assert.deepEqual(devAuthFixture("?e2e-auth=off", true), { configured: false, email: null, account: { kind: "none" } });
+  assert.deepEqual(devAuthFixture("e2e-auth=in", true), signedIn("jorgesuarez@gmail.com"));
+  assert.deepEqual(devAuthFixture("?e2e-auth=in&e2e-email=person@example.com", true), signedIn("person@example.com"));
+  assert.deepEqual(devAuthFixture("?e2e-auth=in&e2e-email=%20%20", true), signedIn("jorgesuarez@gmail.com"));
 
   const source = readFileSync(new URL("../../components/auth/sign-in-session.ts", import.meta.url), "utf8");
   assert.match(

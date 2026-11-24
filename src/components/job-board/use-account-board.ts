@@ -16,19 +16,13 @@ import {
   type SavedPreferences
 } from "@/lib/account/preferences";
 import { recordJobView, savePreferences, setJobSaved } from "@/lib/account/requests";
-import type { DevAccountFixture } from "@/lib/auth/session";
+import type { AccountSource } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/client";
 import { useSignInSession } from "@/components/auth/sign-in-session";
 
 import type { FilterAction, FilterState } from "./filter-model";
 
 const saveDelayMs = 400;
-
-/** Where the signed-in user's account data comes from. */
-type AccountSource =
-  | { kind: "none" }
-  | { kind: "fixture"; userId: string; fixture: DevAccountFixture }
-  | { kind: "account"; userId: string };
 
 type AccountState = {
   hideViewed: boolean;
@@ -49,18 +43,6 @@ function accountSourceKey(source: AccountSource) {
   return source.kind === "none" ? source.kind : `${source.kind}:${source.userId}`;
 }
 
-// The session store sets a userId without a fixture only after Supabase reports
-// one, so an "account" source always has Supabase configured.
-function useAccountSource() {
-  const session = useSignInSession();
-  return useMemo((): AccountSource => {
-    const { userId, fixtureAccount } = session;
-    if (!userId) return { kind: "none" };
-    if (fixtureAccount) return { kind: "fixture", userId, fixture: fixtureAccount };
-    return { kind: "account", userId };
-  }, [session]);
-}
-
 function initialAccountState(source: AccountSource): AccountState {
   if (source.kind !== "fixture") return emptyAccountState;
   const { fixture } = source;
@@ -72,23 +54,25 @@ function initialAccountState(source: AccountSource): AccountState {
   };
 }
 
-/** State owned by one key: another key reads `initial` until something is written for it. */
+/** `useState` that starts over at `initial` whenever `key` changes. */
 function useKeyedState<T>(key: string, initial: T) {
   const [stored, setStored] = useState<{ key: string; value: T } | null>(null);
   const value = stored !== null && stored.key === key ? stored.value : initial;
-  const update = (next: (current: T) => T) =>
-    setStored((previous) => ({ key, value: next(previous !== null && previous.key === key ? previous.value : initial) }));
-  const put = useCallback((forKey: string, next: T) => setStored({ key: forKey, value: next }), []);
-  return [value, update, put] as const;
+  const update = useCallback(
+    (next: (current: T) => T) =>
+      setStored((previous) => ({ key, value: next(previous !== null && previous.key === key ? previous.value : initial) })),
+    [initial, key]
+  );
+  return [value, update] as const;
 }
 
 export function useAccountBoard(
   filters: FilterState,
   dispatch: (action: FilterAction) => void
 ) {
-  const source = useAccountSource();
+  const source = useSignInSession().account;
   const initialState = useMemo(() => initialAccountState(source), [source]);
-  const [account, updateAccount, putAccount] = useKeyedState(accountSourceKey(source), initialState);
+  const [account, updateAccount] = useKeyedState(accountSourceKey(source), initialState);
   const [savedToken, setSavedToken] = useState("0");
   const ready = useRef(false);
   const savedJson = useRef("");
@@ -105,7 +89,6 @@ export function useAccountBoard(
     ready.current = false;
     if (source.kind !== "account") return undefined;
 
-    const key = accountSourceKey(source);
     const client = browserAccountClient();
     let cancel = false;
     void (async () => {
@@ -117,7 +100,7 @@ export function useAccountBoard(
       if (cancel) return;
       const hideViewed = preferences?.hideViewed ?? false;
       const savedOnly = preferences?.savedOnly ?? false;
-      putAccount(key, { hideViewed, savedOnly, viewedIds: new Set(viewed), savedIds: new Set(saved) });
+      updateAccount(() => ({ hideViewed, savedOnly, viewedIds: new Set(viewed), savedIds: new Set(saved) }));
       const pageFilters = filtersRef.current;
       const restore = Boolean(
         preferences && shouldRestoreSavedFilters(window.location.pathname, window.location.search)
@@ -138,7 +121,7 @@ export function useAccountBoard(
     return () => {
       cancel = true;
     };
-  }, [dispatch, putAccount, source]);
+  }, [dispatch, source, updateAccount]);
 
   const { hideViewed, savedOnly } = account;
   useEffect(() => {
@@ -194,7 +177,7 @@ export function useAccountBoard(
 
 /** Records the view for a real account; the fixture and signed-out visitors record nothing. */
 export function useRecordJobView(jobId: string) {
-  const source = useAccountSource();
+  const source = useSignInSession().account;
   const accountKey = source.kind === "account" ? accountSourceKey(source) : null;
 
   useEffect(() => {
@@ -203,10 +186,9 @@ export function useRecordJobView(jobId: string) {
 }
 
 export function useSavedJob(jobId: string) {
-  const source = useAccountSource();
-  const key = `${accountSourceKey(source)}:${jobId}`;
-  const [saved, updateSaved, putSaved] = useKeyedState(
-    key,
+  const source = useSignInSession().account;
+  const [saved, updateSaved] = useKeyedState(
+    `${accountSourceKey(source)}:${jobId}`,
     source.kind === "fixture" && source.fixture.savedIds.includes(jobId)
   );
 
@@ -214,12 +196,12 @@ export function useSavedJob(jobId: string) {
     if (source.kind !== "account") return undefined;
     let cancel = false;
     void listSavedIds(browserAccountClient(), source.userId).then((ids) => {
-      if (!cancel) putSaved(key, ids.includes(jobId));
+      if (!cancel) updateSaved(() => ids.includes(jobId));
     });
     return () => {
       cancel = true;
     };
-  }, [jobId, key, putSaved, source]);
+  }, [jobId, source, updateSaved]);
 
   async function toggle() {
     if (source.kind === "none") return;

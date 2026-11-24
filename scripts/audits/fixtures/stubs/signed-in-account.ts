@@ -3,6 +3,8 @@
  * user-1 is signed in with one saved and one viewed job and no stored
  * preferences. Every account read is logged.
  */
+import type { SignInSession } from "@/lib/auth/session";
+
 export const accountReads: string[] = [];
 
 const rows: Record<string, unknown> = {
@@ -23,8 +25,12 @@ export function createClient() {
   };
 }
 
-// One object, like the real store's snapshot, so the session keeps its identity across renders.
-const session = { configured: true, email: "user-1@example.com", userId: "user-1" };
+// One object, like the real store's snapshot, so the account keeps its identity across renders.
+const session: SignInSession = {
+  configured: true,
+  email: "user-1@example.com",
+  account: { kind: "account", userId: "user-1" }
+};
 
 export function useSignInSession() {
   return session;

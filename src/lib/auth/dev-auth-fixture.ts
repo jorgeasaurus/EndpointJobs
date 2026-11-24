@@ -1,4 +1,4 @@
-import type { DevAccountFixture, SignInSession } from "./session";
+import { noAccount, type DevAccountFixture, type SignInSession } from "./session";
 
 const fixtureEmail = "jorgesuarez@gmail.com";
 
@@ -12,12 +12,11 @@ export function devAuthFixture(search: string, enabled: boolean): SignInSession 
     return {
       configured: true,
       email: email || fixtureEmail,
-      userId: "e2e-user",
-      fixtureAccount: accountFixture(params)
+      account: { kind: "fixture", userId: "e2e-user", fixture: accountFixture(params) }
     };
   }
-  if (mode === "out") return { configured: true, email: null };
-  if (mode === "off") return { configured: false, email: null };
+  if (mode === "out") return { configured: true, email: null, account: noAccount };
+  if (mode === "off") return { configured: false, email: null, account: noAccount };
   return null;
 }
 

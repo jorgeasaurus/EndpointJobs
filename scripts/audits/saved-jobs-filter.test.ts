@@ -130,8 +130,12 @@ test("saved jobs only is a private preference and a shared URL cannot turn it on
   assert.equal(off.params.get("page"), "2");
   assert.equal(off.params.has("saved"), false);
 
-  assert.equal(devAuthFixture("?e2e-auth=in&savedOnly=1&saved=1", true)?.fixtureAccount?.savedOnly, false);
-  assert.deepEqual(devAuthFixture("?e2e-auth=in&e2e-saved=job-a&e2e-saved-only=1&e2e-viewed=job-a&e2e-hide-viewed=1", true)?.fixtureAccount, {
+  const fixtureAccount = (search: string) => {
+    const account = devAuthFixture(search, true)?.account;
+    return account?.kind === "fixture" ? account.fixture : null;
+  };
+  assert.equal(fixtureAccount("?e2e-auth=in&savedOnly=1&saved=1")?.savedOnly, false);
+  assert.deepEqual(fixtureAccount("?e2e-auth=in&e2e-saved=job-a&e2e-saved-only=1&e2e-viewed=job-a&e2e-hide-viewed=1"), {
     savedIds: ["job-a"],
     viewedIds: ["job-a"],
     hideViewed: true,
