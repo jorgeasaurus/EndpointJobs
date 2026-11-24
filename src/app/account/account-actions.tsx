@@ -1,10 +1,57 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 
 import { deleteAccountConfirmation, deletionConfirmed } from "@/lib/account/records";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
+
+type Router = ReturnType<typeof useRouter>;
+
+/** Each action reports whether it finished; a failure shows its message under the button. */
+const accountActions = {
+  export: { label: "Export my data", failure: "Export did not finish.", run: exportAccount },
+  "clear-views": { label: "Clear view history", failure: "View history could not be cleared.", run: clearViewHistory }
+} satisfies Record<string, { label: string; failure: string; run: (router: Router) => Promise<boolean> }>;
+
+async function exportAccount() {
+  const response = await fetch("/api/account/export");
+  if (!response.ok) return false;
+  const url = URL.createObjectURL(await response.blob());
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "endpoint-jobs-account.json";
+  link.click();
+  URL.revokeObjectURL(url);
+  return true;
+}
+
+async function clearViewHistory(router: Router) {
+  const response = await fetch("/api/account/views", { method: "DELETE" });
+  if (response.ok) router.refresh();
+  return response.ok;
+}
+
+export function AccountActionButton({ action }: { action: keyof typeof accountActions }) {
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const { label, failure, run } = accountActions[action];
+
+  async function click() {
+    setError(null);
+    if (!(await run(router))) setError(failure);
+  }
+
+  return (
+    <div className="account-actions">
+      <button className="compare-button" type="button" onClick={() => void click()}>
+        {label}
+      </button>
+      {error ? <p className="account-error" role="alert">{error}</p> : null}
+    </div>
+  );
+}
 
 export function DeleteAccountForm() {
   const [confirmation, setConfirmation] = useState("");

@@ -144,9 +144,7 @@ test("the account page and privacy policy link to each other", () => {
   const privacy = readFileSync(new URL("../../src/app/privacy/page.tsx", import.meta.url), "utf8");
   const account = [
     readFileSync(new URL("../../src/app/account/page.tsx", import.meta.url), "utf8"),
-    readFileSync(new URL("../../src/app/account/account-actions.tsx", import.meta.url), "utf8"),
-    readFileSync(new URL("../../src/app/account/export-account-button.tsx", import.meta.url), "utf8"),
-    readFileSync(new URL("../../src/app/account/clear-view-history-button.tsx", import.meta.url), "utf8")
+    readFileSync(new URL("../../src/app/account/account-actions.tsx", import.meta.url), "utf8")
   ].join("\n");
   const menu = readFileSync(new URL("../../src/components/auth/account-menu.tsx", import.meta.url), "utf8");
   assert.match(privacy, /href="\/account"/);

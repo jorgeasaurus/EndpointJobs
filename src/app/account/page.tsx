@@ -10,9 +10,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getJobPath } from "@/app/site-metadata";
 import type { JobsFeed } from "@/types/job";
 
-import { DeleteAccountForm } from "./account-actions";
-import { ClearViewHistoryButton } from "./clear-view-history-button";
-import { ExportAccountButton } from "./export-account-button";
+import { AccountActionButton, DeleteAccountForm } from "./account-actions";
 import "./account.css";
 
 export const metadata: Metadata = {
@@ -63,13 +61,13 @@ export default async function AccountPage() {
               <section className="account-section" aria-labelledby="export-heading">
                 <h2 id="export-heading">Export</h2>
                 <p>Download your profile, saved filters, saved jobs, and view history.</p>
-                <ExportAccountButton />
+                <AccountActionButton action="export" />
               </section>
 
               <section className="account-section" aria-labelledby="views-heading">
                 <h2 id="views-heading">View history</h2>
                 <p>{session.viewCount === 1 ? "1 viewed role." : `${session.viewCount} viewed roles.`}</p>
-                <ClearViewHistoryButton />
+                <AccountActionButton action="clear-views" />
               </section>
 
               <section className="account-section" aria-labelledby="delete-heading">

@@ -253,11 +253,6 @@ export function useSavedJob(jobId: string) {
   return { saved, signedIn: Boolean(userId), toggle };
 }
 
-export async function clearViewHistory() {
-  const response = await fetch("/api/account/views", { method: "DELETE" });
-  return response.ok;
-}
-
 function browserAccountClient() {
   return createClient() as unknown as AccountClient;
 }
