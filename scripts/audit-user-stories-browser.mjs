@@ -414,48 +414,46 @@ await run("QA-018", "Job directory pagination exposes crawlable detail links", a
 
 await run("FEAT-032", "Parallax background layers render behind content", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 });
-  await page.waitForSelector('[data-endpoint-signal-canvas="true"]', { timeout: 10000 });
+  await page.waitForSelector('[data-endpoint-dither-canvas="true"]', { timeout: 10000 });
   const state = await page.evaluate(() => {
     const field = document.querySelector(".parallax-field");
     const content = document.querySelector(".site-content");
-    const signalCanvas = document.querySelector('[data-endpoint-signal-canvas="true"]');
+    const ditherCanvas = document.querySelector('[data-endpoint-dither-canvas="true"]');
     return {
       ariaHidden: field?.getAttribute("aria-hidden"),
       fieldPosition: field ? getComputedStyle(field).position : null,
       contentPosition: content ? getComputedStyle(content).position : null,
-      hasAtmosphere: Boolean(document.querySelector(".parallax-atmosphere")),
-      hasSignalCanvas: Boolean(signalCanvas),
-      signalCanvasPosition: signalCanvas ? getComputedStyle(signalCanvas).position : null
+      hasDitherCanvas: Boolean(ditherCanvas),
+      ditherCanvasPosition: ditherCanvas ? getComputedStyle(ditherCanvas).position : null
     };
   });
   expect(state.ariaHidden).toBe("true");
   expect(state.fieldPosition).toBe("fixed");
-  expect(state.hasAtmosphere).toBeTruthy();
-  expect(state.hasSignalCanvas).toBeTruthy();
-  expect(state.signalCanvasPosition).toBe("absolute");
+  expect(state.hasDitherCanvas).toBeTruthy();
+  expect(state.ditherCanvasPosition).toBe("absolute");
   expect(["relative", "absolute", "fixed", "sticky"]).toContain(state.contentPosition);
   await page.close();
 });
 
-await run("QA-012", "Reduced motion skips the Three signal canvas", async () => {
+await run("QA-012", "Reduced motion skips the dither canvas", async () => {
   const page = await newPage(browser, { width: 1280, height: 900 }, {
     contextOptions: {
       reducedMotion: "reduce"
     }
   });
 
-  await expect(page.locator('[data-endpoint-signal-canvas="true"]')).toHaveCount(0);
+  await expect(page.locator('[data-endpoint-dither-canvas="true"]')).toHaveCount(0);
   const state = await page.evaluate(() => {
     const field = document.querySelector(".parallax-field");
-    const host = document.querySelector(".parallax-three-host");
+    const host = document.querySelector(".parallax-dither-host");
 
     return {
-      hasThreeClass: field?.classList.contains("parallax-field--three") ?? false,
+      hasLiveClass: field?.classList.contains("parallax-field--live") ?? false,
       hostChildCount: host?.childElementCount ?? 0
     };
   });
 
-  expect(state.hasThreeClass).toBeFalsy();
+  expect(state.hasLiveClass).toBeFalsy();
   expect(state.hostChildCount).toBe(0);
   await page.close();
 });

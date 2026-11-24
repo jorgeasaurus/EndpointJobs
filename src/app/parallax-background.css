@@ -1,68 +1,54 @@
+/* Fixed backdrop behind every page. The CSS gradient is the fallback and the
+   first paint; the dithered cloud canvas fades in on top once WebGL draws. */
 .parallax-field {
   position: fixed;
-  inset: -12vh 0 0;
+  inset: 0;
   z-index: 0;
-  min-height: calc(100vh + 24vh);
   overflow: hidden;
   pointer-events: none;
   background:
-    linear-gradient(120deg, rgb(45 212 191 / 7%), transparent 34%, rgb(190 242 100 / 5%) 74%, transparent),
-    linear-gradient(180deg, rgb(0 0 0 / 0%), rgb(0 0 0 / 52%) 78%, var(--black));
+    radial-gradient(120% 80% at 70% 10%, rgb(19 66 59 / 55%), transparent 60%),
+    var(--obsidian);
 }
 
-.parallax-atmosphere,
-.parallax-three-host,
-.parallax-three-host canvas {
+/* Darkens toward the bottom so long lists and footers sit on near-black. */
+.parallax-field::after {
   position: absolute;
-  pointer-events: none;
-  content: "";
-}
-
-.parallax-atmosphere {
   inset: 0;
-  background:
-    linear-gradient(rgb(190 242 100 / 3%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(45 212 191 / 2.8%) 1px, transparent 1px),
-    linear-gradient(150deg, transparent, rgb(255 255 255 / 5%) 48%, transparent);
-  background-size: 60px 60px, 60px 60px, auto;
-  -webkit-mask-image: linear-gradient(180deg, black 0%, black 70%, transparent 100%);
-  mask-image: linear-gradient(180deg, black 0%, black 70%, transparent 100%);
-  opacity: 0.76;
+  z-index: 2;
+  content: "";
+  background: linear-gradient(180deg, rgb(0 0 0 / 0%) 0%, rgb(0 0 0 / 28%) 55%, rgb(0 0 0 / 72%) 100%);
 }
 
-.parallax-three-host {
+.parallax-dither-host {
+  position: absolute;
   inset: 0;
   z-index: 1;
   opacity: 0;
-  mix-blend-mode: screen;
-  transition: opacity 520ms var(--curve);
+  transition: opacity 900ms var(--curve);
 }
 
-.parallax-field--three .parallax-three-host {
-  opacity: 0.92;
+.parallax-field--live .parallax-dither-host {
+  opacity: 1;
 }
 
-.parallax-three-host canvas {
+.parallax-dither-host canvas {
+  position: absolute;
   inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
-  display: block;
-  filter: drop-shadow(0 0 12px rgb(190 242 100 / 12%));
+  image-rendering: pixelated;
 }
 
 @media (max-width: 760px) {
-  .parallax-field {
+  .parallax-field--live .parallax-dither-host {
     opacity: 0.72;
   }
-
-  .parallax-field--three .parallax-three-host {
-    opacity: 0.58;
-  }
-
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .parallax-three-host {
+  .parallax-dither-host {
     display: none;
   }
 }
