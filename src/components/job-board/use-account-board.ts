@@ -21,6 +21,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useSignInSession } from "@/components/auth/sign-in-session";
 
 import type { FilterAction, FilterState } from "./filter-model";
+import { savedBoardQuery } from "./use-board-results";
 
 const saveDelayMs = 400;
 
@@ -123,7 +124,7 @@ export function useAccountBoard(
     };
   }, [dispatch, source, updateAccount]);
 
-  const { hideViewed, savedOnly } = account;
+  const { hideViewed, savedIds, savedOnly, viewedIds } = account;
   useEffect(() => {
     if (source.kind !== "account" || !ready.current) return undefined;
     if (!pageFiltersOwned.current && JSON.stringify(filters) !== pageFiltersJson.current) {
@@ -150,7 +151,7 @@ export function useAccountBoard(
 
   async function toggleSaved(job: BoardListing) {
     if (source.kind === "none") return;
-    const wasSaved = account.savedIds.has(job.id);
+    const wasSaved = savedIds.has(job.id);
     const flip = (state: AccountState) => ({ ...state, savedIds: toggleId(state.savedIds, job.id) });
     updateAccount(flip);
     if (source.kind === "fixture") return;
@@ -161,17 +162,21 @@ export function useAccountBoard(
     setSavedToken((token) => String(Number(token) + 1));
   }
 
+  const savedQuery = useMemo(
+    () => savedBoardQuery({ accountKind: source.kind, savedIds, savedOnly, savedToken }),
+    [savedIds, savedOnly, savedToken, source.kind]
+  );
+
   return {
-    accountKind: source.kind,
     hideViewed,
-    savedIds: account.savedIds,
+    savedIds,
     savedOnly,
-    savedToken,
+    savedQuery,
     signedIn: source.kind !== "none",
     toggleHideViewed: () => updateAccount((state) => ({ ...state, hideViewed: !state.hideViewed })),
     toggleSaved,
     toggleSavedOnly: () => updateAccount((state) => ({ ...state, savedOnly: !state.savedOnly })),
-    viewedIds: account.viewedIds
+    viewedIds
   };
 }
 
