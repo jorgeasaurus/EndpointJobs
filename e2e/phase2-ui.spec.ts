@@ -75,8 +75,6 @@ test("[RESP-01] narrow labeled controls are at least 44px", async ({ page }, inf
       "#job-search-input",
       ".topbar .roadmap-link",
       ".topbar .mcp-docs-link",
-      ".site-footer .api-docs-link",
-      ".site-footer .support-link",
       ".site-footer .footer-link"
     ];
     return selectors.flatMap((selector) => [...document.querySelectorAll(selector)].map((element) => {

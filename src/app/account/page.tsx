@@ -3,7 +3,8 @@ import Link from "next/link";
 
 import { listSavedJobs, type AccountClient } from "@/lib/account/store";
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
-import { SiteFooter, Topbar } from "@/components/job-board/topbar";
+import { SiteFooter } from "@/components/job-board/site-footer";
+import { Topbar } from "@/components/job-board/topbar";
 import feedData from "@/data/jobs.json";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";

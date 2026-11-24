@@ -60,11 +60,11 @@ test("the map fetch uses the same debounced filters as the page", () => {
 });
 
 test("footer links to site pages do not prefetch", () => {
-  const topbar = readFileSync(new URL("../../src/components/job-board/topbar.tsx", import.meta.url), "utf8");
-  const comment = topbar.indexOf("Disable speculative prefetch");
-  const link = topbar.indexOf("href={link.href} prefetch={false}");
+  const footer = readFileSync(new URL("../../src/components/job-board/site-footer.tsx", import.meta.url), "utf8");
+  const comment = footer.indexOf("Disable speculative prefetch");
+  const link = footer.indexOf("href={link.href} prefetch={false}");
 
-  assert.match(topbar, /\{ text: "Job board", href: getBoardPath\(\) \}/);
+  assert.match(footer, /\{ text: "Job board", href: getBoardPath\(\) \}/);
   assert.ok(comment > -1);
   assert.ok(link > comment);
 });

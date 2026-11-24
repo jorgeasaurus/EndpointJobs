@@ -4,7 +4,8 @@ import Link from "next/link";
 
 import { LandingSignIn } from "@/components/auth/landing-sign-in";
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
-import { SiteFooter, Topbar } from "@/components/job-board/topbar";
+import { SiteFooter } from "@/components/job-board/site-footer";
+import { Topbar } from "@/components/job-board/topbar";
 import { getActiveSourceFeed } from "@/lib/board-page";
 import { getEndpointToolLabel } from "@/lib/job-taxonomy";
 import { formatRelativePosted, formatRelativeUpdated, formatUpdatedAt } from "@/lib/jobs";

@@ -41,7 +41,7 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     assertIncludes(sources.siteMetadata, "Endpoint Engineering Jobs", "search-focused title");
     assertNotIncludes(sources.siteMetadata, "specialtySearchLinks", "removed specialty links");
     assertNotIncludes(
-      sources.topbar,
+      sources.siteFooter,
       "Popular endpoint job searches",
       "removed footer search navigation"
     );
@@ -55,8 +55,8 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
       "page > Math.max(totalPages, 1)",
       "empty feed keeps page 1 valid"
     );
-    assertIncludes(sources.topbar, "getJobsDirectoryPath()", "directory discovery link");
-    assertIncludes(sources.topbar, "https://buymeacoffee.com/jorgeasaurus", "support link");
+    assertIncludes(sources.siteFooter, "getJobsDirectoryPath()", "directory discovery link");
+    assertIncludes(sources.siteFooter, "https://buymeacoffee.com/jorgeasaurus", "support link");
     assertTruthy(existsSync("public/og-image.png"), "missing public/og-image.png");
   });
 

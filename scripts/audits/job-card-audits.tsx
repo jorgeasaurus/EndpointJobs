@@ -34,10 +34,10 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
     assertIncludes(sources.topbar, "Endpoint Jobs home");
     assertIncludes(sources.topbar, "Endpoint Jobs");
     assertIncludes(
-      sources.topbar,
+      sources.siteFooter,
       "https://github.com/jorgeasaurus/EndpointJobs/blob/main/powershell/EndpointJobs/README.md"
     );
-    assertIncludes(sources.topbar, "Open PowerShell module documentation on GitHub");
+    assertIncludes(sources.siteFooter, "Open PowerShell module documentation on GitHub");
   });
 
   await run("FEAT-003", "Refresh timestamps format valid and invalid feed dates", () => {

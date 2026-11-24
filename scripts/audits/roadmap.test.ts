@@ -190,9 +190,8 @@ test("roadmap page renders skills, source links, and progress", async () => {
   assert.doesNotMatch(html, /href="#intune"[^>]*target="_blank"/);
 
   const page = readFileSync(new URL("../../src/app/roadmap/page.tsx", import.meta.url), "utf8");
-  const topbar = readFileSync(new URL("../../src/components/job-board/topbar.tsx", import.meta.url), "utf8");
-  const header = topbar.slice(topbar.indexOf("export function Topbar"), topbar.indexOf("type FooterLink"));
-  const footer = topbar.slice(topbar.indexOf("type FooterLink"));
+  const header = readFileSync(new URL("../../src/components/job-board/topbar.tsx", import.meta.url), "utf8");
+  const footer = readFileSync(new URL("../../src/components/job-board/site-footer.tsx", import.meta.url), "utf8");
   assert.match(page, /roadmapPageTitle/);
   assert.match(page, /roadmapPageDescription/);
   assert.match(page, /socialTitle/);
