@@ -8,12 +8,9 @@ import ts from "typescript";
 
 import { initialFilterState } from "../../src/components/job-board/filter-model";
 import { getLandingJsonLd, serializeJsonLd } from "../../src/app/structured-data";
-import {
-  hasShownSalary,
-  queryBoardPage,
-} from "../../src/lib/board-page";
+import { queryBoardPage } from "../../src/lib/board-page";
 import { selectLanding } from "../../src/lib/landing";
-import { hasListedSalary } from "../../src/lib/shown-salary";
+import { hasListedSalary, hasShownSalary } from "../../src/lib/shown-salary";
 import { boardHomeRedirectKeys, filterSearchParamKeys } from "../../src/lib/board-search-params";
 import { legacyHomeBoardRedirect } from "../../src/lib/legacy-board-url";
 import { getJobWorkplace } from "../../src/lib/workplace";

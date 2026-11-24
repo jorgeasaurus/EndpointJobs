@@ -8,8 +8,6 @@ import { isActiveJob } from "@/lib/jobs";
 import { withResolvedWorkplace } from "@/lib/workplace";
 import type { Job, JobsFeed } from "@/types/job";
 
-export { hasShownSalary } from "@/lib/shown-salary";
-
 export const boardPageSize = 20;
 
 const boardCacheControl = "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400";
