@@ -14,7 +14,7 @@ export function assertPrerenderedHomeHtml(html: Buffer) {
     html.byteLength < homeHtmlByteBudget,
     `prerendered / is ${html.byteLength} bytes`
   );
-  assert.match(html.toString("utf8"), /Remote\/hybrid/);
+  assert.match(html.toString("utf8"), /<h1 id="landing-title">/);
 }
 
 const isDirectRun = process.argv[1] !== undefined
