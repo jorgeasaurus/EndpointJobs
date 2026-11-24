@@ -8,8 +8,7 @@ const origin = "http://harness.test";
 const signedInAccount = new URL("../../../scripts/audits/fixtures/stubs/signed-in-account.ts", import.meta.url);
 const harness = bundleHarness(new URL("../../../scripts/audits/fixtures/account-board-harness.tsx", import.meta.url), {
   "@/components/auth/sign-in-session": signedInAccount,
-  "@/lib/supabase/client": signedInAccount,
-  "@/lib/supabase/env": signedInAccount
+  "@/lib/supabase/client": signedInAccount
 });
 
 test("a filter change saves the preferences once and does not reload the account", { timeout: 60_000 }, async () => {

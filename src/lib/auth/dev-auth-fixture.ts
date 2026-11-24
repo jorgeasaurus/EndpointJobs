@@ -1,22 +1,9 @@
+import type { DevAccountFixture, SignInSession } from "./session";
+
 const fixtureEmail = "jorgesuarez@gmail.com";
 
-export type DevAccountFixture = {
-  savedIds: string[];
-  viewedIds: string[];
-  hideViewed: boolean;
-  savedOnly: boolean;
-};
-
-type FixtureSession = {
-  configured: boolean;
-  email: string | null;
-  userId?: string | null;
-  /** The signed-in fixture's account data, read from the `e2e-*` params. */
-  fixtureAccount?: DevAccountFixture;
-};
-
 /** Dev-only session stand-in for screenshots and harnesses. Production passes enabled=false. */
-export function devAuthFixture(search: string, enabled: boolean): FixtureSession | null {
+export function devAuthFixture(search: string, enabled: boolean): SignInSession | null {
   if (!enabled) return null;
   const params = new URLSearchParams(search);
   const mode = params.get("e2e-auth");

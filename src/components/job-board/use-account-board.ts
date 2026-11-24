@@ -16,19 +16,17 @@ import {
   type SavedPreferences
 } from "@/lib/account/preferences";
 import { recordJobView, savePreferences, setJobSaved } from "@/lib/account/requests";
-import type { DevAccountFixture } from "@/lib/auth/dev-auth-fixture";
+import type { DevAccountFixture } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/client";
-import { isSupabaseConfigured } from "@/lib/supabase/env";
-import { useSignInSession, type SignInSession } from "@/components/auth/sign-in-session";
+import { useSignInSession } from "@/components/auth/sign-in-session";
 
 import type { FilterAction, FilterState } from "./filter-model";
 
 const saveDelayMs = 400;
 
-/** Where the board's account data comes from. */
+/** Where the signed-in user's account data comes from. */
 type AccountSource =
-  | { kind: "signed-out" }
-  | { kind: "unconfigured" }
+  | { kind: "none" }
   | { kind: "fixture"; userId: string; fixture: DevAccountFixture }
   | { kind: "account"; userId: string };
 
@@ -48,14 +46,19 @@ const emptyAccountState: AccountState = {
 
 /** Changes exactly when the account data must start over. */
 function accountSourceKey(source: AccountSource) {
-  return "userId" in source ? `${source.kind}:${source.userId}` : source.kind;
+  return source.kind === "none" ? source.kind : `${source.kind}:${source.userId}`;
 }
 
-function resolveAccountSource({ userId, fixtureAccount }: SignInSession): AccountSource {
-  if (!userId) return { kind: "signed-out" };
-  if (fixtureAccount) return { kind: "fixture", userId, fixture: fixtureAccount };
-  if (!isSupabaseConfigured()) return { kind: "unconfigured" };
-  return { kind: "account", userId };
+// The session store sets a userId without a fixture only after Supabase reports
+// one, so an "account" source always has Supabase configured.
+function useAccountSource() {
+  const session = useSignInSession();
+  return useMemo((): AccountSource => {
+    const { userId, fixtureAccount } = session;
+    if (!userId) return { kind: "none" };
+    if (fixtureAccount) return { kind: "fixture", userId, fixture: fixtureAccount };
+    return { kind: "account", userId };
+  }, [session]);
 }
 
 function initialAccountState(source: AccountSource): AccountState {
@@ -83,9 +86,7 @@ export function useAccountBoard(
   filters: FilterState,
   dispatch: (action: FilterAction) => void
 ) {
-  const session = useSignInSession();
-  const { userId } = session;
-  const source = useMemo(() => resolveAccountSource(session), [session]);
+  const source = useAccountSource();
   const initialState = useMemo(() => initialAccountState(source), [source]);
   const [account, updateAccount, putAccount] = useKeyedState(accountSourceKey(source), initialState);
   const [savedToken, setSavedToken] = useState("0");
@@ -165,7 +166,7 @@ export function useAccountBoard(
   }, [filters, hideViewed, savedOnly, source.kind]);
 
   async function toggleSaved(job: BoardListing) {
-    if (!userId) return;
+    if (source.kind === "none") return;
     const wasSaved = account.savedIds.has(job.id);
     const flip = (state: AccountState) => ({ ...state, savedIds: toggleId(state.savedIds, job.id) });
     updateAccount(flip);
@@ -182,7 +183,7 @@ export function useAccountBoard(
     savedIds: account.savedIds,
     savedOnly,
     savedToken,
-    signedIn: Boolean(userId),
+    signedIn: source.kind !== "none",
     toggleHideViewed: () => updateAccount((state) => ({ ...state, hideViewed: !state.hideViewed })),
     toggleSaved,
     toggleSavedOnly: () => updateAccount((state) => ({ ...state, savedOnly: !state.savedOnly })),
@@ -191,40 +192,44 @@ export function useAccountBoard(
   };
 }
 
+/** Records the view for a real account; the fixture and signed-out visitors record nothing. */
 export function useRecordJobView(jobId: string) {
-  const { userId } = useSignInSession();
+  const source = useAccountSource();
+  const accountKey = source.kind === "account" ? accountSourceKey(source) : null;
 
   useEffect(() => {
-    if (!userId || !isSupabaseConfigured()) return;
-    void recordJobView(jobId);
-  }, [jobId, userId]);
+    if (accountKey) void recordJobView(jobId);
+  }, [accountKey, jobId]);
 }
 
 export function useSavedJob(jobId: string) {
-  const { userId } = useSignInSession();
-  const accountUserId = userId && isSupabaseConfigured() ? userId : null;
-  const key = accountUserId ? `${accountUserId}:${jobId}` : "signed-out";
-  const [saved, updateSaved, putSaved] = useKeyedState(key, false);
+  const source = useAccountSource();
+  const key = `${accountSourceKey(source)}:${jobId}`;
+  const [saved, updateSaved, putSaved] = useKeyedState(
+    key,
+    source.kind === "fixture" && source.fixture.savedIds.includes(jobId)
+  );
 
   useEffect(() => {
-    if (!accountUserId) return;
+    if (source.kind !== "account") return undefined;
     let cancel = false;
-    void listSavedIds(browserAccountClient(), accountUserId).then((ids) => {
+    void listSavedIds(browserAccountClient(), source.userId).then((ids) => {
       if (!cancel) putSaved(key, ids.includes(jobId));
     });
     return () => {
       cancel = true;
     };
-  }, [accountUserId, jobId, key, putSaved]);
+  }, [jobId, key, putSaved, source]);
 
   async function toggle() {
-    if (!accountUserId) return;
+    if (source.kind === "none") return;
     const next = !saved;
     updateSaved(() => next);
+    if (source.kind === "fixture") return;
     if (!(await setJobSaved(jobId, next))) updateSaved(() => !next);
   }
 
-  return { saved, signedIn: Boolean(userId), toggle };
+  return { saved, signedIn: source.kind !== "none", toggle };
 }
 
 function browserAccountClient() {

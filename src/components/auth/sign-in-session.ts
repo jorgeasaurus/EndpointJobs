@@ -1,16 +1,9 @@
 import { useSyncExternalStore } from "react";
 
-import { devAuthFixture, type DevAccountFixture } from "@/lib/auth/dev-auth-fixture";
+import { devAuthFixture } from "@/lib/auth/dev-auth-fixture";
+import type { SignInSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
-
-export type SignInSession = {
-  configured: boolean;
-  email: string | null;
-  userId?: string | null;
-  /** Set only by the dev auth fixture; the board then uses it instead of Supabase. */
-  fixtureAccount?: DevAccountFixture;
-};
 
 export function canShowSignInOffer(session: SignInSession) {
   return session.configured && session.email === null;

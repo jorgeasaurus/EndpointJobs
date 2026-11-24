@@ -1,4 +1,4 @@
-import type { SignInSession } from "@/components/auth/sign-in-session";
+import type { SignInSession } from "@/lib/auth/session";
 
 /** Stands in for `@/components/auth/sign-in-session`: Supabase configured, nobody signed in. */
 export function canShowSignInOffer(session: SignInSession) {
