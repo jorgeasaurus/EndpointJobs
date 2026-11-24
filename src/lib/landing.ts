@@ -1,4 +1,4 @@
-import { initialFilterState } from "@/components/job-board/filter-model";
+import { initialFilterState, withInitialTools } from "@/components/job-board/filter-model";
 import { selectVisibleJobs } from "@/lib/board-page";
 import { managementTools } from "@/lib/job-taxonomy";
 import { hasShownSalary } from "@/lib/shown-salary";
@@ -21,10 +21,7 @@ export function selectLanding(jobs: readonly Job[]): Landing {
   // Management platforms by open roles, most first; ties keep taxonomy order.
   // Each count is the `/[tool]` page's own selection, so the number matches the page it links to.
   const ranking = managementTools
-    .map((tool) => ({
-      tool,
-      count: selectVisibleJobs(jobs, { ...initialFilterState, selectedTools: [tool] }).visibleJobs.length
-    }))
+    .map((tool) => ({ tool, count: selectVisibleJobs(jobs, withInitialTools([tool])).visibleJobs.length }))
     .sort((a, b) => b.count - a.count);
   const rankedTools = ranking.map(({ tool }) => tool);
   const paid = visibleJobs

@@ -1,55 +1,57 @@
 import { normalizeTokens } from "@/lib/text";
 
-// `role: "management"` marks the device-management platforms that identify an
-// endpoint role on their own. Identity, scripting, and security tools are
-// "adjacent": they also show up in roles that are not endpoint work.
+type EndpointToolCategory = "management" | "scripting" | "identity" | "collaboration" | "security";
+
 export const endpointToolDefinitions = [
-  { tool: "Jamf", aliases: ["jamf", "jamf pro", "jamf school"], strong: true, role: "management" },
+  { tool: "Jamf", aliases: ["jamf", "jamf pro", "jamf school"], category: "management" },
   {
     tool: "Intune",
     aliases: ["intune", "endpoint manager", "microsoft endpoint manager"],
-    strong: true,
-    role: "management"
+    category: "management"
   },
   {
     tool: "SCCM",
     aliases: ["sccm", "mecm", "configuration manager", "configmgr"],
-    strong: true,
-    role: "management"
+    category: "management"
   },
   {
     tool: "Fleet MDM",
     aliases: ["fleet mdm", "fleetdm", "fleet device management"],
-    strong: true,
-    role: "management"
+    category: "management"
   },
-  { tool: "Kandji", aliases: ["kandji", "kanji", "iru"], strong: true, role: "management" },
-  { tool: "NinjaOne", aliases: ["ninjaone", "ninja one"], strong: true, role: "management" },
+  { tool: "Kandji", aliases: ["kandji", "kanji", "iru"], category: "management" },
+  { tool: "NinjaOne", aliases: ["ninjaone", "ninja one"], category: "management" },
   {
     tool: "Workspace ONE",
     aliases: ["workspace one", "workspaceone", "airwatch"],
-    strong: true,
-    role: "management"
+    category: "management"
   },
-  { tool: "Tanium", aliases: ["tanium"], strong: true, role: "management" },
-  { tool: "Okta", aliases: ["okta"], strong: false, role: "adjacent" },
+  { tool: "Tanium", aliases: ["tanium"], category: "management" },
+  { tool: "Okta", aliases: ["okta"], category: "identity" },
   {
     tool: "Google Workspace",
     aliases: ["google workspace", "g suite", "gsuite"],
-    strong: false,
-    role: "adjacent"
+    category: "collaboration"
   },
-  { tool: "Entra ID", aliases: ["entra id", "entra", "azure ad"], strong: false, role: "adjacent" },
-  { tool: "Autopilot", aliases: ["autopilot", "windows autopilot"], strong: true, role: "management" },
-  { tool: "PowerShell", aliases: ["powershell", "power shell", "pwsh"], strong: true, role: "adjacent" },
-  { tool: "Defender", aliases: ["defender", "microsoft defender", "mde"], strong: false, role: "adjacent" }
-] as const;
+  { tool: "Entra ID", aliases: ["entra id", "entra", "azure ad"], category: "identity" },
+  { tool: "Autopilot", aliases: ["autopilot", "windows autopilot"], category: "management" },
+  { tool: "PowerShell", aliases: ["powershell", "power shell", "pwsh"], category: "scripting" },
+  { tool: "Defender", aliases: ["defender", "microsoft defender", "mde"], category: "security" }
+] as const satisfies readonly { tool: string; aliases: readonly string[]; category: EndpointToolCategory }[];
 
 export type EndpointTool = (typeof endpointToolDefinitions)[number]["tool"];
 
-/** The management platforms, in taxonomy order. */
+/**
+ * Management platforms and PowerShell mark a posting as endpoint work on their
+ * own. Identity, collaboration, and security tools also show up in roles that are not.
+ */
+export function identifiesEndpointRole({ category }: { category: EndpointToolCategory }) {
+  return category === "management" || category === "scripting";
+}
+
+/** The device-management platforms, in taxonomy order. */
 export const managementTools: readonly EndpointTool[] = endpointToolDefinitions
-  .filter(({ role }) => role === "management")
+  .filter(({ category }) => category === "management")
   .map(({ tool }) => tool);
 
 export const endpointToolNameMap = Object.fromEntries(
