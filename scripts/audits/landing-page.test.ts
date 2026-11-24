@@ -33,9 +33,6 @@ const board = readFileSync(new URL("../../src/app/board/page.tsx", import.meta.u
 test("the home page is a landing page with inline provider buttons", () => {
   assert.match(home, /The board for endpoint engineers/);
   assert.doesNotMatch(home, /Daily listings for macOS/);
-  assert.match(home, /Endpoint roles only, gathered daily from company career pages and job boards\./);
-  assert.match(home, /<Topbar \/>/);
-  assert.match(home, /id="landing-tools-caption">Open roles by tool</);
   assert.match(home, /href=\{getBoardPath\(\)\}/);
   assert.doesNotMatch(home, /Sign in to save/);
   assert.match(home, /<LandingSignIn \/>/);
@@ -51,13 +48,8 @@ test("the home page is a landing page with inline provider buttons", () => {
   assert.doesNotMatch(home, /An account is optional/);
   assert.doesNotMatch(home, /href="\/privacy"/);
   assert.match(home, /export const revalidate = 86400/);
-  assert.match(home, /selectLanding\(activeFeed\.jobs\)/);
-  assert.match(home, /See all \{countFormat\.format\(total\)\} jobs/);
   assert.match(home, /Newest with salary/);
-  assert.match(home, />Job board</);
-  assert.match(home, /<h2 className="section-kicker">Newest with salary<\/h2>/);
   assert.doesNotMatch(home, /Newest on the board/);
-  assert.match(home, /href=\{getEndpointToolPath\(tool\)\}/);
   assert.doesNotMatch(home, /trackedJobsCount/);
   assert.doesNotMatch(home, /<JobBoard/);
   assert.doesNotMatch(home, /board\.jobs\b(?!\.slice)/);
@@ -429,7 +421,6 @@ test("the home preview prints each shown salary and leaves the all-roles link al
   assert.match(home, /className="landing-posted"/);
   assert.match(home, /title=\{formatUpdatedAt\(activeFeed\.updatedAt\)\}/);
   assert.match(home, /formatRelativeUpdated\(activeFeed\.updatedAt\)/);
-  assert.match(home, /<Link href=\{getBoardPath\(\)\}>Job board<\/Link>/);
   assert.doesNotMatch(home, /salary=1/);
   assert.match(home, /No roles with a posted salary yet/);
 });

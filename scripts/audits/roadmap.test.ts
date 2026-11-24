@@ -26,7 +26,8 @@ import {
   toggleSkillId
 } from "../../src/lib/roadmap-progress";
 import sitemap from "../../src/app/sitemap";
-import { getRoadmapPath, siteUrl } from "../../src/app/site-metadata";
+import { getApiDocsPath, getRoadmapPath, siteUrl } from "../../src/app/site-metadata";
+import { SiteFooter } from "../../src/components/job-board/site-footer";
 
 const sourceHosts = new Set([
   "learn.microsoft.com",
@@ -191,7 +192,7 @@ test("roadmap page renders skills, source links, and progress", async () => {
 
   const page = readFileSync(new URL("../../src/app/roadmap/page.tsx", import.meta.url), "utf8");
   const header = readFileSync(new URL("../../src/components/job-board/topbar.tsx", import.meta.url), "utf8");
-  const footer = readFileSync(new URL("../../src/components/job-board/site-footer.tsx", import.meta.url), "utf8");
+  const footer = renderToStaticMarkup(createElement(SiteFooter, { updatedAt: "2026-10-27T00:00:00.000Z" }));
   assert.match(page, /roadmapPageTitle/);
   assert.match(page, /roadmapPageDescription/);
   assert.match(page, /socialTitle/);
@@ -204,15 +205,14 @@ test("roadmap page renders skills, source links, and progress", async () => {
   assert.doesNotMatch(header, /getApiDocsPath\(\)/);
   assert.doesNotMatch(header, /buymeacoffee/);
   assert.doesNotMatch(header, /report-or-request/);
-  assert.match(footer, /getApiDocsPath\(\)/);
-  assert.match(footer, /buymeacoffee/);
+  assert.match(footer, new RegExp(`href="${getApiDocsPath()}"`));
+  assert.match(footer, /href="https:\/\/buymeacoffee\.com\/jorgeasaurus"/);
   assert.match(footer, /report-or-request/);
-  assert.equal(footer.split("getRoadmapPath()").length - 1, 1);
-  assert.match(footer, /id: "browse",\n\s+label: "Browse"/);
-  assert.match(footer, /id: "project",\n\s+label: "Project"/);
-  assert.match(footer, /const labelId = `footer-group-\$\{group\.id\}`;/);
-  assert.match(footer, /id=\{labelId\}/);
-  assert.match(footer, /aria-labelledby=\{labelId\}/);
+  assert.equal(footer.split(`href="${getRoadmapPath()}"`).length - 1, 1);
+  for (const [id, label] of [["browse", "Browse"], ["project", "Project"]]) {
+    assert.match(footer, new RegExp(`id="footer-group-${id}">${label}<`));
+    assert.match(footer, new RegExp(`<ul class="footer-link-list" aria-labelledby="footer-group-${id}">`));
+  }
   assert.equal(getRoadmapPath(), "/roadmap");
   assert.ok((await sitemap()).some((entry) => entry.url === new URL("/roadmap", siteUrl).toString()));
 });
