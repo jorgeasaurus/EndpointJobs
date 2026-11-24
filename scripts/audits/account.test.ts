@@ -23,6 +23,8 @@ import {
   type AccountClient
 } from "../../src/lib/account/store";
 
+import { importWithStubs } from "./harness-bundle";
+
 test("saved board filters restore only on a clean board URL", () => {
   const filters = { ...initialFilterState, query: "Intune", salaryOnly: true };
   const stored = encodePreferences({ filters, hideViewed: true, savedOnly: false });
@@ -168,12 +170,43 @@ function fakeClient(calls: unknown[], seed: { preferences: unknown; saved: unkno
   };
 }
 
-test("the preference and view routes take the user from the session", () => {
-  const preferences = readFileSync(new URL("../../src/app/api/account/preferences/route.ts", import.meta.url), "utf8");
-  const views = readFileSync(new URL("../../src/app/api/account/views/route.ts", import.meta.url), "utf8");
-  assert.match(preferences, /requireAccountUser\(\)/);
-  assert.match(preferences, /preferenceRow\(session\.user\.id, preferences,/);
-  assert.match(views, /requireAccountUser\(\)/);
-  // record_job_view takes the user from auth.uid(), so the request names only the job.
-  assert.match(views, /session\.supabase\.rpc\("record_job_view", \{ p_job_id: jobId \}\)/);
+const routes = importWithStubs<typeof import("./fixtures/account-routes")>(
+  new URL("./fixtures/account-routes.ts", import.meta.url),
+  { "@/lib/account/require-user": new URL("./fixtures/stubs/account-route-session.ts", import.meta.url) }
+);
+
+function jsonRequest(method: "POST" | "PUT", body: unknown) {
+  return new Request("http://board.test/api/account", { method, body: JSON.stringify(body) });
+}
+
+test("the preference and view routes write for the session user, whatever the body names", async () => {
+  const { postView, putPreferences, writes } = await routes;
+  writes.length = 0;
+  const saved = await putPreferences(jsonRequest("PUT", { user_id: "user-2", q: "Intune", hideViewed: true }));
+  const viewed = await postView(jsonRequest("POST", { userId: "user-2", jobId: "job-3" }));
+
+  assert.equal(saved.status, 200);
+  assert.equal(viewed.status, 200);
+  const [preferences, view] = writes;
+  assert.equal(preferences?.table, "user_preferences");
+  assert.equal(preferences?.values.user_id, "user-1");
+  const stored = decodePreferences(preferences?.values.filters);
+  assert.equal(stored?.filters.query, "Intune");
+  assert.equal(stored?.hideViewed, true);
+  // record_job_view takes the user from auth.uid(), so the call names only the job.
+  assert.deepEqual(view, { rpc: "record_job_view", values: { p_job_id: "job-3" } });
+});
+
+test("the views route needs a job id, and both write routes need a session", async () => {
+  const { postView, putPreferences, setSignedIn, writes } = await routes;
+  writes.length = 0;
+  assert.equal((await postView(jsonRequest("POST", {}))).status, 400);
+  setSignedIn(false);
+  try {
+    assert.equal((await putPreferences(jsonRequest("PUT", {}))).status, 401);
+    assert.equal((await postView(jsonRequest("POST", { jobId: "job-3" }))).status, 401);
+  } finally {
+    setSignedIn(true);
+  }
+  assert.deepEqual(writes, []);
 });

@@ -13,14 +13,24 @@ export const nextLinkStub = new URL("./fixtures/stubs/next-link.tsx", import.met
  * Bundles a browser harness into one script for Chrome. `@/` resolves to `src/`.
  * `stubs` maps a module id (`next/link`, `@/lib/supabase/client`) to the file that replaces it.
  */
-export async function bundleHarness(entry: URL, stubs: Record<string, URL> = {}) {
+export function bundleHarness(entry: URL, stubs: Record<string, URL> = {}) {
+  return bundle(entry, stubs, "browser");
+}
+
+/** Bundles `entry` for Node with the same stubs and imports it, for server code such as route handlers. */
+export async function importWithStubs<Module>(entry: URL, stubs: Record<string, URL>): Promise<Module> {
+  const code = await bundle(entry, stubs, "node");
+  return import(`data:text/javascript;base64,${Buffer.from(code).toString("base64")}`);
+}
+
+async function bundle(entry: URL, stubs: Record<string, URL>, platform: "browser" | "node") {
   const result = await esbuild.build({
     absWorkingDir: repoRoot,
     entryPoints: [fileURLToPath(entry)],
     bundle: true,
     write: false,
-    format: "iife",
-    platform: "browser",
+    format: platform === "browser" ? "iife" : "esm",
+    platform,
     target: "es2022",
     jsx: "automatic",
     plugins: [
