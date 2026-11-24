@@ -89,7 +89,6 @@ const sourcePaths = {
   searchConfig: "scripts/job-refresh/search-config.ts",
   seoAudit: "scripts/audits/seo-audits.ts",
   sheet: "docs/feature-user-stories.csv",
-  siteFooter: "src/components/job-board/site-footer.tsx",
   siteMetadata: "src/app/site-metadata.ts",
   sitemap: "src/app/sitemap.ts",
   toolPage: "src/app/[tool]/page.tsx",
