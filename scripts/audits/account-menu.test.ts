@@ -203,7 +203,7 @@ async function assertDismiss(page: Page, trigger: ReturnType<Page["getByRole"]>)
 
 function bundle() {
   return bundleHarness(new URL("./fixtures/account-menu-harness.tsx", import.meta.url), {
-    stubs: { "next/link": nextLinkStub }
+    "next/link": nextLinkStub
   });
 }
 

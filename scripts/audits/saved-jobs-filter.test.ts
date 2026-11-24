@@ -6,7 +6,7 @@ import { getEmptyResultsMessage } from "../../src/components/job-board/empty-res
 import { initialFilterState } from "../../src/components/job-board/filter-model";
 import { filterStateFromSearchParams } from "../../src/components/job-board/filter-url";
 import { boardResultsRequest } from "../../src/components/job-board/use-board-results";
-import { devAccountFixture } from "../../src/lib/auth/dev-auth-fixture";
+import { devAuthFixture } from "../../src/lib/auth/dev-auth-fixture";
 import { queryBoardMap, queryBoardPage } from "../../src/lib/board-page";
 import {
   decodePreferences,
@@ -130,15 +130,15 @@ test("saved jobs only is a private preference and a shared URL cannot turn it on
   assert.equal(off.params.get("page"), "2");
   assert.equal(off.params.has("saved"), false);
 
-  assert.equal(devAccountFixture("?e2e-auth=in&savedOnly=1&saved=1", true)?.savedOnly, false);
-  assert.deepEqual(devAccountFixture("?e2e-auth=in&e2e-saved=job-a&e2e-saved-only=1&e2e-viewed=job-a&e2e-hide-viewed=1", true), {
+  assert.equal(devAuthFixture("?e2e-auth=in&savedOnly=1&saved=1", true)?.fixtureAccount?.savedOnly, false);
+  assert.deepEqual(devAuthFixture("?e2e-auth=in&e2e-saved=job-a&e2e-saved-only=1&e2e-viewed=job-a&e2e-hide-viewed=1", true)?.fixtureAccount, {
     savedIds: ["job-a"],
     viewedIds: ["job-a"],
     hideViewed: true,
     savedOnly: true
   });
-  assert.equal(devAccountFixture("?e2e-auth=in&e2e-saved-only=1", false), null);
-  assert.equal(devAccountFixture("?savedOnly=1", true), null);
+  assert.equal(devAuthFixture("?e2e-auth=in&e2e-saved-only=1", false), null);
+  assert.equal(devAuthFixture("?savedOnly=1", true), null);
 });
 
 test("saved board access uses the caller session and the dev fixture never bypasses production", () => {

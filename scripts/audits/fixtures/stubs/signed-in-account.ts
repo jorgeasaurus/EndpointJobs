@@ -27,10 +27,9 @@ export function createClient() {
     from: (table: string) => ({
       select: () => {
         accountReads.push(table);
-        return query(Promise.resolve({ error: null, data: rows[table] ?? [] }));
+        return query(Promise.resolve({ error: null, data: rows[table] }));
       }
-    }),
-    rpc: async () => ({ error: null })
+    })
   };
 }
 
@@ -38,6 +37,9 @@ export function isSupabaseConfigured() {
   return true;
 }
 
+// One object, like the real store's snapshot, so the session keeps its identity across renders.
+const session = { configured: true, email: "user-1@example.com", userId: "user-1" };
+
 export function useSignInSession() {
-  return { configured: true, email: "user-1@example.com", userId: "user-1" };
+  return session;
 }

@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client";
 import { useReducer } from "react";
 
 import { filterReducer, initialFilterState } from "@/components/job-board/filter-model";
-import { useAccountBoard } from "@/components/job-board/use-account-board";
+import { useAccountBoard, useRecordJobView } from "@/components/job-board/use-account-board";
 
 import { accountReads } from "./stubs/signed-in-account";
 
@@ -14,6 +14,7 @@ Object.assign(window, { accountReads });
 function Harness() {
   const [filters, dispatch] = useReducer(filterReducer, initialFilterState);
   const account = useAccountBoard(filters, dispatch);
+  useRecordJobView("job-3");
 
   return (
     <>

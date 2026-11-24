@@ -1,3 +1,4 @@
+import { readJobId } from "@/lib/account/read-job-id";
 import { savedJobSnapshot } from "@/lib/account/records";
 import { requireAccountUser } from "@/lib/account/require-user";
 import { findActiveJob } from "@/lib/jobs-api";
@@ -7,9 +8,7 @@ export async function POST(request: Request) {
   const session = await requireAccountUser();
   if (!session) return Response.json({ error: "Sign in required" }, { status: 401 });
 
-  const body = await request.json().catch(() => null) as { jobId?: unknown } | null;
-  const jobId = typeof body?.jobId === "string" ? body.jobId : "";
-  const job = findActiveJob(await getPublishedJobsFeed(), jobId);
+  const job = findActiveJob(await getPublishedJobsFeed(), await readJobId(request));
   if (!job) return Response.json({ error: "Job not found" }, { status: 404 });
 
   const { error } = await session.supabase.from("saved_jobs").upsert({

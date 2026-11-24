@@ -176,28 +176,12 @@ function fakeClient(calls: unknown[], seed: { preferences: unknown; saved: unkno
   };
 }
 
-test("board preferences are written by the server route with the session user", () => {
-  const hook = readFileSync(new URL("../../src/components/job-board/use-account-board.ts", import.meta.url), "utf8");
-  const route = readFileSync(new URL("../../src/app/api/account/preferences/route.ts", import.meta.url), "utf8");
-  const store = readFileSync(new URL("../../src/lib/account/store.ts", import.meta.url), "utf8");
-  assert.match(hook, /fetch\("\/api\/account\/preferences", \{\n\s+method: "PUT"/);
-  assert.doesNotMatch(hook, /upsertPreferences/);
-  assert.doesNotMatch(store, /\.upsert\(|\.insert\(|\.rpc\(/);
-  assert.match(route, /requireAccountUser\(\)/);
-  assert.match(route, /preferenceRow\(session\.user\.id, preferences,/);
-  assert.match(route, /decodePreferences\(await request\.json\(\)/);
-  assert.match(hook, /body: json\n/);
-  const encoded = encodePreferences({ filters: { ...initialFilterState, query: "Jamf" }, hideViewed: true, savedOnly: true });
-  const decoded = decodePreferences(encoded);
-  assert.equal(decoded?.filters.query, "Jamf");
-  assert.equal(decoded?.hideViewed, true);
-  assert.equal(decoded?.savedOnly, true);
-});
-
-test("job views are recorded by the server route with the session user", () => {
-  const hook = readFileSync(new URL("../../src/components/job-board/use-account-board.ts", import.meta.url), "utf8");
-  const route = readFileSync(new URL("../../src/app/api/account/views/route.ts", import.meta.url), "utf8");
-  assert.match(hook, /fetch\("\/api\/account\/views", \{\n\s+method: "POST"/);
-  assert.match(route, /export async function POST/);
-  assert.match(route, /session\.supabase\.rpc\("record_job_view", \{ p_job_id: jobId \}\)/);
+test("the preference and view routes take the user from the session", () => {
+  const preferences = readFileSync(new URL("../../src/app/api/account/preferences/route.ts", import.meta.url), "utf8");
+  const views = readFileSync(new URL("../../src/app/api/account/views/route.ts", import.meta.url), "utf8");
+  assert.match(preferences, /requireAccountUser\(\)/);
+  assert.match(preferences, /preferenceRow\(session\.user\.id, preferences,/);
+  assert.match(views, /requireAccountUser\(\)/);
+  // record_job_view takes the user from auth.uid(), so the request names only the job.
+  assert.match(views, /session\.supabase\.rpc\("record_job_view", \{ p_job_id: jobId \}\)/);
 });

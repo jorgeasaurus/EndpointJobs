@@ -79,10 +79,8 @@ test("keyboard activation of a provider keeps the dialog and its error open", as
 
 test("opening the sign-in dialog focuses Continue with Google after the provider remount", { timeout: 60_000 }, async () => {
   const js = await bundleHarness(new URL("./fixtures/sign-in-dialog-harness.tsx", import.meta.url), {
-    stubs: {
-      "next/link": nextLinkStub,
-      "@/components/auth/sign-in-session": new URL("./fixtures/stubs/signed-out-session.ts", import.meta.url)
-    }
+    "next/link": nextLinkStub,
+    "@/components/auth/sign-in-session": new URL("./fixtures/stubs/signed-out-session.ts", import.meta.url)
   });
   const css = readFileSync(new URL("../../src/app/auth-menu.css", import.meta.url), "utf8");
   const browser = await chromium.launch({

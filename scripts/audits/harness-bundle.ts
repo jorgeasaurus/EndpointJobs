@@ -9,14 +9,11 @@ const srcRoot = fileURLToPath(new URL("../../src/", import.meta.url));
 /** A plain-anchor `next/link`, for harnesses that render links outside Next. */
 export const nextLinkStub = new URL("./fixtures/stubs/next-link.tsx", import.meta.url);
 
-type HarnessOptions = {
-  /** Module id (`next/link`, `@/lib/supabase/client`) to the file that replaces it. */
-  stubs?: Record<string, URL>;
-  define?: Record<string, string>;
-};
-
-/** Bundles a browser harness into one script for Chrome. `@/` resolves to `src/`. */
-export async function bundleHarness(entry: URL, { stubs = {}, define }: HarnessOptions = {}) {
+/**
+ * Bundles a browser harness into one script for Chrome. `@/` resolves to `src/`.
+ * `stubs` maps a module id (`next/link`, `@/lib/supabase/client`) to the file that replaces it.
+ */
+export async function bundleHarness(entry: URL, stubs: Record<string, URL> = {}) {
   const result = await esbuild.build({
     absWorkingDir: repoRoot,
     entryPoints: [fileURLToPath(entry)],
@@ -26,7 +23,6 @@ export async function bundleHarness(entry: URL, { stubs = {}, define }: HarnessO
     platform: "browser",
     target: "es2022",
     jsx: "automatic",
-    define,
     plugins: [
       {
         name: "harness-modules",

@@ -11,7 +11,7 @@ type EqQuery = {
   };
 };
 
-/** Browser reads only; writes go through the `/api/account/*` routes. */
+/** Reads only; account writes go through the `/api/account/*` routes (see `requests.ts`). */
 export type AccountClient = {
   from: (table: string) => {
     select: (columns: string) => EqQuery;
