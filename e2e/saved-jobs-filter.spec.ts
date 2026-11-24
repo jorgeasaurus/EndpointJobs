@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+const artifactDir = process.env.E2E_ARTIFACT_DIR ?? "test-results/artifacts";
+
 const savedJobId = "e2e-platform-chip-fixture";
 
 test("[BOARD-06] signed-out board omits Saved jobs only", async ({ page }) => {
@@ -72,18 +74,18 @@ test("[BOARD-06] saved filter screenshots", async ({ page }, info) => {
   await expect(page.locator(".saved-only-button")).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator("article.job-card")).toHaveCount(1);
   await page.locator(".results-heading").scrollIntoViewIfNeeded();
-  await page.screenshot({ path: "/opt/cursor/artifacts/saved-jobs-filter-signed-in-1280.png" });
+  await page.screenshot({ path: `${artifactDir}/saved-jobs-filter-signed-in-1280.png` });
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator(".results-heading").scrollIntoViewIfNeeded();
   const box = await page.locator(".saved-only-button").boundingBox();
   expect(box?.height).toBeGreaterThanOrEqual(44);
   expect(box?.width).toBeGreaterThanOrEqual(44);
-  await page.screenshot({ path: "/opt/cursor/artifacts/saved-jobs-filter-signed-in-390.png" });
+  await page.screenshot({ path: `${artifactDir}/saved-jobs-filter-signed-in-390.png` });
 
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/board");
   await expect(page.locator(".saved-only-button")).toHaveCount(0);
   await page.locator(".results-heading").scrollIntoViewIfNeeded();
-  await page.screenshot({ path: "/opt/cursor/artifacts/saved-jobs-filter-signed-out-1280.png" });
+  await page.screenshot({ path: `${artifactDir}/saved-jobs-filter-signed-out-1280.png` });
 });
