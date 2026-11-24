@@ -407,7 +407,7 @@ test("the landing preview is the newest roles with a shown salary, capped at the
   assert.deepEqual(shortPreview.map((job) => job.id), ["paid-new"]);
 });
 
-test("the home preview prints each shown salary and leaves the all-roles link alone", () => {
+test("the home preview prints each shown salary and adds no salary filter to its links", () => {
   assert.match(home, /aria-label="Newest roles with salary"/);
   assert.match(home, /getActiveSourceFeed\(/);
   assert.match(home, /formatShownSalary\(job\)/);
