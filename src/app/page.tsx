@@ -1,18 +1,21 @@
 import type { Metadata } from "next";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 import { LandingSignIn } from "@/components/auth/landing-sign-in";
-import { initialFilterState } from "@/components/job-board/filter-model";
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
-import { SiteFooter, Topbar } from "@/components/job-board/topbar";
-import { getActiveSourceFeed, queryBoardPage, selectLandingPreview } from "@/lib/board-page";
+import { SiteFooter } from "@/components/job-board/site-footer";
+import { Topbar } from "@/components/job-board/topbar";
+import { getActiveSourceFeed } from "@/lib/board-page";
+import { getEndpointToolLabel } from "@/lib/job-taxonomy";
 import { formatRelativePosted, formatRelativeUpdated, formatUpdatedAt } from "@/lib/jobs";
+import { selectLanding } from "@/lib/landing";
 import { getPublishedJobsFeed } from "@/lib/published-jobs-feed";
 import { formatRolePlace } from "@/lib/role-place";
 import { formatShownSalary } from "@/lib/shown-salary";
 import { getJobWorkplace } from "@/lib/workplace";
 
-import { getBoardPath, getJobPath } from "./site-metadata";
+import { getBoardPath, getEndpointToolPath, getJobPath } from "./site-metadata";
 import { getLandingJsonLd, serializeJsonLd } from "./structured-data";
 import "./landing.css";
 
@@ -35,56 +38,78 @@ export const metadata: Metadata = {
 
 const countFormat = new Intl.NumberFormat("en-US");
 
+// Tags a preview card can hold before its tool line wraps.
+const previewToolTags = 3;
+
 export default async function Home() {
   const activeFeed = getActiveSourceFeed(await getPublishedJobsFeed());
-  const board = queryBoardPage(activeFeed, initialFilterState, 1);
-  const preview = selectLandingPreview(activeFeed.jobs, initialFilterState).map((job) => ({
+  const { total, preview: previewRoles, toolCounts } = selectLanding(activeFeed.jobs);
+  const preview = previewRoles.map(({ job, managementTools }) => ({
     id: job.id,
     title: job.title,
     company: job.company,
     place: formatRolePlace(job.location),
+    tools: managementTools.slice(0, previewToolTags).map(getEndpointToolLabel),
     workplace: getJobWorkplace(job),
     salary: formatShownSalary(job) ?? "",
     posted: formatRelativePosted(job),
     postedAt: job.postedAt,
     postedTitle: formatUpdatedAt(job.postedAt)
   }));
-  const stats = [
-    { label: "Open roles", value: board.total },
-    { label: "Remote/hybrid", value: board.metrics.remoteJobsCount },
-    { label: "Salary shown", value: board.metrics.salaryJobsCount }
-  ];
 
   return (
     <main className="site-frame">
       <ParallaxBackground />
       <div className="site-content">
-        <Topbar updatedAt={activeFeed.updatedAt} />
+        <Topbar />
 
         <section className="landing-hero" aria-labelledby="landing-title">
           <div className="landing-copy">
             <div className="landing-intro">
               <h1 id="landing-title">The board for endpoint engineers.</h1>
+              <p className="landing-lead">
+                Endpoint roles only, gathered daily from company career pages and job boards.
+                Salary shown whenever the posting lists it.
+              </p>
               <div className="landing-actions">
                 <Link className="landing-jobs-link" href={getBoardPath()}>
-                  See the jobs
+                  See all {countFormat.format(total)} jobs
+                  <ArrowRight aria-hidden="true" size={18} strokeWidth={2.25} />
                 </Link>
               </div>
             </div>
-            <dl className="landing-stats">
-              {stats.map((stat) => (
-                <div key={stat.label}>
-                  <dt>{stat.label}</dt>
-                  <dd>{countFormat.format(stat.value)}</dd>
-                </div>
-              ))}
-            </dl>
+            {toolCounts.length > 0 ? (
+              <div className="landing-tools-block">
+                <p className="landing-tools-caption" id="landing-tools-caption">Open roles by tool</p>
+                <ul className="landing-tools" aria-labelledby="landing-tools-caption">
+                  {toolCounts.map(({ tool, count }) => {
+                    const label = getEndpointToolLabel(tool);
+                    const formatted = countFormat.format(count);
+
+                    return (
+                      <li key={tool}>
+                        <Link
+                          aria-label={`${formatted} ${label} open ${count === 1 ? "role" : "roles"}`}
+                          href={getEndpointToolPath(tool)}
+                        >
+                          <span className="landing-tool-count">{formatted}</span>
+                          <span className="landing-tool-name">
+                            {label}
+                            <ArrowRight aria-hidden="true" size={14} strokeWidth={2.25} />
+                          </span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ) : null}
           </div>
 
           <aside className="landing-preview" aria-label="Newest roles with salary">
             <header>
               <div className="landing-preview-heading">
-                <p className="section-kicker">Newest with salary</p>
+                <h2 className="section-kicker">Newest with salary</h2>
                 <time
                   className="landing-updated"
                   dateTime={activeFeed.updatedAt}
@@ -93,7 +118,7 @@ export default async function Home() {
                   {formatRelativeUpdated(activeFeed.updatedAt)}
                 </time>
               </div>
-              <Link href={getBoardPath()}>All roles</Link>
+              <Link href={getBoardPath()}>Job board</Link>
             </header>
             {preview.length === 0 ? (
               <p className="landing-preview-empty">No roles with a posted salary yet.</p>
@@ -107,6 +132,9 @@ export default async function Home() {
                         {job.company}
                         {job.place ? <span className="landing-place"> · {job.place}</span> : null}
                       </span>
+                      {job.tools.length > 0 ? (
+                        <span className="landing-matched-tools">{job.tools.join(" · ")}</span>
+                      ) : null}
                       <span className="landing-role-facts">
                         <span className="landing-salary">{job.salary}</span>
                         <span className="landing-role-tags">

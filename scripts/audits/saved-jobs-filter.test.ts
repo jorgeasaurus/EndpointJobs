@@ -107,7 +107,7 @@ test("a saved job stays visible when hide viewed is also on", () => {
 });
 
 test("saved jobs only is a private preference and a shared URL cannot turn it on", () => {
-  const stored = encodePreferences({ ...initialFilterState, query: "Intune" }, true, true);
+  const stored = encodePreferences({ filters: { ...initialFilterState, query: "Intune" }, hideViewed: true, savedOnly: true });
   const decoded = decodePreferences(stored);
   assert.equal(decoded?.savedOnly, true);
   assert.equal(decoded?.hideViewed, true);

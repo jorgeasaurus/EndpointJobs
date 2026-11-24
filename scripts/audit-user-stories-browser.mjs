@@ -394,7 +394,7 @@ await run("QA-021", "API docs expose contract-derived examples without mobile ov
 await run("QA-018", "Job directory pagination exposes crawlable detail links", async () => {
   const page = await newPage(browser, desktopViewport);
   await page.locator("footer").scrollIntoViewIfNeeded();
-  const directoryLink = page.getByRole("link", { name: "All jobs" });
+  const directoryLink = page.getByRole("link", { name: "Job directory" });
   await expect(directoryLink).toHaveAttribute("href", "/jobs");
   await directoryLink.click();
   await page.waitForURL(/\/jobs$/, { waitUntil: "networkidle" });

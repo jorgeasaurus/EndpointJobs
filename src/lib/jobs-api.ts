@@ -15,7 +15,7 @@ for (const [key, definition] of queryDefinitions) {
   }
 }
 
-export const jobsApiCacheControl = "public, s-maxage=3600, stale-while-revalidate=86400";
+const jobsApiCacheControl = "public, s-maxage=3600, stale-while-revalidate=86400";
 
 export const jobsApiHeaders = {
   "Access-Control-Allow-Headers": "Content-Type",

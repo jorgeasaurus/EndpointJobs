@@ -305,7 +305,6 @@ export function jobPostingAddress(location: string, addressCountry: string): Pos
   const regions: string[] = [];
 
   parts.forEach((part, index) => {
-    const folded = foldTokens(part);
     const isLast = index === parts.length - 1;
     if (isLast && isAddressCountryName(part, addressCountry)) return;
     if (isDistrictOfColumbia(part) && addressCountry === "US") {

@@ -164,7 +164,7 @@ test("roadmap page renders skills, source links, and progress", async () => {
   assert.equal(initial.match(/<h3[^>]*>Admin<\/h3>/g)?.length, 2);
   assert.equal(initial.match(/<h3[^>]*>Engineer<\/h3>/g)?.length, 2);
   assert.equal(initial.match(/<h3[^>]*>Architect<\/h3>/g)?.length, 2);
-  assert.match(initial, /aria-valuenow="0"/);
+  assert.match(initial, /<progress[^>]*max="100"[^>]*value="0"/);
   assert.match(initial, /Progress stays in this browser/);
   assert.doesNotMatch(initial, /checked=""/);
 
@@ -178,8 +178,8 @@ test("roadmap page renders skills, source links, and progress", async () => {
   assert.match(checked, /checked=""/);
   assert.ok(unchecked);
   assert.doesNotMatch(unchecked, /checked/);
-  assert.match(html, new RegExp(`aria-valuenow="${completionFor(skillIdsForLevel(track.levels[1]!), completed).percent}"`));
-  assert.match(html, new RegExp(`aria-valuenow="${completionFor(skillIdsForTrack(track), completed).percent}"`));
+  assert.match(html, new RegExp(`<progress[^>]*value="${completionFor(skillIdsForLevel(track.levels[1]!), completed).percent}"`));
+  assert.match(html, new RegExp(`<progress[^>]*value="${completionFor(skillIdsForTrack(track), completed).percent}"`));
   assert.match(html, new RegExp(`aria-describedby="${skill.id}-summary"`));
 
   for (const source of skill.sources) {
@@ -190,9 +190,8 @@ test("roadmap page renders skills, source links, and progress", async () => {
   assert.doesNotMatch(html, /href="#intune"[^>]*target="_blank"/);
 
   const page = readFileSync(new URL("../../src/app/roadmap/page.tsx", import.meta.url), "utf8");
-  const topbar = readFileSync(new URL("../../src/components/job-board/topbar.tsx", import.meta.url), "utf8");
-  const header = topbar.slice(topbar.indexOf("export function Topbar"), topbar.indexOf("export function SiteFooter"));
-  const footer = topbar.slice(topbar.indexOf("export function SiteFooter"));
+  const header = readFileSync(new URL("../../src/components/job-board/topbar.tsx", import.meta.url), "utf8");
+  const footer = readFileSync(new URL("../../src/components/job-board/site-footer.tsx", import.meta.url), "utf8");
   assert.match(page, /roadmapPageTitle/);
   assert.match(page, /roadmapPageDescription/);
   assert.match(page, /socialTitle/);
@@ -209,8 +208,11 @@ test("roadmap page renders skills, source links, and progress", async () => {
   assert.match(footer, /buymeacoffee/);
   assert.match(footer, /report-or-request/);
   assert.equal(footer.split("getRoadmapPath()").length - 1, 1);
-  assert.match(footer, /aria-label="Browse"/);
-  assert.match(footer, /aria-label="Project"/);
+  assert.match(footer, /id: "browse",\n\s+label: "Browse"/);
+  assert.match(footer, /id: "project",\n\s+label: "Project"/);
+  assert.match(footer, /const labelId = `footer-group-\$\{group\.id\}`;/);
+  assert.match(footer, /id=\{labelId\}/);
+  assert.match(footer, /aria-labelledby=\{labelId\}/);
   assert.equal(getRoadmapPath(), "/roadmap");
   assert.ok((await sitemap()).some((entry) => entry.url === new URL("/roadmap", siteUrl).toString()));
 });

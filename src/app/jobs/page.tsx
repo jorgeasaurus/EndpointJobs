@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
-import { SiteFooter, Topbar } from "@/components/job-board/topbar";
+import { SiteFooter } from "@/components/job-board/site-footer";
+import { Topbar } from "@/components/job-board/topbar";
 import { getCanonicalSeoIndex } from "@/lib/job-seo";
 import { formatPostedDate, isActiveJob } from "@/lib/jobs";
 import { getPublishedJobsFeed } from "@/lib/published-jobs-feed";

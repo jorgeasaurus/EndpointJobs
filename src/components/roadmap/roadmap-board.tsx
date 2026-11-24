@@ -179,24 +179,20 @@ function ProgressMeter({
   progress: { completed: number; total: number; percent: number };
 }) {
   return (
-    <div
-      className="roadmap-meter"
-      role="progressbar"
-      aria-label={label}
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuenow={progress.percent}
-      aria-valuetext={`${progress.completed} of ${progress.total} skills, ${progress.percent} percent`}
-    >
+    <div className="roadmap-meter">
       <span className="roadmap-meter-label" aria-hidden="true">
         {progress.percent}%
       </span>
       <span className="roadmap-meter-count" aria-hidden="true">
         {progress.completed} of {progress.total} skills
       </span>
-      <span className="roadmap-meter-track" aria-hidden="true">
-        <span className="roadmap-meter-fill" style={{ width: `${progress.percent}%` }} />
-      </span>
+      <progress
+        className="roadmap-meter-track"
+        aria-label={label}
+        aria-valuetext={`${progress.completed} of ${progress.total} skills, ${progress.percent} percent`}
+        max={100}
+        value={progress.percent}
+      />
     </div>
   );
 }

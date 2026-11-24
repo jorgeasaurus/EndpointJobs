@@ -1,6 +1,6 @@
 export const accountMenuMargin = 12;
 export const accountMenuGap = 8;
-export const accountMenuPreferredWidth = 280;
+const accountMenuPreferredWidth = 280;
 
 export type AccountMenuRect = {
   top: number;

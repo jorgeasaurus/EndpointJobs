@@ -3,14 +3,15 @@ import Link from "next/link";
 
 import { listSavedJobs, type AccountClient } from "@/lib/account/store";
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
-import { SiteFooter, Topbar } from "@/components/job-board/topbar";
+import { SiteFooter } from "@/components/job-board/site-footer";
+import { Topbar } from "@/components/job-board/topbar";
 import feedData from "@/data/jobs.json";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 import { getJobPath } from "@/app/site-metadata";
 import type { JobsFeed } from "@/types/job";
 
-import { ClearViewHistoryButton, DeleteAccountForm, ExportAccountButton } from "./account-actions";
+import { AccountActionButton, DeleteAccountForm } from "./account-actions";
 import "./account.css";
 
 export const metadata: Metadata = {
@@ -61,13 +62,13 @@ export default async function AccountPage() {
               <section className="account-section" aria-labelledby="export-heading">
                 <h2 id="export-heading">Export</h2>
                 <p>Download your profile, saved filters, saved jobs, and view history.</p>
-                <ExportAccountButton />
+                <AccountActionButton action="export" />
               </section>
 
               <section className="account-section" aria-labelledby="views-heading">
                 <h2 id="views-heading">View history</h2>
                 <p>{session.viewCount === 1 ? "1 viewed role." : `${session.viewCount} viewed roles.`}</p>
-                <ClearViewHistoryButton />
+                <AccountActionButton action="clear-views" />
               </section>
 
               <section className="account-section" aria-labelledby="delete-heading">

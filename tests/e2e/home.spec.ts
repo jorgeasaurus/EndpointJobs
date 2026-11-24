@@ -2,8 +2,9 @@ import { readFileSync } from "node:fs";
 
 import { expect, test } from "@playwright/test";
 
-import { initialFilterState } from "../../src/components/job-board/filter-model";
-import { getActiveSourceFeed, selectLandingPreview } from "../../src/lib/board-page";
+import { getActiveSourceFeed } from "../../src/lib/board-page";
+import { getEndpointToolBySlug, getEndpointToolLabel } from "../../src/lib/job-taxonomy";
+import { selectLanding } from "../../src/lib/landing";
 import type { JobsFeed } from "../../src/types/job";
 
 const feedData = JSON.parse(readFileSync(new URL("../../src/data/jobs.json", import.meta.url), "utf8")) as JobsFeed;
@@ -12,7 +13,7 @@ test("[HOME-01] landing hero", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1, name: "The board for endpoint engineers." })).toBeVisible();
   await expect(page.getByText("Daily listings for macOS, Windows, MDM, and endpoint security roles.")).toHaveCount(0);
-  const jobs = page.getByRole("link", { name: "See the jobs" });
+  const jobs = page.getByRole("link", { name: /^See all [\d,]+ jobs$/ });
   await expect(jobs).toBeVisible();
   await expect(jobs).toHaveAttribute("href", "/board");
   const html = await page.request.get("/");
@@ -21,30 +22,37 @@ test("[HOME-01] landing hero", async ({ page }) => {
   expect(body).toContain("The board for endpoint engineers.");
 });
 
-test("[HOME-02] landing counts", async ({ page }) => {
-  const board = await page.request.get("/api/board");
-  expect(board.ok()).toBeTruthy();
-  const payload = await board.json() as {
-    total: number;
-    metrics: { remoteJobsCount: number; salaryJobsCount: number };
-  };
+test("[HOME-02] landing tool counts", async ({ page }) => {
   await page.goto("/");
-  const stats = page.locator(".landing-stats");
-  await expect(stats.getByText("Open roles", { exact: true })).toBeVisible();
-  await expect(stats.getByText("Remote/hybrid", { exact: true })).toBeVisible();
-  await expect(stats.getByText("Salary shown", { exact: true })).toBeVisible();
+  const tools = page.getByRole("list", { name: "Open roles by tool" });
+  await expect(tools).toBeVisible();
+  const links = tools.getByRole("link");
+  const count = await links.count();
+  expect(count).toBeGreaterThan(0);
+  expect(count).toBeLessThanOrEqual(4);
   const format = new Intl.NumberFormat("en-US");
-  await expect(stats).toContainText(format.format(payload.total));
-  await expect(stats).toContainText(format.format(payload.metrics.remoteJobsCount));
-  await expect(stats).toContainText(format.format(payload.metrics.salaryJobsCount));
+  let previous = Number.POSITIVE_INFINITY;
+  for (let index = 0; index < count; index += 1) {
+    const link = links.nth(index);
+    const slug = (await link.getAttribute("href"))?.slice(1) ?? "";
+    const tool = getEndpointToolBySlug(slug);
+    expect(tool, slug).toBeTruthy();
+    // Each count matches the board API for that tool, fixtures included.
+    const board = await page.request.get(`/api/board?tools=${encodeURIComponent(tool!)}`);
+    const { total } = await board.json() as { total: number };
+    await expect(link).toContainText(format.format(total));
+    await expect(link).toHaveAttribute("aria-label", `${format.format(total)} ${getEndpointToolLabel(tool!)} open ${total === 1 ? "role" : "roles"}`);
+    expect(total).toBeLessThanOrEqual(previous);
+    previous = total;
+  }
 });
 
 test("[HOME-03] newest roles preview", async ({ page }) => {
-  const jobs = selectLandingPreview(getActiveSourceFeed(feedData).jobs, initialFilterState);
+  const jobs = selectLanding(getActiveSourceFeed(feedData).jobs).preview.map(({ job }) => job);
   await page.goto("/");
   const preview = page.getByRole("complementary", { name: "Newest roles with salary" });
   await expect(preview).toBeVisible();
-  await expect(preview.getByRole("link", { name: "All roles" })).toHaveAttribute("href", "/board");
+  await expect(preview.getByRole("link", { name: "Job board" })).toHaveAttribute("href", "/board");
   const rows = preview.locator("ol a");
   const count = await rows.count();
   expect(count).toBeLessThanOrEqual(4);

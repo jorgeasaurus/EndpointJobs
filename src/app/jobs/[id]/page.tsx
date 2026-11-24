@@ -22,7 +22,8 @@ import { DescriptionContent } from "@/components/job-board/description-content";
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
 import { JobContextCards } from "@/components/job-board/job-context-cards";
 import { VisaSponsorship } from "@/components/job-board/visa-sponsorship";
-import { SiteFooter, Topbar } from "@/components/job-board/topbar";
+import { SiteFooter } from "@/components/job-board/site-footer";
+import { Topbar } from "@/components/job-board/topbar";
 import {
   getJobPath,
   getJobUrl,

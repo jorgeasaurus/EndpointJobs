@@ -559,8 +559,6 @@ test("[RESP-01] narrow hit areas", async ({ page }, info) => {
       "#job-search-input",
       ".topbar .roadmap-link",
       ".topbar .mcp-docs-link",
-      ".site-footer .api-docs-link",
-      ".site-footer .support-link",
       ".site-footer .footer-link"
     ];
     return selectors.flatMap((selector) => [...document.querySelectorAll(selector)].map((element) => {
@@ -591,7 +589,7 @@ test("[NAV-01] brand and footer", async ({ page }) => {
   await expect(brand).toHaveAttribute("href", "/");
   const footer = page.getByRole("navigation", { name: "Project links" });
   await expect(footer.getByRole("link", { name: "Job board" })).toHaveAttribute("href", "/board");
-  await expect(footer.getByRole("link", { name: "All jobs" })).toHaveAttribute("href", "/jobs");
+  await expect(footer.getByRole("link", { name: "Job directory" })).toHaveAttribute("href", "/jobs");
   await expect(footer.getByRole("link", { name: "Privacy" })).toHaveAttribute("href", "/privacy");
   const repo = footer.getByRole("link", { name: /GitHub repository/ });
   await expect(repo).toHaveAttribute("href", "https://github.com/jorgeasaurus/EndpointJobs");

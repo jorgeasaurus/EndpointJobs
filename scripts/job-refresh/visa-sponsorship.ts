@@ -55,7 +55,7 @@ export function analyzeVisaSponsorship(description: string, sourceUrl: string): 
   return { sponsorship: { ...claim, sourceUrl }, jevEligible: false };
 }
 
-export function isQualifyingSponsorshipContinuation(text: string) {
+function isQualifyingSponsorshipContinuation(text: string) {
   const normalized = sponsorshipMatchText(text.replace(/\s+/g, " ").trim());
   return qualifyingContinuation.test(normalized) && !classifySponsorshipStatement(normalized);
 }

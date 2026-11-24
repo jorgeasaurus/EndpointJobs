@@ -54,10 +54,11 @@ export function McpGuide() {
         <h1>Your next role.<br /><span className="mcp-accent">One conversation away.</span></h1>
         <p>Give your assistant access to the same endpoint engineering roles you browse here. Search, filter, and explore the details together.</p>
         <div className="mcp-mode-bar">
-          <div className="mcp-mode-switch" role="group" aria-label="Instructions view">
+          <fieldset className="mcp-mode-switch">
+            <legend className="sr-only">Instructions view</legend>
             <button type="button" aria-pressed={!agentView} aria-controls="mcp-instructions" onClick={() => setAgentView(false)}><UserRound size={16} aria-hidden="true" />Human</button>
             <button type="button" aria-pressed={agentView} aria-controls="mcp-instructions" onClick={() => setAgentView(true)}><Bot size={16} aria-hidden="true" />Agent</button>
-          </div>
+          </fieldset>
           <span>{agentView ? "Copy the instructions into your agent’s context." : "A quick setup guide for your AI assistant."}</span>
         </div>
       </header>

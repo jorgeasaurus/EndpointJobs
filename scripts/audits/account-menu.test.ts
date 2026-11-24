@@ -1,18 +1,15 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import * as esbuild from "esbuild";
 import { chromium, type Page } from "@playwright/test";
-import { fileURLToPath } from "node:url";
 
 import { AccountMenu } from "../../src/components/auth/account-menu";
 
+import { bundleHarness, nextLinkStub } from "./harness-bundle";
+
 const email = "a-very-long-account-email-address-that-must-truncate@example.com";
-const repoRoot = fileURLToPath(new URL("../..", import.meta.url));
-const srcRoot = fileURLToPath(new URL("../../src", import.meta.url));
 
 test("the closed account menu truncates the email and posts sign-out", () => {
   const html = renderToStaticMarkup(createElement(AccountMenu, { email }));
@@ -35,7 +32,7 @@ test("the closed account menu truncates the email and posts sign-out", () => {
 });
 
 test("opening the account menu with Enter focuses the panel, and Tab then signs out", { timeout: 60_000 }, async () => {
-  const js = await bundle(fileURLToPath(new URL("./fixtures/account-menu-harness.tsx", import.meta.url)));
+  const js = await bundle();
   const css = `${variables}\n${readFileSync(new URL("../../src/app/auth-menu.css", import.meta.url), "utf8")}\n${harnessCss}`;
   const browser = await chromium.launch({
     headless: true,
@@ -114,7 +111,7 @@ test("opening the account menu with Enter focuses the panel, and Tab then signs 
 });
 
 test("the open account menu stays inside 390 and 1280 and dismisses", { timeout: 60_000 }, async () => {
-  const js = await bundle(fileURLToPath(new URL("./fixtures/account-menu-harness.tsx", import.meta.url)));
+  const js = await bundle();
   const css = `${variables}\n${readFileSync(new URL("../../src/app/auth-menu.css", import.meta.url), "utf8")}\n${harnessCss}`;
   const browser = await chromium.launch({
     headless: true,
@@ -204,45 +201,10 @@ async function assertDismiss(page: Page, trigger: ReturnType<Page["getByRole"]>)
   await page.waitForFunction((name) => document.activeElement?.getAttribute("aria-label") === name, `Account menu for ${email}`);
 }
 
-async function bundle(entry: string) {
-  const result = await esbuild.build({
-    absWorkingDir: repoRoot,
-    entryPoints: [entry],
-    bundle: true,
-    write: false,
-    format: "iife",
-    platform: "browser",
-    target: "es2022",
-    jsx: "automatic",
-    plugins: [
-        {
-        name: "next-link",
-        setup(build) {
-          build.onResolve({ filter: /^next\/link$/ }, () => ({
-            path: "next-link",
-            namespace: "next-link"
-          }));
-          build.onLoad({ filter: /.*/, namespace: "next-link" }, () => ({
-            loader: "js",
-            resolveDir: repoRoot,
-            contents: `import { createElement } from "react";
-              export default function Link(props) {
-                return createElement("a", { href: props.href, className: props.className }, props.children);
-              }`
-          }));
-        }
-      },
-      {
-        name: "at-alias",
-        setup(build) {
-          build.onResolve({ filter: /^@\// }, (args) => ({
-            path: resolveAlias(args.path)
-          }));
-        }
-      }
-    ]
+function bundle() {
+  return bundleHarness(new URL("./fixtures/account-menu-harness.tsx", import.meta.url), {
+    stubs: { "next/link": nextLinkStub }
   });
-  return result.outputFiles[0]?.text ?? "";
 }
 
 const variables = `
@@ -292,11 +254,3 @@ const harnessCss = `
   }
   h1 { margin: 24px 8px; font-size: 2rem; }
 `;
-
-function resolveAlias(specifier: string) {
-  const base = resolve(srcRoot, specifier.slice(2));
-  for (const candidate of [base, `${base}.tsx`, `${base}.ts`, `${base}.jsx`, `${base}.js`]) {
-    if (existsSync(candidate)) return candidate;
-  }
-  return base;
-}

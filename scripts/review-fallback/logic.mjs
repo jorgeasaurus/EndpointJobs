@@ -6,7 +6,7 @@
 
 export const COPILOT_REVIEWER = "copilot-pull-request-reviewer[bot]";
 export const BUGBOT_COMMENT_BODY = "bugbot run";
-export const GITHUB_API_VERSION = "2026-03-10";
+const GITHUB_API_VERSION = "2026-03-10";
 
 const COPILOT_LOGINS = new Set([
   "copilot-pull-request-reviewer[bot]",
@@ -62,7 +62,7 @@ export function indicatesUsageLimit(body) {
   return USAGE_LIMIT_PATTERNS.some((pattern) => pattern.test(text));
 }
 
-export function isCopilotAuthor(user) {
+function isCopilotAuthor(user) {
   const login = typeof user === "string" ? user : user?.login;
   return typeof login === "string" && COPILOT_LOGINS.has(login.toLowerCase());
 }
@@ -233,21 +233,21 @@ export function renderSummary({ outcome, headSha = "", detail = "" }) {
   return lines.join("\n");
 }
 
-export function assertRepo(repo) {
+function assertRepo(repo) {
   if (typeof repo !== "string" || !/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repo)) {
     throw new Error("GITHUB_REPOSITORY must look like owner/repo");
   }
   return repo;
 }
 
-export function assertPullNumber(value) {
+function assertPullNumber(value) {
   if (!/^[1-9]\d*$/.test(String(value ?? ""))) {
     throw new Error("PR_NUMBER must be a positive integer");
   }
   return String(value);
 }
 
-export function assertHeadSha(value) {
+function assertHeadSha(value) {
   if (typeof value !== "string" || !/^[0-9a-f]{40}$/i.test(value)) {
     throw new Error("HEAD_SHA must be a 40-character commit SHA");
   }

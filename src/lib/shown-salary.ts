@@ -51,9 +51,15 @@ export function formatShownSalary(job: Pick<Job, "location" | "salary">) {
     ? `${symbol}${formatSalaryAmount(start)}`
     : `${symbol}${formatSalaryAmount(start)}\u2013${symbol}${formatSalaryAmount(end)}`;
   const suffix = period === "year" ? "" : periodSuffix[period];
-  const code = currency === "USD" ? "" : ` ${currency}`;
+  const code = symbolNamesCurrency(symbol, currency) ? "" : ` ${currency}`;
 
   return `${range}${suffix}${code}`;
+}
+
+// "$" is USD on this board, € and £ are unambiguous, and lettered symbols
+// (CA$, A$, CHF) already carry their code. Other glyphs keep the ISO code.
+function symbolNamesCurrency(symbol: string, currency: string) {
+  return currency === "USD" || symbol === "\u20ac" || symbol === "\u00a3" || /[A-Z]/.test(symbol);
 }
 
 function salaryCurrencyMatchesLocation(job: Pick<Job, "location" | "salary">) {

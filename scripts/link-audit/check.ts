@@ -5,7 +5,7 @@ import { getProviderProbe } from "./providers";
 export type Outcome = "reachable" | "dead" | "blocked" | "auth" | "rate-limited" | "transient" | "unverified";
 export type Observation = { url: string; status?: number; finalUrl?: string; outcome: Outcome; reason: string };
 
-export function isCanonicalRedirect(requested: string, final: string): boolean {
+function isCanonicalRedirect(requested: string, final: string): boolean {
   const normalize = (value: string) => {
     const url = new URL(value);
     url.hash = "";

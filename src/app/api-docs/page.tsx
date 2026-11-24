@@ -5,7 +5,8 @@ import { ScrollRegion } from "@/components/scroll-region";
 import { ApiCodeBlock } from "@/components/api-code-block";
 import { getOpenApiPath, getMcpDocsPath, siteUrl } from "@/app/site-metadata";
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
-import { SiteFooter, Topbar } from "@/components/job-board/topbar";
+import { SiteFooter } from "@/components/job-board/site-footer";
+import { Topbar } from "@/components/job-board/topbar";
 import feedData from "@/data/jobs.json";
 import {
   jobsApiQueryContract,

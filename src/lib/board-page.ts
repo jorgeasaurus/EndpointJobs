@@ -5,7 +5,6 @@ import { listingLanguage, prepareBoardFeed, dedupeJobs, dedupeWorkplaceJobs, ded
 import { seedPlatformChipFixture } from "@/lib/platform-chip-fixture";
 import type { JobMapRecord } from "@/lib/job-map";
 import { isActiveJob } from "@/lib/jobs";
-import { hasShownSalary } from "@/lib/shown-salary";
 import { withResolvedWorkplace } from "@/lib/workplace";
 import type { Job, JobsFeed } from "@/types/job";
 
@@ -13,9 +12,7 @@ export { hasShownSalary } from "@/lib/shown-salary";
 
 export const boardPageSize = 20;
 
-export const landingPreviewLimit = 4;
-
-export const boardCacheControl = "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400";
+const boardCacheControl = "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400";
 
 export const boardCacheHeaders = {
   "Cache-Control": boardCacheControl,
@@ -159,24 +156,6 @@ export function selectVisibleJobs(jobs: readonly Job[], filters: FilterState) {
     matchedJobs,
     visibleJobs: dedupeWorkplaceJobs(matchedJobs, filters.workplace)
   };
-}
-
-export function selectLandingPreview(
-  jobs: readonly Job[],
-  filters: FilterState,
-  limit = landingPreviewLimit
-) {
-  const count = limit > 0 ? Math.floor(limit) : landingPreviewLimit;
-  const { visibleJobs } = selectVisibleJobs(jobs, filters);
-  const preview: Job[] = [];
-
-  for (const job of visibleJobs) {
-    if (!hasShownSalary(job)) continue;
-    preview.push(job);
-    if (preview.length === count) break;
-  }
-
-  return preview;
 }
 
 export function toBoardListing(job: Job): BoardListing {

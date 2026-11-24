@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 import { formatUpdatedAt, isActiveJob } from "../../src/lib/jobs";
 import { JobContextCards } from "../../src/components/job-board/job-context-cards";
-import { WorkplaceFilters } from "../../src/components/job-board/location-filters";
+import { WorkplaceFilters } from "../../src/components/job-board/workplace-filters";
 import { MatchRecommendation } from "../../src/components/job-board/match-recommendation";
 import { ToggleButton } from "../../src/components/job-board/toggle-button";
 import { ToolChips } from "../../src/components/job-board/tool-chips";
@@ -24,7 +24,7 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
     assertTruthy(feed.jobs.length > 0, "feed has no jobs");
     assertTruthy(feed.jobs.some((job) => isActiveJob(job)), "feed has no active jobs");
     assertIncludes(sources.page, "getPublishedJobsFeed()");
-    assertIncludes(sources.page, "See the jobs");
+    assertIncludes(sources.page, "See all {countFormat.format(total)} jobs");
     assertIncludes(sources.jobBoardPage, "<JobBoard initialPage={initialPage} />");
     assertNotIncludes(sources.page, "<JobBoard");
   });
@@ -34,10 +34,10 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
     assertIncludes(sources.topbar, "Endpoint Jobs home");
     assertIncludes(sources.topbar, "Endpoint Jobs");
     assertIncludes(
-      sources.topbar,
+      sources.siteFooter,
       "https://github.com/jorgeasaurus/EndpointJobs/blob/main/powershell/EndpointJobs/README.md"
     );
-    assertIncludes(sources.topbar, "Open PowerShell module documentation on GitHub");
+    assertIncludes(sources.siteFooter, "Open PowerShell module documentation on GitHub");
   });
 
   await run("FEAT-003", "Refresh timestamps format valid and invalid feed dates", () => {

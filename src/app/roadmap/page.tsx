@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
-import { SiteFooter, Topbar } from "@/components/job-board/topbar";
+import { SiteFooter } from "@/components/job-board/site-footer";
+import { Topbar } from "@/components/job-board/topbar";
 import { RoadmapExperience } from "@/components/roadmap/roadmap-board";
 import { roadmapPageDescription, roadmapPageTitle } from "@/data/roadmap";
 import feedData from "@/data/jobs.json";

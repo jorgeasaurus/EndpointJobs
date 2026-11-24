@@ -59,13 +59,14 @@ test("the map fetch uses the same debounced filters as the page", () => {
   assert.doesNotMatch(mapHook, /boardFilterDebounceMs/);
 });
 
-test("the footer job board link is above the prefetch note and does not prefetch", () => {
-  const topbar = readFileSync(new URL("../../src/components/job-board/topbar.tsx", import.meta.url), "utf8");
-  const link = topbar.indexOf("href={getBoardPath()} prefetch={false}");
-  const comment = topbar.indexOf("Disable speculative prefetch");
+test("footer links to site pages do not prefetch", () => {
+  const footer = readFileSync(new URL("../../src/components/job-board/site-footer.tsx", import.meta.url), "utf8");
+  const comment = footer.indexOf("Disable speculative prefetch");
+  const link = footer.indexOf("href={link.href} prefetch={false}");
 
-  assert.ok(link > -1);
-  assert.ok(comment > link);
+  assert.match(footer, /\{ text: "Job board", href: getBoardPath\(\) \}/);
+  assert.ok(comment > -1);
+  assert.ok(link > comment);
 });
 
 test("job cards expand from hasDescription instead of the fetch flag", () => {

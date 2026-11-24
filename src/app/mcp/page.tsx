@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ParallaxBackground } from "@/components/job-board/parallax-background";
-import { SiteFooter, Topbar } from "@/components/job-board/topbar";
+import { SiteFooter } from "@/components/job-board/site-footer";
+import { Topbar } from "@/components/job-board/topbar";
 import { McpGuide } from "@/components/mcp-guide";
 import feedData from "@/data/jobs.json";
 import "../api-docs/api-docs.css";

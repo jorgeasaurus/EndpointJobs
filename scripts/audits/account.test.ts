@@ -20,15 +20,12 @@ import {
 import {
   listSavedIds,
   readPreferences,
-  recordJobView,
-  saveJob,
-  upsertPreferences,
   type AccountClient
 } from "../../src/lib/account/store";
 
 test("saved board filters restore only on a clean board URL", () => {
   const filters = { ...initialFilterState, query: "Intune", salaryOnly: true };
-  const stored = encodePreferences(filters, true);
+  const stored = encodePreferences({ filters, hideViewed: true, savedOnly: false });
   const decoded = decodePreferences(stored);
   assert.equal(decoded?.filters.query, "Intune");
   assert.equal(decoded?.filters.salaryOnly, true);
@@ -49,8 +46,9 @@ test("hide viewed on a shared board keeps the saved search", () => {
     pageFiltersOwned: false
   });
   assert.equal(kept.query, "Intune");
-  assert.equal(encodePreferences(kept, true).q, "Intune");
-  assert.equal(encodePreferences(kept, true).hideViewed, true);
+  const keptRecord = encodePreferences({ filters: kept, hideViewed: true, savedOnly: false });
+  assert.equal(keptRecord.q, "Intune");
+  assert.equal(keptRecord.hideViewed, true);
 
   const edited = filtersForPreferenceSave({
     pageFilters: shared,
@@ -81,7 +79,7 @@ test("deleting an account signs out before the next page load", () => {
 });
 
 test("preference rows keep schema version 1", () => {
-  const row = preferenceRow("user-1", initialFilterState, false, "2026-10-27T00:00:00.000Z");
+  const row = preferenceRow("user-1", { filters: initialFilterState, hideViewed: false, savedOnly: false }, "2026-10-27T00:00:00.000Z");
   assert.equal(row.user_id, "user-1");
   assert.equal(row.schema_version, 1);
   assert.equal(row.filters.hideViewed, false);
@@ -123,30 +121,18 @@ test("account export keeps the four user tables", () => {
   assert.deepEqual(Object.keys(document), ["exportedAt", "profile", "preferences", "savedJobs", "jobViews"]);
 });
 
-test("account store writes preferences, views, and saved jobs for the signed-in user", async () => {
+test("account store reads preferences and saved jobs for the signed-in user", async () => {
   const calls: unknown[] = [];
   const client = fakeClient(calls, {
     preferences: { filters: { q: "Intune", hideViewed: true }, schema_version: 1 },
     saved: [{ job_id: "job-1", job_snapshot: { title: "Role", company: "Co", location: "Austin", sourceUrl: "https://example.com" }, saved_at: "2026-10-27T00:00:00.000Z" }]
   });
-  await upsertPreferences(client, "user-1", { ...initialFilterState, query: "Intune" }, false, "2026-10-27T00:00:00.000Z");
   const preferences = await readPreferences(client, "user-1");
   assert.equal(preferences?.filters.query, "Intune");
   assert.equal(preferences?.hideViewed, true);
-  await recordJobView(client, "job-1");
-  await saveJob(client, "user-1", {
-    id: "job-1",
-    title: "Role",
-    company: "Co",
-    location: "Austin",
-    sourceUrl: "https://example.com"
-  });
   assert.deepEqual(await listSavedIds(client, "user-1"), ["job-1"]);
   assert.deepEqual(calls, [
-    { table: "user_preferences", op: "upsert" },
     { table: "user_preferences", op: "select" },
-    { rpc: "record_job_view", jobId: "job-1" },
-    { table: "saved_jobs", op: "upsert" },
     { table: "saved_jobs", op: "select" }
   ]);
 });
@@ -171,14 +157,6 @@ function fakeClient(calls: unknown[], seed: { preferences: unknown; saved: unkno
   return {
     from(table) {
       return {
-        upsert() {
-          calls.push({ table, op: "upsert" });
-          return Promise.resolve({ error: null });
-        },
-        insert() {
-          calls.push({ table, op: "insert" });
-          return Promise.resolve({ error: null });
-        },
         select() {
           calls.push({ table, op: "select" });
           const data = table === "user_preferences" ? seed.preferences : table === "saved_jobs" ? seed.saved : [];
@@ -192,16 +170,34 @@ function fakeClient(calls: unknown[], seed: { preferences: unknown; saved: unkno
               };
             }
           } as never;
-        },
-        delete() {
-          calls.push({ table, op: "delete" });
-          return { eq: () => ({ eq: () => Promise.resolve({ error: null }) }) } as never;
         }
       };
-    },
-    rpc(_name, args) {
-      calls.push({ rpc: "record_job_view", jobId: args.p_job_id });
-      return Promise.resolve({ error: null });
     }
   };
 }
+
+test("board preferences are written by the server route with the session user", () => {
+  const hook = readFileSync(new URL("../../src/components/job-board/use-account-board.ts", import.meta.url), "utf8");
+  const route = readFileSync(new URL("../../src/app/api/account/preferences/route.ts", import.meta.url), "utf8");
+  const store = readFileSync(new URL("../../src/lib/account/store.ts", import.meta.url), "utf8");
+  assert.match(hook, /fetch\("\/api\/account\/preferences", \{\n\s+method: "PUT"/);
+  assert.doesNotMatch(hook, /upsertPreferences/);
+  assert.doesNotMatch(store, /\.upsert\(|\.insert\(|\.rpc\(/);
+  assert.match(route, /requireAccountUser\(\)/);
+  assert.match(route, /preferenceRow\(session\.user\.id, preferences,/);
+  assert.match(route, /decodePreferences\(await request\.json\(\)/);
+  assert.match(hook, /body: json\n/);
+  const encoded = encodePreferences({ filters: { ...initialFilterState, query: "Jamf" }, hideViewed: true, savedOnly: true });
+  const decoded = decodePreferences(encoded);
+  assert.equal(decoded?.filters.query, "Jamf");
+  assert.equal(decoded?.hideViewed, true);
+  assert.equal(decoded?.savedOnly, true);
+});
+
+test("job views are recorded by the server route with the session user", () => {
+  const hook = readFileSync(new URL("../../src/components/job-board/use-account-board.ts", import.meta.url), "utf8");
+  const route = readFileSync(new URL("../../src/app/api/account/views/route.ts", import.meta.url), "utf8");
+  assert.match(hook, /fetch\("\/api\/account\/views", \{\n\s+method: "POST"/);
+  assert.match(route, /export async function POST/);
+  assert.match(route, /session\.supabase\.rpc\("record_job_view", \{ p_job_id: jobId \}\)/);
+});
