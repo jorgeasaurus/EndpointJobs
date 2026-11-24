@@ -16,12 +16,12 @@ export function ParallaxBackground() {
       return;
     }
 
-    void import("./signal-field").then(({ mountEndpointSignalField }) => {
+    void import("./dither-field").then(({ mountDitherField }) => {
       if (isDisposed) {
         return;
       }
 
-      cleanup = mountEndpointSignalField(host, field);
+      cleanup = mountDitherField(host, field);
     });
 
     return () => {
@@ -36,8 +36,7 @@ export function ParallaxBackground() {
       className="parallax-field"
       aria-hidden="true"
     >
-      <span className="parallax-atmosphere" />
-      <div ref={hostRef} className="parallax-three-host" />
+      <div ref={hostRef} className="parallax-dither-host" />
     </div>
   );
 }
