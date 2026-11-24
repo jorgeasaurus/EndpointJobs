@@ -43,12 +43,12 @@ const previewToolTags = 3;
 export default async function Home() {
   const activeFeed = getActiveSourceFeed(await getPublishedJobsFeed());
   const { total, preview: previewRoles, toolCounts } = selectLanding(activeFeed.jobs);
-  const preview = previewRoles.map(({ job, platformTools }) => ({
+  const preview = previewRoles.map(({ job, managementTools }) => ({
     id: job.id,
     title: job.title,
     company: job.company,
     place: formatRolePlace(job.location),
-    tools: platformTools.slice(0, previewToolTags).map(getEndpointToolLabel),
+    tools: managementTools.slice(0, previewToolTags).map(getEndpointToolLabel),
     workplace: getJobWorkplace(job),
     salary: formatShownSalary(job) ?? "",
     posted: formatRelativePosted(job),

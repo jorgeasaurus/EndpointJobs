@@ -298,7 +298,16 @@ test("the landing preview leads with management-platform roles, newest first wit
     paid("jamf", 2, ["Jamf", "Okta"]),
     paid("older-adjacent", 3, ["PowerShell"]),
     paid("intune", 4, ["Intune", "Autopilot"]),
-    paid("okta-jamf-intune", 5, ["Okta", "Jamf", "Intune"])
+    paid("okta-jamf-intune", 5, ["Okta", "Jamf", "Intune"]),
+    // No salary, so it stays out of the preview but still ranks Intune above Jamf.
+    makeJob({
+      id: "unpaid-intune",
+      title: "unpaid-intune",
+      company: "unpaid-intune",
+      sourceUrl: "https://example.com/unpaid-intune",
+      applyUrl: "https://example.com/unpaid-intune/apply",
+      tools: ["Intune"]
+    })
   ];
   const { preview } = selectLanding(jobs);
 
@@ -306,8 +315,8 @@ test("the landing preview leads with management-platform roles, newest first wit
     preview.map(({ job }) => job.id),
     ["jamf", "intune", "okta-jamf-intune", "newest-adjacent"]
   );
-  // Tags follow the board's tool order, not the posting's.
-  assert.deepEqual(preview.map(({ platformTools }) => platformTools), [
+  // Tags follow the tool ranking (most open roles first), not taxonomy or posting order.
+  assert.deepEqual(preview.map(({ managementTools }) => managementTools), [
     ["Jamf"],
     ["Intune", "Autopilot"],
     ["Intune", "Jamf"],
@@ -334,7 +343,8 @@ test("landing tool counts match each tool page and skip adjacent-role tools", ()
   ];
   const { toolCounts: counts } = selectLanding(jobs);
 
-  assert.deepEqual(counts.map(({ tool }) => tool), ["Intune", "Jamf", "SCCM", "Autopilot"]);
+  // SCCM, Kandji and Autopilot tie at one role; ties keep taxonomy order.
+  assert.deepEqual(counts.map(({ tool }) => tool), ["Intune", "Jamf", "SCCM", "Kandji"]);
   assert.ok(!counts.some(({ tool }) => tool === "PowerShell" || tool === "Entra ID"));
   for (const { tool, count } of counts) {
     const toolPage = queryBoardPage(
