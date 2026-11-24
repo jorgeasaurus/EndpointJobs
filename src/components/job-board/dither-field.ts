@@ -119,24 +119,40 @@ export function mountDitherField(hostElement: HTMLDivElement, fieldElement: HTML
   const resolution = gl.getUniformLocation(program, "resolution");
   const time = gl.getUniformLocation(program, "time");
 
-  function resize() {
-    if (!gl) return;
-    canvas.width = Math.max(1, Math.ceil(hostElement.clientWidth / cellSize));
-    canvas.height = Math.max(1, Math.ceil(hostElement.clientHeight / cellSize));
-    gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.uniform2f(resolution, canvas.width, canvas.height);
-  }
-
   // Start mid-drift so the first frame is not the noise origin.
   const startOffsetSeconds = 40;
   let frame = 0;
   let lastDraw = -Infinity;
-  function draw(now: number) {
-    frame = requestAnimationFrame(draw);
-    if (!gl || now - lastDraw < frameIntervalMs) return;
+
+  function render(now: number) {
+    if (!gl) return;
     lastDraw = now;
     gl.uniform1f(time, now / 1000 + startOffsetSeconds);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+
+  function draw(now: number) {
+    frame = requestAnimationFrame(draw);
+    if (now - lastDraw >= frameIntervalMs) render(now);
+  }
+
+  // Setting canvas.width or height clears the drawing buffer, so only touch
+  // them when the size changes, and redraw at once instead of waiting for the
+  // next throttled frame.
+  let sizedWidth = 0;
+  let sizedHeight = 0;
+  function resize() {
+    if (!gl) return;
+    const width = Math.max(1, Math.ceil(hostElement.clientWidth / cellSize));
+    const height = Math.max(1, Math.ceil(hostElement.clientHeight / cellSize));
+    if (width === sizedWidth && height === sizedHeight) return;
+    sizedWidth = width;
+    sizedHeight = height;
+    canvas.width = width;
+    canvas.height = height;
+    gl.viewport(0, 0, width, height);
+    gl.uniform2f(resolution, width, height);
+    render(performance.now());
   }
 
   hostElement.appendChild(canvas);
