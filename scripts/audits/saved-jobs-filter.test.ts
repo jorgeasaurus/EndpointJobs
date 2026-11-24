@@ -188,11 +188,10 @@ test("unsaving a visible job updates the saved page immediately", () => {
   assert.equal(page.totalJobs, 1);
   assert.equal(page.viewingSaved, true);
   assert.equal(savedBoardQuery({
+    accountKind: "account",
     savedIds: new Set(["kept"]),
     savedOnly: false,
-    savedToken: "1",
-    signedIn: true,
-    usingFixture: false
+    savedToken: "1"
   }).kind, "off");
 });
 

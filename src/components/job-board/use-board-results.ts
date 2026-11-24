@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import type { AccountSource } from "@/lib/auth/session";
 import type { BoardMapJob, BoardPage } from "@/lib/board-page";
 import { isKnownCrawler } from "@/lib/known-crawler";
 import type { FilterState } from "./filter-model";
@@ -18,14 +19,13 @@ export type BoardSavedQuery =
   | { kind: "fixture"; ids: readonly string[] };
 
 export function savedBoardQuery(account: {
+  accountKind: AccountSource["kind"];
   savedIds: ReadonlySet<string>;
   savedOnly: boolean;
   savedToken: string;
-  signedIn: boolean;
-  usingFixture: boolean;
 }): BoardSavedQuery {
-  if (!account.signedIn || !account.savedOnly) return { kind: "off" };
-  if (account.usingFixture) return { kind: "fixture", ids: [...account.savedIds] };
+  if (account.accountKind === "none" || !account.savedOnly) return { kind: "off" };
+  if (account.accountKind === "fixture") return { kind: "fixture", ids: [...account.savedIds] };
   return { kind: "session", token: account.savedToken };
 }
 

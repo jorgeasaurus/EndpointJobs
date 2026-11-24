@@ -51,17 +51,15 @@ export function JobBoard({
 
   const account = useAccountBoard(filters, dispatchFilters);
   const savedQuery = useMemo(() => savedBoardQuery({
+    accountKind: account.accountKind,
     savedIds: account.savedIds,
     savedOnly: account.savedOnly,
-    savedToken: account.savedToken,
-    signedIn: account.signedIn,
-    usingFixture: account.usingFixture
+    savedToken: account.savedToken
   }), [
+    account.accountKind,
     account.savedIds,
     account.savedOnly,
-    account.savedToken,
-    account.signedIn,
-    account.usingFixture
+    account.savedToken
   ]);
   const debouncedFilters = useDebouncedFilters(filters);
   const debouncedFilterKey = JSON.stringify(debouncedFilters);

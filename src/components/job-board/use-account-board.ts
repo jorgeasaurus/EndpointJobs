@@ -162,6 +162,7 @@ export function useAccountBoard(
   }
 
   return {
+    accountKind: source.kind,
     hideViewed,
     savedIds: account.savedIds,
     savedOnly,
@@ -170,7 +171,6 @@ export function useAccountBoard(
     toggleHideViewed: () => updateAccount((state) => ({ ...state, hideViewed: !state.hideViewed })),
     toggleSaved,
     toggleSavedOnly: () => updateAccount((state) => ({ ...state, savedOnly: !state.savedOnly })),
-    usingFixture: source.kind === "fixture",
     viewedIds: account.viewedIds
   };
 }
