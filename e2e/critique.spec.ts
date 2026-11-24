@@ -1,6 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 
+const artifactDir = process.env.E2E_ARTIFACT_DIR ?? "test-results/artifacts";
+
 async function firstDescribedJob(page: Page) {
   await page.goto("/board");
   await page.waitForLoadState("networkidle");
@@ -72,7 +74,7 @@ test("home desktop keeps counts with their labels and shortens cards", async ({ 
   const found = page.locator(".search-result-count");
   await expect(found).toHaveCount(0);
 
-  await page.screenshot({ path: "/opt/cursor/artifacts/home-desktop-after.png", fullPage: false });
+  await page.screenshot({ path: `${artifactDir}/home-desktop-after.png`, fullPage: false });
 });
 
 test("search empty state names the query", async ({ page }, testInfo) => {
@@ -93,11 +95,11 @@ test("job detail renders repaired lists", async ({ page }, testInfo) => {
   expect(text).not.toContain("taskBonus");
   expect(text).not.toContain("MDMHands");
   expect(text).not.toContain("〔");
-  await page.screenshot({ path: "/opt/cursor/artifacts/job-desktop-after.png", fullPage: false });
+  await page.screenshot({ path: `${artifactDir}/job-desktop-after.png`, fullPage: false });
   const item = description.getByRole("listitem").first();
   if (await item.count()) await item.scrollIntoViewIfNeeded();
   else await description.scrollIntoViewIfNeeded();
-  await page.screenshot({ path: "/opt/cursor/artifacts/job-desktop-description-after.png", fullPage: false });
+  await page.screenshot({ path: `${artifactDir}/job-desktop-description-after.png`, fullPage: false });
 });
 
 test("mobile layout keeps the first job above collapsed stats", async ({ page }, testInfo) => {
@@ -150,15 +152,15 @@ test("mobile layout keeps the first job above collapsed stats", async ({ page },
   if (cardBox && statsBox) expect(cardBox.y).toBeLessThan(statsBox.y);
   await expect(stats).not.toHaveAttribute("open", "");
 
-  await page.screenshot({ path: "/opt/cursor/artifacts/home-mobile-390-after.png", fullPage: false });
+  await page.screenshot({ path: `${artifactDir}/home-mobile-390-after.png`, fullPage: false });
   const job = await firstDescribedJob(page);
   await page.goto(job.href);
   await expect(page.getByRole("heading", { level: 1 })).toContainText(job.title);
-  await page.screenshot({ path: "/opt/cursor/artifacts/job-mobile-390-after.png", fullPage: false });
+  await page.screenshot({ path: `${artifactDir}/job-mobile-390-after.png`, fullPage: false });
   const descriptionItem = page.locator(".job-detail-description").getByRole("listitem").first();
   if (await descriptionItem.count()) await descriptionItem.scrollIntoViewIfNeeded();
   else await page.locator(".job-detail-description").scrollIntoViewIfNeeded();
-  await page.screenshot({ path: "/opt/cursor/artifacts/job-mobile-description-after.png", fullPage: false });
+  await page.screenshot({ path: `${artifactDir}/job-mobile-description-after.png`, fullPage: false });
 });
 
 test("mobile sticky filters sit against the single-row header", async ({ page }, testInfo) => {
@@ -266,8 +268,8 @@ test("measured label contrast is at least 4.5:1 and text is at least 12px", asyn
     });
   });
 
-  mkdirSync("/opt/cursor/artifacts", { recursive: true });
-  writeFileSync("/opt/cursor/artifacts/contrast-ratios.json", JSON.stringify(samples, null, 2));
+  mkdirSync(artifactDir, { recursive: true });
+  writeFileSync(`${artifactDir}/contrast-ratios.json`, JSON.stringify(samples, null, 2));
   expect(samples.map((sample) => sample.name)).toEqual(expect.arrayContaining([
     "ROLE / FRESHNESS",
     "platform chip",
