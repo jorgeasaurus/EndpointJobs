@@ -190,7 +190,6 @@
     display: inline;
   }
 
-  .refresh-pill,
   .feedback-link {
     min-width: 0;
     min-height: 32px;
@@ -199,11 +198,6 @@
     overflow: visible;
     font-size: max(0.75rem, 12px);
     text-overflow: clip;
-  }
-
-  .refresh-pill {
-    flex: 0 1 auto;
-    min-width: max-content;
   }
 
   .workbench {

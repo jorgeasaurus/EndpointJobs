@@ -32,7 +32,6 @@
 
 .brand,
 .topbar-actions,
-.refresh-pill,
 .feedback-link,
 .eyebrow,
 .feed-note,
@@ -48,7 +47,6 @@
 }
 
 .topbar,
-.refresh-pill,
 .feedback-link,
 .feed-note {
   -webkit-backdrop-filter: blur(16px);
@@ -62,13 +60,18 @@
   font-weight: 700;
 }
 
-.topbar .refresh-pill {
+.refresh-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
   padding: 0 6px;
   color: var(--white-60);
-  background: none;
-  border-color: transparent;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .refresh-label {
@@ -108,7 +111,6 @@
   display: none;
 }
 
-.refresh-pill,
 .feedback-link,
 .feed-note {
   gap: 8px;

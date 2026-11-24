@@ -419,16 +419,7 @@
     min-width: 0;
   }
 
-  .landing-lead {
-  max-width: 34rem;
-  margin: 0;
-  color: var(--white-60);
-  font-size: 1.05rem;
-  line-height: 1.55;
-  text-wrap: pretty;
-}
-
-.landing-actions {
+  .landing-actions {
     justify-self: stretch;
   }
 
