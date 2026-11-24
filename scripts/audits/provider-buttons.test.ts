@@ -1,38 +1,14 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { readFileSync } from "node:fs";
 import test from "node:test";
-import * as esbuild from "esbuild";
 import { chromium } from "@playwright/test";
-import { fileURLToPath } from "node:url";
 
 import { signInStartError } from "../../src/lib/auth/start-provider-sign-in";
 
+import { bundleHarness } from "./harness-bundle";
+
 test("inline provider buttons keep focus and show a failed OAuth start", { timeout: 60_000 }, async () => {
-  const result = await esbuild.build({
-    absWorkingDir: fileURLToPath(new URL("../..", import.meta.url)),
-    entryPoints: [fileURLToPath(new URL("./fixtures/provider-buttons-harness.tsx", import.meta.url))],
-    bundle: true,
-    write: false,
-    format: "iife",
-    platform: "browser",
-    target: "es2022",
-    jsx: "automatic",
-    plugins: [
-      {
-        name: "at-alias",
-        setup(build) {
-          build.onResolve({ filter: /^@\// }, (args) => {
-            const base = resolve(fileURLToPath(new URL("../../src", import.meta.url)), args.path.slice(2));
-            for (const candidate of [base, `${base}.tsx`, `${base}.ts`, `${base}.jsx`, `${base}.js`]) {
-              if (existsSync(candidate)) return { path: candidate };
-            }
-            return { path: base };
-          });
-        }
-      }
-    ]
-  });
+  const js = await bundleHarness(new URL("./fixtures/provider-buttons-harness.tsx", import.meta.url));
   const css = `
     :root { --lime: #bef264; --black: #000; --white: #fff; --danger: #fb7185; --glow-lime: none; --sans: system-ui, sans-serif; }
     ${readFileSync(new URL("../../src/app/auth-menu.css", import.meta.url), "utf8")}
@@ -45,7 +21,7 @@ test("inline provider buttons keep focus and show a failed OAuth start", { timeo
   try {
     const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
     await page.setContent(`<!doctype html><html><head><style>${css}</style></head><body><div id="root"></div></body></html>`);
-    await page.addScriptTag({ content: result.outputFiles[0]?.text ?? "" });
+    await page.addScriptTag({ content: js });
     const google = page.getByRole("button", { name: "Continue with Google" });
     const github = page.getByRole("button", { name: "Continue with GitHub" });
     await google.waitFor();

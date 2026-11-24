@@ -1,17 +1,12 @@
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
-import { resolve } from "node:path";
 import test from "node:test";
-import * as esbuild from "esbuild";
 import { chromium } from "@playwright/test";
-import { fileURLToPath } from "node:url";
 
 import { queryBoardPage } from "../../lib/board-page";
+import { bundleHarness, nextLinkStub } from "../../../scripts/audits/harness-bundle";
 import { makeJob } from "../../../scripts/audits/shared";
 import { initialFilterState } from "./filter-model";
 
-const repoRoot = fileURLToPath(new URL("../../../", import.meta.url));
-const srcRoot = fileURLToPath(new URL("../../", import.meta.url));
 const title = "Visible public role";
 
 test("a failed saved-jobs request keeps the last results and the Saved jobs only control", { timeout: 60_000 }, async () => {
@@ -28,7 +23,9 @@ test("a failed saved-jobs request keeps the last results and the Saved jobs only
       })
     ]
   }, initialFilterState, 1, 20);
-  const js = await bundle(fileURLToPath(new URL("../../../scripts/audits/fixtures/saved-scope-error-harness.tsx", import.meta.url)));
+  const js = await bundleHarness(new URL("../../../scripts/audits/fixtures/saved-scope-error-harness.tsx", import.meta.url), {
+    stubs: { "next/link": nextLinkStub }
+  });
   const browser = await chromium.launch({
     headless: true,
     executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH ?? "/usr/bin/google-chrome"
@@ -70,47 +67,3 @@ test("a failed saved-jobs request keeps the last results and the Saved jobs only
     await browser.close();
   }
 });
-
-async function bundle(entry: string) {
-  const result = await esbuild.build({
-    absWorkingDir: repoRoot,
-    entryPoints: [entry],
-    bundle: true,
-    write: false,
-    format: "iife",
-    platform: "browser",
-    target: "es2022",
-    jsx: "automatic",
-    plugins: [
-      {
-        name: "next-link",
-        setup(build) {
-          build.onResolve({ filter: /^next\/link$/ }, () => ({ path: "next-link", namespace: "next-link" }));
-          build.onLoad({ filter: /.*/, namespace: "next-link" }, () => ({
-            loader: "js",
-            resolveDir: repoRoot,
-            contents: `import { createElement } from "react";
-              export default function Link(props) {
-                return createElement("a", { href: props.href, className: props.className }, props.children);
-              }`
-          }));
-        }
-      },
-      {
-        name: "at-alias",
-        setup(build) {
-          build.onResolve({ filter: /^@\// }, (args) => ({ path: resolveAlias(args.path) }));
-        }
-      }
-    ]
-  });
-  return result.outputFiles[0]?.text ?? "";
-}
-
-function resolveAlias(specifier: string) {
-  const base = resolve(srcRoot, specifier.slice(2));
-  for (const candidate of [base, `${base}.tsx`, `${base}.ts`, `${base}.jsx`, `${base}.js`]) {
-    if (existsSync(candidate)) return candidate;
-  }
-  return base;
-}

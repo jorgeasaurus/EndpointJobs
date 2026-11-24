@@ -1,12 +1,8 @@
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
-import { resolve } from "node:path";
 import test from "node:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import * as esbuild from "esbuild";
 import { chromium } from "@playwright/test";
-import { fileURLToPath } from "node:url";
 
 import { initialFilterState } from "../../src/components/job-board/filter-model";
 import { DescriptionContent } from "../../src/components/job-board/description-content";
@@ -16,10 +12,8 @@ import { isDescriptionHeading, repairJobDescription, toDescriptionBlocks } from 
 import { getCardPostedLabel } from "../../src/lib/jobs";
 import { cardSourceLabels, dedupeJobLead, isBoilerplateListingText } from "../../src/lib/listing-copy";
 import { hasListedSalary, hasShownSalary } from "../../src/lib/shown-salary";
+import { bundleHarness } from "./harness-bundle";
 import { makeJob } from "./shared";
-
-const repoRoot = fileURLToPath(new URL("../../", import.meta.url));
-const srcRoot = fileURLToPath(new URL("../../src/", import.meta.url));
 
 const adzunaPreview = "Adzuna listing preview for Experis: Kanton Genf, Schweiz · Unknown · Windows platform · macOS platform. Full description is available on the source posting.";
 
@@ -205,7 +199,7 @@ test("the salary stat counts assumed currencies and the newest preview does not"
 });
 
 test("the mobile overflow menu opens, closes on Escape and outside click, and moves focus", { timeout: 60_000 }, async () => {
-  const js = await bundle(fileURLToPath(new URL("./fixtures/topbar-overflow-harness.tsx", import.meta.url)));
+  const js = await bundleHarness(new URL("./fixtures/topbar-overflow-harness.tsx", import.meta.url));
   const browser = await chromium.launch({
     headless: true,
     executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH ?? "/usr/bin/google-chrome"
@@ -236,31 +230,3 @@ test("the mobile overflow menu opens, closes on Escape and outside click, and mo
     await browser.close();
   }
 });
-
-async function bundle(entry: string) {
-  const result = await esbuild.build({
-    absWorkingDir: repoRoot,
-    entryPoints: [entry],
-    bundle: true,
-    write: false,
-    format: "iife",
-    platform: "browser",
-    target: "es2022",
-    jsx: "automatic",
-    plugins: [{
-      name: "at-alias",
-      setup(build) {
-        build.onResolve({ filter: /^@\// }, (args) => ({ path: resolveAlias(args.path) }));
-      }
-    }]
-  });
-  return result.outputFiles[0]?.text ?? "";
-}
-
-function resolveAlias(specifier: string) {
-  const base = resolve(srcRoot, specifier.slice(2));
-  for (const candidate of [base, `${base}.tsx`, `${base}.ts`]) {
-    if (existsSync(candidate)) return candidate;
-  }
-  return base;
-}
