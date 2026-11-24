@@ -16,7 +16,6 @@ export type AccountClient = {
   from: (table: string) => {
     select: (columns: string) => EqQuery;
   };
-  rpc: (name: string, args: { p_job_id: string }) => Promise<ErrorResult>;
 };
 
 export async function readPreferences(client: AccountClient, userId: string): Promise<SavedPreferences | null> {
@@ -29,10 +28,6 @@ export async function readPreferences(client: AccountClient, userId: string): Pr
   const row = result.data as { filters?: unknown; schema_version?: unknown };
   if (row.schema_version !== undefined && row.schema_version !== 1) return null;
   return decodePreferences(row.filters);
-}
-
-export async function recordJobView(client: AccountClient, jobId: string) {
-  return client.rpc("record_job_view", { p_job_id: jobId });
 }
 
 export async function listViewedIds(client: AccountClient, userId: string) {

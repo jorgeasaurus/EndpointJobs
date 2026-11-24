@@ -20,7 +20,6 @@ import {
 import {
   listSavedIds,
   readPreferences,
-  recordJobView,
   type AccountClient
 } from "../../src/lib/account/store";
 
@@ -122,7 +121,7 @@ test("account export keeps the four user tables", () => {
   assert.deepEqual(Object.keys(document), ["exportedAt", "profile", "preferences", "savedJobs", "jobViews"]);
 });
 
-test("account store reads preferences and saved jobs and records views for the signed-in user", async () => {
+test("account store reads preferences and saved jobs for the signed-in user", async () => {
   const calls: unknown[] = [];
   const client = fakeClient(calls, {
     preferences: { filters: { q: "Intune", hideViewed: true }, schema_version: 1 },
@@ -131,11 +130,9 @@ test("account store reads preferences and saved jobs and records views for the s
   const preferences = await readPreferences(client, "user-1");
   assert.equal(preferences?.filters.query, "Intune");
   assert.equal(preferences?.hideViewed, true);
-  await recordJobView(client, "job-1");
   assert.deepEqual(await listSavedIds(client, "user-1"), ["job-1"]);
   assert.deepEqual(calls, [
     { table: "user_preferences", op: "select" },
-    { rpc: "record_job_view", jobId: "job-1" },
     { table: "saved_jobs", op: "select" }
   ]);
 });
@@ -175,10 +172,6 @@ function fakeClient(calls: unknown[], seed: { preferences: unknown; saved: unkno
           } as never;
         }
       };
-    },
-    rpc(_name, args) {
-      calls.push({ rpc: "record_job_view", jobId: args.p_job_id });
-      return Promise.resolve({ error: null });
     }
   };
 }
@@ -189,7 +182,7 @@ test("board preferences are written by the server route with the session user", 
   const store = readFileSync(new URL("../../src/lib/account/store.ts", import.meta.url), "utf8");
   assert.match(hook, /fetch\("\/api\/account\/preferences", \{\n\s+method: "PUT"/);
   assert.doesNotMatch(hook, /upsertPreferences/);
-  assert.doesNotMatch(store, /\.upsert\(|\.insert\(/);
+  assert.doesNotMatch(store, /\.upsert\(|\.insert\(|\.rpc\(/);
   assert.match(route, /requireAccountUser\(\)/);
   assert.match(route, /preferenceRow\(session\.user\.id, preferences,/);
   assert.match(route, /decodePreferences\(await request\.json\(\)/);
@@ -199,4 +192,12 @@ test("board preferences are written by the server route with the session user", 
   assert.equal(decoded?.filters.query, "Jamf");
   assert.equal(decoded?.hideViewed, true);
   assert.equal(decoded?.savedOnly, true);
+});
+
+test("job views are recorded by the server route with the session user", () => {
+  const hook = readFileSync(new URL("../../src/components/job-board/use-account-board.ts", import.meta.url), "utf8");
+  const route = readFileSync(new URL("../../src/app/api/account/views/route.ts", import.meta.url), "utf8");
+  assert.match(hook, /fetch\("\/api\/account\/views", \{\n\s+method: "POST"/);
+  assert.match(route, /export async function POST/);
+  assert.match(route, /session\.supabase\.rpc\("record_job_view", \{ p_job_id: jobId \}\)/);
 });

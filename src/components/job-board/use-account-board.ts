@@ -7,7 +7,6 @@ import {
   listSavedIds,
   listViewedIds,
   readPreferences,
-  recordJobView,
   type AccountClient
 } from "@/lib/account/store";
 import {
@@ -217,7 +216,11 @@ export function useRecordJobView(jobId: string) {
 
   useEffect(() => {
     if (!userId || !isSupabaseConfigured()) return;
-    void recordJobView(browserAccountClient(), jobId);
+    void fetch("/api/account/views", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ jobId })
+    });
   }, [jobId, userId]);
 }
 
