@@ -27,20 +27,24 @@ export function deleteAccount(confirmation: string) {
 
 /** Saves the account export as endpoint-jobs-account.json. */
 export async function downloadAccountExport() {
-  const response = await fetch("/api/account/export");
-  if (!response.ok) return false;
-  const url = URL.createObjectURL(await response.blob());
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "endpoint-jobs-account.json";
-  link.click();
-  URL.revokeObjectURL(url);
-  return true;
+  try {
+    const response = await fetch("/api/account/export");
+    if (!response.ok) return false;
+    const url = URL.createObjectURL(await response.blob());
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "endpoint-jobs-account.json";
+    link.click();
+    URL.revokeObjectURL(url);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-async function send(path: string, init: RequestInit) {
-  const response = await fetch(path, init);
-  return response.ok;
+/** A network failure counts as a failed route, so callers undo or report it the same way. */
+function send(path: string, init: RequestInit) {
+  return fetch(path, init).then((response) => response.ok, () => false);
 }
 
 function jsonRequest(method: "POST" | "PUT", body: unknown): RequestInit {

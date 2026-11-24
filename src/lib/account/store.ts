@@ -3,9 +3,9 @@ import { savedJobSnapshot, type SavedJobSnapshot } from "./records";
 
 type ErrorResult = { error: { message: string } | null; data?: unknown };
 
-type EqQuery = {
-  eq: (column: string, value: string) => EqQuery & Promise<ErrorResult> & {
-    eq: (column: string, value: string) => Promise<ErrorResult>;
+/** One user's rows: awaited directly, as a single row, or ordered. */
+type UserRowsQuery = {
+  eq: (column: string, value: string) => Promise<ErrorResult> & {
     maybeSingle: () => Promise<ErrorResult>;
     order: (column: string, options: { ascending: boolean }) => Promise<ErrorResult>;
   };
@@ -14,7 +14,7 @@ type EqQuery = {
 /** Reads only; account writes go through the `/api/account/*` routes (see `requests.ts`). */
 export type AccountClient = {
   from: (table: string) => {
-    select: (columns: string) => EqQuery;
+    select: (columns: string) => UserRowsQuery;
   };
 };
 

@@ -160,16 +160,8 @@ function fakeClient(calls: unknown[], seed: { preferences: unknown; saved: unkno
         select() {
           calls.push({ table, op: "select" });
           const data = table === "user_preferences" ? seed.preferences : table === "saved_jobs" ? seed.saved : [];
-          return {
-            eq() {
-              return {
-                eq: () => Promise.resolve({ data, error: null }),
-                maybeSingle: () => Promise.resolve({ data, error: null }),
-                order: () => Promise.resolve({ data, error: null }),
-                then: (resolve: (value: { data: unknown; error: null }) => void) => resolve({ data, error: null })
-              };
-            }
-          } as never;
+          const result = Promise.resolve({ data, error: null });
+          return { eq: () => Object.assign(result, { maybeSingle: () => result, order: () => result }) };
         }
       };
     }
