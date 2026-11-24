@@ -6,16 +6,20 @@ export type DevAccountFixture = {
   savedOnly: boolean;
 };
 
-/** Where the signed-in user's account data comes from. */
+/** Who is signed in, and where their account data comes from. */
 export type AccountSource =
   | { kind: "none" }
-  | { kind: "fixture"; userId: string; fixture: DevAccountFixture }
-  | { kind: "account"; userId: string };
+  | { kind: "fixture"; userId: string; email: string; fixture: DevAccountFixture }
+  | { kind: "account"; userId: string; email: string };
 
 export type SignInSession = {
   configured: boolean;
-  email: string | null;
   account: AccountSource;
 };
 
 export const noAccount: AccountSource = { kind: "none" };
+
+/** Sign-in buttons show only when auth is configured and nobody is signed in. */
+export function canShowSignInOffer({ configured, account }: SignInSession) {
+  return configured && account.kind === "none";
+}

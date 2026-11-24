@@ -7,10 +7,10 @@ import { devAuthFixture } from "./dev-auth-fixture";
 test("the dev auth fixture only invents a session when the caller enables it", () => {
   const signedIn = (email: string) => ({
     configured: true,
-    email,
     account: {
       kind: "fixture",
       userId: "e2e-user",
+      email,
       fixture: { savedIds: [], viewedIds: [], hideViewed: false, savedOnly: false }
     }
   });
@@ -18,8 +18,8 @@ test("the dev auth fixture only invents a session when the caller enables it", (
   assert.equal(devAuthFixture("?e2e-auth=in", false), null);
   assert.equal(devAuthFixture("?e2e-auth=out", false), null);
   assert.equal(devAuthFixture("", true), null);
-  assert.deepEqual(devAuthFixture("?e2e-auth=out", true), { configured: true, email: null, account: { kind: "none" } });
-  assert.deepEqual(devAuthFixture("?e2e-auth=off", true), { configured: false, email: null, account: { kind: "none" } });
+  assert.deepEqual(devAuthFixture("?e2e-auth=out", true), { configured: true, account: { kind: "none" } });
+  assert.deepEqual(devAuthFixture("?e2e-auth=off", true), { configured: false, account: { kind: "none" } });
   assert.deepEqual(devAuthFixture("e2e-auth=in", true), signedIn("jorgesuarez@gmail.com"));
   assert.deepEqual(devAuthFixture("?e2e-auth=in&e2e-email=person@example.com", true), signedIn("person@example.com"));
   assert.deepEqual(devAuthFixture("?e2e-auth=in&e2e-email=%20%20", true), signedIn("jorgesuarez@gmail.com"));

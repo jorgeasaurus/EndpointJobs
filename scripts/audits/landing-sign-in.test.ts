@@ -7,19 +7,20 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { LandingSignIn } from "../../src/components/auth/landing-sign-in";
-import { canShowSignInOffer } from "../../src/components/auth/sign-in-session";
+import { canShowSignInOffer, noAccount } from "../../src/lib/auth/session";
 
 const phrase = ["Sign in to save", "jobs, filters, and viewed job history"].join(" ");
+const someone = { kind: "account", userId: "user-1", email: "a@example.com" } as const;
 
 test("the home shows provider buttons only when signed out and auth is configured", () => {
   const unconfigured = renderToStaticMarkup(createElement(LandingSignIn, {
-    session: { configured: false, email: null }
+    session: { configured: false, account: noAccount }
   }));
   const signedOut = renderToStaticMarkup(createElement(LandingSignIn, {
-    session: { configured: true, email: null }
+    session: { configured: true, account: noAccount }
   }));
   const signedIn = renderToStaticMarkup(createElement(LandingSignIn, {
-    session: { configured: true, email: "a@example.com" }
+    session: { configured: true, account: someone }
   }));
 
   assert.equal(unconfigured, "");
@@ -31,9 +32,9 @@ test("the home shows provider buttons only when signed out and auth is configure
   assert.doesNotMatch(signedOut, /<h[1-6]/);
   assert.doesNotMatch(signedOut, /<a\b/);
   assert.doesNotMatch(signedOut, new RegExp(phrase));
-  assert.equal(canShowSignInOffer({ configured: false, email: null }), false);
-  assert.equal(canShowSignInOffer({ configured: true, email: null }), true);
-  assert.equal(canShowSignInOffer({ configured: true, email: "a@example.com" }), false);
+  assert.equal(canShowSignInOffer({ configured: false, account: noAccount }), false);
+  assert.equal(canShowSignInOffer({ configured: true, account: noAccount }), true);
+  assert.equal(canShowSignInOffer({ configured: true, account: someone }), false);
 
   const menu = readFileSync(new URL("../../src/components/auth/auth-menu.tsx", import.meta.url), "utf8");
   const landing = readFileSync(new URL("../../src/components/auth/landing-sign-in.tsx", import.meta.url), "utf8");

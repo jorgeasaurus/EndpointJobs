@@ -11,12 +11,11 @@ export function devAuthFixture(search: string, enabled: boolean): SignInSession 
     const email = params.get("e2e-email")?.trim();
     return {
       configured: true,
-      email: email || fixtureEmail,
-      account: { kind: "fixture", userId: "e2e-user", fixture: accountFixture(params) }
+      account: { kind: "fixture", userId: "e2e-user", email: email || fixtureEmail, fixture: accountFixture(params) }
     };
   }
-  if (mode === "out") return { configured: true, email: null, account: noAccount };
-  if (mode === "off") return { configured: false, email: null, account: noAccount };
+  if (mode === "out") return { configured: true, account: noAccount };
+  if (mode === "off") return { configured: false, account: noAccount };
   return null;
 }
 

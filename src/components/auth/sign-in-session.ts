@@ -5,13 +5,8 @@ import { noAccount, type SignInSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
-export function canShowSignInOffer(session: Pick<SignInSession, "configured" | "email">) {
-  return session.configured && session.email === null;
-}
-
 let session: SignInSession = {
   configured: isSupabaseConfigured(),
-  email: null,
   account: noAccount
 };
 let started = false;
@@ -40,18 +35,15 @@ function ensureLoaded() {
       const claims = data?.claims;
       const userId = typeof claims?.sub === "string" ? claims.sub : null;
       if (!claims || !userId) {
-        publish({ configured: true, email: null, account: noAccount });
+        publish({ configured: true, account: noAccount });
         return;
       }
       const claimEmail = claims.email;
-      publish({
-        configured: true,
-        email: typeof claimEmail === "string" && claimEmail ? claimEmail : "Signed in",
-        account: { kind: "account", userId }
-      });
+      const email = typeof claimEmail === "string" && claimEmail ? claimEmail : "Signed in";
+      publish({ configured: true, account: { kind: "account", userId, email } });
     })
     .catch(() => {
-      publish({ configured: true, email: null, account: noAccount });
+      publish({ configured: true, account: noAccount });
     });
 }
 

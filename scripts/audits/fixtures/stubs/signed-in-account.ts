@@ -28,8 +28,7 @@ export function createClient() {
 // One object, like the real store's snapshot, so the account keeps its identity across renders.
 const session: SignInSession = {
   configured: true,
-  email: "user-1@example.com",
-  account: { kind: "account", userId: "user-1" }
+  account: { kind: "account", userId: "user-1", email: "user-1@example.com" }
 };
 
 export function useSignInSession() {
