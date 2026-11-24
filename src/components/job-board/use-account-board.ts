@@ -50,9 +50,9 @@ function accountSourceKey(source: AccountSource) {
   return "userId" in source ? `${source.kind}:${source.userId}` : source.kind;
 }
 
-function resolveAccountSource(userId: string | null | undefined, fixtureParams: string | null): AccountSource {
+function resolveAccountSource(userId: string | null | undefined, fixtureParams: string): AccountSource {
   if (!userId) return { kind: "signed-out" };
-  const fixture = fixtureParams === null ? null : devAccountFixture(fixtureParams, process.env.NODE_ENV !== "production");
+  const fixture = devAccountFixture(fixtureParams, process.env.NODE_ENV !== "production");
   if (fixture) return { kind: "fixture", userId, fixture };
   if (!isSupabaseConfigured()) return { kind: "unconfigured" };
   return { kind: "account", userId };
@@ -77,8 +77,10 @@ const readFixtureParams = () =>
     .filter(([name]) => name.startsWith("e2e-"))
     .map(([name, value]) => `${name}=${encodeURIComponent(value)}`)
     .join("&");
-// The server has no query string; hydration matches, then the client reads the real one.
-const readServerFixtureParams = () => null;
+// The server has no query string. Read it as empty, the same value the client
+// reads without `e2e-*` params, so hydration doesn't hand the account effect a
+// new source and load the account twice.
+const readServerFixtureParams = () => "";
 
 /** State owned by one key: another key reads `initial` until something is written for it. */
 function useKeyedState<T>(key: string, initial: T) {
