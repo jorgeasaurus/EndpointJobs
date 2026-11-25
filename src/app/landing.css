@@ -1,3 +1,27 @@
+/* Home is the short page. A tall viewport keeps the footer at the bottom and
+   gives the leftover height to the two cards. Other pages keep the shared frame. */
+.site-frame.landing-frame {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.landing-frame .site-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+}
+
+.landing-frame .landing-hero {
+  flex: 1 0 auto;
+}
+
+.landing-frame .landing-sign-in,
+.landing-frame .site-footer {
+  flex-shrink: 0;
+}
+
 .landing-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(320px, 1fr);
@@ -19,7 +43,7 @@
 .landing-copy {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   gap: 36px;
   min-height: 100%;
   padding: clamp(28px, 4vw, 52px);
@@ -256,6 +280,7 @@
 
 .landing-preview ol {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
   gap: 8px;
   margin: 0;
@@ -263,8 +288,14 @@
   list-style: none;
 }
 
+.landing-preview li {
+  display: flex;
+  flex: 1 1 auto;
+}
+
 .landing-preview li a {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
   gap: 6px;
   padding: 14px 16px;
@@ -425,5 +456,35 @@
 
   .landing-jobs-link {
     width: 100%;
+  }
+}
+
+/* Eight rows are rendered (landingPreviewSize). The first four always show.
+   Later rows appear only when a two-column viewport can hold them. */
+.landing-preview li:nth-child(n + 5) {
+  display: none;
+}
+
+@media (min-width: 901px) and (min-height: 1200px) {
+  .landing-preview li:nth-child(-n + 5) {
+    display: flex;
+  }
+}
+
+@media (min-width: 901px) and (min-height: 1360px) {
+  .landing-preview li:nth-child(-n + 6) {
+    display: flex;
+  }
+}
+
+@media (min-width: 901px) and (min-height: 1520px) {
+  .landing-preview li:nth-child(-n + 7) {
+    display: flex;
+  }
+}
+
+@media (min-width: 901px) and (min-height: 1680px) {
+  .landing-preview li:nth-child(-n + 8) {
+    display: flex;
   }
 }

@@ -9,7 +9,7 @@ import ts from "typescript";
 import { initialFilterState } from "../../src/components/job-board/filter-model";
 import { getLandingJsonLd, serializeJsonLd } from "../../src/app/structured-data";
 import { queryBoardPage } from "../../src/lib/board-page";
-import { selectLanding } from "../../src/lib/landing";
+import { landingPreviewSize, selectLanding } from "../../src/lib/landing";
 import { hasListedSalary, hasShownSalary } from "../../src/lib/shown-salary";
 import { boardHomeRedirectKeys, filterSearchParamKeys } from "../../src/lib/board-search-params";
 import { legacyHomeBoardRedirect } from "../../src/lib/legacy-board-url";
@@ -302,13 +302,14 @@ test("the landing preview leads with management-platform roles, newest first wit
 
   assert.deepEqual(
     preview.map(({ job }) => job.id),
-    ["jamf", "intune", "okta-jamf-intune", "newest-adjacent"]
+    ["jamf", "intune", "okta-jamf-intune", "newest-adjacent", "older-adjacent"]
   );
   // Tags follow the tool ranking (most open roles first), not taxonomy or posting order.
   assert.deepEqual(preview.map(({ managementTools }) => managementTools), [
     ["Jamf"],
     ["Intune", "Autopilot"],
     ["Intune", "Jamf"],
+    [],
     []
   ]);
 });
@@ -346,7 +347,7 @@ test("landing tool counts match each tool page and skip adjacent-role tools", ()
   assert.deepEqual(selectLanding([]), { total: 0, preview: [], toolCounts: [] });
 });
 
-test("the landing preview is the newest roles with a shown salary, capped at the same four rows", () => {
+test("the landing preview is the newest roles with a shown salary, capped for a tall desktop", () => {
   const paid = (id: string, days: number, label: string, min: number): Job => makeJob({
     id,
     title: id,
@@ -379,7 +380,11 @@ test("the landing preview is the newest roles with a shown salary, capped at the
     paid("paid-mid", 3, "$130k-$150k", 130000),
     paid("paid-older", 4, "$120k-$140k", 120000),
     paid("paid-fourth", 5, "$110k-$130k", 110000),
-    paid("paid-fifth", 6, "$100k-$120k", 100000)
+    paid("paid-fifth", 6, "$100k-$120k", 100000),
+    paid("paid-sixth", 7, "$95k-$115k", 95000),
+    paid("paid-seventh", 8, "$90k-$110k", 90000),
+    paid("paid-eighth", 9, "$85k-$105k", 85000),
+    paid("paid-ninth", 10, "$80k-$100k", 80000)
   ];
   const feed = {
     updatedAt: "2026-10-26T00:00:00.000Z",
@@ -389,12 +394,24 @@ test("the landing preview is the newest roles with a shown salary, capped at the
   const page = queryBoardPage(feed, initialFilterState, 1);
   const preview = selectLanding(jobs).preview.map(({ job }) => job);
   assert.equal(selectLanding(jobs).total, page.total);
-  const shownIds = ["paid-new", "paid-mid", "paid-older", "paid-fourth", "paid-fifth", "unknown-date-paid"];
+  const shownIds = [
+    "paid-new",
+    "paid-mid",
+    "paid-older",
+    "paid-fourth",
+    "paid-fifth",
+    "paid-sixth",
+    "paid-seventh",
+    "paid-eighth",
+    "paid-ninth",
+    "unknown-date-paid"
+  ];
 
   assert.equal(page.metrics.salaryJobsCount, jobs.filter(hasListedSalary).length);
   assert.ok(page.metrics.salaryJobsCount > shownIds.length);
-  assert.deepEqual(preview.map((job) => job.id), shownIds.slice(0, 4));
-  assert.equal(preview.length, 4);
+  assert.deepEqual(preview.map((job) => job.id), shownIds.slice(0, landingPreviewSize));
+  assert.equal(preview.length, landingPreviewSize);
+  assert.ok(landingPreviewSize > 4);
   for (const job of preview) {
     assert.equal(hasShownSalary(job), true);
   }

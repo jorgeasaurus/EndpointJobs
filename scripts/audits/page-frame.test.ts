@@ -16,6 +16,20 @@ test("the shared page frame fills the viewport and keeps its side padding", () =
   assert.match(frame, /padding:\s*18px/);
 });
 
+test("the home page alone fills a tall viewport as a column", () => {
+  const home = readFileSync(new URL("../../src/app/page.tsx", import.meta.url), "utf8");
+  const board = readFileSync(new URL("../../src/components/job-board.tsx", import.meta.url), "utf8");
+  const css = readFileSync(new URL("../../src/app/landing.css", import.meta.url), "utf8");
+
+  assert.match(home, /className="site-frame landing-frame"/);
+  assert.doesNotMatch(board, /landing-frame/);
+  const frame = ruleBody(css, String.raw`\.site-frame\.landing-frame`);
+  assert.match(frame, /display:\s*flex/);
+  assert.match(frame, /flex-direction:\s*column/);
+  assert.match(frame, /min-height:\s*100dvh/);
+  assert.match(css, /\.landing-frame \.landing-hero\s*\{[^}]*flex:\s*1\s*0\s*auto/);
+});
+
 test("home, board, directory, and roadmap share the full-width frame", () => {
   const sources = [
     new URL("../../src/app/page.tsx", import.meta.url),
@@ -24,9 +38,13 @@ test("home, board, directory, and roadmap share the full-width frame", () => {
     new URL("../../src/app/roadmap/page.tsx", import.meta.url)
   ].map((url) => readFileSync(url, "utf8"));
 
+  assert.match(sources[0], /className="site-frame landing-frame"/);
   for (const source of sources) {
-    assert.match(source, /className="site-frame"/);
     assert.doesNotMatch(source, /job-detail-frame/);
+  }
+  for (const source of sources.slice(1)) {
+    assert.match(source, /className="site-frame"/);
+    assert.doesNotMatch(source, /landing-frame/);
   }
 });
 

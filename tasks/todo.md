@@ -1202,3 +1202,14 @@ Salary badges use the listing currency via Intl, preserving country qualifiers s
 Review: React Doctor's formatter warning is addressed by a per-currency cache. A mocked constructor test confirms repeated normalized currency codes create one formatter; its static rule still flags the cache-miss construction.
 
 Copilot completed two reviews; the latest targets `dc10411` with no findings. Both React Doctor threads are resolved with cache/test evidence. All 517 tests, typecheck, lint, and PR checks pass.
+
+# Homepage fills a tall viewport
+
+- [x] Make the home page a min-height 100dvh column so the footer sits at the bottom.
+- [x] Let the hero cards grow, center the hero copy, and reveal more newest-job rows when the viewport has room.
+- [x] Leave the shared frame alone so the board and other pages keep their layout.
+- [x] Bump the version to 0.1.51.
+
+## Review
+
+The shared frame was already full width and at least `100vh`, but the homepage column still sized to its content, so a tall desktop left empty space under the footer. The home page is now its own flex column. The hero section takes the leftover height, the two cards stretch, the hero copy stays vertically centered, and newest-job rows after the first four appear only at tall two-column heights. Version 0.1.51.

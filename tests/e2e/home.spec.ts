@@ -4,7 +4,7 @@ import { expect, test } from "@playwright/test";
 
 import { getActiveSourceFeed } from "../../src/lib/board-page";
 import { getEndpointToolBySlug, getEndpointToolLabel } from "../../src/lib/job-taxonomy";
-import { selectLanding } from "../../src/lib/landing";
+import { landingPreviewSize, selectLanding } from "../../src/lib/landing";
 import type { JobsFeed } from "../../src/types/job";
 
 const feedData = JSON.parse(readFileSync(new URL("../../src/data/jobs.json", import.meta.url), "utf8")) as JobsFeed;
@@ -59,16 +59,20 @@ test("[HOME-03] newest roles preview", async ({ page }) => {
   await expect(preview.getByRole("link", { name: "Job board" })).toHaveAttribute("href", "/board");
   const rows = preview.locator("ol a");
   const count = await rows.count();
-  expect(count).toBeLessThanOrEqual(4);
+  expect(count).toBeLessThanOrEqual(landingPreviewSize);
   expect(count).toBe(jobs.length);
   for (let index = 0; index < count; index += 1) {
     const row = rows.nth(index);
     await expect(row).toHaveAttribute("href", `/jobs/${jobs[index].id}`);
-    await expect(row).toContainText(jobs[index].title);
-    await expect(row).toContainText(jobs[index].company);
-    await expect(row.locator(".landing-salary")).not.toBeEmpty();
-    await expect(row.locator(".landing-workplace")).not.toBeEmpty();
+    const text = (await row.textContent()) ?? "";
+    expect(text).toContain(jobs[index].title);
+    expect(text).toContain(jobs[index].company);
+    expect((await row.locator(".landing-salary").textContent())?.trim()).not.toBe("");
+    expect((await row.locator(".landing-workplace").textContent())?.trim()).not.toBe("");
   }
+  // Suite viewports are below the tall-desktop breakpoint, so the extra rows stay hidden.
+  const visible = await preview.locator("ol li:visible").count();
+  expect(visible).toBe(Math.min(4, count));
 });
 
 test("[HOME-04] why an account", async ({ page }) => {

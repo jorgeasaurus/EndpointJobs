@@ -4,7 +4,8 @@ import { managementTools } from "@/lib/job-taxonomy";
 import { hasShownSalary } from "@/lib/shown-salary";
 import type { EndpointTool, Job } from "@/types/job";
 
-const previewSize = 4;
+/** Enough rows for a tall desktop. Shorter viewports keep the first four visible. */
+export const landingPreviewSize = 8;
 const toolCountSize = 4;
 
 export type LandingRole = { job: Job; managementTools: EndpointTool[] };
@@ -32,7 +33,7 @@ export function selectLanding(jobs: readonly Job[]): Landing {
   const preview = [
     ...paid.filter((role) => role.managementTools.length > 0),
     ...paid.filter((role) => role.managementTools.length === 0)
-  ].slice(0, previewSize);
+  ].slice(0, landingPreviewSize);
   const toolCounts = ranking.filter(({ count }) => count > 0).slice(0, toolCountSize);
 
   return { total: visibleJobs.length, preview, toolCounts };
