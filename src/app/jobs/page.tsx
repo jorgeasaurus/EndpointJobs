@@ -56,7 +56,7 @@ export default async function JobsDirectory({ searchParams }: DirectoryPageProps
   const pageJobs = activeJobs.slice((page - 1) * jobsPerPage, page * jobsPerPage);
 
   return (
-    <main className="site-frame job-detail-frame">
+    <main className="site-frame">
       <ParallaxBackground />
 
       <div className="site-content">

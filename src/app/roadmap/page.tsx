@@ -37,7 +37,7 @@ export const metadata: Metadata = {
 
 export default function RoadmapPage() {
   return (
-    <main className="site-frame job-detail-frame">
+    <main className="site-frame">
       <ParallaxBackground />
       <div className="site-content">
         <Topbar updatedAt={feed.updatedAt} />
