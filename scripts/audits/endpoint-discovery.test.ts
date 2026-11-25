@@ -1,11 +1,20 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { deriveTools, inferRoleFamily, isEndpointRelevant, normalizeSearchText } from "../job-refresh/shared";
+import { endpointToolDefinitions, identifiesEndpointRole, managementTools } from "../../src/lib/job-taxonomy";
 
 function matches(title: string, description: string) {
   const text = normalizeSearchText(`${title} ${description}`);
   return isEndpointRelevant(text, title, deriveTools(text));
 }
+
+test("management platforms and PowerShell are the tools that identify an endpoint role", () => {
+  assert.deepEqual(
+    endpointToolDefinitions.filter(identifiesEndpointRole).map(({ tool }) => tool),
+    ["Jamf", "Intune", "SCCM", "Fleet MDM", "Kandji", "NinjaOne", "Workspace ONE", "Tanium", "Autopilot", "PowerShell"]
+  );
+  assert.deepEqual(managementTools, ["Jamf", "Intune", "SCCM", "Fleet MDM", "Kandji", "NinjaOne", "Workspace ONE", "Tanium", "Autopilot"]);
+});
 
 test("IT platform and lead specialist roles require endpoint responsibilities", () => {
   assert.equal(matches("Senior IT Platform and Automation Engineer", "Own Jamf and Intune device lifecycle, zero-touch onboarding and endpoint patch compliance."), true);

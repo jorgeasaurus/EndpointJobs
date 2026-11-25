@@ -16,6 +16,9 @@ test("[HOME-01] landing hero", async ({ page }) => {
   const jobs = page.getByRole("link", { name: /^See all [\d,]+ jobs$/ });
   await expect(jobs).toBeVisible();
   await expect(jobs).toHaveAttribute("href", "/board");
+  await expect(page.getByText("Endpoint roles only, gathered daily from company career pages and job boards.")).toBeVisible();
+  // The preview shows the feed's freshness, so the topbar leaves its Updated pill off.
+  await expect(page.locator(".refresh-pill")).toHaveCount(0);
   const html = await page.request.get("/");
   expect(html.headers()["x-robots-tag"] ?? "").not.toMatch(/noindex/i);
   const body = await html.text();
@@ -52,6 +55,7 @@ test("[HOME-03] newest roles preview", async ({ page }) => {
   await page.goto("/");
   const preview = page.getByRole("complementary", { name: "Newest roles with salary" });
   await expect(preview).toBeVisible();
+  await expect(preview.getByRole("heading", { level: 2, name: "Newest with salary" })).toBeVisible();
   await expect(preview.getByRole("link", { name: "Job board" })).toHaveAttribute("href", "/board");
   const rows = preview.locator("ol a");
   const count = await rows.count();

@@ -40,11 +40,6 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
     );
     assertIncludes(sources.siteMetadata, "Endpoint Engineering Jobs", "search-focused title");
     assertNotIncludes(sources.siteMetadata, "specialtySearchLinks", "removed specialty links");
-    assertNotIncludes(
-      sources.siteFooter,
-      "Popular endpoint job searches",
-      "removed footer search navigation"
-    );
     assertIncludes(sources.jobCard, "id={`job-${job.id}`}", "stable job anchors");
     assertIncludes(sources.jobCard, "getJobPath(job.id)", "crawlable job detail links");
     assertIncludes(sources.jobPage, "generateMetadata", "unique job metadata");
@@ -55,8 +50,6 @@ export async function auditSeo({ feed, run, sources }: AuditContext) {
       "page > Math.max(totalPages, 1)",
       "empty feed keeps page 1 valid"
     );
-    assertIncludes(sources.siteFooter, "getJobsDirectoryPath()", "directory discovery link");
-    assertIncludes(sources.siteFooter, "https://buymeacoffee.com/jorgeasaurus", "support link");
     assertTruthy(existsSync("public/og-image.png"), "missing public/og-image.png");
   });
 

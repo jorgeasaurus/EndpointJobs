@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { BoardListing } from "@/lib/board-page";
 import {
@@ -15,21 +15,15 @@ import {
   shouldRestoreSavedFilters,
   type SavedPreferences
 } from "@/lib/account/preferences";
-import { devAccountFixture, type DevAccountFixture } from "@/lib/auth/dev-auth-fixture";
+import { recordJobView, savePreferences, setJobSaved } from "@/lib/account/requests";
+import type { AccountSource } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/client";
-import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { useSignInSession } from "@/components/auth/sign-in-session";
 
 import type { FilterAction, FilterState } from "./filter-model";
+import { savedBoardQuery } from "./use-board-results";
 
 const saveDelayMs = 400;
-
-/** Where the board's account data comes from. */
-type AccountSource =
-  | { kind: "signed-out" }
-  | { kind: "unconfigured" }
-  | { kind: "fixture"; userId: string; fixture: DevAccountFixture }
-  | { kind: "account"; userId: string };
 
 type AccountState = {
   hideViewed: boolean;
@@ -47,15 +41,7 @@ const emptyAccountState: AccountState = {
 
 /** Changes exactly when the account data must start over. */
 function accountSourceKey(source: AccountSource) {
-  return "userId" in source ? `${source.kind}:${source.userId}` : source.kind;
-}
-
-function resolveAccountSource(userId: string | null | undefined, fixtureParams: string): AccountSource {
-  if (!userId) return { kind: "signed-out" };
-  const fixture = devAccountFixture(fixtureParams, process.env.NODE_ENV !== "production");
-  if (fixture) return { kind: "fixture", userId, fixture };
-  if (!isSupabaseConfigured()) return { kind: "unconfigured" };
-  return { kind: "account", userId };
+  return source.kind === "none" ? source.kind : `${source.kind}:${source.userId}`;
 }
 
 function initialAccountState(source: AccountSource): AccountState {
@@ -69,38 +55,25 @@ function initialAccountState(source: AccountSource): AccountState {
   };
 }
 
-const subscribeToNothing = () => () => {};
-// Only the dev fixture's own `e2e-*` params. Filter changes rewrite the rest of
-// the query string, and must not look like a new account source.
-const readFixtureParams = () =>
-  [...new URLSearchParams(window.location.search)]
-    .filter(([name]) => name.startsWith("e2e-"))
-    .map(([name, value]) => `${name}=${encodeURIComponent(value)}`)
-    .join("&");
-// The server has no query string. Read it as empty, the same value the client
-// reads without `e2e-*` params, so hydration doesn't hand the account effect a
-// new source and load the account twice.
-const readServerFixtureParams = () => "";
-
-/** State owned by one key: another key reads `initial` until something is written for it. */
+/** `useState` that starts over at `initial` whenever `key` changes. */
 function useKeyedState<T>(key: string, initial: T) {
   const [stored, setStored] = useState<{ key: string; value: T } | null>(null);
   const value = stored !== null && stored.key === key ? stored.value : initial;
-  const update = (next: (current: T) => T) =>
-    setStored((previous) => ({ key, value: next(previous !== null && previous.key === key ? previous.value : initial) }));
-  const put = useCallback((forKey: string, next: T) => setStored({ key: forKey, value: next }), []);
-  return [value, update, put] as const;
+  const update = useCallback(
+    (next: (current: T) => T) =>
+      setStored((previous) => ({ key, value: next(previous !== null && previous.key === key ? previous.value : initial) })),
+    [initial, key]
+  );
+  return [value, update] as const;
 }
 
 export function useAccountBoard(
   filters: FilterState,
   dispatch: (action: FilterAction) => void
 ) {
-  const { userId } = useSignInSession();
-  const fixtureParams = useSyncExternalStore(subscribeToNothing, readFixtureParams, readServerFixtureParams);
-  const source = useMemo(() => resolveAccountSource(userId, fixtureParams), [fixtureParams, userId]);
+  const source = useSignInSession().account;
   const initialState = useMemo(() => initialAccountState(source), [source]);
-  const [account, updateAccount, putAccount] = useKeyedState(accountSourceKey(source), initialState);
+  const [account, updateAccount] = useKeyedState(accountSourceKey(source), initialState);
   const [savedToken, setSavedToken] = useState("0");
   const ready = useRef(false);
   const savedJson = useRef("");
@@ -117,7 +90,6 @@ export function useAccountBoard(
     ready.current = false;
     if (source.kind !== "account") return undefined;
 
-    const key = accountSourceKey(source);
     const client = browserAccountClient();
     let cancel = false;
     void (async () => {
@@ -129,7 +101,7 @@ export function useAccountBoard(
       if (cancel) return;
       const hideViewed = preferences?.hideViewed ?? false;
       const savedOnly = preferences?.savedOnly ?? false;
-      putAccount(key, { hideViewed, savedOnly, viewedIds: new Set(viewed), savedIds: new Set(saved) });
+      updateAccount(() => ({ hideViewed, savedOnly, viewedIds: new Set(viewed), savedIds: new Set(saved) }));
       const pageFilters = filtersRef.current;
       const restore = Boolean(
         preferences && shouldRestoreSavedFilters(window.location.pathname, window.location.search)
@@ -150,9 +122,9 @@ export function useAccountBoard(
     return () => {
       cancel = true;
     };
-  }, [dispatch, putAccount, source]);
+  }, [dispatch, source, updateAccount]);
 
-  const { hideViewed, savedOnly } = account;
+  const { hideViewed, savedIds, savedOnly, viewedIds } = account;
   useEffect(() => {
     if (source.kind !== "account" || !ready.current) return undefined;
     if (!pageFiltersOwned.current && JSON.stringify(filters) !== pageFiltersJson.current) {
@@ -172,90 +144,79 @@ export function useAccountBoard(
     if (json === savedJson.current) return undefined;
     const timer = window.setTimeout(() => {
       savedJson.current = json;
-      void fetch("/api/account/preferences", {
-        method: "PUT",
-        headers: { "content-type": "application/json" },
-        body: json
-      });
+      void savePreferences(preferences);
     }, saveDelayMs);
     return () => window.clearTimeout(timer);
   }, [filters, hideViewed, savedOnly, source.kind]);
 
   async function toggleSaved(job: BoardListing) {
-    if (!userId) return;
-    const wasSaved = account.savedIds.has(job.id);
+    if (source.kind === "none") return;
+    const wasSaved = savedIds.has(job.id);
     const flip = (state: AccountState) => ({ ...state, savedIds: toggleId(state.savedIds, job.id) });
     updateAccount(flip);
     if (source.kind === "fixture") return;
-    const response = await fetch(wasSaved ? `/api/account/saved?jobId=${encodeURIComponent(job.id)}` : "/api/account/saved", {
-      method: wasSaved ? "DELETE" : "POST",
-      headers: wasSaved ? undefined : { "content-type": "application/json" },
-      body: wasSaved ? undefined : JSON.stringify({ jobId: job.id })
-    });
-    if (!response.ok) {
+    if (!(await setJobSaved(job.id, !wasSaved))) {
       updateAccount(flip);
       return;
     }
     setSavedToken((token) => String(Number(token) + 1));
   }
 
+  const savedQuery = useMemo(
+    () => savedBoardQuery({ accountKind: source.kind, savedIds, savedOnly, savedToken }),
+    [savedIds, savedOnly, savedToken, source.kind]
+  );
+
   return {
     hideViewed,
-    savedIds: account.savedIds,
+    savedIds,
     savedOnly,
-    savedToken,
-    signedIn: Boolean(userId),
+    savedQuery,
+    signedIn: source.kind !== "none",
     toggleHideViewed: () => updateAccount((state) => ({ ...state, hideViewed: !state.hideViewed })),
     toggleSaved,
     toggleSavedOnly: () => updateAccount((state) => ({ ...state, savedOnly: !state.savedOnly })),
-    usingFixture: source.kind === "fixture",
-    viewedIds: account.viewedIds
+    viewedIds
   };
 }
 
+/** Records the view for a real account; the fixture and signed-out visitors record nothing. */
 export function useRecordJobView(jobId: string) {
-  const { userId } = useSignInSession();
+  const source = useSignInSession().account;
+  const accountKey = source.kind === "account" ? accountSourceKey(source) : null;
 
   useEffect(() => {
-    if (!userId || !isSupabaseConfigured()) return;
-    void fetch("/api/account/views", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ jobId })
-    });
-  }, [jobId, userId]);
+    if (accountKey) void recordJobView(jobId);
+  }, [accountKey, jobId]);
 }
 
 export function useSavedJob(jobId: string) {
-  const { userId } = useSignInSession();
-  const accountUserId = userId && isSupabaseConfigured() ? userId : null;
-  const key = accountUserId ? `${accountUserId}:${jobId}` : "signed-out";
-  const [saved, updateSaved, putSaved] = useKeyedState(key, false);
+  const source = useSignInSession().account;
+  const [saved, updateSaved] = useKeyedState(
+    `${accountSourceKey(source)}:${jobId}`,
+    source.kind === "fixture" && source.fixture.savedIds.includes(jobId)
+  );
 
   useEffect(() => {
-    if (!accountUserId) return;
+    if (source.kind !== "account") return undefined;
     let cancel = false;
-    void listSavedIds(browserAccountClient(), accountUserId).then((ids) => {
-      if (!cancel) putSaved(key, ids.includes(jobId));
+    void listSavedIds(browserAccountClient(), source.userId).then((ids) => {
+      if (!cancel) updateSaved(() => ids.includes(jobId));
     });
     return () => {
       cancel = true;
     };
-  }, [accountUserId, jobId, key, putSaved]);
+  }, [jobId, source, updateSaved]);
 
   async function toggle() {
-    if (!accountUserId) return;
+    if (source.kind === "none") return;
     const next = !saved;
     updateSaved(() => next);
-    const response = await fetch(next ? "/api/account/saved" : `/api/account/saved?jobId=${encodeURIComponent(jobId)}`, {
-      method: next ? "POST" : "DELETE",
-      headers: next ? { "content-type": "application/json" } : undefined,
-      body: next ? JSON.stringify({ jobId }) : undefined
-    });
-    if (!response.ok) updateSaved(() => !next);
+    if (source.kind === "fixture") return;
+    if (!(await setJobSaved(jobId, next))) updateSaved(() => !next);
   }
 
-  return { saved, signedIn: Boolean(userId), toggle };
+  return { saved, signedIn: source.kind !== "none", toggle };
 }
 
 function browserAccountClient() {

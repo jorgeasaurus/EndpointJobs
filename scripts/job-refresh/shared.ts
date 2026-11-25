@@ -12,6 +12,7 @@ import type {
 import {
   endpointRoleTerms,
   endpointToolDefinitions,
+  identifiesEndpointRole,
   platformDefinitions,
   roleFamilyInferenceRules,
   technicalRoleTitleTerms,
@@ -161,7 +162,7 @@ export function isEndpointRelevant(
 ) {
   const normalizedTitle = normalizeSearchText(title);
   const hasStrongTool = toolAliases.some(
-    ({ tool, strong }) => strong && tools.includes(tool)
+    (definition) => identifiesEndpointRole(definition) && tools.includes(definition.tool)
   );
   const hasEndpointRole = endpointRoleTerms.some((term) =>
     containsAlias(haystack, term)
@@ -182,7 +183,7 @@ export function isEndpointRelevant(
     containsAlias(normalizedTitle, "técnico") ||
     containsAlias(normalizedTitle, "especialista");
   const titleHasStrongTool = toolAliases.some(
-    ({ aliases, strong }) => strong && aliases.some((alias) => containsAlias(normalizedTitle, alias))
+    (definition) => identifiesEndpointRole(definition) && definition.aliases.some((alias) => containsAlias(normalizedTitle, alias))
   );
   const hasEndUserOpsSignal = [
     "desktop",

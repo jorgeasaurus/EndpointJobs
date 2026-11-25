@@ -7,15 +7,18 @@ import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from
 import { AccountMenu } from "./account-menu";
 import { AuthProviderButtons } from "./auth-provider-buttons";
 import { closeDialogOnBackdrop } from "./dialog-backdrop";
+import { canShowSignInOffer } from "@/lib/auth/session";
+
 import { registerSignInOpener } from "./open-sign-in";
-import { canShowSignInOffer, useSignInSession } from "./sign-in-session";
+import { useSignInSession } from "./sign-in-session";
 
 export function AuthMenu() {
-  const { configured, email } = useSignInSession();
+  const session = useSignInSession();
+  const { account } = session;
   const dialogTitleId = useId();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [providerReset, setProviderReset] = useState(0);
-  const offerSignIn = canShowSignInOffer({ configured, email });
+  const offerSignIn = canShowSignInOffer(session);
   const openSignIn = useCallback(() => {
     setProviderReset((value) => value + 1);
     const dialog = dialogRef.current;
@@ -63,7 +66,7 @@ export function AuthMenu() {
     };
   }, [offerSignIn, openSignIn]);
 
-  if (!offerSignIn) return email ? <AccountMenu email={email} /> : null;
+  if (!offerSignIn) return account.kind === "none" ? null : <AccountMenu email={account.email} />;
 
   return (
     <>

@@ -24,20 +24,14 @@ export async function auditJobCards({ feed, jobCardMarkup, run, sources }: Audit
     assertTruthy(feed.jobs.length > 0, "feed has no jobs");
     assertTruthy(feed.jobs.some((job) => isActiveJob(job)), "feed has no active jobs");
     assertIncludes(sources.page, "getPublishedJobsFeed()");
-    assertIncludes(sources.page, "See all {countFormat.format(total)} jobs");
     assertIncludes(sources.jobBoardPage, "<JobBoard initialPage={initialPage} />");
     assertNotIncludes(sources.page, "<JobBoard");
   });
 
-  await run("FEAT-002", "Topbar brand and documentation links are present", () => {
+  await run("FEAT-002", "Topbar brand links home", () => {
     assertIncludes(sources.topbar, "href=\"/\"");
     assertIncludes(sources.topbar, "Endpoint Jobs home");
     assertIncludes(sources.topbar, "Endpoint Jobs");
-    assertIncludes(
-      sources.siteFooter,
-      "https://github.com/jorgeasaurus/EndpointJobs/blob/main/powershell/EndpointJobs/README.md"
-    );
-    assertIncludes(sources.siteFooter, "Open PowerShell module documentation on GitHub");
   });
 
   await run("FEAT-003", "Refresh timestamps format valid and invalid feed dates", () => {

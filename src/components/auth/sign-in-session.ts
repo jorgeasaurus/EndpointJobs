@@ -1,23 +1,13 @@
 import { useSyncExternalStore } from "react";
 
 import { devAuthFixture } from "@/lib/auth/dev-auth-fixture";
+import { noAccount, type SignInSession } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/client";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 
-export type SignInSession = {
-  configured: boolean;
-  email: string | null;
-  userId?: string | null;
-};
-
-export function canShowSignInOffer(session: SignInSession) {
-  return session.configured && session.email === null;
-}
-
 let session: SignInSession = {
   configured: isSupabaseConfigured(),
-  email: null,
-  userId: null
+  account: noAccount
 };
 let started = false;
 const listeners = new Set<() => void>();
@@ -45,18 +35,15 @@ function ensureLoaded() {
       const claims = data?.claims;
       const userId = typeof claims?.sub === "string" ? claims.sub : null;
       if (!claims || !userId) {
-        publish({ configured: true, email: null, userId: null });
+        publish({ configured: true, account: noAccount });
         return;
       }
       const claimEmail = claims.email;
-      publish({
-        configured: true,
-        userId,
-        email: typeof claimEmail === "string" && claimEmail ? claimEmail : "Signed in"
-      });
+      const email = typeof claimEmail === "string" && claimEmail ? claimEmail : "Signed in";
+      publish({ configured: true, account: { kind: "account", userId, email } });
     })
     .catch(() => {
-      publish({ configured: true, email: null, userId: null });
+      publish({ configured: true, account: noAccount });
     });
 }
 

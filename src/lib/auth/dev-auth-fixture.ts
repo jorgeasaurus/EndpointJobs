@@ -1,37 +1,26 @@
+import { noAccount, type DevAccountFixture, type SignInSession } from "./session";
+
 const fixtureEmail = "jorgesuarez@gmail.com";
 
-type FixtureSession = {
-  configured: boolean;
-  email: string | null;
-  userId?: string | null;
-};
-
 /** Dev-only session stand-in for screenshots and harnesses. Production passes enabled=false. */
-export function devAuthFixture(search: string, enabled: boolean): FixtureSession | null {
+export function devAuthFixture(search: string, enabled: boolean): SignInSession | null {
   if (!enabled) return null;
   const params = new URLSearchParams(search);
   const mode = params.get("e2e-auth");
   if (mode === "in") {
     const email = params.get("e2e-email")?.trim();
-    return { configured: true, email: email || fixtureEmail, userId: "e2e-user" };
+    return {
+      configured: true,
+      account: { kind: "fixture", userId: "e2e-user", email: email || fixtureEmail, fixture: accountFixture(params) }
+    };
   }
-  if (mode === "out") return { configured: true, email: null };
-  if (mode === "off") return { configured: false, email: null };
+  if (mode === "out") return { configured: true, account: noAccount };
+  if (mode === "off") return { configured: false, account: noAccount };
   return null;
 }
 
-export type DevAccountFixture = {
-  savedIds: string[];
-  viewedIds: string[];
-  hideViewed: boolean;
-  savedOnly: boolean;
-};
-
-/** Local account stand-in for the dev auth fixture. `savedOnly=1` in a shared URL is ignored. */
-export function devAccountFixture(search: string, enabled: boolean): DevAccountFixture | null {
-  const session = devAuthFixture(search, enabled);
-  if (!session?.userId) return null;
-  const params = new URLSearchParams(search);
+/** Only the `e2e-*` params count, so `savedOnly=1` in a shared URL is ignored. */
+function accountFixture(params: URLSearchParams): DevAccountFixture {
   return {
     savedIds: splitFixtureIds(params.get("e2e-saved")),
     viewedIds: splitFixtureIds(params.get("e2e-viewed")),

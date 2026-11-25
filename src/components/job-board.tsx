@@ -17,7 +17,7 @@ import { ParallaxBackground } from "./job-board/parallax-background";
 import { OpenRolesSection } from "./job-board/open-roles";
 import { SiteFooter } from "./job-board/site-footer";
 import { Topbar } from "./job-board/topbar";
-import { savedBoardQuery, useBoardMap, useBoardPage, useDebouncedFilters } from "./job-board/use-board-results";
+import { useBoardMap, useBoardPage, useDebouncedFilters } from "./job-board/use-board-results";
 import { useAccountBoard } from "./job-board/use-account-board";
 import { useSearchFocusShortcut } from "./job-board/use-search-focus-shortcut";
 import { useUrlSyncedFilters } from "./job-board/use-url-synced-filters";
@@ -50,19 +50,7 @@ export function JobBoard({
   useSearchFocusShortcut(searchInputRef);
 
   const account = useAccountBoard(filters, dispatchFilters);
-  const savedQuery = useMemo(() => savedBoardQuery({
-    savedIds: account.savedIds,
-    savedOnly: account.savedOnly,
-    savedToken: account.savedToken,
-    signedIn: account.signedIn,
-    usingFixture: account.usingFixture
-  }), [
-    account.savedIds,
-    account.savedOnly,
-    account.savedToken,
-    account.signedIn,
-    account.usingFixture
-  ]);
+  const { savedQuery } = account;
   const debouncedFilters = useDebouncedFilters(filters);
   const debouncedFilterKey = JSON.stringify(debouncedFilters);
   const requestedPage = pagination.filterKey === debouncedFilterKey ? pagination.page : 1;

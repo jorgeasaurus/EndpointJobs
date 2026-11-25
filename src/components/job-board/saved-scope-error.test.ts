@@ -24,7 +24,7 @@ test("a failed saved-jobs request keeps the last results and the Saved jobs only
     ]
   }, initialFilterState, 1, 20);
   const js = await bundleHarness(new URL("../../../scripts/audits/fixtures/saved-scope-error-harness.tsx", import.meta.url), {
-    stubs: { "next/link": nextLinkStub }
+    "next/link": nextLinkStub
   });
   const browser = await chromium.launch({
     headless: true,

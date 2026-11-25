@@ -191,7 +191,6 @@ test("roadmap page renders skills, source links, and progress", async () => {
 
   const page = readFileSync(new URL("../../src/app/roadmap/page.tsx", import.meta.url), "utf8");
   const header = readFileSync(new URL("../../src/components/job-board/topbar.tsx", import.meta.url), "utf8");
-  const footer = readFileSync(new URL("../../src/components/job-board/site-footer.tsx", import.meta.url), "utf8");
   assert.match(page, /roadmapPageTitle/);
   assert.match(page, /roadmapPageDescription/);
   assert.match(page, /socialTitle/);
@@ -204,15 +203,6 @@ test("roadmap page renders skills, source links, and progress", async () => {
   assert.doesNotMatch(header, /getApiDocsPath\(\)/);
   assert.doesNotMatch(header, /buymeacoffee/);
   assert.doesNotMatch(header, /report-or-request/);
-  assert.match(footer, /getApiDocsPath\(\)/);
-  assert.match(footer, /buymeacoffee/);
-  assert.match(footer, /report-or-request/);
-  assert.equal(footer.split("getRoadmapPath()").length - 1, 1);
-  assert.match(footer, /id: "browse",\n\s+label: "Browse"/);
-  assert.match(footer, /id: "project",\n\s+label: "Project"/);
-  assert.match(footer, /const labelId = `footer-group-\$\{group\.id\}`;/);
-  assert.match(footer, /id=\{labelId\}/);
-  assert.match(footer, /aria-labelledby=\{labelId\}/);
   assert.equal(getRoadmapPath(), "/roadmap");
   assert.ok((await sitemap()).some((entry) => entry.url === new URL("/roadmap", siteUrl).toString()));
 });

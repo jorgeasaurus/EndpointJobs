@@ -9,24 +9,30 @@ const srcRoot = fileURLToPath(new URL("../../src/", import.meta.url));
 /** A plain-anchor `next/link`, for harnesses that render links outside Next. */
 export const nextLinkStub = new URL("./fixtures/stubs/next-link.tsx", import.meta.url);
 
-type HarnessOptions = {
-  /** Module id (`next/link`, `@/lib/supabase/client`) to the file that replaces it. */
-  stubs?: Record<string, URL>;
-  define?: Record<string, string>;
-};
+/**
+ * Bundles a browser harness into one script for Chrome. `@/` resolves to `src/`.
+ * `stubs` maps a module id (`next/link`, `@/lib/supabase/client`) to the file that replaces it.
+ */
+export function bundleHarness(entry: URL, stubs: Record<string, URL> = {}) {
+  return bundle(entry, stubs, "browser");
+}
 
-/** Bundles a browser harness into one script for Chrome. `@/` resolves to `src/`. */
-export async function bundleHarness(entry: URL, { stubs = {}, define }: HarnessOptions = {}) {
+/** Bundles `entry` for Node with the same stubs and imports it, for server code such as route handlers. */
+export async function importWithStubs<Module>(entry: URL, stubs: Record<string, URL>): Promise<Module> {
+  const code = await bundle(entry, stubs, "node");
+  return import(`data:text/javascript;base64,${Buffer.from(code).toString("base64")}`);
+}
+
+async function bundle(entry: URL, stubs: Record<string, URL>, platform: "browser" | "node") {
   const result = await esbuild.build({
     absWorkingDir: repoRoot,
     entryPoints: [fileURLToPath(entry)],
     bundle: true,
     write: false,
-    format: "iife",
-    platform: "browser",
+    format: platform === "browser" ? "iife" : "esm",
+    platform,
     target: "es2022",
     jsx: "automatic",
-    define,
     plugins: [
       {
         name: "harness-modules",
