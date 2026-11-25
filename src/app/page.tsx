@@ -58,7 +58,7 @@ export default async function Home() {
   }));
 
   return (
-    <main className="site-frame">
+    <main className="site-frame landing-frame">
       <ParallaxBackground />
       <div className="site-content">
         <Topbar />
